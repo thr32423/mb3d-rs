@@ -21,8 +21,10 @@
 //! | `x86`       | IA-32 interpreter/compiler for the formula machine code |
 //! | `custom`    | memory layout + calling convention for .m3f formulas |
 //! | `anim`      | Animation.pas, Interpolation.pas: keyframes and interpolation |
+//! | `animfile`  | Animation.pas (`LoadAni`, save): .m3a files, .m3k text format |
 
 pub mod anim;
+pub mod animfile;
 pub mod calc;
 pub mod custom;
 pub mod deao;

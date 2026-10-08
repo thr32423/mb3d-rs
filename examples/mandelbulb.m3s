@@ -1,0 +1,36 @@
+# Classic power 8 Mandelbulb, close-up with smooth normals and two lights.
+width = 800
+height = 600
+iterations = 14
+zoom = 1.8
+mid = 0.0, -0.35, 0.0
+z_start = -2
+z_end = 30
+rotation = -40, 30, 0
+de_stop = 0.8
+raystep = 0.4
+smooth_normals = 3
+bin_search = 8
+color_start = 64
+color_end = 71
+depth_fog = 60
+diffuse = 80
+
+[formula]
+name = Integer Power
+power = 8
+z_multiplier = -1
+
+[light]
+color = #FFE8A0
+x_angle = 16
+y_angle = 57
+spec_power = 64
+diffuse_func = 3
+
+[light]
+color = #4060A0
+x_angle = -60
+y_angle = -40
+spec_power = 8
+diffuse_func = 0

@@ -1,0 +1,486 @@
+//! Multithreaded rendering: calculation of the G-buffer (`CalcMandT` +
+//! `TMandCalcThread`) followed by painting (`PaintRows`).
+//!
+//! Like MB3D, rows are distributed interleaved over the threads
+//! (thread t calculates rows t, t + n, t + 2n, ...).
+
+use crate::calc::{CalcParams, HsLight, Marcher};
+use crate::gbuffer::SiLight;
+use crate::lighting::{LightVals, PaintCamera};
+use crate::math::normalise_matrix_to;
+use crate::scene::{CameraOptic, Scene};
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::time::Instant;
+
+pub struct RenderResult {
+    pub width: usize,
+    pub height: usize,
+    pub gbuffer: Vec<SiLight>,
+    /// RGB, 8 bit per channel, row major
+    pub rgb: Vec<u8>,
+    pub calc_seconds: f64,
+    pub paint_seconds: f64,
+}
+
+impl RenderResult {
+    /// Fraction of pixels that hit the object.
+    pub fn coverage(&self) -> f64 {
+        let hits = self.gbuffer.iter().filter(|s| !s.is_background()).count();
+        hits as f64 / self.gbuffer.len() as f64
+    }
+}
+
+fn thread_count(sc: &Scene) -> usize {
+    if sc.threads > 0 {
+        sc.threads
+    } else {
+        std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4)
+    }
+}
+
+/// Calculates the G-buffer.  `progress` is called from the worker threads with
+/// the number of finished rows.
+pub fn calculate(
+    sc: &Scene,
+    progress: &(dyn Fn(usize, usize) + Sync),
+) -> Result<(CalcParams, Vec<SiLight>), String> {
+    calculate_cancellable(sc, progress, &|| false)
+}
+
+/// Like [`calculate`]; stops early with `Err("cancelled")` as soon as
+/// `cancel` returns true (checked once per row and between passes).
+pub fn calculate_cancellable(
+    sc: &Scene,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+) -> Result<(CalcParams, Vec<SiLight>), String> {
+    calculate_inner(sc, progress, cancel, true)
+}
+
+fn calculate_inner(
+    sc: &Scene,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+    image_space: bool,
+) -> Result<(CalcParams, Vec<SiLight>), String> {
+    let mut p = CalcParams::new(sc)?;
+    let threads = thread_count(sc).min(p.rect[3] as usize).max(1);
+    if let Some(vp) = &sc.vol_light {
+        let l = effective_lighting(sc);
+        let lv = light_vals(sc, &l, &paint_camera(sc, &p));
+        if let Some((ln, positional)) = lv.light_ln(vp.light) {
+            let hs_len = sc.shadows.map(|h| h.max_len_mul).unwrap_or(1.0);
+            let map = crate::vollight::build(&p, sc.mid, ln, positional, l.lights[vp.light].amplitude, vp, hs_len, threads);
+            p.vol = Some(std::sync::Arc::new(map));
+        }
+    }
+    let p = p;
+    let [x0, y0, w, h] = p.rect;
+    let (x0, y0, w, h) = (x0 as usize, y0 as usize, w as usize, h as usize);
+    let done = AtomicUsize::new(0);
+    let mut rows: Vec<Vec<SiLight>> = vec![Vec::new(); h];
+    std::thread::scope(|s| {
+        let mut handles = Vec::new();
+        for t in 0..threads {
+            let p = &p;
+            let done = &done;
+            handles.push(s.spawn(move || {
+                // MB3D: seed := Round(Random * (iThreadId + 1) * $324594A1 + $24563487)
+                let mut out = Vec::new();
+                let mut y = t;
+                while y < h {
+                    if cancel() {
+                        break;
+                    }
+                    let yy = y + y0;
+                    let seed = (0x24563487u32 as i64 + (yy as i64 + 1) * 0x324594A1i64) as i32;
+                    let mut m = Marcher::new(p, seed);
+                    let row: Vec<SiLight> = (x0..x0 + w).map(|x| m.march_pixel(x as i32, yy as i32)).collect();
+                    out.push((y, row));
+                    let d = done.fetch_add(1, Ordering::Relaxed) + 1;
+                    progress(d, h);
+                    y += threads;
+                }
+                out
+            }));
+        }
+        for hnd in handles {
+            for (y, row) in hnd.join().expect("render thread panicked") {
+                rows[y] = row;
+            }
+        }
+    });
+    if cancel() {
+        return Err("cancelled".into());
+    }
+    let mut gbuf: Vec<SiLight> = rows.into_iter().flatten().collect();
+    if image_space {
+        post_process(sc, &p, &mut gbuf, threads);
+    } else if sc.shadows.is_some() || sc.deao.is_some() {
+        let mut s2 = sc.clone();
+        if s2.deao.is_none() {
+            s2.ao = None;
+        }
+        post_process(&s2, &p, &mut gbuf, threads);
+    }
+    if cancel() {
+        return Err("cancelled".into());
+    }
+    Ok((p, gbuf))
+}
+
+/// The automatic post calculations on the G-buffer (hard shadows, ambient
+/// occlusion), as MB3D runs them after the main calculation.
+pub fn post_process(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: usize) {
+    if sc.shadows.is_some() {
+        hard_shadows(sc, p, gbuf, threads);
+    }
+    if let Some(ao) = &sc.ao {
+        if let Some(d) = &sc.deao {
+            crate::deao::deao(p, gbuf, p.rect[2] as usize, p.rect[3] as usize, d, threads);
+        } else {
+            ssao(gbuf, p.rect[2] as usize, p.rect[3] as usize, p, ao, threads);
+        }
+    }
+}
+
+fn ssao(gbuf: &mut [SiLight], w: usize, h: usize, p: &CalcParams, ao: &crate::ssao::SsaoParams, threads: usize) {
+    if ao.bits15 {
+        crate::ssao15::ssao15(gbuf, w, h, p.zc_mul, p.zcorr, ao, threads);
+    } else {
+        crate::ssao::ssao24(gbuf, w, h, p.zc_mul, p.zcorr, ao, threads);
+    }
+}
+
+/// The lighting with the hard shadow state of the scene applied
+/// (`iHScalced`, `iHSmask`, "set diffuse function to cos").
+fn effective_lighting(sc: &Scene) -> crate::lighting::Lighting {
+    let mut l = sc.lighting.clone();
+    if let Some(hs) = &sc.shadows {
+        l.hs_calced = hs.lights & 0x3F;
+        l.hs_soft = hs.soft;
+        l.hs_set_cos = hs.set_cos;
+    }
+    l
+}
+
+fn light_vals(sc: &Scene, l: &crate::lighting::Lighting, cam: &PaintCamera) -> LightVals {
+    let z_range = sc.z_end - sc.z_start;
+    let mut lv = LightVals::new(l, sc.z_step_div, sc.dfog_on_it, z_range, sc.step_width(), sc.width, 1.0);
+    lv.rotate_object_lights(l, &normalise_matrix_to(1.0, &sc.vgrads));
+    if sc.vol_light.is_some_and(|v| l.lights[v.light].on) {
+        lv.set_vol_light(l, z_range);
+    }
+    let vz = normalise_matrix_to(1.0, &sc.vgrads)[2];
+    lv.place_lights(l, sc.mid, cam, z_range, vz);
+    lv
+}
+
+/// `PaintParameter` / `GetStartSPosAndAddVecs`
+pub fn paint_camera(sc: &Scene, p: &CalcParams) -> PaintCamera {
+    let w = sc.width;
+    let h = sc.height;
+    let fov = if sc.optic == CameraOptic::Panorama {
+        std::f32::consts::PI
+    } else {
+        sc.fov_y.to_radians() as f32
+    };
+    let d = (fov as f64 * 0.5).clamp(0.01, 1.5);
+    let m = normalise_matrix_to(1.0, &p.vgrads);
+    let mf = [
+        [m[0][0] as f32, m[0][1] as f32, m[0][2] as f32],
+        [m[1][0] as f32, m[1][1] as f32, m[1][2] as f32],
+        [m[2][0] as f32, m[2][1] as f32, m[2][2] as f32],
+    ];
+    let sw = p.step_width;
+    let sp = if sc.optic == CameraOptic::Panorama {
+        [0.0, 0.0, p.zz_stmit_dif]
+    } else {
+        [-0.5 * w as f64 * sw, -0.5 * h as f64 * sw, p.zz_stmit_dif]
+    };
+    let sp = crate::math::rotate_vector_reverse(&sp, &m);
+    PaintCamera {
+        width: w,
+        height: h,
+        fov,
+        aspect: if sc.optic == CameraOptic::Panorama { 2.0 } else { w as f32 / h as f32 },
+        x_off: 0.5,
+        planar: sc.optic as i32,
+        pl_optic_z: (d.cos() * d / d.sin()) as f32,
+        zcorr: p.zcorr,
+        zc_mul: p.zc_mul,
+        step_width: p.step_width,
+        zz_stmit_dif: p.zz_stmit_dif,
+        m: mf,
+        start_pos: [sp[0] as f32, sp[1] as f32, sp[2] as f32],
+        x_add: [(m[0][0] * sw) as f32, (m[0][1] * sw) as f32, (m[0][2] * sw) as f32],
+        y_add: [(m[1][0] * sw) as f32, (m[1][1] * sw) as f32, (m[1][2] * sw) as f32],
+    }
+}
+
+/// `CalcHardShadowT`: hard (or one soft) shadow for the selected global
+/// lights, stored in the shadow bits of the G-buffer.
+pub fn hard_shadows(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: usize) {
+    let Some(hs) = &sc.shadows else { return };
+    let l = effective_lighting(sc);
+    let lv = light_vals(sc, &l, &paint_camera(sc, p));
+    // CalcHSVecsFromLights: HSvecs = RotateVectorReverse(-StepWidth * LN, M)
+    let m = normalise_matrix_to(1.0, &p.vgrads);
+    let mut lights: Vec<HsLight> = lv
+        .light_dirs()
+        .into_iter()
+        .filter(|(idx, _)| (hs.lights >> idx) & 1 != 0)
+        .map(|(idx, ln)| {
+            let v = crate::math::normalize([ln[0] as f64, ln[1] as f64, ln[2] as f64]);
+            let v = [-v[0] * p.step_width, -v[1] * p.step_width, -v[2] * p.step_width];
+            HsLight { idx, vec: crate::math::rotate_vector_reverse(&v, &m) }
+        })
+        .collect();
+    if lights.is_empty() {
+        return;
+    }
+    if hs.soft {
+        // calcHSsoft uses the last selected light
+        lights = vec![*lights.last().unwrap()];
+    }
+    // the HS calculation always uses 8 binary search steps
+    let mut p = p.clone();
+    p.de_add_steps = 8;
+    let p = &p;
+    let w = p.rect[2] as usize;
+    let h = p.rect[3] as usize;
+    let (x0, y0) = (p.rect[0], p.rect[1] as usize);
+    let threads = threads.min(h).max(1);
+    let lights = &lights;
+    std::thread::scope(|s| {
+        let mut rows: Vec<(usize, &mut [SiLight])> = gbuf.chunks_mut(w).enumerate().collect();
+        let mut per: Vec<Vec<(usize, &mut [SiLight])>> = (0..threads).map(|_| Vec::new()).collect();
+        for (i, r) in rows.drain(..) {
+            per[i % threads].push((i, r));
+        }
+        for list in per {
+            s.spawn(move || {
+                for (y, row) in list {
+                    let y = y + y0;
+                    let seed = (0x24563487u32 as i64 + (y as i64 + 1) * 0x324594A1i64) as i32;
+                    let mut m = Marcher::new(p, seed);
+                    if hs.soft {
+                        m.soft_shadow_row(y as i32, x0, row, &lights[0], hs.soft_radius, hs.max_len_mul);
+                    } else {
+                        m.hard_shadow_row(y as i32, x0, row, lights, hs.max_len_mul);
+                    }
+                }
+            });
+        }
+    });
+}
+
+/// Paints the G-buffer with the scene lighting.
+pub fn paint(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> Vec<u8> {
+    let [x0, ry0, w, h] = p.rect;
+    let l = effective_lighting(sc);
+    let cam = paint_camera(sc, p);
+    let lv = light_vals(sc, &l, &cam);
+    let threads = thread_count(sc).min(h as usize).max(1);
+    let mut rgb = vec![0u8; (w * h * 3) as usize];
+    let chunk_rows = ((h as usize) + threads - 1) / threads;
+    std::thread::scope(|s| {
+        for (ci, chunk) in rgb.chunks_mut(chunk_rows * w as usize * 3).enumerate() {
+            let lv = &lv;
+            let cam = &cam;
+            s.spawn(move || {
+                let y0 = ci * chunk_rows;
+                for (ry, row) in chunk.chunks_mut(w as usize * 3).enumerate() {
+                    let y = y0 + ry;
+                    for x in 0..w as usize {
+                        let c = lv.pixel_color(&gbuf[y * w as usize + x], x as i32 + x0, y as i32 + ry0, cam);
+                        row[x * 3..x * 3 + 3].copy_from_slice(&c);
+                    }
+                }
+            });
+        }
+    });
+    if let Some(d) = &sc.dof {
+        crate::dof::apply(&mut rgb, gbuf, w as usize, h as usize, p.zc_mul, p.zcorr, sc.fov_y, d);
+    }
+    rgb
+}
+
+/// Chooses `color_start` / `color_end` so that the palette spans the 2nd to
+/// 98th percentile of the smoothed iteration gradient of the visible surface
+/// (a convenience of this port, MB3D only has the manual sliders).
+pub fn auto_color_range(sc: &mut Scene, gbuf: &[SiLight]) {
+    let mut v: Vec<f64> = gbuf
+        .iter()
+        .filter(|s| !s.is_background() && s.si_gradient < 32768)
+        .map(|s| s.si_gradient as f64)
+        .collect();
+    if v.len() < 16 {
+        return;
+    }
+    v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let q = |f: f64| v[((v.len() - 1) as f64 * f) as usize];
+    // inverse of sCStart := Sqr((TB + 30) / 90) * 32767 - 10900
+    let tb = |si: f64| 90.0 * ((si + 10900.0).max(0.0) / 32767.0).sqrt() - 30.0;
+    let (lo, hi) = (q(0.02), q(0.98).max(q(0.02) + 64.0));
+    sc.lighting.color_start = tb(lo) as f32;
+    sc.lighting.color_end = tb(hi) as f32;
+}
+
+/// Full render: calculation + painting.
+pub fn render(sc: &Scene, progress: &(dyn Fn(usize, usize) + Sync)) -> Result<RenderResult, String> {
+    let t0 = Instant::now();
+    let (p, gbuffer) = calculate(sc, progress)?;
+    let t1 = Instant::now();
+    let rgb = paint(sc, &p, &gbuffer);
+    let t2 = Instant::now();
+    Ok(RenderResult {
+        width: p.rect[2] as usize,
+        height: p.rect[3] as usize,
+        gbuffer,
+        rgb,
+        calc_seconds: (t1 - t0).as_secs_f64(),
+        paint_seconds: (t2 - t1).as_secs_f64(),
+    })
+}
+
+/// Box filter downsampling of an RGB image by an integer factor (used for
+/// anti-aliasing: render at n times the size, then downsample).
+pub fn downsample(rgb: &[u8], w: usize, h: usize, n: usize) -> (Vec<u8>, usize, usize) {
+    let (w2, h2) = (w / n, h / n);
+    let mut out = vec![0u8; w2 * h2 * 3];
+    let nn = (n * n) as u32;
+    for y in 0..h2 {
+        for x in 0..w2 {
+            for c in 0..3 {
+                let mut sum = 0u32;
+                for dy in 0..n {
+                    for dx in 0..n {
+                        sum += rgb[((y * n + dy) * w + x * n + dx) * 3 + c] as u32;
+                    }
+                }
+                out[(y * w2 + x) * 3 + c] = ((sum + nn / 2) / nn) as u8;
+            }
+        }
+    }
+    (out, w2, h2)
+}
+
+/// Result of [`render_tiled`]: the stitched image of the rendered region
+/// (the whole image, or one tile) and optionally its G-buffer.
+pub struct TiledResult {
+    pub width: usize,
+    pub height: usize,
+    pub rgb: Vec<u8>,
+    pub gbuffer: Option<Vec<SiLight>>,
+    pub calc_seconds: f64,
+    pub paint_seconds: f64,
+    /// Calc parameters of the last tile (z conversion for statistics)
+    pub params: Option<CalcParams>,
+}
+
+/// Overlap around a single tile so that the image space effects (SSAO,
+/// DOF) see some context; the overlap is calculated but cut away.
+pub const TILE_BORDER: i32 = 24;
+
+/// Tiled rendering of `sc.tiling`.
+///
+/// All tiles (`tiling.pos` = None): the tiles are calculated one after
+/// another into one G-buffer; SSAO, painting and DOF then run on the whole
+/// image, so the result equals an untiled render.
+///
+/// One tile: only that tile is calculated (with a border of
+/// [`TILE_BORDER`] pixels) and painted, like MB3D's big-render tiles; the
+/// image space effects only see the tile.
+///
+/// `tile_progress(done, total, rect)` is called after each tile, `progress`
+/// per row as in [`calculate`].
+pub fn render_tiled(
+    sc: &Scene,
+    keep_gbuffer: bool,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    tile_progress: &dyn Fn(usize, usize, [i32; 4]),
+) -> Result<TiledResult, String> {
+    let tl = sc.tiling.ok_or("no tiling set")?;
+    let (w, h) = (sc.width, sc.height);
+    if let Some((c, r)) = tl.pos {
+        let t = tl.tile_rect(w, h, c, r);
+        if t[2] <= 0 || t[3] <= 0 {
+            return Err("empty tile".into());
+        }
+        let border = TILE_BORDER.max(tl.downscale as i32);
+        let x0 = (t[0] - border).max(0);
+        let y0 = (t[1] - border).max(0);
+        let x1 = (t[0] + t[2] + border).min(w);
+        let y1 = (t[1] + t[3] + border).min(h);
+        let mut ts = sc.clone();
+        ts.calc_rect = Some([x0, y0, x1 - x0, y1 - y0]);
+        let t0 = Instant::now();
+        let (p, gbuf) = calculate(&ts, progress)?;
+        let t1 = Instant::now();
+        let trgb = paint(&ts, &p, &gbuf);
+        let paint_s = t1.elapsed().as_secs_f64();
+        let tw = (x1 - x0) as usize;
+        let (ow, oh) = (t[2] as usize, t[3] as usize);
+        let (sx, sy) = ((t[0] - x0) as usize, (t[1] - y0) as usize);
+        let mut rgb = Vec::with_capacity(ow * oh * 3);
+        let mut g = Vec::with_capacity(if keep_gbuffer { ow * oh } else { 0 });
+        for y in 0..oh {
+            let o = (sy + y) * tw + sx;
+            rgb.extend_from_slice(&trgb[o * 3..(o + ow) * 3]);
+            if keep_gbuffer {
+                g.extend_from_slice(&gbuf[o..o + ow]);
+            }
+        }
+        tile_progress(1, 1, t);
+        return Ok(TiledResult {
+            width: ow,
+            height: oh,
+            rgb,
+            gbuffer: keep_gbuffer.then_some(g),
+            calc_seconds: (t1 - t0).as_secs_f64(),
+            paint_seconds: paint_s,
+            params: Some(p),
+        });
+    }
+    let (wu, hu) = (w as usize, h as usize);
+    let mut full = vec![SiLight::default(); wu * hu];
+    let total = (tl.cols * tl.rows) as usize;
+    let t0 = Instant::now();
+    let mut n = 0;
+    for r in 0..tl.rows {
+        for c in 0..tl.cols {
+            let t = tl.tile_rect(w, h, c, r);
+            n += 1;
+            if t[2] <= 0 || t[3] <= 0 {
+                continue;
+            }
+            let mut ts = sc.clone();
+            ts.calc_rect = Some(t);
+            let (_, gbuf) = calculate_inner(&ts, progress, &|| false, false)?;
+            let tw = t[2] as usize;
+            for y in 0..t[3] as usize {
+                let d = (t[1] as usize + y) * wu + t[0] as usize;
+                full[d..d + tw].copy_from_slice(&gbuf[y * tw..(y + 1) * tw]);
+            }
+            tile_progress(n, total, t);
+        }
+    }
+    let mut fs = sc.clone();
+    fs.calc_rect = None;
+    let p = CalcParams::new(&fs)?;
+    if let (Some(ao), None) = (&sc.ao, &sc.deao) {
+        ssao(&mut full, wu, hu, &p, ao, thread_count(sc));
+    }
+    let t1 = Instant::now();
+    let rgb = paint(&fs, &p, &full);
+    Ok(TiledResult {
+        width: wu,
+        height: hu,
+        rgb,
+        gbuffer: keep_gbuffer.then_some(full),
+        calc_seconds: (t1 - t0).as_secs_f64(),
+        paint_seconds: t1.elapsed().as_secs_f64(),
+        params: Some(p),
+    })
+}

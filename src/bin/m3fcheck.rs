@@ -1,0 +1,228 @@
+//! Developer tool: differential test of the x86 interpreter against native
+//! execution of the formula machine code.
+//!
+//! usage: m3fcheck <formula dir or .m3f files...> [--oracle PATH] [--trials N] [-v]
+//!
+//! The oracle is the 32-bit static program built from tools/oracle/oracle.asm
+//! (Linux x86/x86-64 with 32-bit support only).  Without an oracle the tool
+//! only checks that every formula runs in the interpreter.
+
+use mb3d::custom::*;
+use mb3d::m3f::M3f;
+use mb3d::x86::{Machine, BASE, MEM_SIZE, RETURN_SENTINEL};
+use std::io::Write;
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
+use std::sync::Arc;
+
+struct Rng(u64);
+impl Rng {
+    fn f(&mut self) -> f64 {
+        self.0 = self.0.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        ((self.0 >> 11) as f64) / ((1u64 << 53) as f64)
+    }
+    fn range(&mut self, a: f64, b: f64) -> f64 {
+        a + (b - a) * self.f()
+    }
+}
+
+fn setup(m: &mut Machine, rng: &mut Rng, de_option: i32, first_it: i32) {
+    let w = |m: &mut Machine, o: u32, v: f64| m.wrf64(IT_BASE + o, v).unwrap();
+    let c = [rng.range(-1.2, 1.2), rng.range(-1.2, 1.2), rng.range(-1.2, 1.2)];
+    let v = [rng.range(-1.5, 1.5), rng.range(-1.5, 1.5), rng.range(-1.5, 1.5), rng.range(-0.5, 0.5)];
+    for k in 0..4 {
+        w(m, off::X + 8 * k as u32, v[k]);
+    }
+    for k in 0..3 {
+        w(m, off::C1 + 8 * k as u32, c[k]);
+        w(m, off::J1 + 8 * k as u32, c[k]);
+        w(m, off::JU1 + 8 * k as u32, c[k]);
+    }
+    w(m, off::J4, 0.1);
+    w(m, off::ROLD, 0.7);
+    w(m, off::RSTOPD, 1024.0);
+    m.wr32(IT_BASE + off::PVAR, pconst_addr(0)).unwrap();
+    w(m, off::ROUT, v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    m.wr32(IT_BASE + off::IT_RESULT, 3).unwrap();
+    m.wr32(IT_BASE + off::MAX_IT, 60).unwrap();
+    m.wrf32(IT_BASE + off::RSTOP, 1024.0 * 1024.0).unwrap();
+    m.wr32(IT_BASE + off::N_HYBRID, 1).unwrap();
+    m.wr32(IT_BASE + off::FHPVAR, pconst_addr(0)).unwrap();
+    m.wr32(IT_BASE + off::DE_OPTION, de_option as u32).unwrap();
+    w(m, off::OTRAP, 0.5);
+    w(m, off::VARY_SCALE, 1.0);
+    m.wr32(IT_BASE + off::FIRST_IT, first_it as u32).unwrap();
+    w(m, off::DERIV1, 1.0);
+    w(m, off::DERIV1 + 8, 0.0);
+    w(m, off::DERIV1 + 16, 0.0);
+    for i in 0..4u32 {
+        m.wrf32(IT_BASE + off::SMATRIX4 + (i * 4 + i) * 4, 1.0).unwrap();
+    }
+    // header for the oracle
+    let x = IT_C1 - 32;
+    for (i, v) in [code_addr(0), x, x + 8, x + 16, x + 24, IT_C1, STACK_TOP].iter().enumerate() {
+        m.wr32(BASE + 4 * i as u32, *v).unwrap();
+    }
+}
+
+fn run_native(oracle: &str, mem: &[u8]) -> Option<Vec<u8>> {
+    let mut ch = Command::new(oracle)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+        .ok()?;
+    ch.stdin.take()?.write_all(mem).ok()?;
+    let out = ch.wait_with_output().ok()?;
+    if out.status.success() && out.stdout.len() == MEM_SIZE {
+        Some(out.stdout)
+    } else {
+        None
+    }
+}
+
+fn close(a: f64, b: f64) -> bool {
+    if a.is_nan() && b.is_nan() {
+        return true;
+    }
+    if a == b {
+        return true;
+    }
+    let d = (a - b).abs();
+    let s = a.abs().max(b.abs());
+    d <= 1e-9 * s.max(1e-3) || (s > 1e100 && d / s < 1e-6)
+}
+
+fn main() {
+    let mut files: Vec<PathBuf> = Vec::new();
+    let mut oracle: Option<String> = None;
+    let mut trials = 4;
+    let mut verbose = false;
+    let mut args = std::env::args().skip(1);
+    while let Some(a) = args.next() {
+        match a.as_str() {
+            "--oracle" => oracle = args.next(),
+            "--trials" => trials = args.next().and_then(|s| s.parse().ok()).unwrap_or(4),
+            "-v" => verbose = true,
+            p => {
+                let pb = PathBuf::from(p);
+                if pb.is_dir() {
+                    let mut v: Vec<PathBuf> = std::fs::read_dir(&pb)
+                        .unwrap()
+                        .flatten()
+                        .map(|e| e.path())
+                        .filter(|p| p.extension().map(|e| e.eq_ignore_ascii_case("m3f")).unwrap_or(false))
+                        .collect();
+                    v.sort();
+                    files.extend(v);
+                } else {
+                    files.push(pb);
+                }
+            }
+        }
+    }
+    let (mut ok, mut mismatch, mut emu_fail, mut skipped, mut native_fail) = (0, 0, 0, 0, 0);
+    let mut compiled = 0;
+    let mut native = 0;
+    for path in &files {
+        let def = match M3f::load(path) {
+            Ok(d) => Arc::new(d),
+            Err(e) => {
+                skipped += 1;
+                if verbose {
+                    println!("SKIP  {e}");
+                }
+                continue;
+            }
+        };
+        let difs = def.de_option >= 20;
+        let cf = CustomFormula::new(def.clone());
+        let base = build_machine(&[Some(&cf)]);
+        if base.prog(code_addr(0)).is_some_and(|p| p.is_native()) {
+            native += 1;
+        }
+        if base.is_compiled(code_addr(0)) {
+            compiled += 1;
+        } else if verbose {
+            println!("      {}: not compilable, interpreted", def.name);
+        }
+        let mut rng = Rng(0x1234_5678 ^ def.name.len() as u64 * 7919);
+        let mut status = "ok".to_string();
+        let mut fail_kind = 0;
+        for t in 0..trials {
+            let mut m = base.clone();
+            setup(&mut m, &mut rng, def.de_option, if t == 0 { 0 } else { t as i32 });
+            if difs {
+                // doHybridIFS3D convention (see the oracle header)
+                for (o, v) in [(12u32, 1u32), (28, 1), (32, IT_BASE + 144), (36, pconst_addr(0)), (40, 0)] {
+                    m.wr32(BASE + o, v).unwrap();
+                }
+                m.wrf64(IT_BASE + off::ROLD, 0.01).unwrap();
+                m.wrf64(IT_BASE + off::RSTOPD, 0.01).unwrap();
+            }
+            let start = m.mem.clone();
+            let mut em = m.clone();
+            let r = if difs {
+                em.call_difs(code_addr(0), IT_BASE + 144, pconst_addr(0), 0, 1, STACK_TOP, MAX_STEPS)
+            } else {
+                em.call_formula(code_addr(0), IT_C1, STACK_TOP, MAX_STEPS)
+            };
+            if let Err(e) = r {
+                status = format!("EMU ERROR {e}");
+                fail_kind = 1;
+                break;
+            }
+            if em.reg(4) != STACK_TOP {
+                status = format!("EMU stack imbalance esp={:#x}", em.reg(4));
+                fail_kind = 1;
+                break;
+            }
+            let _ = RETURN_SENTINEL;
+            if let Some(o) = &oracle {
+                let native = match run_native(o, &start) {
+                    Some(n) => n,
+                    None => {
+                        status = "native run failed".into();
+                        fail_kind = 3;
+                        break;
+                    }
+                };
+                // compare iteration record + variable buffers as doubles
+                let mut bad = Vec::new();
+                for a in (0x1000..0x4000).step_by(8) {
+                    let x = f64::from_le_bytes(em.mem[a..a + 8].try_into().unwrap());
+                    let y = f64::from_le_bytes(native[a..a + 8].try_into().unwrap());
+                    if em.mem[a..a + 8] != native[a..a + 8] && !close(x, y) {
+                        // maybe an integer / single field
+                        let xi = u32::from_le_bytes(em.mem[a..a + 4].try_into().unwrap());
+                        let yi = u32::from_le_bytes(native[a..a + 4].try_into().unwrap());
+                        let xf = f32::from_bits(xi) as f64;
+                        let yf = f32::from_bits(yi) as f64;
+                        if xi != yi && !(close(xf, yf) && (xf - yf).abs() <= 1e-5 * xf.abs().max(1e-3)) || em.mem[a + 4..a + 8] != native[a + 4..a + 8] && !close(x, y) {
+                            bad.push(format!("+{:#x}: emu {x:e} native {y:e}", a - 0x1000));
+                        }
+                    }
+                }
+                if !bad.is_empty() {
+                    status = format!("MISMATCH trial {t}: {}", bad.iter().take(4).cloned().collect::<Vec<_>>().join("; "));
+                    fail_kind = 2;
+                    break;
+                }
+            }
+        }
+        match fail_kind {
+            0 => ok += 1,
+            1 => emu_fail += 1,
+            2 => mismatch += 1,
+            _ => native_fail += 1,
+        }
+        if fail_kind != 0 || verbose {
+            println!("{:5} {}: {status}", if fail_kind == 0 { "OK" } else { "FAIL" }, def.name);
+        }
+    }
+    println!("{compiled} formulas run compiled ({native} as translated native code), the others interpreted");
+    println!(
+        "\n{} formulas: {ok} ok, {mismatch} mismatch, {emu_fail} interpreter errors, {native_fail} native failures, {skipped} skipped",
+        files.len()
+    );
+}

@@ -1,0 +1,17 @@
+# 4D quaternion Julia set (uses MB3D's 4D hybrid loop and 4D rotation).
+width = 640
+height = 480
+iterations = 12
+zoom = 0.8
+z_start = -3
+rotation = 23, 17, 0
+rotation_4d = 0, 20, 0
+julia = true
+julia_c = -0.2, 0.6, 0.2, 0.0
+color_start = 33
+color_end = 59
+
+[formula]
+name = Quaternion
+yw_multiplier = -1
+w_add = 0

@@ -673,12 +673,15 @@ fn animate(argv: &[String]) -> Result<(), String> {
 
     let frames_to_do = run.frames(&anim);
     if list {
-        println!("{} frames, {} keyframes, {}x{}{}", anim.frame_count(), anim.keyframes.len(), anim.width, anim.height,
+        let mut out = std::io::stdout().lock();
+        let _ = writeln!(out, "{} frames, {} keyframes, {}x{}{}", anim.frame_count(), anim.keyframes.len(), anim.width, anim.height,
             if anim.scale > 1 { format!(" (calculated x{})", anim.scale) } else { String::new() });
         for &f in &frames_to_do {
             let p = anim.frame_pos(f).unwrap();
             let k = &anim.keyframes[p.key];
-            println!("{:6}  keyframe {:3}  {:4}/{:<4}  {}", anim.file_index(f), p.key + 1, p.sub, k.frames, anim.frame_file(f).display());
+            if writeln!(out, "{:6}  keyframe {:3}  {:4}/{:<4}  {}", anim.file_index(f), p.key + 1, p.sub, k.frames, anim.frame_file(f).display()).is_err() {
+                break;
+            }
         }
         return Ok(());
     }
@@ -744,6 +747,146 @@ fn fmt_dur(s: f64) -> String {
     }
 }
 
-fn batch(_argv: &[String]) -> Result<(), String> {
-    Err("mb3d batch: not implemented yet".into())
+const BATCH_USAGE: &str = "\
+mb3d batch - render many parameter files (MB3D's batch rendering)
+
+USAGE:
+    mb3d batch FILE_OR_DIR... [OPTIONS]
+    mb3d batch --list LISTFILE [OPTIONS]
+
+Inputs are .m3p, .m3i, .m3s or text parameter files; a directory stands for
+all parameter files in it. A list file has one parameter file per line,
+optionally followed by scene changes separated by '|':
+    6 AM - Torii temple.m3p | width = 1920 | height = 1080
+Each file is rendered to <name>.png next to it (or in --output). Files that
+fail are reported and the batch goes on.
+
+OPTIONS:
+        --list <FILE>        Read the files from a list file (may be repeated)
+    -o, --output <DIR>       Output folder (default: next to each file)
+        --format <F>         png (default), bmp, or m3p (convert to MB3D parameter files)
+        --skip-existing      Keep images that exist already: continues an interrupted
+                             batch, and lets several processes share a list
+    -s, --set <KEY=VALUE>    Change a scene key in every file (may be repeated)
+        --scale <F>          Size factor (e.g. 0.25 for previews)
+        --aa <N>             Anti-aliasing: render N times larger and reduce
+        --depth              Also write <name>_depth.png
+        --dry-run            Only list what would be rendered
+    -t, --threads <N>        Number of threads (default: all cores)
+    -q, --quiet              No progress output
+        --formulas <DIR>     Directory with .m3f formula files
+        --maps <DIR>         Directory with maps and background pictures
+";
+
+fn batch(argv: &[String]) -> Result<(), String> {
+    use mb3d::batch::{BatchOptions, ItemResult};
+    let mut opts = BatchOptions::default();
+    let mut inputs: Vec<String> = Vec::new();
+    let mut lists: Vec<String> = Vec::new();
+    let (mut quiet, mut dry) = (false, false);
+    let mut args = argv.iter();
+    while let Some(a) = args.next() {
+        let mut val = || args.next().cloned().ok_or_else(|| format!("{a} needs a value"));
+        match a.as_str() {
+            "-h" | "--help" => {
+                print!("{BATCH_USAGE}");
+                return Ok(());
+            }
+            "--list" => lists.push(val()?),
+            "-o" | "--output" => opts.output_dir = Some(val()?.into()),
+            "--format" => opts.format = mb3d::anim::OutputFormat::parse(&val()?)?,
+            "--skip-existing" => opts.skip_existing = true,
+            "-s" | "--set" => opts.overrides.push(val()?),
+            "--scale" => opts.scale = Some(val()?.parse::<f64>().ok().filter(|f| *f > 0.0).ok_or("bad --scale value")?),
+            "--aa" => opts.aa = val()?.parse::<usize>().map_err(|_| "bad --aa value".to_string())?.clamp(1, 8),
+            "--depth" => opts.depth = true,
+            "--dry-run" => dry = true,
+            "-t" | "--threads" => opts.threads = val()?.parse::<usize>().map_err(|_| "bad --threads value".to_string())?,
+            "-q" | "--quiet" => quiet = true,
+            "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
+            "--maps" => mb3d::maps::add_map_dir(val()?.into()),
+            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{BATCH_USAGE}")),
+            s => inputs.push(s.to_string()),
+        }
+    }
+    if opts.format == mb3d::anim::OutputFormat::Jpg {
+        return Err("JPEG output is not supported, use png or bmp".into());
+    }
+    let mut items = mb3d::batch::expand_inputs(&inputs)?;
+    for l in &lists {
+        let text = std::fs::read_to_string(l).map_err(|e| format!("{l}: {e}"))?;
+        let base = std::path::Path::new(l).parent().unwrap_or(std::path::Path::new(""));
+        items.extend(mb3d::batch::parse_list(&text, base).map_err(|e| format!("{l}: {e}"))?);
+    }
+    if items.is_empty() {
+        return Err(format!("no parameter files given\n\n{BATCH_USAGE}"));
+    }
+    let outputs = mb3d::batch::output_paths(&items, &opts);
+    if dry {
+        let mut out = std::io::stdout().lock();
+        for (it, o) in items.iter().zip(&outputs) {
+            let extra = if it.overrides.is_empty() { String::new() } else { format!("  ({})", it.overrides.join(", ")) };
+            let state = if o.exists() && opts.skip_existing { "  [exists, skipped]" } else { "" };
+            if writeln!(out, "{} -> {}{extra}{state}", it.input.display(), o.display()).is_err() {
+                break; // e.g. piped into head
+            }
+        }
+        return Ok(());
+    }
+    let tty = std::io::IsTerminal::is_terminal(&std::io::stderr());
+    let t0 = Instant::now();
+    let (mut done, mut skipped) = (0usize, 0usize);
+    let mut failed: Vec<(String, String)> = Vec::new();
+    for (n, (it, out)) in items.iter().zip(&outputs).enumerate() {
+        let name = it.input.display().to_string();
+        let label = format!("[{}/{}] {name}", n + 1, items.len());
+        let progress = |d: usize, t: usize| {
+            if !quiet && tty && (d % 8 == 0 || d == t) {
+                eprint!("\r  {label} {:5.1}%", 100.0 * d as f64 / t as f64);
+                let _ = std::io::stderr().flush();
+            }
+        };
+        let cr = if tty { "\r" } else { "" };
+        match mb3d::batch::render_item(it, out, &opts, &progress, &|| false) {
+            ItemResult::Done { output, seconds, notes } => {
+                done += 1;
+                if !quiet {
+                    eprintln!("{cr}  {label} -> {} ({:.1}s)          ", output.display(), seconds);
+                    for w in notes {
+                        eprintln!("      note: {w}");
+                    }
+                }
+            }
+            ItemResult::Skipped { output, why } => {
+                skipped += 1;
+                if !quiet {
+                    let w = if why == mb3d::frames::Skip::Busy { "being rendered by another process" } else { "exists" };
+                    eprintln!("  {label} skipped, {} {w}", output.display());
+                }
+            }
+            ItemResult::Failed { error } => {
+                if !quiet {
+                    eprintln!("{cr}  {label} FAILED: {error}          ");
+                }
+                failed.push((name, error));
+            }
+        }
+    }
+    if !quiet {
+        eprintln!(
+            "batch done: {done} rendered, {skipped} skipped, {} failed, {}",
+            failed.len(),
+            fmt_dur(t0.elapsed().as_secs_f64())
+        );
+    }
+    if failed.is_empty() {
+        Ok(())
+    } else {
+        Err(format!(
+            "{} of {} files failed:\n{}",
+            failed.len(),
+            items.len(),
+            failed.iter().map(|(n, e)| format!("  {n}: {e}")).collect::<Vec<_>>().join("\n")
+        ))
+    }
 }

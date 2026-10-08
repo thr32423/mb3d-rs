@@ -22,10 +22,12 @@
 //! | `custom`    | memory layout + calling convention for .m3f formulas |
 //! | `anim`      | Animation.pas, Interpolation.pas: keyframes and interpolation |
 //! | `animfile`  | Animation.pas (`LoadAni`, save): .m3a files, .m3k text format |
+//! | `batch`     | BatchForm.pas: batch rendering of parameter files |
 //! | `frames`    | Animation.pas (`Timer2Timer`), Mand.pas (`DoSaveAniImage`): frame rendering, output files |
 
 pub mod anim;
 pub mod animfile;
+pub mod batch;
 pub mod calc;
 pub mod custom;
 pub mod deao;

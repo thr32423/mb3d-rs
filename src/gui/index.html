@@ -77,6 +77,24 @@ dialog .actions { display: flex; gap: 6px; justify-content: flex-end; margin-top
 .addrow input { flex: 1; min-width: 0; }
 #finalprog { height: 6px; background: var(--panel2); border-radius: 3px; overflow: hidden; margin: 8px 0; }
 #finalprog div { height: 100%; width: 0; background: var(--accent); }
+.kf { display: grid; grid-template-columns: 104px 1fr; gap: 4px 8px; align-items: center; padding: 6px; border: 1px solid var(--line);
+  border-radius: 5px; margin-bottom: 5px; background: var(--panel); }
+.kf.sel { border-color: var(--accent2); }
+.kf .th { width: 100px; height: 80px; background: #0d0e11; display: flex; align-items: center; justify-content: center; grid-row: span 2;
+  border-radius: 3px; overflow: hidden; cursor: pointer; }
+.kf .th img { max-width: 100px; max-height: 80px; }
+.kf .meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.kf .meta b { color: var(--accent); }
+.kf .meta input { width: 56px; }
+.kf .btns { display: flex; gap: 3px; flex-wrap: wrap; }
+.kf .btns button { padding: 2px 6px; font-size: 12px; }
+.kfgap { text-align: center; color: var(--dim); font-size: 11px; margin: -3px 0 2px; }
+#flipImg { display: block; max-width: 100%; margin: 6px auto; background: #0d0e11; min-height: 40px; }
+.bar { height: 5px; background: var(--panel); border-radius: 3px; overflow: hidden; margin: 6px 0; }
+.bar div { height: 100%; width: 0; background: var(--accent); }
+.flipctl { display: flex; gap: 6px; align-items: center; }
+.flipctl input[type=range] { flex: 1; }
+.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; word-break: break-all; }
 kbd { background: var(--panel2); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; font-size: 11px; }
 @media (max-width: 900px) { main { grid-template-columns: 1fr; grid-template-rows: 55vh auto; } aside { border-left: 0; } }
 </style>
@@ -293,6 +311,7 @@ const TABS = [
   ["Render", () => globalTab(["Ray marching", "Ambient occlusion and shadows", "Depth of field and volumetric light"])],
   ["Colours", () => globalTab(["Colours", "Background"])],
   ["Lights", () => lightsTab()],
+  ["Animation", () => animTab()],
   ["All", () => globalTab(null)],
   ["Text", () => textTab()],
   ["Info", () => infoTab()],
@@ -522,10 +541,232 @@ function infoTab() {
     el("div", { class: "hint" }, "Moves are measured in % of the distance estimate at the camera, like MB3D's navigator. Previews use the DE stop in preview pixels (fast and coarse); \"Render image\" uses the scene's full settings.")));
 }
 
+// ------------------------------------------------------------ animation
+// MB3D's animation maker: keyframes are taken from the editor; the server
+// interpolates the frames, renders a flipbook preview and the frame files.
+let anim = null, animVer = -1, animSel = -1, animPollTimer = null;
+let flip = { gen: -1, pos: 0, playing: false, timer: null, cache: new Map() };
+async function animLoad() { try { setAnim(await api("/api/anim")); } catch (e) { showError(e.message); } }
+function setAnim(a) {
+  const structural = !anim || a.ver !== animVer;
+  anim = a; animVer = a.ver;
+  if (a.flip.gen !== flip.gen) { flip.gen = a.flip.gen; flip.cache = new Map(); flip.pos = 0; }
+  if (tab === "Animation") {
+    const busy = document.activeElement && $("panel").contains(document.activeElement) && document.activeElement.tagName === "INPUT"
+      && document.activeElement.type !== "range";
+    if (structural && !busy) renderPanel(); else animUpdate();
+  }
+  scheduleAnimPoll();
+}
+function scheduleAnimPoll() {
+  clearTimeout(animPollTimer);
+  const active = anim && (anim.flip.running || anim.job.running);
+  if (tab === "Animation" || active) animPollTimer = setTimeout(animLoad, active ? 400 : 1500);
+}
+async function animKey(op, extra = {}) {
+  try {
+    const r = await post("/api/anim/key", form({ op, ...extra }));
+    if (op === "edit" || op === "edit_frame") applyState(r.state);
+    setAnim(r.anim);
+  } catch (e) { showError(e.message); }
+}
+async function animSet(o) { try { setAnim(await post("/api/anim/set", form(o))); } catch (e) { showError(e.message); } }
+function framePosText(i) {
+  // which keyframe a file index belongs to
+  if (!anim) return "";
+  let k = -1;
+  anim.keys.forEach((key, j) => { if (key.first <= i) k = j; });
+  if (k < 0) return "";
+  const sub = Math.round((i - anim.keys[k].first) / Math.max(1, anim.index_step));
+  return `keyframe ${k + 1}` + (sub ? ` + ${sub}/${anim.keys[k].frames}` : "");
+}
+function flipShow(n) {
+  const f = anim && anim.flip;
+  if (!f || !f.total) return;
+  flip.pos = Math.max(0, Math.min(f.total - 1, n));
+  const im = $("flipImg"), sl = $("flipSlider");
+  if (sl) sl.value = flip.pos;
+  if (im && f.ready[flip.pos]) {
+    let c = flip.cache.get(flip.pos);
+    if (!c) { c = new Image(); c.src = `/api/anim/frame?i=${flip.pos}&g=${f.gen}`; flip.cache.set(flip.pos, c); }
+    im.src = c.src;
+  }
+  const t = $("flipText");
+  if (t) t.textContent = `frame ${String(f.indices[flip.pos]).padStart(6, "0")} · ${framePosText(f.indices[flip.pos])}` + (f.ready[flip.pos] ? "" : " (not rendered yet)");
+}
+function flipPlay(on) {
+  flip.playing = on;
+  clearInterval(flip.timer);
+  const b = $("flipPlay"); if (b) b.textContent = on ? "❚❚" : "▶";
+  if (!on) return;
+  const fps = +($("flipFps") ? $("flipFps").value : 12);
+  flip.timer = setInterval(() => {
+    const f = anim.flip;
+    if (!f.total) return;
+    let n = flip.pos + 1;
+    if (n >= f.total || !f.ready[n]) n = 0;
+    flipShow(n);
+  }, 1000 / fps);
+}
+function animUpdate() {
+  // dynamic parts only (progress, flipbook, job)
+  if (!anim) return;
+  const f = anim.flip, j = anim.job;
+  const ready = f.ready.filter(x => x).length;
+  const fb = $("flipBar"); if (fb) fb.firstElementChild.style.width = f.total ? (100 * (ready + (f.running ? f.progress / 100 : 0)) / f.total) + "%" : "0";
+  const fs = $("flipState"); if (fs) fs.textContent = f.error ? f.error : f.total ? `${ready} of ${f.total} preview frames` + (f.running ? " …" : "") : "";
+  const sl = $("flipSlider"); if (sl) sl.max = Math.max(0, f.total - 1);
+  if (!flip.playing) flipShow(flip.pos);
+  const jb = $("jobBar"); if (jb) jb.firstElementChild.style.width = j.total ? (100 * (j.done + j.skipped + (j.running ? j.progress / 100 : 0)) / j.total) + "%" : "0";
+  const js = $("jobState");
+  if (js) {
+    let t = "";
+    if (j.total) {
+      const n = j.done + j.skipped;
+      t = j.running ? `frame ${j.current} of ${j.total} · ${j.progress.toFixed(0)} %` : `${j.done} rendered, ${j.skipped} skipped of ${j.total}`;
+      if (j.done && j.running) { const per = j.seconds / Math.max(1, n); t += ` · about ${fmtTime(per * (j.total - n))} left`; }
+      if (!j.running) t += ` · ${fmtTime(j.seconds)}`;
+      if (j.error) t += ` · ${j.error}`;
+    }
+    js.textContent = t;
+  }
+  const jl = $("jobLast"); if (jl) jl.textContent = j.last ? "last: " + j.last : "";
+  const rb = $("jobStart"); if (rb) rb.disabled = j.running;
+  for (const k of anim.keys) { const im = $("th" + k.id); if (im && k.thumb && !im.getAttribute("src")) im.src = "/api/anim/thumb?id=" + k.id; }
+}
+function fmtTime(s) { s = Math.round(s); return s >= 3600 ? `${Math.floor(s / 3600)} h ${Math.floor(s / 60) % 60} min` : s >= 60 ? `${Math.floor(s / 60)} min ${s % 60} s` : `${s} s`; }
+
+function animTab() {
+  const p = $("panel");
+  if (!anim) { p.append(el("div", { class: "hint" }, "loading…")); animLoad(); return; }
+  const a = anim;
+  // keyframes
+  const kc = el("div", { class: "card" }, el("h3", {}, `Keyframes`, el("span", { class: "sp" }),
+    el("span", { class: "hint" }, `${a.keys.length} keyframes · ${a.frame_count} frames`),
+    el("button", { title: "Reverse the order", onclick: () => animKey("reverse") }, "⇅"),
+    el("button", { title: "Delete all keyframes", onclick: () => { if (confirm("Delete all keyframes?")) animKey("clear"); } }, "✕ all")));
+  kc.append(el("div", { class: "hint" }, "Navigate in the editor, then add the view as a keyframe. Frames: sub-frames from a keyframe to the next one. Click an image to load the keyframe into the editor."));
+  a.keys.forEach((k, i) => {
+    const th = el("img", { id: "th" + k.id, alt: "" });
+    if (k.thumb) th.src = "/api/anim/thumb?id=" + k.id;
+    const fr = el("input", { type: "text", id: "kfr" + k.id, value: k.frames, title: "Sub-frames to the next keyframe" });
+    fr.addEventListener("change", () => animKey("frames", { i, frames: fr.value }));
+    const last = i === a.keys.length - 1 && !a.loop;
+    const box = el("div", { class: "kf" + (i === animSel ? " sel" : "") },
+      el("div", { class: "th", title: "Load into the editor", onclick: () => { animSel = i; animKey("edit", { i }); } }, th),
+      el("div", { class: "meta" }, el("b", {}, `#${i + 1}`), el("span", { class: "hint" }, `frame ${String(k.first).padStart(6, "0")}`),
+        last ? el("span", { class: "hint" }, "(last)") : el("span", {}, "frames ", fr)),
+      el("div", { class: "btns" },
+        el("button", { title: "Replace this keyframe by the editor's parameters", onclick: () => { if (confirm(`Replace keyframe ${i + 1} by the current parameters?`)) animKey("replace", { i }); } }, "⇦ set"),
+        el("button", { title: "Insert the editor's parameters after this keyframe", onclick: () => animKey("insert", { i }) }, "+ after"),
+        el("button", { title: "Move up", onclick: () => animKey("up", { i }) }, "↑"),
+        el("button", { title: "Move down", onclick: () => animKey("down", { i }) }, "↓"),
+        el("button", { title: "Delete", onclick: () => animKey("delete", { i }) }, "✕")));
+    kc.append(box);
+  });
+  const df = el("input", { type: "text", id: "aDefFrames", value: a.default_frames, size: 4, title: "Frames of new keyframes" });
+  df.addEventListener("change", () => animSet({ default_frames: df.value }));
+  const allBtn = el("button", { title: "Set this frame count for all keyframes", onclick: () => animKey("all_frames", { frames: df.value }) }, "for all");
+  kc.append(el("div", { class: "addrow" }, el("button", { class: "primary", onclick: () => animKey("add") }, "+ Add current view as keyframe"),
+    el("span", { class: "hint" }, " frames"), df, allBtn));
+  p.append(kc);
+
+  // flipbook preview
+  const pw = el("select", { id: "flipW" }, ...[120, 160, 200, 320, 400].map(w => el("option", { value: w }, w + " px")));
+  pw.value = String(a.flip.width || 200);
+  const pe = el("select", { id: "flipEvery" }, ...[1, 2, 3, 5, 10].map(n => el("option", { value: n }, n === 1 ? "all frames" : `every ${n}.`)));
+  const pf = el("input", { type: "checkbox", id: "flipFast", checked: "" });
+  const fps = el("select", { id: "flipFps" }, ...[6, 12, 25, 30].map(n => el("option", { value: n }, n + " fps")));
+  fps.value = "12";
+  fps.onchange = () => { if (flip.playing) flipPlay(true); };
+  const sl = el("input", { type: "range", id: "flipSlider", min: 0, max: Math.max(0, a.flip.total - 1), value: flip.pos });
+  sl.addEventListener("input", () => { flipPlay(false); flipShow(+sl.value); });
+  p.append(el("div", { class: "card" }, el("h3", {}, "Preview"),
+    el("div", { class: "multi" }, pw, pe, el("label", { title: "No shadows, volumetric light or DEAO (like MB3D's fast preview)" }, pf, " fast"),
+      el("button", { class: "primary", onclick: async () => {
+        try { setAnim(await post("/api/anim/preview", form({ width: pw.value, every: pe.value, fast: pf.checked }))); flipPlay(false); }
+        catch (e) { showError(e.message); } } }, "Preview frames"),
+      el("button", { onclick: async () => setAnim(await post("/api/anim/stop", "")) }, "Stop")),
+    el("div", { class: "bar", id: "flipBar" }, el("div")),
+    el("div", { class: "hint", id: "flipState" }),
+    el("img", { id: "flipImg", alt: "" }),
+    el("div", { class: "flipctl" }, el("button", { id: "flipPlay", onclick: () => flipPlay(!flip.playing) }, "▶"), sl, fps),
+    el("div", { class: "addrow" }, el("span", { class: "hint", id: "flipText" }),
+      el("button", { title: "Load this interpolated frame into the editor (e.g. to add it as a keyframe)", onclick: () => {
+        const f = anim.flip; if (!f.total) return;
+        const fi = f.indices[flip.pos];
+        animKey("edit_frame", { f: Math.round((fi - anim.start_index) / Math.max(1, anim.index_step)) });
+      } }, "Open frame in editor"))));
+
+  // settings
+  const inp = (id, v, key, size) => {
+    const e = el("input", { type: "text", id, value: v, size: size || 6 });
+    e.addEventListener("change", () => animSet({ [key]: e.value }));
+    return e;
+  };
+  const chk = (id, v, key) => {
+    const e = el("input", { type: "checkbox", id });
+    e.checked = v;
+    e.addEventListener("change", () => animSet({ [key]: e.checked }));
+    return e;
+  };
+  const sel = (id, v, key, opts) => {
+    const e = el("select", { id }, ...opts.map(([val, lab]) => el("option", { value: val }, lab)));
+    e.value = v;
+    e.addEventListener("change", () => animSet({ [key]: e.value }));
+    return e;
+  };
+  p.append(el("div", { class: "card" }, el("h3", {}, "Settings"),
+    el("div", { class: "row" }, el("label", {}, "frame size"), el("div", { class: "multi" }, inp("aW", a.width, "width"), "×", inp("aH", a.height, "height"))),
+    el("div", { class: "row" }, el("label", { title: "MB3D's image scale: frames are calculated n times larger and reduced" }, "anti-aliasing"),
+      sel("aAA", String(a.aa), "aa", [["1", "off"], ["2", "2×2"], ["3", "3×3"], ["4", "4×4"]])),
+    el("div", { class: "row" }, el("label", {}, "interpolation"), sel("aIp", a.interp, "interp", [["bezier", "quadratic bezier (smooth)"], ["linear", "linear"]])),
+    el("div", { class: "row" }, el("label", { title: "After the last keyframe the first one follows again" }, "loop animation"), chk("aLoop", a.loop, "loop"))));
+
+  // output
+  const from = el("input", { type: "text", id: "jFrom", size: 6, placeholder: "first" });
+  const to = el("input", { type: "text", id: "jTo", size: 6, placeholder: "last" });
+  const sample = `${a.output_abs.replace(/[\\/]$/, "")}/${a.name}${String(a.start_index).padStart(6, "0")}.${a.format}`;
+  p.append(el("div", { class: "card" }, el("h3", {}, "Render frames"),
+    el("div", { class: "row" }, el("label", {}, "folder"), inp("aOut", a.output, "output", 20)),
+    el("div", { class: "row" }, el("label", {}, "name"), inp("aName", a.name, "name", 14)),
+    el("div", { class: "row" }, el("label", {}, "format"), sel("aFmt", a.format, "format", [["png", "PNG"], ["bmp", "BMP"], ["m3p", "parameter files (.m3p)"]])),
+    el("div", { class: "row" }, el("label", {}, "file index from / step"), el("div", { class: "multi" }, inp("aStart", a.start_index, "start_index"), inp("aStep", a.index_step, "index_step"))),
+    el("div", { class: "row" }, el("label", { title: "Otherwise frames whose file exists are skipped (continue a render, or share it with other processes)" }, "overwrite existing"), chk("aOver", a.overwrite, "overwrite")),
+    el("div", { class: "row" }, el("label", {}, "depth images too"), chk("aDepth", a.depth, "depth")),
+    el("div", { class: "row" }, el("label", {}, "only file indices"), el("div", { class: "multi" }, from, "to", to)),
+    el("div", { class: "hint mono" }, sample),
+    el("div", { class: "multi" },
+      el("button", { class: "primary", id: "jobStart", onclick: async () => {
+        try { setAnim(await post("/api/anim/render", form({ from: from.value, to: to.value }))); } catch (e) { showError(e.message); } } }, "Render frames"),
+      el("button", { onclick: async () => setAnim(await post("/api/anim/stop", "")) }, "Stop")),
+    el("div", { class: "bar", id: "jobBar" }, el("div")),
+    el("div", { class: "hint", id: "jobState" }),
+    el("div", { class: "hint mono", id: "jobLast" })));
+
+  // files
+  const fi = el("input", { type: "file", accept: ".m3k,.m3a", hidden: "" });
+  fi.onchange = async () => {
+    const f = fi.files[0]; if (!f) return;
+    try {
+      const r = await post("/api/anim/open?name=" + encodeURIComponent(f.name), await f.arrayBuffer());
+      animSel = -1; setAnim(r.anim);
+      if (r.notes.length) showError(r.notes.join("\n"));
+    } catch (e) { showError(e.message); }
+  };
+  p.append(el("div", { class: "card" }, el("h3", {}, "Animation file"), fi,
+    el("div", { class: "multi" },
+      el("button", { onclick: () => fi.click() }, "Open .m3k / .m3a…"),
+      el("button", { onclick: () => { location.href = "/api/anim/save?fmt=m3k"; } }, "Save .m3k"),
+      el("button", { onclick: () => { location.href = "/api/anim/save?fmt=m3a"; } }, "Save .m3a (MB3D)")),
+    el("div", { class: "hint" }, ".m3k is this program's text format (keyframes as MB3D text parameters); .m3a opens in MB3D's animation maker. On the command line: mb3d animate file.m3k")));
+  animUpdate();
+}
+
 function renderPanel() {
   const tabs = $("tabs");
   tabs.textContent = "";
-  for (const [name] of TABS) tabs.append(el("button", { class: name === tab ? "on" : "", onclick: () => { tab = name; renderPanel(); } }, name));
+  for (const [name] of TABS) tabs.append(el("button", { class: name === tab ? "on" : "", onclick: () => { tab = name; renderPanel(); if (name === "Animation") animLoad(); } }, name));
   const p = $("panel");
   const active = document.activeElement && document.activeElement.id;
   const scroll = p.scrollTop;

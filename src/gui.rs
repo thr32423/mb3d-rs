@@ -18,6 +18,8 @@ use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Instant;
 
+mod anim;
+
 const INDEX_HTML: &str = include_str!("gui/index.html");
 
 #[derive(Clone, Copy, PartialEq)]
@@ -66,6 +68,8 @@ struct App {
     /// progress of the running pass in 1/1000
     progress: AtomicU32,
     view_w: AtomicU32,
+    /// the animation (keyframes, previews, frame rendering)
+    anim: anim::AnimState,
 }
 
 impl App {
@@ -117,6 +121,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
         pick: Mutex::new(None),
         progress: AtomicU32::new(0),
         view_w: AtomicU32::new(640),
+        anim: anim::AnimState::new(),
     });
     let listener = TcpListener::bind((host.as_str(), port)).map_err(|e| format!("cannot listen on {host}:{port}: {e}"))?;
     eprintln!("mb3d gui: open http://{host}:{port}/ in your browser (Ctrl+C to stop)");
@@ -560,7 +565,7 @@ fn safe_name(s: &str) -> String {
     }
 }
 
-fn handle(app: &App, mut stream: TcpStream) -> std::io::Result<()> {
+fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
     let req = read_request(&mut stream)?;
     let ok_json = |s: &mut TcpStream, j: String| respond(s, "200 OK", "application/json", j.as_bytes(), "");
     let err_json = |s: &mut TcpStream, e: String| {
@@ -680,6 +685,60 @@ fn handle(app: &App, mut stream: TcpStream) -> std::io::Result<()> {
                 &body,
                 &format!("Content-Disposition: attachment; filename=\"{name}.{ext}\"\r\n"),
             )
+        }
+        // ---- animation
+        ("GET", "/api/anim") => ok_json(&mut stream, anim::anim_json(app)),
+        ("POST", "/api/anim/key") => match anim::key_op(app, &form()) {
+            Ok(()) => ok_json(&mut stream, format!("{{\"anim\":{},\"state\":{}}}", anim::anim_json(app), state_json(app))),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/anim/set") => match anim::set_settings(app, &form()) {
+            Ok(()) => ok_json(&mut stream, anim::anim_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/anim/preview") => match anim::start_flipbook(app, &form()) {
+            Ok(()) => ok_json(&mut stream, anim::anim_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/anim/render") => match anim::start_render(app, &form()) {
+            Ok(()) => ok_json(&mut stream, anim::anim_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/anim/stop") => {
+            anim::stop(app);
+            ok_json(&mut stream, anim::anim_json(app))
+        }
+        ("GET", "/api/anim/frame") => {
+            let i = req.query.get("i").and_then(|v| v.parse::<usize>().ok()).unwrap_or(0);
+            match anim::flip_frame(app, i) {
+                Some(p) => respond(&mut stream, "200 OK", "image/png", &p, ""),
+                None => respond(&mut stream, "404 Not Found", "text/plain", b"not rendered yet", ""),
+            }
+        }
+        ("GET", "/api/anim/thumb") => {
+            let id = req.query.get("id").and_then(|v| v.parse::<u64>().ok()).unwrap_or(0);
+            match anim::thumb(app, id) {
+                Some(p) => respond(&mut stream, "200 OK", "image/png", &p, ""),
+                None => respond(&mut stream, "404 Not Found", "text/plain", b"no image yet", ""),
+            }
+        }
+        ("GET", "/api/anim/save") => {
+            let fmt = req.query.get("fmt").cloned().unwrap_or_else(|| "m3k".into());
+            let (body, ext, name) = anim::save(app, &fmt);
+            respond(
+                &mut stream,
+                "200 OK",
+                if ext == "m3k" { "text/plain; charset=utf-8" } else { "application/octet-stream" },
+                &body,
+                &format!("Content-Disposition: attachment; filename=\"{}.{ext}\"\r\n", safe_name(&name)),
+            )
+        }
+        ("POST", "/api/anim/open") => {
+            let name = req.query.get("name").cloned().unwrap_or_else(|| "anim.m3a".into());
+            match anim::open(app, &name, req.body.clone()) {
+                Ok(notes) => ok_json(&mut stream, format!("{{\"anim\":{},\"notes\":{}}}", anim::anim_json(app), anim::notes_json(&notes))),
+                Err(e) => err_json(&mut stream, e),
+            }
         }
         ("POST", "/api/title") => {
             app.scene.lock().unwrap().title = String::from_utf8_lossy(&req.body).trim().to_string();

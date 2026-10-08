@@ -269,9 +269,156 @@ pub fn fast_int_pow(base: f32, expo: i32) -> f32 {
     r
 }
 
+/// Quaternion `[x, y, z, w]` (`TQuaternion`).
+pub type Quat = [f64; 4];
+
+/// `MatrixToQuat` (the matrix is normalised first).
+pub fn matrix_to_quat(m1: &Mat3) -> Quat {
+    let m = normalise_matrix_to(1.0, m1);
+    let mut q = [0.0; 4];
+    let t = 1.0 + m[0][0] + m[1][1] + m[2][2];
+    if t > 1e-15 {
+        let s = 2.0 * t.sqrt();
+        q[3] = 0.25 * s;
+        let s = 1.0 / s;
+        q[0] = (m[2][1] - m[1][2]) * s;
+        q[1] = (m[0][2] - m[2][0]) * s;
+        q[2] = (m[1][0] - m[0][1]) * s;
+    } else if m[0][0] > m[1][1] && m[0][0] > m[2][2] {
+        let s = (1.0 + m[0][0] - m[1][1] - m[2][2]).sqrt() * 2.0;
+        q[0] = 0.25 * s;
+        let s = 1.0 / s;
+        q[1] = (m[1][0] + m[0][1]) * s;
+        q[2] = (m[0][2] + m[2][0]) * s;
+        q[3] = (m[2][1] - m[1][2]) * s;
+    } else if m[1][1] > m[2][2] {
+        let s = (1.0 + m[1][1] - m[0][0] - m[2][2]).sqrt() * 2.0;
+        q[1] = 0.25 * s;
+        let s = 1.0 / s;
+        q[0] = (m[1][0] + m[0][1]) * s;
+        q[2] = (m[2][1] + m[1][2]) * s;
+        q[3] = (m[0][2] - m[2][0]) * s;
+    } else {
+        let s = (1.0 + m[2][2] - m[0][0] - m[1][1]).sqrt() * 2.0;
+        q[2] = 0.25 * s;
+        let s = 1.0 / s;
+        q[0] = (m[0][2] + m[2][0]) * s;
+        q[1] = (m[2][1] + m[1][2]) * s;
+        q[3] = (m[1][0] - m[0][1]) * s;
+    }
+    q
+}
+
+/// `CreateMatrixFromQuat`
+pub fn matrix_from_quat(q: &Quat) -> Mat3 {
+    [
+        [1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]), 2.0 * (q[0] * q[1] + q[2] * q[3]), 2.0 * (q[0] * q[2] - q[1] * q[3])],
+        [2.0 * (q[0] * q[1] - q[2] * q[3]), 1.0 - 2.0 * (q[0] * q[0] + q[2] * q[2]), 2.0 * (q[2] * q[1] + q[0] * q[3])],
+        [2.0 * (q[0] * q[2] + q[1] * q[3]), 2.0 * (q[1] * q[2] - q[0] * q[3]), 1.0 - 2.0 * (q[0] * q[0] + q[1] * q[1])],
+    ]
+}
+
+/// `InvertQuat`
+pub fn invert_quat(q: &Quat) -> Quat {
+    let r = [-q[0], -q[1], -q[2], q[3]];
+    let l = r.iter().map(|v| v * v).sum::<f64>();
+    r.map(|v| v / l)
+}
+
+/// `NormaliseQuat`
+fn normalise_quat(q: Quat) -> Quat {
+    let l = q.iter().map(|v| v * v).sum::<f64>().sqrt();
+    if l > 0.0 {
+        q.map(|v| v / l)
+    } else {
+        q
+    }
+}
+
+/// `SlerpQuat`: spherical interpolation with weight `w2` of `q2`, along the
+/// shorter arc.  Like MB3D the dot product is clamped to 0.9999.
+pub fn slerp_quat(q1: &Quat, q2: &Quat, w2: f64) -> Quat {
+    let mut q2 = *q2;
+    let mut dot = q1[0] * q2[0] + q1[1] * q2[1] + q1[2] * q2[2] + q1[3] * q2[3];
+    if dot < 0.0 {
+        dot = -dot;
+        q2 = q2.map(|v| -v);
+    }
+    let dot = dot.min(0.9999);
+    let angle = dot.acos();
+    let a1 = (angle * (1.0 - w2)).sin();
+    let a2 = (angle * w2).sin();
+    normalise_quat([
+        a1 * q1[0] + a2 * q2[0],
+        a1 * q1[1] + a2 * q2[1],
+        a1 * q1[2] + a2 * q2[2],
+        a1 * q1[3] + a2 * q2[3],
+    ])
+}
+
+/// The quadratic Bezier of three rotations used by the animation
+/// (`Interpolate3framesBezier`, `QCubic`): the curve runs from the middle of
+/// q1/q2 over q2 to the middle of q2/q3.
+pub fn bezier_quat(q1: &Quat, q2: &Quat, q3: &Quat, t: f64) -> Quat {
+    let a = slerp_quat(&slerp_quat(q1, q2, 0.5), q2, t);
+    let b = slerp_quat(q2, &slerp_quat(q2, q3, 0.5), t);
+    slerp_quat(&a, &b, t)
+}
+
+/// Matrix of a quaternion as stored by the interpolation:
+/// `CreateMatrixFromQuat(InvertQuat(q))`, the inverse of [`matrix_to_quat`].
+pub fn rotation_matrix(q: &Quat) -> Mat3 {
+    matrix_from_quat(&invert_quat(q))
+}
+
+/// `SlerpSVec`: spherical interpolation of two directions (normalised result).
+pub fn slerp_vec(v1: &Vec3, v2: &Vec3, t: f64) -> Vec3 {
+    let s1 = normalize(*v1);
+    let s2 = normalize(*v2);
+    let d = dot(&s1, &s2);
+    let (d1, d2) = if d.abs() > 0.9999 {
+        (1.0 - t, t)
+    } else {
+        let a = d.acos();
+        (((1.0 - t) * a).sin(), (t * a).sin())
+    };
+    normalize([s1[0] * d1 + s2[0] * d2, s1[1] * d1 + s2[1] * d2, s1[2] * d1 + s2[2] * d2])
+}
+
+/// `BezierIpol3SVecs`
+pub fn bezier_vec(v1: &Vec3, v2: &Vec3, v3: &Vec3, t: f64) -> Vec3 {
+    let a = slerp_vec(&slerp_vec(v1, v2, 0.5), v2, t);
+    let b = slerp_vec(v2, &slerp_vec(v2, v3, 0.5), t);
+    slerp_vec(&a, &b, t)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn quat_roundtrip() {
+        for &(a, b, c) in &[(0.3, -0.7, 0.2), (2.9, 0.1, -3.0), (0.0, 0.0, 0.0), (3.0, 0.0, 0.0), (0.1, 3.1, -0.4)] {
+            // (MatrixToQuat loses precision within ~1e-5 rad of a half turn, as in MB3D)
+            let m = vgrads_from_angles(a, b, c);
+            let r = rotation_matrix(&matrix_to_quat(&m));
+            for i in 0..3 {
+                for j in 0..3 {
+                    assert!((r[i][j] - m[i][j]).abs() < 1e-9, "{a} {b} {c}: {r:?} vs {m:?}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn slerp_halfway() {
+        let q1 = matrix_to_quat(&vgrads_from_angles(0.0, 0.0, 0.0));
+        let q2 = matrix_to_quat(&vgrads_from_angles(0.0, 0.0, 1.0));
+        let qm = matrix_to_quat(&vgrads_from_angles(0.0, 0.0, 0.5));
+        let q = slerp_quat(&q1, &q2, 0.5);
+        let d = (q[0] * qm[0] + q[1] * qm[1] + q[2] * qm[2] + q[3] * qm[3]).abs();
+        assert!(d > 1.0 - 1e-9);
+    }
 
     #[test]
     fn identity_rotation() {

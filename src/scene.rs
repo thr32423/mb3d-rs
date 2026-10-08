@@ -119,6 +119,9 @@ pub struct Scene {
     /// Calculate only this part of the image (left, top, width, height);
     /// set by the tiled renderer, not stored in scene files.
     pub calc_rect: Option<[i32; 4]>,
+    /// Light values of an animation frame: blended from the keyframes by
+    /// the renderer (set by [`crate::anim`], not stored in scene files)
+    pub light_blend: Option<std::sync::Arc<crate::anim::LightBlend>>,
 }
 
 /// Names of the diffuse map mappings (`Lights[1].FreeByte`).
@@ -199,6 +202,7 @@ impl Default for Scene {
             threads: 0,
             tiling: None,
             calc_rect: None,
+            light_blend: None,
         }
     }
 }

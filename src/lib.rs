@@ -20,7 +20,9 @@
 //! | `m3f`       | CustomFormulas.pas: .m3f custom formula files       |
 //! | `x86`       | IA-32 interpreter/compiler for the formula machine code |
 //! | `custom`    | memory layout + calling convention for .m3f formulas |
+//! | `anim`      | Animation.pas, Interpolation.pas: keyframes and interpolation |
 
+pub mod anim;
 pub mod calc;
 pub mod custom;
 pub mod deao;

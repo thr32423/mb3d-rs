@@ -57,7 +57,7 @@ pub struct M3pFile {
 }
 
 /// `ShortFloatToSingle`: mantissa (shortint) * 10^(exponent (shortint) - 1)
-fn short_float(w: u16) -> f32 {
+pub(crate) fn short_float(w: u16) -> f32 {
     let m = (w & 0xFF) as u8 as i8 as f32;
     let e = ((w >> 8) as u8 as i8).clamp(-25, 25) as i32;
     m * 10f32.powi(e - 1)
@@ -774,7 +774,7 @@ fn parse_light(r: &Rd, w: &mut Vec<String>) -> Lighting {
 }
 
 /// `SingleToShortFloat`: the closest m * 10^(e - 1) with byte m and e.
-fn to_short_float(v: f32) -> u16 {
+pub(crate) fn to_short_float(v: f32) -> u16 {
     if v == 0.0 || !v.is_finite() {
         return 0;
     }

@@ -10,6 +10,9 @@ diffuse colour maps, volumetric light, ambient occlusion (15 and 24 bit SSAO,
 random SSAO, DEAO), hard and soft shadows, cutting planes and depth of field.
 Everything is multithreaded, big images can be rendered in tiles, and the
 output is a PNG. Scenes can be written back as MB3D parameter files.
+Animations are made from keyframes with MB3D's interpolation (and MB3D's
+`.m3a` animation files can be opened and saved), and lists of parameter
+files are rendered in batches.
 
 The crate has **no external dependencies** (std only, including its own PNG
 encoder) and builds with any recent stable Rust:
@@ -81,6 +84,119 @@ single-page editor:
 The page and the renderer talk over a few JSON/PNG endpoints (`src/gui.rs`),
 so the server can also run on a bigger machine than the browser.
 
+## Animation
+
+```sh
+# keyframes from parameter files, 60 sub-frames from each to the next:
+./target/release/mb3d animate start.m3p middle.m3p end.m3p --frames 60 --save flight.m3k
+./target/release/mb3d animate flight.m3k --list            # frame schedule
+./target/release/mb3d animate flight.m3k --scale 0.25 --every 4 -o preview   # quick look
+./target/release/mb3d animate flight.m3k --aa 2 -o frames --name flight      # frames/flight000001.png ...
+# MB3D animation projects work too, and can be written for MB3D:
+./target/release/mb3d animate project.m3a --formulas path/to/mb3d/M3Formulas -o frames
+./target/release/mb3d animate flight.m3k --save flight.m3a
+```
+
+Like MB3D's animation maker, a keyframe is a complete parameter set plus the
+number of sub-frames to the next keyframe. A frame takes everything from
+its keyframe and puts the interpolated values on top
+(`Interpolate2frames`, `Interpolate3framesBezier`):
+
+* **interpolated:** camera (start/end plane and middle linearly, zoom and
+  bailout logarithmically, the view matrix as quaternions with slerp, field
+  of view), iterations, DE stop, raystep, julia values, 4D rotation (the short
+  way round), cutting planes, DOF, shadow and AO lengths, the options and
+  iteration counts of hybrid slots that hold the same formula in the
+  keyframes (angle options the short way), and the **light values**: MB3D
+  blends the derived `TLightVals`, not the sliders, and so does the port
+  (colours, amounts, fog, gamma, palette, light colours, global light
+  directions on the sphere, positional lights by position, picture and map
+  rotations). Lights that are on in only one keyframe fade in or out.
+* **interpolation:** linear, or MB3D's "quadratic bezier" (the default): a
+  quadratic B-spline through the middle points between the keyframes, with
+  the sub-frame position corrected for different frame counts so the speed
+  stays continuous. The curve is pulled towards the keyframes but does not
+  pass exactly through them. **Loop** animations continue from the last
+  keyframe to the first.
+* **frames:** `<folder>/<name><6 digit index>.png` like MB3D (start index and
+  step, `--from`/`--to`/`--frame` select file indices). `--aa N` is MB3D's
+  image scale (frames calculated N times larger and reduced). `--format bmp`,
+  or `--format m3p` for one parameter file per frame (to render them
+  elsewhere, e.g. with `mb3d batch`; their light settings are the blend
+  interpolated on the sliders, a close approximation). `--depth` writes
+  `ZBuf <name><index>.png` too.
+* **continuing and sharing:** each output file is created and locked while
+  its frame is calculated (MB3D's `OccupyDFile`). With `--skip-existing`,
+  finished frames are kept, so an interrupted render continues where it
+  stopped, and several processes (or machines on a shared folder) render
+  one animation together.
+* `-s key=value` changes a key in every keyframe (what MB3D's
+  "process keyframes" window does).
+
+Animation files:
+
+* `.m3a`: MB3D's binary animation project (version 5, written by MB3D 1.7 and
+  later): settings, keyframes and their preview images. Older versions
+  (`TMandHeader9` keyframes) are not supported.
+* `.m3k`: the text format of this port. Keyframes refer to parameter files
+  (with optional changes) or hold MB3D text parameters inline:
+
+```text
+# mb3d animation
+width = 1280
+height = 720
+scale = 2                # anti-aliasing (MB3D's image scale)
+interpolation = bezier   # or linear
+loop = false
+output = frames          # relative to this file
+name = flight
+format = png             # png, bmp, m3p
+start_index = 1
+index_step = 1
+overwrite = true
+save_depth = false
+
+[keyframe]
+frames = 60
+file = start.m3p
+set = iterations = 40    # changes on top (repeatable)
+
+[keyframe]
+frames = 60
+params = Mandelbulb3Dv18{
+...
+}
+```
+
+In the editor (`mb3d gui`), the **Animation** tab is the animation maker:
+navigate, add the view as a keyframe (or insert it after one, replace one,
+reorder, delete, set frame counts), click a keyframe image to load it back.
+**Preview frames** renders all or every n-th frame small (fast mode without
+shadows, volumetric light and DEAO, like MB3D's) into a flipbook with a
+player; any frame can be opened in the editor, e.g. to turn it into a new
+keyframe. **Render frames** writes the frames into the output folder in the
+background. Animations are opened and saved as `.m3k` or `.m3a`.
+
+## Batch rendering
+
+```sh
+./target/release/mb3d batch path/to/mb3d/M3Parameter -o renders --formulas path/to/mb3d/M3Formulas
+./target/release/mb3d batch a.m3p b.m3s pasted.txt --aa 2 --skip-existing
+./target/release/mb3d batch --list jobs.txt --scale 0.25 -o previews --dry-run
+```
+
+Parameter files (`.m3p`, `.m3i`, `.m3s`, text parameters; a directory means
+all of them in it, and list files with one file per line, optionally followed
+by changes: `6 AM - Torii temple.m3p | width = 1920 | height = 1080`) are
+rendered one after another to `<name>.png` next to them or in `--output`,
+like MB3D's batch window. Files that cannot be rendered are reported and the
+batch goes on (the exit code tells whether all succeeded). As with
+animations, outputs are locked while they are calculated: `--skip-existing`
+continues an interrupted batch and lets several processes share a list.
+`--format m3p` converts the files to MB3D parameter files instead.
+Over MB3D's 80 example parameter files, 78 render; the other two use
+features listed under "Known differences and gaps".
+
 ## What is ported
 
 Each Delphi routine was ported from its assembler or Pascal source. Where only
@@ -114,11 +230,20 @@ and kept in the original evaluation order.
 | `m3f.rs` | CustomFormulas.pas (`LoadCustomFormula`, `FillCustomVBufWithVars`) | `.m3f` custom formula files, all 23 option types, constants |
 | `x86.rs` | (new) | IA-32 interpreter for the formulas' machine code: integer, x87 and SSE/SSE2 subset; plus a compiler that resolves the x87 stack statically into micro-ops |
 | `custom.rs` | formulas.pas / TypeDefinitions.pas | memory layout of `TIteration3Dext` and the calling convention used by MB3D's hybrid loop, host functions |
+| `anim.rs` | Animation.pas, Interpolation.pas, Math3D.pas | keyframes, sub-frame schedule (`TotalBMPsToRender`, `Timer2Timer`), `Interpolate2frames`, `Interpolate3framesBezier` (header and formula values), `bInterpolateFormula`, quaternions (`MatrixToQuat`, `SlerpQuat`, `SlerpSVec`, `BezierIpol3SVecs`) |
+| `lighting.rs` (`blend`) | Interpolation.pas | the light value part of both interpolations (`TLightVals`, `Slerp2SMatrices`, `Slerp3SMatrices`) |
+| `animfile.rs` | Animation.pas (`LoadAni`, `SpeedButton9Click`) | `.m3a` animation files incl. preview images; the `.m3k` text format |
+| `frames.rs` | Animation.pas, Mand.pas (`DoSaveAniImage`, `AniFileAlreadyExists`, `OccupyDFile`) | frame files, claiming/locking, image scale, BMP output, keyframe previews (`RenderPrevBMP`) |
+| `batch.rs` | BatchForm.pas | batch lists |
+| `gui/anim.rs` | Animation.pas, AniPreviewWindow.pas | the editor's animation maker and flipbook preview |
 
 Tests check that the translated assembler matches the reference spherical
 triplex formulas for all integer powers, that renders are deterministic and
 independent of the thread count, that every preset renders, and that the DEs
-are sane.
+are sane. Animation tests check the frame schedule, the interpolation (first
+and last frames equal their keyframes, logarithmic zoom, slerped rotations
+and light directions, fading lights, angles the short way), the file
+formats and the output claiming.
 
 ## Custom formulas (`.m3f`)
 
@@ -284,8 +409,16 @@ tile files that MB3D writes for big renders are rendered as that tile.
 * **Not yet ported:** interpolation hybrids, stereo, 2D slices, the internal
   formula Aexion C and formulas compiled from Pascal source (`[SOURCE]`). The
   loader reports which of these a parameter file uses. The browser editor
-  covers the main window, navigator and editors; MB3D's animation, voxel
-  export, Monte Carlo rendering and mutagen are not ported.
+  covers the main window, navigator, editors and the animation maker; MB3D's
+  voxel export, Monte Carlo rendering and mutagen are not ported.
+* **Animation:** stereo animations, map sequences (per-frame maps,
+  `MapSequences.pas`), JPEG output and `.m3a` files before version 5 are not
+  supported. Without a loop, MB3D's render loop also counts the sub-frames of
+  the last keyframe (repeating it); the port renders the last keyframe once,
+  as MB3D's own frame count (`TotalBMPsToRender`) and time estimate do.
+  MB3D's per-frame `.m3p` files carry the keyframe's light settings
+  unchanged; the port writes the interpolated sliders instead. Batch
+  rendering writes images (or `.m3p`), not `.m3i` files with G-buffer.
 * **Speed:** custom formulas run as translated native code, but still read
   and write their values through the emulated 32-bit memory, so they are
   slower than MB3D's hand-written assembler (not benchmarked against MB3D
@@ -307,7 +440,8 @@ tile files that MB3D writes for big renders are rendered as that tile.
 4. ✅ Rendering features: positional, visible and volumetric lights, DEAO, cutting planes, depth of field, text parameters, `.m3i` parameters, 15 bit and random SSAO, inside rendering, background pictures, light maps, diffuse colour maps, the remaining light options, `.m3p` writing
 5. ✅ Formulas translated to Rust (3–8× faster), dIFS formulas, DE combinations, image maps and map formulas, tiled rendering
 6. ✅ Editor in the browser (`mb3d gui`): progressive preview, navigator, formula, camera, render, colour and light editors, file handling, final rendering
-7. Animation, batch rendering, voxel and mesh export, mutagen
+7. ✅ Animation (keyframes, MB3D's interpolation incl. light values, `.m3a` and `.m3k` files, frame rendering shared by several processes, animation maker in the editor) and batch rendering
+8. Voxel and mesh export, mutagen
 
 ## License
 

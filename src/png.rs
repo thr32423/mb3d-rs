@@ -214,10 +214,14 @@ pub fn write_rgb(path: &str, width: usize, height: usize, rgb: &[u8]) -> std::io
     std::fs::File::create(path)?.write_all(&data)
 }
 
-pub fn write_gray16(path: &str, width: usize, height: usize, gray: &[u16]) -> std::io::Result<()> {
+/// PNG file contents of a 16 bit greyscale image.
+pub fn encode_gray16(width: usize, height: usize, gray: &[u16]) -> Vec<u8> {
     let bytes: Vec<u8> = gray.iter().flat_map(|v| v.to_be_bytes()).collect();
-    let data = encode(width, height, &bytes, 0, 16, 2);
-    std::fs::File::create(path)?.write_all(&data)
+    encode(width, height, &bytes, 0, 16, 2)
+}
+
+pub fn write_gray16(path: &str, width: usize, height: usize, gray: &[u16]) -> std::io::Result<()> {
+    std::fs::File::create(path)?.write_all(&encode_gray16(width, height, gray))
 }
 
 #[cfg(test)]

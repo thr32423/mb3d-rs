@@ -12,6 +12,9 @@ mb3d - Mandelbulb3D renderer (Rust port)
 USAGE:
     mb3d [OPTIONS] [SCENE_FILE]
     mb3d gui [--port 8080] [--formulas DIR] [--maps DIR] [FILE]    editor in the browser
+    mb3d animate ANIMATION | KEYFRAME_FILES... [OPTIONS]           render an animation
+    mb3d batch FILES... | --list LISTFILE [OPTIONS]                render many files
+    (mb3d animate --help, mb3d batch --help)
 
 SCENE_FILE is an INI-style scene description (see examples/*.m3s), a
 Mandelbulb3D parameter file (.m3p), image file (.m3i, parameters only) or a
@@ -60,8 +63,11 @@ fn main() -> ExitCode {
 
 fn run() -> Result<(), String> {
     let all: Vec<String> = std::env::args().skip(1).collect();
-    if all.first().map(String::as_str) == Some("gui") {
-        return mb3d::gui::run(&all[1..]);
+    match all.first().map(String::as_str) {
+        Some("gui") => return mb3d::gui::run(&all[1..]),
+        Some("animate") | Some("anim") => return animate(&all[1..]),
+        Some("batch") => return batch(&all[1..]),
+        _ => {}
     }
     let mut args = std::env::args().skip(1);
     let mut formula: Option<String> = None;
@@ -393,4 +399,351 @@ fn print_stats(res: &mb3d::RenderResult) {
         })
         .collect();
     eprintln!("  shadow bits: {} (lights 1-6, or soft value bits)", lit.join(" "));
+}
+
+// ---------------------------------------------------------------------------
+// mb3d animate
+
+const ANIMATE_USAGE: &str = "\
+mb3d animate - render the frames of an animation (MB3D's animation maker)
+
+USAGE:
+    mb3d animate ANIMATION [OPTIONS]            a .m3k animation (text) or MB3D .m3a file
+    mb3d animate KEYFRAME KEYFRAME... [OPTIONS] keyframes from parameter files (.m3p, .m3s,
+                                                text parameters), in this order
+
+Frames are written as <output>/<name><index>.<format> with a 6 digit index,
+like MB3D (e.g. frames/flight000001.png).
+
+OPTIONS:
+    -o, --output <DIR>       Output folder (default: the animation's, else the current folder)
+        --name <NAME>        Project name = file name prefix (default: name of the animation)
+        --format <F>         png (default), bmp, or m3p: a parameter file per frame (to
+                             render the frames elsewhere, e.g. with mb3d batch)
+    -W, --width <N>          Frame width   (default: the animation's / first keyframe's)
+    -H, --height <N>         Frame height
+        --aa <N>             Calculate frames N times larger and reduce them
+                             (MB3D's image scale, anti-aliasing)
+        --frames <N>         Sub-frames from each keyframe to the next (keyframe files;
+                             with an animation file: for all keyframes)
+        --linear             Linear interpolation (default: MB3D's quadratic bezier)
+        --bezier             Quadratic bezier interpolation
+        --loop               Loop: after the last keyframe the first follows again
+        --no-loop
+        --start-index <N>    File index of the first frame (default 1)
+        --index-step <N>     Increment of the file index (default 1)
+        --from <INDEX>       Render only frames from this file index ...
+        --to <INDEX>         ... up to this file index
+        --frame <INDEX>      Render only this frame
+        --every <N>          Render only every N-th frame (quick preview)
+        --scale <F>          Render the frames F times the size (e.g. 0.25 for a preview)
+        --skip-existing      Keep frames that exist already; continues an interrupted
+                             render, and lets several processes share the work
+        --overwrite          Render all frames again (default unless the animation says no)
+        --depth              Also write depth images (ZBuf <name><index>.png)
+    -s, --set <KEY=VALUE>    Change a scene key in every keyframe (may be repeated)
+        --save <FILE>        Save the animation: .m3k (text) or .m3a (MB3D); with
+                             keyframe files only the file is written unless --render
+        --render             Render too when saving
+        --list               Print the frames (file index, keyframe, sub-frame) and exit
+    -t, --threads <N>        Number of threads (default: all cores)
+    -q, --quiet              No progress output
+        --formulas <DIR>     Directory with .m3f formula files
+        --maps <DIR>         Directory with maps and background pictures
+";
+
+fn animate(argv: &[String]) -> Result<(), String> {
+    use mb3d::anim::{Animation, Interpolation, Keyframe, OutputFormat};
+    let mut files: Vec<String> = Vec::new();
+    let mut overrides: Vec<String> = Vec::new();
+    let mut run = mb3d::frames::FrameRun::default();
+    let (mut output, mut name, mut format): (Option<String>, Option<String>, Option<String>) = (None, None, None);
+    let (mut width, mut height, mut aa, mut frames): (Option<i32>, Option<i32>, Option<u32>, Option<u32>) = (None, None, None, None);
+    let (mut ipol, mut looped): (Option<Interpolation>, Option<bool>) = (None, None);
+    let (mut start_index, mut index_step): (Option<i64>, Option<i64>) = (None, None);
+    let mut overwrite: Option<bool> = None;
+    let (mut depth, mut list, mut render_too, mut quiet) = (false, false, false, false);
+    let mut save: Option<String> = None;
+    let mut args = argv.iter();
+    let num = |a: &str, v: Option<&String>| -> Result<i64, String> {
+        v.ok_or_else(|| format!("{a} needs a value"))?.trim().parse::<i64>().map_err(|_| format!("bad value for {a}"))
+    };
+    while let Some(a) = args.next() {
+        match a.as_str() {
+            "-h" | "--help" => {
+                print!("{ANIMATE_USAGE}");
+                return Ok(());
+            }
+            "-o" | "--output" => output = Some(args.next().ok_or("--output needs a value")?.clone()),
+            "--name" => name = Some(args.next().ok_or("--name needs a value")?.clone()),
+            "--format" => format = Some(args.next().ok_or("--format needs a value")?.clone()),
+            "-W" | "--width" => width = Some(num(a, args.next())?.clamp(1, 65535) as i32),
+            "-H" | "--height" => height = Some(num(a, args.next())?.clamp(1, 65535) as i32),
+            "--aa" => aa = Some(num(a, args.next())?.clamp(1, 16) as u32),
+            "--frames" => frames = Some(num(a, args.next())?.clamp(0, 1_000_000) as u32),
+            "--linear" => ipol = Some(Interpolation::Linear),
+            "--bezier" => ipol = Some(Interpolation::Bezier),
+            "--loop" => looped = Some(true),
+            "--no-loop" => looped = Some(false),
+            "--start-index" => start_index = Some(num(a, args.next())?),
+            "--index-step" => index_step = Some(num(a, args.next())?.max(1)),
+            "--from" => run.from_index = Some(num(a, args.next())?),
+            "--to" => run.to_index = Some(num(a, args.next())?),
+            "--frame" => {
+                let i = num(a, args.next())?;
+                run.from_index = Some(i);
+                run.to_index = Some(i);
+            }
+            "--every" => run.every = num(a, args.next())?.max(1) as usize,
+            "--scale" => {
+                run.preview = args
+                    .next()
+                    .ok_or("--scale needs a value")?
+                    .parse::<f64>()
+                    .ok()
+                    .filter(|f| *f > 0.0)
+                    .ok_or("bad --scale value")?
+            }
+            "--skip-existing" => overwrite = Some(false),
+            "--overwrite" => overwrite = Some(true),
+            "--depth" => depth = true,
+            "-s" | "--set" => overrides.push(args.next().ok_or("--set needs a value")?.clone()),
+            "--save" => save = Some(args.next().ok_or("--save needs a value")?.clone()),
+            "--render" => render_too = true,
+            "--list" => list = true,
+            "-t" | "--threads" => run.threads = num(a, args.next())?.max(0) as usize,
+            "-q" | "--quiet" => quiet = true,
+            "--formulas" => mb3d::formulas::add_formula_dir(args.next().ok_or("--formulas needs a value")?.into()),
+            "--maps" => mb3d::maps::add_map_dir(args.next().ok_or("--maps needs a value")?.into()),
+            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{ANIMATE_USAGE}")),
+            s => files.push(s.to_string()),
+        }
+    }
+    if files.is_empty() {
+        return Err(format!("no animation or keyframe files given\n\n{ANIMATE_USAGE}"));
+    }
+    let is_anim = |f: &str| {
+        let l = f.to_ascii_lowercase();
+        l.ends_with(".m3a") || l.ends_with(".m3k")
+    };
+    let note = |m: &str| {
+        if !quiet {
+            eprintln!("  note: {m}");
+        }
+    };
+    let mut previews: Vec<Option<mb3d::animfile::Preview>>;
+    let from_file = files.len() == 1 && is_anim(&files[0]);
+    let mut anim = if from_file {
+        let path = std::path::Path::new(&files[0]);
+        let f = mb3d::animfile::load(path)?;
+        for w in &f.warnings {
+            note(w);
+        }
+        previews = f.previews;
+        let mut a = f.anim;
+        if !quiet {
+            eprintln!("loaded {} ({} keyframes, {} frames)", files[0], a.keyframes.len(), a.frame_count());
+        }
+        // MB3D's output folder is an absolute Windows path
+        let foreign = a.output_folder.contains('\\') || a.output_folder.get(1..2) == Some(":");
+        if foreign && !cfg!(windows) && output.is_none() {
+            note(&format!("output folder '{}' of the .m3a file is not usable here, using the current folder (see --output)", a.output_folder));
+            a.output_folder.clear();
+        }
+        if let Some(n) = frames {
+            for k in a.keyframes.iter_mut() {
+                k.frames = n;
+            }
+        }
+        a
+    } else {
+        if files.iter().any(|f| is_anim(f)) {
+            return Err("give either one animation file or keyframe parameter files".into());
+        }
+        let mut a = Animation { name: "anim".into(), ..Default::default() };
+        for f in &files {
+            let (s, w) = mb3d::animfile::load_scene(std::path::Path::new(f))?;
+            for w in w {
+                note(&format!("{f}: {w}"));
+            }
+            let mut k = Keyframe::new(s, frames.unwrap_or(50));
+            k.source = Some(f.clone());
+            a.keyframes.push(k);
+        }
+        let first = a.keyframes[0].scene.clone();
+        a.set_size_from(&first);
+        previews = vec![None; a.keyframes.len()];
+        a
+    };
+    if !overrides.is_empty() {
+        let text = overrides.join("\n");
+        for (i, k) in anim.keyframes.iter_mut().enumerate() {
+            k.scene = k.scene.clone().apply(&text).map_err(|e| format!("keyframe {}: {e}", i + 1))?;
+            if let Some(src) = &mut k.source {
+                for o in &overrides {
+                    src.push('\u{0}');
+                    src.push_str(o);
+                }
+            }
+        }
+        previews.iter_mut().for_each(|p| *p = None);
+    }
+    if let Some(w) = width {
+        anim.width = w;
+    }
+    if let Some(h) = height {
+        anim.height = h;
+    }
+    if let Some(n) = aa {
+        anim.scale = n;
+    }
+    if let Some(i) = ipol {
+        anim.interpolation = i;
+    }
+    if let Some(l) = looped {
+        anim.looped = l;
+    }
+    if let Some(v) = start_index {
+        anim.start_index = v;
+    }
+    if let Some(v) = index_step {
+        anim.index_step = v;
+    }
+    if let Some(o) = overwrite {
+        anim.overwrite = o;
+    }
+    if depth {
+        anim.save_depth = true;
+    }
+    if let Some(n) = name {
+        anim.name = n;
+    }
+    if let Some(o) = output {
+        anim.output_folder = o;
+    }
+    if let Some(f) = format {
+        anim.format = OutputFormat::parse(&f)?;
+    }
+    if anim.format == OutputFormat::Jpg {
+        note("JPEG output is not supported, writing PNG");
+        anim.format = OutputFormat::Png;
+    }
+    if anim.keyframes.len() < 2 && !list && save.is_none() {
+        return Err("an animation needs at least 2 keyframes".into());
+    }
+
+    if let Some(path) = &save {
+        let p = std::path::Path::new(path);
+        let m3a = p.extension().is_some_and(|e| e.eq_ignore_ascii_case("m3a"));
+        if m3a {
+            for (i, pv) in previews.iter_mut().enumerate() {
+                if pv.is_none() {
+                    *pv = mb3d::frames::keyframe_preview(&anim, i).ok();
+                }
+            }
+        }
+        let mut a2 = anim.clone();
+        if !m3a {
+            // keyframe file references relative to the saved file
+            if let Some(dir) = p.parent().and_then(|d| std::fs::canonicalize(if d.as_os_str().is_empty() { std::path::Path::new(".") } else { d }).ok()) {
+                for k in a2.keyframes.iter_mut() {
+                    if let Some(src) = &mut k.source {
+                        let (f, rest) = src.split_once('\u{0}').map(|(a, b)| (a.to_string(), format!("\u{0}{b}"))).unwrap_or((src.clone(), String::new()));
+                        if let Ok(abs) = std::fs::canonicalize(&f) {
+                            let r = abs.strip_prefix(&dir).map(|r| r.to_path_buf()).unwrap_or(abs);
+                            *src = format!("{}{rest}", r.to_string_lossy());
+                        }
+                    }
+                }
+                if let Ok(abs) = std::fs::canonicalize(if a2.output_folder.is_empty() { "." } else { &a2.output_folder }) {
+                    if !a2.output_folder.is_empty() {
+                        a2.output_folder = abs.strip_prefix(&dir).map(|r| r.to_path_buf()).unwrap_or(abs).to_string_lossy().into_owned();
+                    }
+                }
+            }
+        }
+        mb3d::animfile::save(p, &a2, &previews)?;
+        if !quiet {
+            eprintln!("  wrote {path} ({} keyframes, {} frames)", anim.keyframes.len(), anim.frame_count());
+        }
+        if !render_too && !list {
+            return Ok(());
+        }
+    }
+
+    let frames_to_do = run.frames(&anim);
+    if list {
+        println!("{} frames, {} keyframes, {}x{}{}", anim.frame_count(), anim.keyframes.len(), anim.width, anim.height,
+            if anim.scale > 1 { format!(" (calculated x{})", anim.scale) } else { String::new() });
+        for &f in &frames_to_do {
+            let p = anim.frame_pos(f).unwrap();
+            let k = &anim.keyframes[p.key];
+            println!("{:6}  keyframe {:3}  {:4}/{:<4}  {}", anim.file_index(f), p.key + 1, p.sub, k.frames, anim.frame_file(f).display());
+        }
+        return Ok(());
+    }
+    if frames_to_do.is_empty() {
+        return Err("no frames to render (check --from/--to/--frame)".into());
+    }
+    if !quiet {
+        eprintln!(
+            "rendering {} of {} frames at {}x{}{} to {}",
+            frames_to_do.len(),
+            anim.frame_count(),
+            anim.width,
+            anim.height,
+            if anim.scale > 1 { format!(" (x{} anti-aliasing)", anim.scale) } else { String::new() },
+            anim.frame_file(frames_to_do[0]).parent().map(|p| p.display().to_string()).filter(|s| !s.is_empty()).unwrap_or_else(|| ".".into())
+        );
+    }
+    let t0 = Instant::now();
+    let (mut done, mut skipped, mut secs) = (0usize, 0usize, 0.0f64);
+    let tty = std::io::IsTerminal::is_terminal(&std::io::stderr());
+    for (n, &f) in frames_to_do.iter().enumerate() {
+        let label = format!("frame {}/{} ({:06})", n + 1, frames_to_do.len(), anim.file_index(f));
+        let progress = |d: usize, t: usize| {
+            if !quiet && tty && (d % 8 == 0 || d == t) {
+                eprint!("\r  {label} {:5.1}%", 100.0 * d as f64 / t as f64);
+                let _ = std::io::stderr().flush();
+            }
+        };
+        match mb3d::frames::render_frame_to_file(&anim, f, &run, &progress, &|| false)? {
+            mb3d::frames::FrameResult::Written { path, seconds } => {
+                done += 1;
+                secs += seconds;
+                if !quiet {
+                    let left = frames_to_do.len() - n - 1;
+                    let eta = if done > 0 { secs / done as f64 * left as f64 } else { 0.0 };
+                    let cr = if tty { "\r" } else { "" };
+                    eprintln!("{cr}  {label} {:.1}s  {}  (left: {})          ", seconds, path.display(), fmt_dur(eta));
+                }
+            }
+            mb3d::frames::FrameResult::Skipped { path, why } => {
+                skipped += 1;
+                if !quiet {
+                    let w = if why == mb3d::frames::Skip::Busy { "being rendered by another process" } else { "exists" };
+                    eprintln!("  {label} skipped, {} {w}", path.display());
+                }
+            }
+        }
+    }
+    if !quiet {
+        eprintln!("done: {done} frames rendered, {skipped} skipped, {}", fmt_dur(t0.elapsed().as_secs_f64()));
+    }
+    Ok(())
+}
+
+fn fmt_dur(s: f64) -> String {
+    let s = s.max(0.0).round() as u64;
+    if s >= 3600 {
+        format!("{}h{:02}m", s / 3600, (s / 60) % 60)
+    } else if s >= 60 {
+        format!("{}m{:02}s", s / 60, s % 60)
+    } else {
+        format!("{s}s")
+    }
+}
+
+fn batch(_argv: &[String]) -> Result<(), String> {
+    Err("mb3d batch: not implemented yet".into())
 }

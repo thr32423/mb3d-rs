@@ -522,6 +522,84 @@ pub fn interpolate_bezier(h: [&Scene; 4], counts: [f64; 4], t: f64) -> Scene {
     s
 }
 
+/// Writes the light blend of a frame into its light settings, so the frame
+/// can be saved as a parameter file: the light sliders, colours, palette and
+/// light angles/positions of the keyframes are interpolated with the frame's
+/// weights.  This approximates the blended light values (MB3D itself writes
+/// the light settings of the frame's keyframe unchanged).
+pub fn bake_light_blend(s: &mut Scene) {
+    let Some(b) = s.light_blend.take() else { return };
+    let w = &b.weights;
+    let ls: Vec<&crate::lighting::Lighting> = b.keys.iter().map(|k| &k.lighting).collect();
+    let l = &mut s.lighting;
+    let f = |g: &dyn Fn(&crate::lighting::Lighting) -> f32| -> f32 { ls.iter().zip(w).map(|(x, w)| g(x) * *w as f32).sum() };
+    let c = |g: &dyn Fn(&crate::lighting::Lighting) -> [u8; 3]| -> [u8; 3] {
+        let mut r = [0f64; 3];
+        for (x, w) in ls.iter().zip(w) {
+            for (k, v) in r.iter_mut().enumerate() {
+                *v += g(x)[k] as f64 * w;
+            }
+        }
+        r.map(|v| v.round().clamp(0.0, 255.0) as u8)
+    };
+    l.amb_top = c(&|x| x.amb_top);
+    l.amb_bottom = c(&|x| x.amb_bottom);
+    l.depth_col = c(&|x| x.depth_col);
+    l.depth_col2 = c(&|x| x.depth_col2);
+    l.dyn_fog_col = c(&|x| x.dyn_fog_col);
+    l.dyn_fog_col2 = c(&|x| x.dyn_fog_col2);
+    l.fog_offset = f(&|x| x.fog_offset);
+    l.depth_fog = f(&|x| x.depth_fog);
+    l.diffuse = f(&|x| x.diffuse);
+    l.dyn_fog = f(&|x| x.dyn_fog);
+    l.specular = f(&|x| x.specular);
+    l.ambient = f(&|x| x.ambient);
+    l.color_start = f(&|x| x.color_start);
+    l.color_end = f(&|x| x.color_end);
+    l.amb_shadow = f(&|x| x.amb_shadow);
+    l.ind_light = f(&|x| x.ind_light);
+    l.gamma = f(&|x| x.gamma).round();
+    l.roughness = f(&|x| x.roughness);
+    l.var_col_z = f(&|x| x.var_col_z);
+    l.interior_start = f(&|x| x.interior_start);
+    l.interior_end = f(&|x| x.interior_end);
+    l.diffuse_shadowing = f(&|x| x.diffuse_shadowing);
+    for i in 0..10 {
+        l.palette[i].diffuse = c(&|x| x.palette[i].diffuse);
+        l.palette[i].specular = c(&|x| x.palette[i].specular);
+        l.palette[i].position = f(&|x| x.palette[i].position as f32).round().clamp(0.0, 32767.0) as u16;
+    }
+    for i in 0..4 {
+        l.interior[i].1 = c(&|x| x.interior[i].1);
+        l.interior[i].0 = f(&|x| x.interior[i].0 as f32).round().clamp(0.0, 32767.0) as u16;
+    }
+    for i in 0..6 {
+        let on_any = ls.iter().any(|x| x.lights[i].on);
+        if !on_any {
+            continue;
+        }
+        let li = &mut l.lights[i];
+        li.on = true;
+        // an off light fades: its amplitude counts as 0
+        li.amplitude = f(&|x| if x.lights[i].on { x.lights[i].amplitude } else { 0.0 });
+        li.color = c(&|x| x.lights[i].color);
+        if ls.iter().all(|x| x.lights[i].positional) {
+            for k in 0..3 {
+                li.position[k] = ls.iter().zip(w).map(|(x, w)| x.lights[i].position[k] * w).sum();
+            }
+        } else {
+            let mut xa: Vec<f64> = ls.iter().map(|x| x.lights[i].x_angle).collect();
+            let mut ya: Vec<f64> = ls.iter().map(|x| x.lights[i].y_angle).collect();
+            for k in 1..xa.len() {
+                xa[k] = wrap_to(xa[k - 1], xa[k], 2.0 * PI, 0.0);
+                ya[k] = wrap_to(ya[k - 1], ya[k], 2.0 * PI, 0.0);
+            }
+            li.x_angle = xa.iter().zip(w).map(|(a, w)| a * w).sum();
+            li.y_angle = ya.iter().zip(w).map(|(a, w)| a * w).sum();
+        }
+    }
+}
+
 /// A keyframe scene for the light blend (without its own blend).
 fn strip(s: &Scene) -> Scene {
     let mut s = s.clone();

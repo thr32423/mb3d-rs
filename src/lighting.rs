@@ -441,9 +441,13 @@ fn col1(c: [u8; 3]) -> SVec {
     sv_scale(col255(c), 1.0 / 255.0)
 }
 
+#[derive(Clone)]
 struct LightVal {
     /// header light index 0..5
     idx: usize,
+    /// light switched on (`iLightOption = 0`); off lights only exist while
+    /// the light values of animation keyframes are blended
+    on: bool,
     sub_amb_sh: bool,
     /// hard shadow calculated for this light
     hs_calced: bool,
@@ -511,6 +515,8 @@ pub struct LightVals {
     map_lights: Vec<PaintMap>,
     /// light map lights relative to the object (rotation combined later)
     map_lights_rel: Vec<bool>,
+    /// header light index of each map light
+    map_lights_idx: Vec<usize>,
     col_int_spec: [f32; 4],
     sqr: bool,
     no_col_ipol: bool,
@@ -802,6 +808,19 @@ pub fn encode_vlight(step_count: f32) -> u16 {
 impl LightVals {
     /// `MakeLightValsFromHeaderLight` (subset).
     pub fn new(l: &Lighting, z_step_div: f64, dfog_on_it: u16, z_range: f64, step_width: f64, width: i32, image_scale: f64) -> LightVals {
+        Self::build(l, z_step_div, dfog_on_it, z_range, step_width, width, image_scale, false)
+    }
+
+    /// Like [`LightVals::new`], but with the lights that are switched off too
+    /// (with colour 0, as MB3D clears `sLCols` of off lights before it
+    /// interpolates); see [`LightVals::blend`].
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_all(l: &Lighting, z_step_div: f64, dfog_on_it: u16, z_range: f64, step_width: f64, width: i32, image_scale: f64) -> LightVals {
+        Self::build(l, z_step_div, dfog_on_it, z_range, step_width, width, image_scale, true)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn build(l: &Lighting, z_step_div: f64, dfog_on_it: u16, z_range: f64, step_width: f64, width: i32, image_scale: f64, all: bool) -> LightVals {
         let sqr = l.internal_gamma2;
         let light_scale: f32 = if sqr { 1.5 } else { 1.0 };
         // RGBColToSVecNoScale(SQR)
@@ -821,7 +840,7 @@ impl LightVals {
             }
         };
         let mut lights = Vec::new();
-        for (idx, li) in l.lights.iter().enumerate().filter(|(_, li)| li.on) {
+        for (idx, li) in l.lights.iter().enumerate().filter(|(_, li)| all || li.on) {
             // BuildViewVectorFOV(LY, -LX), negated
             let dtmp = -li.x_angle;
             let dtmp2 = li.y_angle;
@@ -839,13 +858,14 @@ impl LightVals {
                 lmax_l *= 5.0;
             }
             lights.push(LightVal {
+                on: li.on,
                 ln,
                 positional: li.positional,
                 visible: li.visible,
                 lmax_l,
                 pos_z: 0.0,
                 pos_lp: 0.0,
-                col,
+                col: if li.on { col } else { [0.0; 3] },
                 pow_func: 2 << (li.spec_func & 7),
                 diff_func: if hs_calced(l, idx) && l.hs_set_cos { 0 } else { (li.diff_func & 3) as usize },
                 idx,
@@ -1034,6 +1054,9 @@ impl LightVals {
                 .filter(|li| li.map > 0 && crate::maps::by_number(li.map as i32).is_some())
                 .map(|li| li.relative_to_object)
                 .collect(),
+            map_lights_idx: (0..6)
+                .filter(|&i| l.lights[i].map > 0 && crate::maps::by_number(l.lights[i].map as i32).is_some())
+                .collect(),
             col_int_spec,
             sqr,
             no_col_ipol: l.no_col_ipol,
@@ -1128,15 +1151,172 @@ impl LightVals {
                 pm.rot = mat_mul(&ms, &pm.rot);
             }
         }
-        let mut k = 0;
-        for li in l.lights.iter().filter(|li| li.on) {
+        for lv in self.lights.iter_mut() {
+            let li = &l.lights[lv.idx];
             if li.relative_to_object && !li.positional {
-                let v = self.lights[k].ln;
+                let v = lv.ln;
                 let v = crate::math::rotate_vector_reverse(&[v[0] as f64, v[1] as f64, v[2] as f64], m);
                 let v = crate::math::normalize(v);
-                self.lights[k].ln = [v[0] as f32, v[1] as f32, v[2] as f32];
+                lv.ln = [v[0] as f32, v[1] as f32, v[2] as f32];
             }
-            k += 1;
+        }
+    }
+
+    /// The light value part of `Interpolate2frames` (linear, `t` = weight
+    /// of the second keyframe) and `Interpolate3framesBezier` (`t` = curve
+    /// parameter): the values of the keyframes `keys` (made with
+    /// [`LightVals::new_all`]) are combined with the weights `w`.  `self` is
+    /// the frame's own light values (made with `new_all` from the keyframe
+    /// the frame belongs to); what MB3D does not interpolate stays as it is.
+    /// Directions of global lights are interpolated on the sphere before the
+    /// lights relative to the object are rotated; positional lights are
+    /// placed by the caller (their positions are interpolated in the scene).
+    /// Lights that are on in any keyframe fade in or out.
+    pub fn blend(&mut self, keys: &[LightVals], w: &[f64], t: f64, bezier: bool) {
+        use crate::math::{bezier_quat, bezier_vec, matrix_to_quat, rotation_matrix, slerp_quat, slerp_vec};
+        if keys.is_empty() || keys.len() != w.len() {
+            return;
+        }
+        let wf: Vec<f32> = w.iter().map(|&x| x as f32).collect();
+        let lin = |f: &dyn Fn(&LightVals) -> f32| -> f32 { keys.iter().zip(&wf).map(|(k, w)| f(k) * w).sum() };
+        let lin_sv = |f: &dyn Fn(&LightVals) -> SVec| -> SVec {
+            let mut r = [0f32; 3];
+            for (k, w) in keys.iter().zip(&wf) {
+                sv_add_w(&mut r, f(k), *w);
+            }
+            r
+        };
+        let rot = |ms: &[[[f32; 3]; 3]]| -> [[f32; 3]; 3] {
+            let q: Vec<_> = ms.iter().map(|m| matrix_to_quat(&m.map(|r| r.map(|v| v as f64)))).collect();
+            let r = if bezier && q.len() == 3 { bezier_quat(&q[0], &q[1], &q[2], t) } else { slerp_quat(&q[0], &q[1], t) };
+            rotation_matrix(&r).map(|r| r.map(|v| v as f32))
+        };
+        // bBackBMP := L1.bBackBMP and L2.bBackBMP (and L3.bBackBMP)
+        if keys.iter().any(|k| k.bg.is_none()) {
+            self.bg = None;
+        }
+        // the singles from sGamma on, sDiff, sSpec, sIndLightReflect
+        self.s_col_zmul = lin(&|k| k.s_col_zmul);
+        self.s_shad_zmul = lin(&|k| k.s_shad_zmul);
+        self.s_depth = lin(&|k| k.s_depth);
+        self.s_shad_gr = lin(&|k| k.s_shad_gr);
+        self.s_shad = lin(&|k| k.s_shad);
+        self.s_amb_shad = lin(&|k| k.s_amb_shad);
+        self.s_c_start = lin(&|k| k.s_c_start);
+        self.s_ci_start = lin(&|k| k.s_ci_start);
+        self.s_c_mul = lin(&|k| k.s_c_mul);
+        self.s_ci_mul = lin(&|k| k.s_ci_mul);
+        self.s_diff = lin(&|k| k.s_diff);
+        self.s_spec = lin(&|k| k.s_spec);
+        self.s_ind_light_reflect = lin(&|k| k.s_ind_light_reflect);
+        // the colours of TLValigned
+        self.depth_col = lin_sv(&|k| k.depth_col);
+        self.depth_col2 = lin_sv(&|k| k.depth_col2);
+        self.amb_col = lin_sv(&|k| k.amb_col);
+        self.amb_col2 = lin_sv(&|k| k.amb_col2);
+        self.dyn_fog_col = lin_sv(&|k| k.dyn_fog_col);
+        self.dyn_fog_col2 = lin_sv(&|k| k.dyn_fog_col2);
+        for i in 0..10 {
+            self.col_dif[i] = lin_sv(&|k| k.col_dif[i]);
+            self.col_spe[i] = lin_sv(&|k| k.col_spe[i]);
+            self.col_pos[i] = (lin(&|k| k.col_pos[i] as f32).round() as i32).clamp(0, 32767);
+            self.s_c_div[i] = lin(&|k| k.s_c_div[i]).clamp(0.0, 1.0);
+        }
+        for i in 0..4 {
+            self.col_int[i] = lin_sv(&|k| k.col_int[i]);
+            self.icol_pos[i] = (lin(&|k| k.icol_pos[i] as f32).round() as i32).clamp(0, 32767);
+            self.s_ic_div[i] = lin(&|k| k.s_ic_div[i]).clamp(0.0, 1.0);
+        }
+        // lights
+        for lv in self.lights.iter_mut() {
+            let kl: Vec<&LightVal> = keys.iter().filter_map(|k| k.lights.iter().find(|x| x.idx == lv.idx)).collect();
+            if kl.len() != keys.len() {
+                continue;
+            }
+            let lw = |f: &dyn Fn(&LightVal) -> f32| -> f32 { kl.iter().zip(&wf).map(|(x, w)| f(x) * w).sum() };
+            lv.on = kl.iter().any(|x| x.on);
+            lv.pow_func = lw(&|x| x.pow_func as f32).round() as i32;
+            lv.lmax_l = lw(&|x| x.lmax_l);
+            let mut c = [0f32; 3];
+            for (x, w) in kl.iter().zip(&wf) {
+                sv_add_w(&mut c, x.col, *w);
+            }
+            lv.col = c;
+            if kl.iter().all(|x| !x.positional) {
+                let v: Vec<[f64; 3]> = kl.iter().map(|x| x.ln.map(|c| c as f64)).collect();
+                let d = if bezier && v.len() == 3 { bezier_vec(&v[0], &v[1], &v[2], t) } else { slerp_vec(&v[0], &v[1], t) };
+                lv.ln = d.map(|c| c as f32);
+            }
+        }
+        self.lights.retain(|lv| lv.on);
+        // gamma
+        let d1: f32 = keys.iter().zip(&wf).map(|(k, w)| k.s_gamma * w * k.gamma_h as f32).sum();
+        self.s_gamma = d1.abs().min(1.0);
+        self.gamma_h = if d1.abs() < 0.005 {
+            0
+        } else if d1 < 0.0 {
+            -1
+        } else {
+            1
+        };
+        self.s_dyn_fog_mul = lin(&|k| k.s_dyn_fog_mul);
+        self.s_roughness_factor = lin(&|k| k.s_roughness_factor);
+        self.s_diffuse_shadowing = lin(&|k| k.s_diffuse_shadowing);
+        // picture rotations
+        if self.bg.is_some() {
+            let ms: Vec<_> = keys.iter().map(|k| k.bg.as_ref().unwrap().rot).collect();
+            self.bg.as_mut().unwrap().rot = rot(&ms);
+        }
+        for (j, &idx) in self.map_lights_idx.clone().iter().enumerate() {
+            let ms: Option<Vec<_>> = keys
+                .iter()
+                .map(|k| k.map_lights_idx.iter().position(|&i| i == idx).map(|p| k.map_lights[p].rot))
+                .collect();
+            if let Some(ms) = ms {
+                self.map_lights[j].rot = rot(&ms);
+            }
+        }
+        if self.diff_map.is_some() && keys.iter().all(|k| k.diff_map.is_some()) {
+            let dm: Vec<&DiffMap> = keys.iter().map(|k| k.diff_map.as_ref().unwrap()).collect();
+            let r = if dm.len() > 1 { 1 } else { 0 };
+            // offsets wrap around (period 1), towards the middle keyframe
+            let mut off = [0f32; 2];
+            for (c, o) in off.iter_mut().enumerate() {
+                let d2 = dm[r].off[c];
+                *o = dm
+                    .iter()
+                    .zip(&wf)
+                    .map(|(d, w)| {
+                        let mut v = d.off[c];
+                        if (v - d2).abs() > 0.5 {
+                            v += if v < d2 { 1.0 } else { -1.0 };
+                        }
+                        v * w
+                    })
+                    .sum();
+            }
+            let ms: Vec<_> = dm.iter().map(|d| d.rot).collect();
+            let new_rot = rot(&ms);
+            let ang: Vec<f32> = dm.iter().map(|d| d.rot_sin.atan2(if d.rot_cos == 0.0 { 1e-30 } else { d.rot_cos })).collect();
+            let a: f32 = ang
+                .iter()
+                .zip(&wf)
+                .map(|(&a, w)| {
+                    let a = if (a - ang[r]).abs() > std::f32::consts::PI {
+                        a + (ang[r] - a).signum() * 2.0 * std::f32::consts::PI
+                    } else {
+                        a
+                    };
+                    a * w
+                })
+                .sum();
+            let scale = lin(&|k| k.diff_map.as_ref().unwrap().scale);
+            let d = self.diff_map.as_mut().unwrap();
+            d.off = off;
+            d.rot = new_rot;
+            d.rot_sin = a.sin();
+            d.rot_cos = a.cos();
+            d.scale = scale;
         }
     }
 

@@ -166,14 +166,53 @@ fn effective_lighting(sc: &Scene) -> crate::lighting::Lighting {
 
 fn light_vals(sc: &Scene, l: &crate::lighting::Lighting, cam: &PaintCamera) -> LightVals {
     let z_range = sc.z_end - sc.z_start;
-    let mut lv = LightVals::new(l, sc.z_step_div, sc.dfog_on_it, z_range, sc.step_width(), sc.width, 1.0);
+    let vol = |s: &Scene, l: &crate::lighting::Lighting| s.vol_light.is_some_and(|v| l.lights[v.light].on);
+    let make = |s: &Scene, l: &crate::lighting::Lighting, all: bool| {
+        let zr = s.z_end - s.z_start;
+        let mut lv = if all {
+            LightVals::new_all(l, s.z_step_div, s.dfog_on_it, zr, s.step_width(), s.width, 1.0)
+        } else {
+            LightVals::new(l, s.z_step_div, s.dfog_on_it, zr, s.step_width(), s.width, 1.0)
+        };
+        if vol(s, l) {
+            lv.set_vol_light(l, zr);
+        }
+        lv
+    };
+    let blended_l;
+    let (mut lv, l) = match &sc.light_blend {
+        // an animation frame: MB3D interpolates the light values of the keyframes
+        Some(b) => {
+            let mut lv = make(sc, l, true);
+            let keys: Vec<LightVals> = b.keys.iter().map(|k| make(k, &effective_lighting(k), true)).collect();
+            lv.blend(&keys, &b.weights, b.t, b.bezier);
+            blended_l = blend_light_positions(l, b);
+            (lv, &blended_l)
+        }
+        None => (make(sc, l, false), l),
+    };
     lv.rotate_object_lights(l, &normalise_matrix_to(1.0, &sc.vgrads));
-    if sc.vol_light.is_some_and(|v| l.lights[v.light].on) {
-        lv.set_vol_light(l, z_range);
-    }
     let vz = normalise_matrix_to(1.0, &sc.vgrads)[2];
     lv.place_lights(l, sc.mid, cam, z_range, vz);
     lv
+}
+
+/// Positional lights of an animation frame: the absolute positions of the
+/// keyframes interpolated (lights that are positional in all keyframes).
+fn blend_light_positions(l: &crate::lighting::Lighting, b: &crate::anim::LightBlend) -> crate::lighting::Lighting {
+    let mut l = l.clone();
+    for (i, li) in l.lights.iter_mut().enumerate() {
+        if b.keys.iter().all(|k| k.lighting.lights[i].positional) {
+            let mut p = [0.0; 3];
+            for (k, w) in b.keys.iter().zip(&b.weights) {
+                for (c, v) in p.iter_mut().enumerate() {
+                    *v += k.lighting.lights[i].position[c] * w;
+                }
+            }
+            li.position = p;
+        }
+    }
+    l
 }
 
 /// `PaintParameter` / `GetStartSPosAndAddVecs`

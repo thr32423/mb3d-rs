@@ -102,6 +102,7 @@ dialog .actions { display: flex; gap: 6px; justify-content: flex-end; margin-top
 .mtree .mm span { position: absolute; left: 2px; top: 1px; font-size: 10px; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; }
 .mtree .mm.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .mtree .mm.wait { aspect-ratio: 5 / 4; display: flex; align-items: center; justify-content: center; color: var(--dim); font-size: 10px; }
+#mcImg { display: block; max-width: 100%; margin: 6px auto; background: #0d0e11; }
 #voxImg { display: block; width: min(240px, 100%); margin: 6px auto; background: #0d0e11; min-height: 40px; image-rendering: pixelated; }
 .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; word-break: break-all; }
 kbd { background: var(--panel2); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; font-size: 11px; }
@@ -315,6 +316,7 @@ const GROUPS = [
   ["Colours", /^(color_start|color_end|color_cycling|color_var_z|color_on_otrap|color_interpolation|palette_full|palette|interior_.*|fine_color_adjust|diffuse_map.*)$/],
   ["Light and fog", /^(ambient.*|depth_.*|dynfog.*|dyn_fog|fog_offset|far_fog|diffuse|specular|indirect_light|gamma|roughness|diffuse_shadowing|internal_gamma2|light_mode|lights)$/],
   ["Background", /^background.*$/],
+  ["Monte Carlo", /^mc_.*$/],
 ];
 const TABS = [
   ["Formulas", () => formulasTab()],
@@ -323,6 +325,7 @@ const TABS = [
   ["Colours", () => globalTab(["Colours", "Background"])],
   ["Lights", () => lightsTab()],
   ["Animation", () => animTab()],
+  ["Monte Carlo", () => mcTab()],
   ["MutaGen", () => mutaTab()],
   ["Export", () => exportTab()],
   ["All", () => globalTab(null)],
@@ -990,10 +993,141 @@ function exportTab() {
   exportUpdate();
 }
 
+
+// ------------------------------------------------------------ Monte Carlo
+// MB3D's Monte Carlo renderer: ambient bounces, soft shadows, reflections
+// and transparency, refined pass by pass where the image is noisy.
+let mcState = null, mcVer = -1, mcPollTimer = null, mcWasRunning = false;
+const mcUi = { rays: "64", scale: "1" };
+const MC_DEF = { mc_depth: "3", mc_reflections: "false", mc_reflection_depth: "1", mc_reflection_amount: "0.5",
+  mc_transparency: "false", mc_only_difs: "false", mc_diffuse_reflects: "0", mc_soft_shadow_radius: "1", mc_exposure: "128",
+  mc_saturation: "32", mc_options: "2", mc_refraction_index: "1.5", mc_absorption: "0.2", mc_scattering: "1" };
+function mcVal(k) { const l = model && model.global.find(x => x.k === k); return l ? l.v : MC_DEF[k]; }
+function mcSet(o) {
+  for (const [k, v] of Object.entries(o)) {
+    const l = model.global.find(x => x.k === k);
+    if (l) l.v = String(v); else model.global.push({ k, v: String(v), c: "" });
+  }
+  // the scene only keeps the mc keys when one differs from the default: write them all
+  for (const k of Object.keys(MC_DEF)) if (!model.global.find(x => x.k === k)) model.global.push({ k, v: MC_DEF[k], c: "" });
+  commit();
+}
+async function mcLoad() { try { setMc(await api("/api/mc")); } catch (e) { showError(e.message); } }
+function setMc(m) {
+  const first = !mcState;
+  const changed = first || m.ver !== mcVer;
+  mcState = m; mcVer = m.ver;
+  if (tab === "Monte Carlo") { if (first || mcWasRunning !== m.running) renderPanel(); else if (changed) mcUpdate(); else mcProgress(); }
+  mcWasRunning = m.running;
+  clearTimeout(mcPollTimer);
+  if (m.running || tab === "Monte Carlo") mcPollTimer = setTimeout(mcLoad, m.running ? 700 : 2500);
+}
+function mcProgress() {
+  const m = mcState; if (!m) return;
+  const b = $("mcBar"); if (b) b.firstElementChild.style.width = (m.running ? m.progress : (m.passes ? 100 : 0)) + "%";
+}
+function mcUpdate() {
+  const m = mcState; if (!m) return;
+  mcProgress();
+  const s = $("mcState");
+  if (s) {
+    let t = m.passes || m.running ? `${m.w} × ${m.h} · pass ${m.passes + (m.running ? 1 : 0)} · ${m.rays.toFixed(1)} rays per pixel (max ${m.max_rays}) · noise ${m.noise.toFixed(4)} · ${fmtTime(m.seconds)}` : "";
+    if (m.running) t += ` · until ${m.target} rays`;
+    if (m.error) t += " · " + m.error;
+    s.textContent = t;
+  }
+  const im = $("mcImg");
+  if (im && (m.passes || m.rays > 0)) { im.src = "/api/mc/img?v=" + m.ver + "&t=" + Date.now(); im.hidden = false; }
+  for (const id of ["mcDl", "mcM3c"]) { const x = $(id); if (x) x.hidden = !(m.passes || m.rays > 0); }
+  const c = $("mcCont"); if (c) c.disabled = m.running || !m.passes;
+}
+function mcTab() {
+  const p = $("panel");
+  if (!mcState) { p.append(el("div", { class: "hint" }, "loading…")); mcLoad(); return; }
+  const m = mcState;
+  const inp = (k, title, size) => {
+    const e = el("input", { type: "text", id: "mc_" + k, value: mcVal(k), title: title || "", size: size || 6 });
+    e.addEventListener("change", () => mcSet({ [k]: e.value }));
+    return e;
+  };
+  const chk = (k, title) => {
+    const e = el("input", { type: "checkbox", id: "mc_" + k, title: title || "" });
+    e.checked = mcVal(k) === "true";
+    e.addEventListener("change", () => mcSet({ [k]: e.checked }));
+    return e;
+  };
+  const opts = +mcVal("mc_options") || 0;
+  const bit = (b, title) => {
+    const e = el("input", { type: "checkbox", title: title || "" });
+    e.checked = (opts & b) !== 0;
+    e.addEventListener("change", () => mcSet({ mc_options: e.checked ? opts | b : opts & ~b }));
+    return e;
+  };
+  const row = (label, ctl, title) => el("div", { class: "row" }, el("label", { title: title || "" }, label), ctl);
+  const slider = (k, max, title) => {
+    const e = el("input", { type: "range", min: 0, max, value: mcVal(k), title: title || "", id: "mc_" + k });
+    const v = el("span", { class: "hint" }, mcVal(k));
+    e.addEventListener("input", () => { v.textContent = e.value; });
+    e.addEventListener("change", () => mcSet({ [k]: e.value }));
+    return el("div", { class: "multi" }, e, v);
+  };
+  const bokeh = el("select", { id: "mc_bokeh" }, ...[1, 2, 3, 4, 5, 6].map(n => el("option", { value: n }, ["disc", "disc, bright rim", "pentagon", "pentagon, bright rim", "heptagon", "heptagon, bright rim"][n - 1])));
+  bokeh.value = String(((opts >> 4) & 7) + 1);
+  bokeh.onchange = () => mcSet({ mc_options: (opts & 0x0F) | ((+bokeh.value - 1) << 4) });
+  p.append(el("div", { class: "card" }, el("h3", {}, "Light paths"),
+    el("div", { class: "hint" }, "Path tracing with the scene's lights, colours and background. Ambient light comes from bounces of light between the surfaces, lights get a size and cast soft shadows."),
+    row("ambient bounces", inp("mc_depth"), "MCDepth: diffuse bounces (1 = ambient occlusion only)"),
+    row("light size", inp("mc_soft_shadow_radius"), "Size of the light sources (soft shadows)"),
+    row("reflections", chk("mc_reflections")),
+    row("reflection depth", inp("mc_reflection_depth"), "Reflections and refractions of reflections ..."),
+    row("reflection amount", inp("mc_reflection_amount"), "Amount of reflected light (the palette's specular colours); 0..1 is realistic"),
+    row("diffuse reflections", inp("mc_diffuse_reflects"), "Rough reflections: 0 (sharp) .. 2.5"),
+    row("transparency", chk("mc_transparency", "With reflections: the alpha of the palette's specular colours is the transparency")),
+    row("only dIFS transparent", chk("mc_only_difs")),
+    row("refraction index", inp("mc_refraction_index")),
+    row("absorption", inp("mc_absorption"), "Light absorption inside transparent material (coloured by the diffuse colour)"),
+    row("light scattering", inp("mc_scattering"), "Light scattered inside transparent material"),
+    row("secant search", bit(2, "Finer surface search")),
+    row("clip spec. + diffuse", bit(4, "Scale specular and diffuse colours down when they add up to more than 1")),
+    row("gaussian anti-aliasing", bit(8)),
+    row("bokeh shape", bokeh, "Depth of field (Render tab) aperture shape")));
+  p.append(el("div", { class: "card" }, el("h3", {}, "Image"),
+    row("exposure", slider("mc_exposure", 255), "128 = 1"),
+    row("colour saturation", slider("mc_saturation", 127), "32 = 1"),
+    row("HDR soft clipping", bit(1)),
+    el("div", { class: "hint" }, "Exposure, saturation and soft clipping change the image without recalculating it; gamma is the one of the Colours tab.")));
+  const rays = el("input", { type: "text", id: "mcRays", value: mcUi.rays, size: 5 });
+  rays.onchange = () => { mcUi.rays = rays.value; };
+  const scale = el("select", { id: "mcScale" }, ...[["1", "full size"], ["0.5", "1/2"], ["0.25", "1/4"]].map(([v, l]) => el("option", { value: v }, l)));
+  scale.value = mcUi.scale; scale.onchange = () => { mcUi.scale = scale.value; };
+  const start = async cont => { try { setMc(await post("/api/mc/start", form({ rays: rays.value, scale: scale.value, cont }))); } catch (e) { showError(e.message); } };
+  const fi = el("input", { type: "file", accept: ".m3c", hidden: "" });
+  fi.onchange = async () => {
+    const f = fi.files[0]; if (!f) return;
+    try { applyState(await post("/api/mc/open?name=" + encodeURIComponent(f.name), await f.arrayBuffer())); mcLoad(); }
+    catch (e) { showError(e.message); }
+  };
+  p.append(el("div", { class: "card" }, el("h3", {}, "Render"),
+    el("div", { class: "multi" }, el("span", { class: "hint" }, "until"), rays, el("span", { class: "hint" }, "rays per pixel"), scale),
+    el("div", { class: "multi" },
+      el("button", { class: "primary", id: "mcStart", disabled: m.running ? "" : null, onclick: () => start(false) }, "Start"),
+      el("button", { id: "mcCont", title: "More rays for the image below", onclick: () => start(true) }, "Continue"),
+      el("button", { onclick: async () => setMc(await post("/api/mc/stop", "")) }, "Stop")),
+    el("div", { class: "bar", id: "mcBar" }, el("div")),
+    el("div", { class: "hint", id: "mcState" }),
+    el("a", { href: "/api/mc/img", target: "_blank", title: "Full size" }, el("img", { id: "mcImg", alt: "", hidden: "" })),
+    el("div", { class: "multi" },
+      el("a", { id: "mcDl", href: "/api/mc/img", download: "mc.png", hidden: "" }, el("button", {}, "Save PNG")),
+      el("a", { id: "mcM3c", href: "/api/mc/m3c", hidden: "" }, el("button", { title: "MB3D's Monte Carlo file: continue later, here or in MB3D" }, "Save .m3c")),
+      el("button", { onclick: () => fi.click() }, "Open .m3c…"), fi),
+    el("div", { class: "hint" }, "Start renders the editor's scene: the first pass shoots 4 rays per pixel, every further pass adds rays where the image is still noisy. On the command line: mb3d montecarlo scene.m3p --rays 64")));
+  mcUpdate();
+}
+
 function renderPanel() {
   const tabs = $("tabs");
   tabs.textContent = "";
-  for (const [name] of TABS) tabs.append(el("button", { class: name === tab ? "on" : "", onclick: () => { tab = name; renderPanel(); if (name === "Animation") animLoad(); if (name === "MutaGen") mutaLoad(); if (name === "Export") exportLoad(); } }, name));
+  for (const [name] of TABS) tabs.append(el("button", { class: name === tab ? "on" : "", onclick: () => { tab = name; renderPanel(); if (name === "Animation") animLoad(); if (name === "MutaGen") mutaLoad(); if (name === "Monte Carlo") mcLoad(); if (name === "Export") exportLoad(); } }, name));
   const p = $("panel");
   const active = document.activeElement && document.activeElement.id;
   const scroll = p.scrollTop;

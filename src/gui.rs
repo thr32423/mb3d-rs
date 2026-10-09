@@ -774,6 +774,37 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
                 None => respond(&mut stream, "404 Not Found", "text/plain", b"no image", ""),
             }
         }
+        // ---- Monte Carlo
+        ("GET", "/api/mc") => ok_json(&mut stream, tools::mc_json(app)),
+        ("POST", "/api/mc/start") => match tools::mc_start(app, &form()) {
+            Ok(()) => ok_json(&mut stream, tools::mc_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/mc/stop") => {
+            tools::mc_stop(app);
+            ok_json(&mut stream, tools::mc_json(app))
+        }
+        ("GET", "/api/mc/img") => match tools::mc_png(app) {
+            Some(p) => respond(&mut stream, "200 OK", "image/png", &p, ""),
+            None => respond(&mut stream, "404 Not Found", "text/plain", b"no image", ""),
+        },
+        ("GET", "/api/mc/m3c") => match tools::mc_m3c(app) {
+            Some((name, d)) => respond(
+                &mut stream,
+                "200 OK",
+                "application/octet-stream",
+                &d,
+                &format!("Content-Disposition: attachment; filename=\"{}\"\r\n", safe_name(&name)),
+            ),
+            None => respond(&mut stream, "404 Not Found", "text/plain", b"nothing rendered", ""),
+        },
+        ("POST", "/api/mc/open") => {
+            let name = req.query.get("name").cloned().unwrap_or_else(|| "mc.m3c".into());
+            match tools::mc_open(app, &name, &req.body) {
+                Ok(()) => ok_json(&mut stream, state_json(app)),
+                Err(e) => err_json(&mut stream, e),
+            }
+        }
         // ---- voxel / mesh export
         ("GET", "/api/export") => ok_json(&mut stream, tools::export_json(app)),
         ("POST", "/api/export/start") => match tools::export_start(app, &form()) {

@@ -32,7 +32,24 @@ struct ExportJob {
     folder: String,
 }
 
+/// The Monte Carlo rendering of the editor (`TMCForm`).
+#[derive(Default)]
+struct McJob {
+    running: bool,
+    /// the scene being rendered and its title
+    scene: Option<crate::scene::Scene>,
+    title: String,
+    /// the state after the last finished pass
+    img: Option<crate::mc::McImage>,
+    target: f64,
+    error: String,
+}
+
 pub(super) struct ToolsState {
+    mc: Mutex<McJob>,
+    mc_stop: AtomicBool,
+    mc_progress: AtomicU32,
+    mc_ver: AtomicU64,
     muta: Mutex<Muta>,
     muta_gen: AtomicU64,
     muta_ver: AtomicU64,
@@ -44,6 +61,10 @@ pub(super) struct ToolsState {
 impl ToolsState {
     pub(super) fn new() -> ToolsState {
         ToolsState {
+            mc: Mutex::new(McJob::default()),
+            mc_stop: AtomicBool::new(false),
+            mc_progress: AtomicU32::new(0),
+            mc_ver: AtomicU64::new(1),
             muta: Mutex::new(Muta::default()),
             muta_gen: AtomicU64::new(0),
             muta_ver: AtomicU64::new(1),
@@ -327,4 +348,148 @@ pub(super) fn export_stop(app: &App) {
 
 pub(super) fn export_file(app: &App) -> Option<(String, Arc<Vec<u8>>)> {
     app.tools.export.lock().unwrap().file.clone()
+}
+
+// ---------------------------------------------------------------------------
+// Monte Carlo rendering
+
+pub(super) fn mc_json(app: &App) -> String {
+    let t = &app.tools;
+    let j = t.mc.lock().unwrap();
+    let st = j.img.as_ref().map(|i| i.stats()).unwrap_or_default();
+    let (w, h, passes, secs) = j.img.as_ref().map_or((0, 0, 0, 0.0), |i| (i.width, i.height, i.passes, i.seconds));
+    format!(
+        "{{\"ver\":{},\"running\":{},\"progress\":{},\"w\":{w},\"h\":{h},\"passes\":{passes},\"seconds\":{secs:.1},\"rays\":{:.2},\"max_rays\":{},\"noise\":{:.5},\"zero\":{},\"target\":{},\"title\":{},\"error\":{}}}",
+        t.mc_ver.load(Ordering::SeqCst),
+        j.running,
+        t.mc_progress.load(Ordering::Relaxed) as f64 / 10.0,
+        st.avg_rays,
+        st.max_rays,
+        st.avg_noise,
+        st.zero_counts,
+        j.target,
+        json_str(&j.title),
+        json_str(&j.error),
+    )
+}
+
+/// Starts (or with `cont` continues) the Monte Carlo rendering of the
+/// editor's scene until `rays` rays per pixel on average.
+pub(super) fn mc_start(app: &Arc<App>, q: &HashMap<String, String>) -> Result<(), String> {
+    let t = &app.tools;
+    let cont = q.get("cont").is_some_and(|v| v == "true");
+    let target = num::<f64>(q, "rays").unwrap_or(64.0).clamp(1.0, 65535.0);
+    {
+        let mut j = t.mc.lock().unwrap();
+        if j.running {
+            return Err("the Monte Carlo rendering is running".into());
+        }
+        if !cont || j.img.is_none() || j.scene.is_none() {
+            let st = app.scene.lock().unwrap();
+            let mut sc = st.scene.clone();
+            if let Some(f) = num::<f64>(q, "scale").filter(|f| *f > 0.0 && (*f - 1.0).abs() > 1e-9) {
+                sc.scale_image(f);
+            }
+            j.img = Some(crate::mc::McImage::new(sc.width as usize, sc.height as usize));
+            j.title = st.title.clone();
+            j.scene = Some(sc);
+        }
+        j.running = true;
+        j.target = target;
+        j.error.clear();
+    }
+    t.mc_stop.store(false, Ordering::SeqCst);
+    t.mc_progress.store(0, Ordering::Relaxed);
+    t.mc_ver.fetch_add(1, Ordering::SeqCst);
+    let app = app.clone();
+    std::thread::spawn(move || {
+        let t = &app.tools;
+        let (scene, mut img) = {
+            let j = t.mc.lock().unwrap();
+            (j.scene.clone().unwrap(), j.img.clone().unwrap())
+        };
+        let cancel = || t.mc_stop.load(Ordering::SeqCst);
+        let mut err = String::new();
+        loop {
+            let st = img.stats();
+            if cancel() || (!st.zero_counts && st.avg_rays >= target) {
+                break;
+            }
+            t.mc_progress.store(0, Ordering::Relaxed);
+            let progress = |d: usize, n: usize| t.mc_progress.store((d * 1000 / n.max(1)) as u32, Ordering::Relaxed);
+            let r = crate::mc::pass(&scene, &mut img, 0, &progress, &cancel);
+            // keep what was calculated, also of a stopped pass
+            t.mc.lock().unwrap().img = Some(img.clone());
+            t.mc_ver.fetch_add(1, Ordering::SeqCst);
+            if let Err(e) = r {
+                if e != "cancelled" {
+                    err = e;
+                }
+                break;
+            }
+        }
+        let mut j = t.mc.lock().unwrap();
+        j.running = false;
+        j.error = err;
+        drop(j);
+        t.mc_ver.fetch_add(1, Ordering::SeqCst);
+    });
+    Ok(())
+}
+
+pub(super) fn mc_stop(app: &App) {
+    app.tools.mc_stop.store(true, Ordering::SeqCst);
+}
+
+/// The current image, painted with the exposure, saturation, soft clip and
+/// gamma of the editor's scene (they can be changed while rendering).
+pub(super) fn mc_png(app: &App) -> Option<Vec<u8>> {
+    let (img, mut mc) = {
+        let j = app.tools.mc.lock().unwrap();
+        let sc = j.scene.as_ref()?;
+        (j.img.clone()?, sc.mc)
+    };
+    let gamma;
+    {
+        let st = app.scene.lock().unwrap();
+        mc.contrast = st.scene.mc.contrast;
+        mc.saturation = st.scene.mc.saturation;
+        mc.options = (mc.options & !1) | (st.scene.mc.options & 1);
+        gamma = st.scene.lighting.gamma;
+    }
+    let rgb = crate::mc::paint(&img, &mc, gamma);
+    Some(crate::png::encode_rgb(img.width, img.height, &rgb))
+}
+
+/// The state as MB3D Monte Carlo file (`.m3c`), name and contents.
+pub(super) fn mc_m3c(app: &App) -> Option<(String, Vec<u8>)> {
+    let j = app.tools.mc.lock().unwrap();
+    let (sc, img) = (j.scene.as_ref()?, j.img.as_ref()?);
+    let name = if j.title.trim().is_empty() { "mc".to_string() } else { j.title.clone() };
+    Some((format!("{name}.m3c"), crate::mc::write_m3c(sc, img)))
+}
+
+/// Opens a `.m3c` file: its parameters go to the editor, its image to the
+/// Monte Carlo tab (continue with "Continue").
+pub(super) fn mc_open(app: &Arc<App>, name: &str, data: &[u8]) -> Result<(), String> {
+    let (f, img) = crate::mc::read_m3c(data)?;
+    let title = std::path::Path::new(name).file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+    {
+        let mut j = app.tools.mc.lock().unwrap();
+        if j.running {
+            return Err("the Monte Carlo rendering is running".into());
+        }
+        j.scene = Some(f.scene.clone());
+        j.img = Some(img);
+        j.title = title.clone();
+        j.error.clear();
+    }
+    let mut st = app.scene.lock().unwrap();
+    st.scene = f.scene;
+    st.title = title;
+    st.notes = f.warnings;
+    drop(st);
+    app.restart();
+    app.tools.mc_ver.fetch_add(1, Ordering::SeqCst);
+    Ok(())
 }

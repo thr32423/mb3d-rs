@@ -3164,6 +3164,79 @@ fn ea_expr(m: &Mem) -> String {
     e
 }
 
+/// SSE2 double precision ops that `emit_rust` translates (the others run
+/// through the interpreter).
+fn sse_native(op: SseOp, src: &Rm) -> bool {
+    use SseOp::*;
+    match op {
+        MovU | MovLpdLoad | MovHpdLoad | AddPd | SubPd | MulPd | DivPd | MinPd | MaxPd | SqrtPd | AddSd | SubSd | MulSd | DivSd
+        | MinSd | MaxSd | SqrtSd | And | AndN | Or | Xor | UnpckLpd | UnpckHpd | ShufPd | HAddPd => true,
+        MovSdLoad | MovqLoad => true,
+        MovHlps | MovLhps => matches!(src, Rm::Reg(_)),
+        _ => false,
+    }
+}
+
+/// Rust code for one SSE op, with the semantics of `Machine::sse`.
+fn emit_sse(op: SseOp, d: usize, src: &Rm, imm: u8) -> String {
+    use SseOp::*;
+    let s16 = match src {
+        Rm::Reg(r) => format!("m.xmm[{r}]"),
+        Rm::Mem(mm) => format!("{{ let a = {}; [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }}", ea_expr(mm)),
+    };
+    let s8 = match src {
+        Rm::Reg(r) => format!("m.xmm[{r}][0]"),
+        Rm::Mem(mm) => format!("m.rd64({})?", ea_expr(mm)),
+    };
+    let fd = |x: &str| format!("f64::from_bits({x})");
+    let bin = |o: &str, a: &str, b: &str| -> String {
+        match o {
+            "min" => format!("{{ let (p, q) = ({}, {}); if p < q {{ p }} else {{ q }} }}", fd(a), fd(b)),
+            "max" => format!("{{ let (p, q) = ({}, {}); if p > q {{ p }} else {{ q }} }}", fd(a), fd(b)),
+            _ => format!("({} {o} {})", fd(a), fd(b)),
+        }
+    };
+    let pd = |o: &str| format!("{{ let s: [u64; 2] = {s16}; let a = m.xmm[{d}]; m.xmm[{d}] = [{}.to_bits(), {}.to_bits()]; }}", bin(o, "a[0]", "s[0]"), bin(o, "a[1]", "s[1]"));
+    let sd = |o: &str| format!("{{ let s: u64 = {s8}; let a = m.xmm[{d}][0]; m.xmm[{d}][0] = {}.to_bits(); }}", bin(o, "a", "s"));
+    let bits = |o: &str| format!("{{ let s: [u64; 2] = {s16}; let a = m.xmm[{d}]; m.xmm[{d}] = [{}, {}]; }}",
+        o.replace("X", "a[0]").replace("Y", "s[0]"), o.replace("X", "a[1]").replace("Y", "s[1]"));
+    match op {
+        MovU => format!("m.xmm[{d}] = {s16};"),
+        MovSdLoad => match src {
+            Rm::Reg(r) => format!("m.xmm[{d}][0] = m.xmm[{r}][0];"),
+            _ => format!("{{ let s: u64 = {s8}; m.xmm[{d}] = [s, 0]; }}"),
+        },
+        MovqLoad => format!("{{ let s: u64 = {s8}; m.xmm[{d}] = [s, 0]; }}"),
+        MovLpdLoad => format!("{{ let s: u64 = {s8}; m.xmm[{d}][0] = s; }}"),
+        MovHpdLoad => format!("{{ let s: u64 = {s8}; m.xmm[{d}][1] = s; }}"),
+        MovHlps => format!("{{ let s: [u64; 2] = {s16}; m.xmm[{d}][0] = s[1]; }}"),
+        MovLhps => format!("{{ let s: [u64; 2] = {s16}; m.xmm[{d}][1] = s[0]; }}"),
+        AddPd => pd("+"),
+        SubPd => pd("-"),
+        MulPd => pd("*"),
+        DivPd => pd("/"),
+        MinPd => pd("min"),
+        MaxPd => pd("max"),
+        SqrtPd => format!("{{ let s: [u64; 2] = {s16}; m.xmm[{d}] = [{}.sqrt().to_bits(), {}.sqrt().to_bits()]; }}", fd("s[0]"), fd("s[1]")),
+        AddSd => sd("+"),
+        SubSd => sd("-"),
+        MulSd => sd("*"),
+        DivSd => sd("/"),
+        MinSd => sd("min"),
+        MaxSd => sd("max"),
+        SqrtSd => format!("{{ let s: u64 = {s8}; m.xmm[{d}][0] = {}.sqrt().to_bits(); }}", fd("s")),
+        And => bits("X & Y"),
+        AndN => bits("!X & Y"),
+        Or => bits("X | Y"),
+        Xor => bits("X ^ Y"),
+        UnpckLpd => format!("{{ let s: [u64; 2] = {s16}; m.xmm[{d}][1] = s[0]; }}"),
+        UnpckHpd => format!("{{ let s: [u64; 2] = {s16}; let a = m.xmm[{d}]; m.xmm[{d}] = [a[1], s[1]]; }}"),
+        ShufPd => format!("{{ let s: [u64; 2] = {s16}; let a = m.xmm[{d}]; m.xmm[{d}] = [a[{}], s[{}]]; }}", imm & 1, (imm >> 1) & 1),
+        HAddPd => format!("{{ let s: [u64; 2] = {s16}; let a = m.xmm[{d}]; m.xmm[{d}] = [{}.to_bits(), {}.to_bits()]; }}", bin("+", "a[0]", "a[1]"), bin("+", "s[0]", "s[1]")),
+        _ => unreachable!("sse_native"),
+    }
+}
+
 fn f64_lit(v: f64) -> String {
     format!("f64::from_bits({:#x})", v.to_bits())
 }
@@ -3362,6 +3435,15 @@ impl Prog {
                             match dst {
                                 Rm::Reg(r) => format!("m.regs[{r}] = {v};"),
                                 Rm::Mem(mm) => format!("{{ let v = {v}; let a = {}; m.wr32(a, v)?; }}", ea_expr(mm)),
+                            }
+                        }
+                        Ins::Sse { op, dst, src, imm } if sse_native(*op, src) => emit_sse(*op, *dst as usize, src, *imm),
+                        Ins::SseStore { op, dst, src } if matches!(op, SseOp::MovStore | SseOp::MovSdStore | SseOp::MovLpdStore | SseOp::MovqStore | SseOp::MovHpdStore) => {
+                            let a = ea_expr(dst);
+                            match op {
+                                SseOp::MovStore => format!("{{ let a = {a}; let x = m.xmm[{src}]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }}"),
+                                SseOp::MovHpdStore => format!("{{ let a = {a}; let x = m.xmm[{src}][1]; m.wr64(a, x)?; }}"),
+                                _ => format!("{{ let a = {a}; let x = m.xmm[{src}][0]; m.wr64(a, x)?; }}"),
                             }
                         }
                         _ => format!(

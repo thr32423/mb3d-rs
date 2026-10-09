@@ -461,27 +461,27 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffc4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 m.exec_op(&p.ops[17], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
                 { let v = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?; f[0] = f[0] - v; }
@@ -1114,43 +1114,43 @@ pub(super) fn f_028e1e6782dccfd3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             1 => {
                 { let a = m.regs[6].wrapping_add(0x50u32); let v = m.rd32(a)?; let cf = m.cf; let r = m.alu(Alu::Add, v, 1, 4); m.cf = cf; m.wr32(a, r)?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 6, src: Mem(Mem { base: Some(0), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: MovLpdLoad, dst: 5, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: Xor, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: 88 }, src: 6 }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovLpdStore, dst: Mem { base: Some(6), index: None, disp: -144 }, src: 4 }
+                m.xmm[6] = { let a = m.regs[0].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; m.xmm[5][0] = s; }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[4]; m.xmm[4] = [a[0] ^ s[0], a[1] ^ s[1]]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let a = m.regs[6].wrapping_add(0x58u32); let x = m.xmm[6]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff70u32); let x = m.xmm[4][0]; m.wr64(a, x)?; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 2, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 2, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Reg(2), imm: 0 }
+                m.xmm[2] = m.xmm[1];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[2]; m.xmm[2] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(42) => { b = 6; continue; } Some(47) => { b = 8; continue; } Some(50) => { b = 10; continue; } Some(53) => { b = 12; continue; } Some(56) => { b = 14; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 2, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[29] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[30] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 2, src: Reg(6), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 1, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(6), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[34] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 1, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[35] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Reg(3), imm: 0 }
+                m.xmm[2] = m.xmm[0];
+                m.xmm[3] = m.xmm[1];
+                { let s: [u64; 2] = m.xmm[6]; let a = m.xmm[2]; m.xmm[2] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[6]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(42) => { b = 6; continue; } Some(47) => { b = 8; continue; } Some(50) => { b = 10; continue; } Some(53) => { b = 12; continue; } Some(56) => { b = 14; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             4 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[37] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 6, src: Mem(Mem { base: Some(6), index: None, disp: 88 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
+                m.xmm[6] = { let a = m.regs[6].wrapping_add(0x58u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                m.xmm[5] = { let a = m.regs[6].wrapping_add(0x70u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
                 b = 5;
             }
             5 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[39] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(6), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[40] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Reg(5), imm: 0 }
+                m.xmm[1] = m.xmm[6];
+                m.xmm[0] = m.xmm[5];
                 if let Op::Call { ret, .. } = &p.ops[41] { m.push(*ret)?; } b = 2; continue;
             }
             6 => {
@@ -1188,34 +1188,34 @@ pub(super) fn f_028e1e6782dccfd3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 if let Op::Call { ret, .. } = &p.ops[55] { m.push(*ret)?; } b = 3; continue;
             }
             14 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[56] { m.exec(ins, *nx, *at)?; } // Sse { op: MovLpdLoad, dst: 2, src: Mem(Mem { base: Some(6), index: None, disp: -88 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[57] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[58] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 2, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[59] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 1, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[60] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[61] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: 88 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[62] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 0 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffffa8u32))?; m.xmm[2][0] = s; }
+                m.xmm[3] = { let a = m.regs[6].wrapping_add(0xffffff98u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: [u64; 2] = m.xmm[2]; m.xmm[2][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let a = m.regs[6].wrapping_add(0x58u32); let x = m.xmm[1]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 2, src: Reg(0), imm: 78 }
                 if let Op::Gen(ins, nx, at) = &p.ops[64] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 3, src: Reg(1), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[65] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 2, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[66] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 3, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[67] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[68] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[69] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 2, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[70] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[71] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(2), imm: 0 }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[2][0]; m.xmm[2][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; m.xmm[2][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                m.xmm[5] = m.xmm[2];
                 if let Op::Gen(ins, nx, at) = &p.ops[72] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 4, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[73] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[74] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 0, src: Reg(4), imm: 0 }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[5]; m.xmm[5] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 if let Op::Gen(ins, nx, at) = &p.ops[75] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 3, src: Reg(5), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[76] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 0, src: Mem(Mem { base: Some(2), index: None, disp: -8 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[77] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 3, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[78] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 3, src: Mem(Mem { base: Some(2), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[79] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 0, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[80] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[81] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[82] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 2, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[83] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(0), index: None, disp: 0 }, src: 2 }
+                { let s: u64 = m.rd64(m.regs[2].wrapping_add(0xfffffff8u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.rd64(m.regs[2].wrapping_add(0x0u32))?; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[2]; m.xmm[2] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let a = m.regs[0].wrapping_add(0x0u32); let x = m.xmm[2]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[3] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
@@ -2117,27 +2117,27 @@ pub(super) fn f_06f36d5a16051792(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -2478,27 +2478,27 @@ pub(super) fn f_091b83b22b60261b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffffacu32))?;
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
@@ -5151,27 +5151,27 @@ pub(super) fn f_0d2d38758758b123(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -6275,27 +6275,27 @@ pub(super) fn f_1241d2b84fae112c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
@@ -6960,27 +6960,27 @@ pub(super) fn f_15ceb8dc7a068aa6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
@@ -8463,27 +8463,27 @@ pub(super) fn f_1c26f158990d75db(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -8925,27 +8925,27 @@ pub(super) fn f_1d53e7c915b02656(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wrf64(a, f[0])?; }
@@ -9100,24 +9100,24 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffa6u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[7] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
@@ -10497,27 +10497,27 @@ pub(super) fn f_22e2557ab471f64e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffa6u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffff98u32))?;
                 { let bv = 0x1fu32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 { let bv = 0x0u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
@@ -10816,27 +10816,27 @@ pub(super) fn f_2447beab2b1a0d2d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 m.fcompare(f[0], 0.0);
                 
@@ -11272,27 +11272,27 @@ pub(super) fn f_25b0e599b5e18c3f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
@@ -11417,27 +11417,27 @@ pub(super) fn f_268ab00071700e27(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffb0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = 0x2u32;
                 b = 3;
             }
@@ -12087,27 +12087,27 @@ pub(super) fn f_2afaa6e446c39604(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffccu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -12267,27 +12267,27 @@ pub(super) fn f_2ce52f975c89786f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
@@ -13702,27 +13702,27 @@ pub(super) fn f_31d3d4fa897a6b4a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x10u32))?;
                 { let a = m.regs[4].wrapping_add(0x28u32); m.wrf64(a, f[0])?; }
                 { let bv = 0x1u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
@@ -14157,27 +14157,27 @@ pub(super) fn f_327c8d0feb18147a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -14968,27 +14968,27 @@ pub(super) fn f_37744c623877da48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = f[0] * f[0];
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -15051,27 +15051,27 @@ pub(super) fn f_379b0161b71a06f6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff9cu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -15450,27 +15450,27 @@ pub(super) fn f_38cbe2a25848f82c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -16679,27 +16679,27 @@ pub(super) fn f_3d11b504b653453e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -17190,18 +17190,18 @@ pub(super) fn f_3e3f70ef8a7a49e9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[2] = 0x8u32;
                 { let bv = m.regs[0]; let av = m.regs[2]; let r = m.alu(Alu::Sub, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 1, 4);
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(0), index: Some((6, 1)), disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[7] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 3, src: Mem(Mem { base: Some(2), index: Some((6, 1)), disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: DivPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 3, src: Mem(Mem { base: Some(7), index: None, disp: -16 }), imm: 0 }
+                m.xmm[0] = { let a = (m.regs[0].wrapping_add(0xffffff88u32)).wrapping_add(m.regs[6].wrapping_mul(1)); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64((m.regs[2].wrapping_add(0xffffff88u32)).wrapping_add(m.regs[6].wrapping_mul(1)))?; m.xmm[3] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) / f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) / f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xfffffff0u32))?; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
                 if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Sse { op: CvtPd2Dq, dst: 2, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(2), index: Some((6, 1)), disp: -120 }, src: 3 }
+                { let a = (m.regs[2].wrapping_add(0xffffff88u32)).wrapping_add(m.regs[6].wrapping_mul(1)); let x = m.xmm[3][0]; m.wr64(a, x)?; }
                 if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: CvtDq2Pd, dst: 2, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(0), index: Some((6, 1)), disp: -120 }, src: 0 }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let a = (m.regs[0].wrapping_add(0xffffff88u32)).wrapping_add(m.regs[6].wrapping_mul(1)); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             _ => return Err(unsup(0, "bad block".into())),
@@ -17511,27 +17511,27 @@ pub(super) fn f_41988a06b6cbcd15(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 m.exec_op(&p.ops[18], &mut f)?; // FSincos { src: 0, dst: 1 }
@@ -18027,27 +18027,27 @@ pub(super) fn f_45ed33e74dab57e4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffdau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = f[0] * f[0];
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -18377,27 +18377,27 @@ pub(super) fn f_496394d990bca45e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffc4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -18977,27 +18977,27 @@ pub(super) fn f_4d358183a0a8f2e7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffa0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
@@ -19661,27 +19661,27 @@ pub(super) fn f_4fc28fd4347db636(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -20180,27 +20180,27 @@ pub(super) fn f_5146a19bd6cd198b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffccu32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -20885,23 +20885,23 @@ pub(super) fn f_55905c9bc6aae0dd(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             0 => {
                 { let v = m.regs[1]; m.push(v)?; }
                 { let bv = 0xffffffc4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff90u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff88u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -20933,15 +20933,15 @@ pub(super) fn f_55905c9bc6aae0dd(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?; f[0] = f[0] + v; }
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[44] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(4), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[45] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(4), index: None, disp: 16 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[4].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[4].wrapping_add(0x10u32))?; m.xmm[1] = [s, 0]; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[48] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -112 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[49] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 1 }
+                { let a = m.regs[6].wrapping_add(0xffffff90u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 b = 4;
             }
             4 => {
@@ -20965,8 +20965,8 @@ pub(super) fn f_55905c9bc6aae0dd(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1].abs();
                 f[0] = f[0] - f[1];
                 f[0] = -f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[70] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[71] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[0] = m.rd32(m.regs[4].wrapping_add(0x28u32))?;
                 { let bv = 0x100u32; let av = m.regs[0]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[0] = r; }
                 { let bv = m.regs[2]; let av = m.regs[2]; let r = m.alu(Alu::Xor, av, bv, 4); m.regs[2] = r; }
@@ -21649,27 +21649,27 @@ pub(super) fn f_5a71ce685b892e52(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffff9cu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[4].wrapping_add(0x44u32); m.wrf64(a, f[0])?; }
@@ -22175,27 +22175,27 @@ pub(super) fn f_5ddbed1ac19ab491(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -22238,8 +22238,8 @@ pub(super) fn f_5ddbed1ac19ab491(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] - v; }
                 { let a = m.regs[6].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[50] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[51] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
@@ -23705,27 +23705,27 @@ pub(super) fn f_60c71cf10d673174(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -24704,27 +24704,27 @@ pub(super) fn f_67c5196c872080e3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffc4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffffb0u32))?;
                 { let bv = 0x2u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(13) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
@@ -26039,27 +26039,27 @@ pub(super) fn f_6be71cd5d3317381(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -26414,27 +26414,27 @@ pub(super) fn f_6f49871a86722e2e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -28009,49 +28009,49 @@ pub(super) fn f_7307f395e81dc750(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[6]; m.push(v)?; }
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 2, src: Mem(Mem { base: Some(0), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[7] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxPd, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 4, src: Mem(Mem { base: Some(6), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MinPd, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Sse { op: MinSd, dst: 4, src: Mem(Mem { base: Some(6), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 4, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(5), imm: 0 }
+                m.xmm[2] = { let a = m.regs[0].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; m.xmm[4] = [s, 0]; }
+                m.xmm[0] = m.xmm[2];
+                { let s: [u64; 2] = { let a = m.regs[6].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [{ let (p, q) = (f64::from_bits(a[0]), f64::from_bits(s[0])); if p > q { p } else { q } }.to_bits(), { let (p, q) = (f64::from_bits(a[1]), f64::from_bits(s[1])); if p > q { p } else { q } }.to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffffc0u32))?; let a = m.xmm[4][0]; m.xmm[4][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[6].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [{ let (p, q) = (f64::from_bits(a[0]), f64::from_bits(s[0])); if p < q { p } else { q } }.to_bits(), { let (p, q) = (f64::from_bits(a[1]), f64::from_bits(s[1])); if p < q { p } else { q } }.to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffffd0u32))?; let a = m.xmm[4][0]; m.xmm[4][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p < q { p } else { q } }.to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                m.xmm[1] = m.xmm[0];
+                m.xmm[5][0] = m.xmm[4][0];
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 2, src: Reg(1), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Reg(2), imm: 0 }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[2][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Sse { op: UComiSd, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -32 }), imm: 0 }
                 if m.cond(3) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 3, src: Mem(Mem { base: Some(6), index: None, disp: -24 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffffe8u32))?; m.xmm[3] = [s, 0]; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
             2 => {
                 if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Sse { op: UComiSd, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 3, src: Mem(Mem { base: Some(6), index: None, disp: -16 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xfffffff0u32))?; m.xmm[3] = [s, 0]; }
                 if m.cond(3) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[30] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 3, src: Reg(1), imm: 0 }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 b = 4;
             }
             4 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Sse { op: MovHpdLoad, dst: 4, src: Mem(Mem { base: Some(1), index: None, disp: 8 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[34] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 4, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[35] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(0), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 4 }
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x8u32))?; m.xmm[4][1] = s; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [a[0], s[0]]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[4]; m.xmm[4] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let a = m.regs[0].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[4]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(8);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
@@ -28073,22 +28073,22 @@ pub(super) fn f_731ce2b1f7de0ce3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[5] = m.regs[4];
                 { let bv = 0x10u32; let av = m.regs[4]; let r = m.alu(Alu::Sub, av, bv, 4); m.regs[4] = r; }
                 { let bv = 0xfffffff0u32; let av = m.regs[4]; let r = m.alu(Alu::And, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 2, src: Mem(Mem { base: Some(6), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 2, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[7] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 2, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -72 }), imm: 0 }
+                m.xmm[2] = { let a = m.regs[6].wrapping_add(0xffffff90u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff88u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[2]; m.xmm[2] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[2]; m.xmm[2] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb8u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffacu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -112 }, src: 2 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff90u32); let x = m.xmm[2]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
@@ -28098,7 +28098,7 @@ pub(super) fn f_731ce2b1f7de0ce3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue;
             }
             4 => {
@@ -28107,13 +28107,13 @@ pub(super) fn f_731ce2b1f7de0ce3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 5;
             }
             5 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovHpdStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 2 }
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 2, src: Reg(1), imm: 0 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[2][1]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[2][1] = s[0]; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue;
             }
             6 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 2 }
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 2, src: Reg(1), imm: 0 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[2][0]; m.wr64(a, x)?; }
+                m.xmm[2][0] = m.xmm[1][0];
                 b = 7;
             }
             7 => {
@@ -28136,7 +28136,7 @@ pub(super) fn f_731ce2b1f7de0ce3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             9 => {
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[42] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x0u32))?; m.xmm[0] = [s, 0]; }
                 b = 10;
             }
             10 => {
@@ -28146,31 +28146,31 @@ pub(super) fn f_731ce2b1f7de0ce3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[3])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[2] = f[2] * v; }
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[2])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[49] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(2), imm: 0 }
+                m.xmm[3] = m.xmm[2];
                 f[1] = f[1] + f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[51] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 3, src: Mem(Mem { base: Some(4), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[52] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
+                { let s: [u64; 2] = { let a = m.regs[4].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Gen(ins, nx, at) = &p.ops[53] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 4, src: Reg(3), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[54] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 3, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[55] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[56] { m.exec(ins, *nx, *at)?; } // Sse { op: MinSd, dst: 0, src: Reg(3), imm: 0 }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[3][0]; m.xmm[3][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[0][0]; m.xmm[0][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p < q { p } else { q } }.to_bits(); }
                 { let bv = 0x1u32; let av = m.regs[0]; let r = m.alu(Alu::Sub, av, bv, 4); m.regs[0] = r; }
                 if m.cond(9) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 11;
             }
             11 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[59] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -80 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
                 m.fcompare(f[1], f[0]);
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffacu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 13; continue; }
                 b = 12;
             }
             12 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 b = 13;
             }
             13 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[64] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -32 }, src: 0 }
+                { let a = m.regs[6].wrapping_add(0xffffffe0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
                 m.regs[4] = m.regs[5];
                 { let v = m.pop()?; m.regs[5] = v; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
@@ -28189,27 +28189,27 @@ pub(super) fn f_737c34e38f81a08f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffffacu32))?;
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?;
@@ -28282,27 +28282,27 @@ pub(super) fn f_744b631186296222(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffccu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -28488,27 +28488,27 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffa6u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffff98u32))?;
                 { let bv = 0x1fu32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 { let bv = 0x0u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
@@ -28954,27 +28954,27 @@ pub(super) fn f_76a1e74342587564(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -72 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff90u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff88u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb8u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff94u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -112 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff90u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -29190,27 +29190,27 @@ pub(super) fn f_7724433f6933be63(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -72 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff90u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff88u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb8u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff94u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -112 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff90u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -29874,31 +29874,31 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 { let bv = 0x18u32; let av = m.regs[6]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[6] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 6, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 5, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 2, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 2, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 2, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Reg(2), imm: 0 }
+                m.xmm[6] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x10u32))?; m.xmm[1] = [s, 0]; }
+                m.xmm[3] = m.xmm[0];
+                m.xmm[5][0] = m.xmm[1][0];
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[2] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; m.xmm[5][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[2][0]; m.xmm[2][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[2]; m.xmm[2][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[2][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xfffffff4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 0, src: Reg(0), imm: 1 }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[0]]; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 8 }, src: 5 }
+                { let a = m.regs[6].wrapping_add(0x8u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 m.regs[3] = m.rd32(m.regs[7].wrapping_add(0xffffffecu32))?;
                 if let Op::Call { ret, .. } = &p.ops[30] { m.push(*ret)?; } b = 8; continue;
@@ -29924,13 +29924,13 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 if let Op::Call { ret, .. } = &p.ops[40] { m.push(*ret)?; } b = 8; continue;
             }
             7 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[41] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 8 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[42] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[43] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[44] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[45] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -52 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[46] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[47] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 16 }, src: 1 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x8u32))?; m.xmm[5] = [s, 0]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffccu32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let v = m.pop()?; m.regs[1] = v; }
                 { let v = m.pop()?; m.regs[3] = v; }
                 { let v = m.pop()?; m.regs[7] = v; }
@@ -29955,21 +29955,21 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 11;
             }
             11 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[61] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[62] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[64] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 5, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[65] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[66] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 4, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[67] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[68] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[69] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 0 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[70] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(4), imm: 0 }
+                m.xmm[3] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; m.xmm[5][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[4] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; m.xmm[4][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let a = m.regs[6].wrapping_add(0x0u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Call { ret, .. } = &p.ops[71] { m.push(*ret)?; } b = 27; continue;
             }
             12 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[72] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[73] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x0u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(31) => { b = 3; continue; } Some(36) => { b = 5; continue; } Some(41) => { b = 7; continue; } Some(72) => { b = 12; continue; } Some(89) => { b = 15; continue; } Some(108) => { b = 18; continue; } Some(122) => { b = 21; continue; } Some(139) => { b = 24; continue; } Some(157) => { b = 26; continue; } Some(170) => { b = 30; continue; } Some(178) => { b = 33; continue; } Some(182) => { b = 35; continue; } Some(189) => { b = 39; continue; } Some(193) => { b = 41; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             13 => {
@@ -29978,23 +29978,23 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 14;
             }
             14 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[77] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovHpdStore, dst: Mem { base: Some(6), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[78] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[79] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[80] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[81] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[82] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 5, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[83] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[84] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 4, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[85] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[86] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[87] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(4), imm: 0 }
+                { let a = m.regs[6].wrapping_add(0x0u32); let x = m.xmm[0][1]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                m.xmm[3] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; m.xmm[5][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[4] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; m.xmm[4][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Call { ret, .. } = &p.ops[88] { m.push(*ret)?; } b = 27; continue;
             }
             15 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[89] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Gen(ins, nx, at) = &p.ops[90] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 1, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[91] { m.exec(ins, *nx, *at)?; } // Sse { op: MovHpdLoad, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x0u32))?; m.xmm[0][1] = s; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(31) => { b = 3; continue; } Some(36) => { b = 5; continue; } Some(41) => { b = 7; continue; } Some(72) => { b = 12; continue; } Some(89) => { b = 15; continue; } Some(108) => { b = 18; continue; } Some(122) => { b = 21; continue; } Some(139) => { b = 24; continue; } Some(157) => { b = 26; continue; } Some(170) => { b = 30; continue; } Some(178) => { b = 33; continue; } Some(182) => { b = 35; continue; } Some(189) => { b = 39; continue; } Some(193) => { b = 41; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             16 => {
@@ -30003,25 +30003,25 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 17;
             }
             17 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[95] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[96] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[97] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[98] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[99] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[100] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[101] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 5, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[102] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[103] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 4, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[104] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[105] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[106] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(4), imm: 0 }
+                { let a = m.regs[6].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                m.xmm[3] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; m.xmm[5][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[4] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; m.xmm[4][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Call { ret, .. } = &p.ops[107] { m.push(*ret)?; } b = 27; continue;
             }
             18 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[108] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Gen(ins, nx, at) = &p.ops[109] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 1, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[110] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[111] { m.exec(ins, *nx, *at)?; } // Sse { op: MovLpdLoad, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
+                { let s: [u64; 2] = m.xmm[0]; m.xmm[0][1] = s[0]; }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x0u32))?; m.xmm[0][0] = s; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(31) => { b = 3; continue; } Some(36) => { b = 5; continue; } Some(41) => { b = 7; continue; } Some(72) => { b = 12; continue; } Some(89) => { b = 15; continue; } Some(108) => { b = 18; continue; } Some(122) => { b = 21; continue; } Some(139) => { b = 24; continue; } Some(157) => { b = 26; continue; } Some(170) => { b = 30; continue; } Some(178) => { b = 33; continue; } Some(182) => { b = 35; continue; } Some(189) => { b = 39; continue; } Some(193) => { b = 41; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             19 => {
@@ -30030,20 +30030,20 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 20;
             }
             20 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[115] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[116] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[117] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[118] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[119] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[120] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
+                m.xmm[5] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let a = m.regs[6].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
                 if let Op::Call { ret, .. } = &p.ops[121] { m.push(*ret)?; } b = 27; continue;
             }
             21 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[122] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[123] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[124] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[125] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[126] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                m.xmm[1] = m.xmm[0];
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(31) => { b = 3; continue; } Some(36) => { b = 5; continue; } Some(41) => { b = 7; continue; } Some(72) => { b = 12; continue; } Some(89) => { b = 15; continue; } Some(108) => { b = 18; continue; } Some(122) => { b = 21; continue; } Some(139) => { b = 24; continue; } Some(157) => { b = 26; continue; } Some(170) => { b = 30; continue; } Some(178) => { b = 33; continue; } Some(182) => { b = 35; continue; } Some(189) => { b = 39; continue; } Some(193) => { b = 41; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             22 => {
@@ -30052,46 +30052,46 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 23;
             }
             23 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[130] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovHpdStore, dst: Mem { base: Some(6), index: None, disp: 16 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[131] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[132] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[133] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[134] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[135] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[136] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[137] { m.exec(ins, *nx, *at)?; } // Sse { op: MovHpdLoad, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: 16 }), imm: 0 }
+                { let a = m.regs[6].wrapping_add(0x10u32); let x = m.xmm[0][1]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                m.xmm[5] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let a = m.regs[6].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x10u32))?; m.xmm[0][1] = s; }
                 if let Op::Call { ret, .. } = &p.ops[138] { m.push(*ret)?; } b = 27; continue;
             }
             24 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[139] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[140] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[141] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[142] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[143] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[144] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[145] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(1), imm: 0 }
+                m.xmm[1] = m.xmm[0];
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(31) => { b = 3; continue; } Some(36) => { b = 5; continue; } Some(41) => { b = 7; continue; } Some(72) => { b = 12; continue; } Some(89) => { b = 15; continue; } Some(108) => { b = 18; continue; } Some(122) => { b = 21; continue; } Some(139) => { b = 24; continue; } Some(157) => { b = 26; continue; } Some(170) => { b = 30; continue; } Some(178) => { b = 33; continue; } Some(182) => { b = 35; continue; } Some(189) => { b = 39; continue; } Some(193) => { b = 41; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             25 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[147] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 16 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[148] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[149] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[150] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[151] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[152] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[153] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[154] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[155] { m.exec(ins, *nx, *at)?; } // Sse { op: MovHpdLoad, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: 16 }), imm: 0 }
+                { let a = m.regs[6].wrapping_add(0x10u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[1][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                m.xmm[5] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let a = m.regs[6].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x10u32))?; m.xmm[0][1] = s; }
                 if let Op::Call { ret, .. } = &p.ops[156] { m.push(*ret)?; } b = 27; continue;
             }
             26 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[157] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[158] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[159] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[160] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 1, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[161] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[162] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[163] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(1), imm: 0 }
+                m.xmm[1] = m.xmm[0];
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[1][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(31) => { b = 3; continue; } Some(36) => { b = 5; continue; } Some(41) => { b = 7; continue; } Some(72) => { b = 12; continue; } Some(89) => { b = 15; continue; } Some(108) => { b = 18; continue; } Some(122) => { b = 21; continue; } Some(139) => { b = 24; continue; } Some(157) => { b = 26; continue; } Some(170) => { b = 30; continue; } Some(178) => { b = 33; continue; } Some(182) => { b = 35; continue; } Some(189) => { b = 39; continue; } Some(193) => { b = 41; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             27 => {
@@ -30100,11 +30100,11 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 28;
             }
             28 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[167] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 0, src: Reg(0), imm: 1 }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[0]]; }
                 b = 29;
             }
             29 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[168] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
+                m.xmm[1] = m.xmm[0];
                 if let Op::Call { ret, .. } = &p.ops[169] { m.push(*ret)?; } b = 44; continue;
             }
             30 => {
@@ -30113,14 +30113,14 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 31;
             }
             31 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[172] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(1), imm: 0 }
+                m.xmm[3] = m.xmm[1];
                 { let bv = 0x4u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 39; continue; }
                 b = 32;
             }
             32 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[175] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 4, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[176] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
+                m.xmm[4] = m.xmm[0];
+                m.xmm[1] = m.xmm[0];
                 if let Op::Call { ret, .. } = &p.ops[177] { m.push(*ret)?; } b = 44; continue;
             }
             33 => {
@@ -30129,7 +30129,7 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 34;
             }
             34 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[180] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
+                m.xmm[1] = m.xmm[0];
                 if let Op::Call { ret, .. } = &p.ops[181] { m.push(*ret)?; } b = 44; continue;
             }
             35 => {
@@ -30146,7 +30146,7 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 38;
             }
             38 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[187] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(4), imm: 0 }
+                m.xmm[1] = m.xmm[4];
                 if let Op::Call { ret, .. } = &p.ops[188] { m.push(*ret)?; } b = 44; continue;
             }
             39 => {
@@ -30155,7 +30155,7 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 40;
             }
             40 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[191] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(3), imm: 0 }
+                m.xmm[1] = m.xmm[3];
                 if let Op::Call { ret, .. } = &p.ops[192] { m.push(*ret)?; } b = 44; continue;
             }
             41 => {
@@ -30164,7 +30164,7 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 42;
             }
             42 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[195] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 0, src: Reg(0), imm: 1 }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[0]]; }
                 b = 43;
             }
             43 => {
@@ -30172,10 +30172,10 @@ pub(super) fn f_7a40fec6e4674f50(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             44 => {
                 if let Op::Gen(ins, nx, at) = &p.ops[197] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 2, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[198] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[199] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 2, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[200] { m.exec(ins, *nx, *at)?; } // Sse { op: Xor, dst: 0, src: Reg(6), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[201] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(2), imm: 0 }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[2]; m.xmm[2] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[6]; let a = m.xmm[0]; m.xmm[0] = [a[0] ^ s[0], a[1] ^ s[1]]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(31) => { b = 3; continue; } Some(36) => { b = 5; continue; } Some(41) => { b = 7; continue; } Some(72) => { b = 12; continue; } Some(89) => { b = 15; continue; } Some(108) => { b = 18; continue; } Some(122) => { b = 21; continue; } Some(139) => { b = 24; continue; } Some(157) => { b = 26; continue; } Some(170) => { b = 30; continue; } Some(178) => { b = 33; continue; } Some(182) => { b = 35; continue; } Some(189) => { b = 39; continue; } Some(193) => { b = 41; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             _ => return Err(unsup(0, "bad block".into())),
@@ -30640,27 +30640,27 @@ pub(super) fn f_7f401f1fca97428b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffc4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -30855,27 +30855,27 @@ pub(super) fn f_80c7c458bee44a90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffb0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 
                 
@@ -31004,22 +31004,22 @@ pub(super) fn f_81da671ec8d37132(m: &mut Machine, p: &Prog, max_steps: u64) -> R
     loop {
         match b {
             0 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[0] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -80 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffb0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffc0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
@@ -31029,8 +31029,8 @@ pub(super) fn f_81da671ec8d37132(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             3 => {
                 { let bv = 0xffffffe8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffa4u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x10u32))?; f[0] = f[0] * v; }
                 m.exec_op(&p.ops[20], &mut f)?; // FSincos { src: 0, dst: 1 }
@@ -31046,32 +31046,32 @@ pub(super) fn f_81da671ec8d37132(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] * f[2];
                 f[0] = f[1] - f[0];
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(4), index: None, disp: 0 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[4].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
                 { let bv = 0x18u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 b = 4;
             }
             4 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[35] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 3, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[37] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 3, src: Mem(Mem { base: Some(7), index: None, disp: -88 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[39] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[40] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[41] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 0, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[42] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[43] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[44] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 1, src: Reg(0), imm: 0 }
+                m.xmm[3][0] = m.xmm[1][0];
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [a[0] & s[0], a[1] & s[1]]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[1]; m.xmm[1] = [a[0] & s[0], a[1] & s[1]]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffa8u32))?; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xfffffff0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[1][0]; m.xmm[1][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[1][0]; m.xmm[1][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
             5 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[47] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 b = 6;
             }
             6 => {
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffff9cu32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[49] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -32 }, src: 1 }
+                { let a = m.regs[6].wrapping_add(0xffffffe0u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x3u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 f[0] = m.rdf64((m.regs[6].wrapping_add(0xffffff80u32)).wrapping_add(m.regs[0].wrapping_mul(8)))?;
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffff94u32))?; f[0] = f[0] * v; }
@@ -31154,27 +31154,27 @@ pub(super) fn f_827fc814703ee437(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0xffffffccu32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -31832,27 +31832,27 @@ pub(super) fn f_84835daba033d91f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -32221,27 +32221,27 @@ pub(super) fn f_857d56de27b2f9d7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -32728,27 +32728,27 @@ pub(super) fn f_85d0642781938c8d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x1u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -33610,27 +33610,27 @@ pub(super) fn f_8713cb10fb46f160(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffc4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -35658,27 +35658,27 @@ pub(super) fn f_8e4e8be2b0066d00(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffb0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -36448,14 +36448,14 @@ pub(super) fn f_8ff930dbacf31149(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             1 => {
                 { let a = m.regs[6].wrapping_add(0x50u32); let v = m.rd32(a)?; let cf = m.cf; let r = m.alu(Alu::Add, v, 1, 4); m.cf = cf; m.wr32(a, r)?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: Xor, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: Xor, dst: 1, src: Reg(1), imm: 0 }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[0] ^ s[0], a[1] ^ s[1]]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [a[0] ^ s[0], a[1] ^ s[1]]; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue;
             }
             2 => {
                 { let bv = 0x80u32; let av = m.regs[6]; let r = m.alu(Alu::Sub, av, bv, 4); m.regs[6] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(5), index: None, disp: -56 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(5), index: None, disp: -72 }, src: 1 }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[5].wrapping_add(0xffffffb8u32); let x = m.xmm[1]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[0] = f[0] * f[0];
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
@@ -36549,8 +36549,8 @@ pub(super) fn f_8ff930dbacf31149(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[1] = f[1] + v; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
                 f[0] = f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[113] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(3), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[114] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[3].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                m.xmm[1] = { let a = m.regs[1].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?; f[0] = f[0] * v; }
@@ -39489,56 +39489,56 @@ pub(super) fn f_9f3abcd9e3fc675a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
     loop {
         match b {
             0 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[0] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff9cu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Mem(Mem { base: Some(7), index: None, disp: -96 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: -80 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 2, src: Mem(Mem { base: Some(7), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 2, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 1, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 3, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[29] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 4, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[30] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 4, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 1, src: Reg(4), imm: 0 }
+                m.xmm[3] = { let a = m.regs[7].wrapping_add(0xffffffa0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb0u32))?; m.xmm[4] = [s, 0]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[1][0]; m.xmm[1][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffff88u32))?; m.xmm[2] = [s, 0]; }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[2][0]; m.xmm[2][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xfffffff0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[2][0]; let a = m.xmm[1][0]; m.xmm[1][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[3]; m.xmm[3] = [a[0] & s[0], a[1] & s[1]]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[4]; m.xmm[4] = [a[0] & s[0], a[1] & s[1]]; }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[4][0]; m.xmm[4][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [a[1], s[1]]; }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[4][0]; m.xmm[4][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff9cu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[35] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 b = 4;
             }
             4 => {
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffff98u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[37] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -32 }, src: 1 }
+                { let a = m.regs[6].wrapping_add(0xffffffe0u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x3u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 f[0] = m.rdf64((m.regs[6].wrapping_add(0xffffff80u32)).wrapping_add(m.regs[0].wrapping_mul(8)))?;
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffff90u32))?; f[0] = f[0] * v; }
@@ -39560,27 +39560,27 @@ pub(super) fn f_9fbb38a21e3674ad(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
@@ -40259,27 +40259,27 @@ pub(super) fn f_a17f8ba9b9d3f95f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = 0x0u32;
                 { let a = m.regs[4].wrapping_add(0x1cu32); m.wr32(a, m.regs[2])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -42335,27 +42335,27 @@ pub(super) fn f_aba24ce0b8f5885d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffffacu32))?;
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
@@ -43111,27 +43111,27 @@ pub(super) fn f_afc7526b3b5df48b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = f[0] * f[0];
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -43985,52 +43985,52 @@ pub(super) fn f_b465984b31c92b84(m: &mut Machine, p: &Prog, max_steps: u64) -> R
     loop {
         match b {
             0 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[0] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -80 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: Xor, dst: 4, src: Reg(4), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffb0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffc0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[4]; m.xmm[4] = [a[0] ^ s[0], a[1] ^ s[1]]; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff9cu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -96 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -96 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxPd, dst: 0, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 1, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 0, src: Reg(0), imm: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -96 }), imm: 0 }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [a[0] & s[0], a[1] & s[1]]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[1]; m.xmm[1] = [a[0] & s[0], a[1] & s[1]]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xfffffff0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffa0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffa0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[0]; m.xmm[0] = [{ let (p, q) = (f64::from_bits(a[0]), f64::from_bits(s[0])); if p > q { p } else { q } }.to_bits(), { let (p, q) = (f64::from_bits(a[1]), f64::from_bits(s[1])); if p > q { p } else { q } }.to_bits()]; }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[1][0]; m.xmm[1][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[0]]; }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[1][0]; m.xmm[1][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffa0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff9cu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 b = 4;
             }
             4 => {
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffff98u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -32 }, src: 1 }
+                { let a = m.regs[6].wrapping_add(0xffffffe0u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x3u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 f[0] = m.rdf64((m.regs[6].wrapping_add(0xffffff80u32)).wrapping_add(m.regs[0].wrapping_mul(8)))?;
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffff90u32))?; f[0] = f[0] * v; }
@@ -45808,27 +45808,27 @@ pub(super) fn f_be2af6ca70ee34ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
@@ -46520,27 +46520,27 @@ pub(super) fn f_c0dcddf31e72bec8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -46812,27 +46812,27 @@ pub(super) fn f_c2c95d1d71e3f677(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -48493,57 +48493,57 @@ pub(super) fn f_ca35300610e09d04(m: &mut Machine, p: &Prog, max_steps: u64) -> R
     loop {
         match b {
             0 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[0] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -72 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff90u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff88u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb8u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -112 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff90u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 4, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
+                m.xmm[4] = m.xmm[1];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[1]; m.xmm[1] = [a[0] & s[0], a[1] & s[1]]; }
                 if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 2, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Sse { op: MinSd, dst: 3, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: -88 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 2, src: Mem(Mem { base: Some(7), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 3, src: Mem(Mem { base: Some(7), index: None, disp: -80 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 2, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 2, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[29] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 0, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[30] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 2, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 0, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // Sse { op: MaxSd, dst: 0, src: Reg(1), imm: 0 }
+                m.xmm[3] = m.xmm[1];
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[2][0]; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[3][0]; m.xmm[3][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p < q { p } else { q } }.to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffa8u32))?; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffff90u32))?; m.xmm[2] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb0u32))?; let a = m.xmm[3][0]; m.xmm[3][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[2][0]; m.xmm[2][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xfffffff0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[2][0]; m.xmm[2][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[2][0]; m.xmm[2][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[2][0]; let a = m.xmm[0][0]; m.xmm[0][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[0][0]; m.xmm[0][0] = { let (p, q) = (f64::from_bits(a), f64::from_bits(s)); if p > q { p } else { q } }.to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 b = 4;
             }
             4 => {
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffa0u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -32 }, src: 0 }
+                { let a = m.regs[6].wrapping_add(0xffffffe0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
                 { let bv = 0x3u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 f[0] = m.rdf64((m.regs[6].wrapping_add(0xffffff80u32)).wrapping_add(m.regs[0].wrapping_mul(8)))?;
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffff98u32))?; f[0] = f[0] * v; }
@@ -48846,27 +48846,27 @@ pub(super) fn f_cb020d7c1a106e2b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0xffffffc4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -49347,27 +49347,27 @@ pub(super) fn f_d004a1690fd068a2(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffdau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = f[0] * f[0];
@@ -49857,27 +49857,27 @@ pub(super) fn f_d1501a6baf7b8475(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -72 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff90u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff88u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb8u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff94u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -112 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff90u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = 0x2u32;
                 b = 3;
             }
@@ -50084,27 +50084,27 @@ pub(super) fn f_d2b8522c28aec906(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -72 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff90u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff88u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffd0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffb8u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffff90u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -112 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff90u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -51186,27 +51186,27 @@ pub(super) fn f_d54901684b942437(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffc4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -51349,27 +51349,27 @@ pub(super) fn f_d585070180966e37(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffb0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
@@ -51957,30 +51957,30 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[3]; m.push(v)?; }
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[7] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 6, src: Mem(Mem { base: Some(7), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(0), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 5, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 2, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 1, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 2, src: Reg(1), imm: 0 }
+                m.xmm[6] = { let a = m.regs[7].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                m.xmm[0] = { let a = m.regs[0].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; m.xmm[5] = [s, 0]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[0][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[2] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; m.xmm[1][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[2][0]; m.xmm[2][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xfffffff4u32))?;
                 { let bv = 0x4u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 3, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(5), imm: 0 }
+                m.xmm[3][0] = m.xmm[5][0];
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 { let bv = 0x8u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(5), imm: 0 }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 { let bv = 0xau32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 3;
@@ -51994,7 +51994,7 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 5;
             }
             5 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[30] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(3), imm: 0 }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 b = 6;
             }
             6 => {
@@ -52003,16 +52003,16 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 7;
             }
             7 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(1), imm: 0 }
+                { let s: u64 = m.xmm[1][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 b = 8;
             }
             8 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[34] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 2, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[35] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(0), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[37] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(0), index: None, disp: 8 }, src: 5 }
-                if let Op::Gen(ins, nx, at) = &p.ops[39] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Reg(2), imm: 0 }
+                { let s: [u64; 2] = m.xmm[2]; m.xmm[2][1] = s[0]; }
+                m.xmm[0] = { let a = m.regs[0].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let a = m.regs[0].wrapping_add(0x8u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
+                { let s: u64 = m.xmm[2][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 m.regs[3] = m.rd32(m.regs[7].wrapping_add(0xffffffecu32))?;
                 if let Op::Call { ret, .. } = &p.ops[42] { m.push(*ret)?; } b = 14; continue;
@@ -52039,16 +52039,16 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             13 => {
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[54] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(0), index: None, disp: 8 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[55] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Mem(Mem { base: Some(6), index: None, disp: 24 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[56] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[57] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[58] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[59] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -52 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[60] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[61] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: 40 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[62] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(0), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 1 }
+                { let s: u64 = m.rd64(m.regs[0].wrapping_add(0x8u32))?; m.xmm[5] = [s, 0]; }
+                m.xmm[3] = { let a = m.regs[6].wrapping_add(0x18u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffccu32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x28u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[0].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let v = m.pop()?; m.regs[3] = v; }
                 { let v = m.pop()?; m.regs[7] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
@@ -52077,20 +52077,20 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 18;
             }
             18 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[78] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[79] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[80] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[81] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[82] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[83] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
+                m.xmm[5] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
                 if let Op::Call { ret, .. } = &p.ops[84] { m.push(*ret)?; } b = 33; continue;
             }
             19 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[85] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[86] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 0, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[87] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[88] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[89] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                m.xmm[1] = m.xmm[0];
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(43) => { b = 9; continue; } Some(48) => { b = 11; continue; } Some(53) => { b = 13; continue; } Some(85) => { b = 19; continue; } Some(102) => { b = 22; continue; } Some(120) => { b = 24; continue; } Some(141) => { b = 27; continue; } Some(158) => { b = 30; continue; } Some(175) => { b = 32; continue; } Some(185) => { b = 36; continue; } Some(193) => { b = 39; continue; } Some(197) => { b = 41; continue; } Some(204) => { b = 45; continue; } Some(208) => { b = 47; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             20 => {
@@ -52099,46 +52099,46 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 21;
             }
             21 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[93] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovHpdStore, dst: Mem { base: Some(0), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[94] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[95] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[96] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[97] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[98] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[99] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[100] { m.exec(ins, *nx, *at)?; } // Sse { op: MovHpdLoad, dst: 0, src: Mem(Mem { base: Some(0), index: None, disp: 0 }), imm: 0 }
+                { let a = m.regs[0].wrapping_add(0x0u32); let x = m.xmm[0][1]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                m.xmm[5] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: u64 = m.rd64(m.regs[0].wrapping_add(0x0u32))?; m.xmm[0][1] = s; }
                 if let Op::Call { ret, .. } = &p.ops[101] { m.push(*ret)?; } b = 33; continue;
             }
             22 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[102] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[103] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 0, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[104] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[105] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[106] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[107] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[108] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(1), imm: 0 }
+                m.xmm[1] = m.xmm[0];
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; let a = m.xmm[0][0]; m.xmm[0][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[0]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(43) => { b = 9; continue; } Some(48) => { b = 11; continue; } Some(53) => { b = 13; continue; } Some(85) => { b = 19; continue; } Some(102) => { b = 22; continue; } Some(120) => { b = 24; continue; } Some(141) => { b = 27; continue; } Some(158) => { b = 30; continue; } Some(175) => { b = 32; continue; } Some(185) => { b = 36; continue; } Some(193) => { b = 39; continue; } Some(197) => { b = 41; continue; } Some(204) => { b = 45; continue; } Some(208) => { b = 47; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             23 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[110] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(0), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[111] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[112] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[113] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[114] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[115] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[116] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[117] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[118] { m.exec(ins, *nx, *at)?; } // Sse { op: MovHpdLoad, dst: 0, src: Mem(Mem { base: Some(0), index: None, disp: 0 }), imm: 0 }
+                { let a = m.regs[0].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[1][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                m.xmm[5] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[0][0]; m.xmm[0][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: u64 = m.rd64(m.regs[0].wrapping_add(0x0u32))?; m.xmm[0][1] = s; }
                 if let Op::Call { ret, .. } = &p.ops[119] { m.push(*ret)?; } b = 33; continue;
             }
             24 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[120] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[121] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 1, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[122] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 1, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[123] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 1, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[124] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[125] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[126] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 1, src: Reg(1), imm: 0 }
+                m.xmm[1] = m.xmm[0];
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[1][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[1]; m.xmm[1] = [a[1], s[1]]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(43) => { b = 9; continue; } Some(48) => { b = 11; continue; } Some(53) => { b = 13; continue; } Some(85) => { b = 19; continue; } Some(102) => { b = 22; continue; } Some(120) => { b = 24; continue; } Some(141) => { b = 27; continue; } Some(158) => { b = 30; continue; } Some(175) => { b = 32; continue; } Some(185) => { b = 36; continue; } Some(193) => { b = 39; continue; } Some(197) => { b = 41; continue; } Some(204) => { b = 45; continue; } Some(208) => { b = 47; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             25 => {
@@ -52147,21 +52147,21 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 26;
             }
             26 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[130] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[131] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[132] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[133] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 5, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[134] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[135] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 4, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[136] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[137] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[138] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[139] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(4), imm: 0 }
+                m.xmm[3] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; m.xmm[5][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[4] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; m.xmm[4][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Call { ret, .. } = &p.ops[140] { m.push(*ret)?; } b = 33; continue;
             }
             27 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[141] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[142] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(43) => { b = 9; continue; } Some(48) => { b = 11; continue; } Some(53) => { b = 13; continue; } Some(85) => { b = 19; continue; } Some(102) => { b = 22; continue; } Some(120) => { b = 24; continue; } Some(141) => { b = 27; continue; } Some(158) => { b = 30; continue; } Some(175) => { b = 32; continue; } Some(185) => { b = 36; continue; } Some(193) => { b = 39; continue; } Some(197) => { b = 41; continue; } Some(204) => { b = 45; continue; } Some(208) => { b = 47; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             28 => {
@@ -52170,45 +52170,45 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 29;
             }
             29 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[146] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovHpdStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[147] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[148] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[149] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[150] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[151] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 5, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[152] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[153] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 4, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[154] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[155] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[156] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(4), imm: 0 }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[0][1]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                m.xmm[3] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; m.xmm[5][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[4] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; m.xmm[4][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Call { ret, .. } = &p.ops[157] { m.push(*ret)?; } b = 33; continue;
             }
             30 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[158] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Gen(ins, nx, at) = &p.ops[159] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 1, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[160] { m.exec(ins, *nx, *at)?; } // Sse { op: MovHpdLoad, dst: 0, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; m.xmm[0][1] = s; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(43) => { b = 9; continue; } Some(48) => { b = 11; continue; } Some(53) => { b = 13; continue; } Some(85) => { b = 19; continue; } Some(102) => { b = 22; continue; } Some(120) => { b = 24; continue; } Some(141) => { b = 27; continue; } Some(158) => { b = 30; continue; } Some(175) => { b = 32; continue; } Some(185) => { b = 36; continue; } Some(193) => { b = 39; continue; } Some(197) => { b = 41; continue; } Some(204) => { b = 45; continue; } Some(208) => { b = 47; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             31 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[162] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[163] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckHpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[164] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[165] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[166] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[167] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 3, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[168] { m.exec(ins, *nx, *at)?; } // Sse { op: SqrtSd, dst: 5, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[169] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 4, src: Mem(Mem { base: Some(7), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[170] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 4, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[171] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[172] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 5, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[173] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(4), imm: 0 }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[0][0]; m.wr64(a, x)?; }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[1]]; }
+                { let s: [u64; 2] = m.xmm[1]; m.xmm[0][1] = s[0]; }
+                m.xmm[3] = m.xmm[0];
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[3]; m.xmm[3] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; m.xmm[5][0] = f64::from_bits(s).sqrt().to_bits(); }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0x10u32))?; m.xmm[4] = [s, 0]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = m.xmm[4]; m.xmm[4][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[5]; m.xmm[5][1] = s[0]; }
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Call { ret, .. } = &p.ops[174] { m.push(*ret)?; } b = 33; continue;
             }
             32 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[175] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(5), imm: 0 }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
                 if let Op::Gen(ins, nx, at) = &p.ops[176] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 1, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[177] { m.exec(ins, *nx, *at)?; } // Sse { op: UnpckLpd, dst: 0, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[178] { m.exec(ins, *nx, *at)?; } // Sse { op: MovLpdLoad, dst: 0, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
+                { let s: [u64; 2] = m.xmm[0]; m.xmm[0][1] = s[0]; }
+                { let s: u64 = m.rd64(m.regs[1].wrapping_add(0x0u32))?; m.xmm[0][0] = s; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(43) => { b = 9; continue; } Some(48) => { b = 11; continue; } Some(53) => { b = 13; continue; } Some(85) => { b = 19; continue; } Some(102) => { b = 22; continue; } Some(120) => { b = 24; continue; } Some(141) => { b = 27; continue; } Some(158) => { b = 30; continue; } Some(175) => { b = 32; continue; } Some(185) => { b = 36; continue; } Some(193) => { b = 39; continue; } Some(197) => { b = 41; continue; } Some(204) => { b = 45; continue; } Some(208) => { b = 47; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             33 => {
@@ -52217,11 +52217,11 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 34;
             }
             34 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[182] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 0, src: Reg(0), imm: 1 }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[0]]; }
                 b = 35;
             }
             35 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[183] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
+                m.xmm[1] = m.xmm[0];
                 if let Op::Call { ret, .. } = &p.ops[184] { m.push(*ret)?; } b = 50; continue;
             }
             36 => {
@@ -52230,14 +52230,14 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 37;
             }
             37 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[187] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Reg(1), imm: 0 }
+                m.xmm[3] = m.xmm[1];
                 { let bv = 0x4u32; let av = m.regs[2]; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 45; continue; }
                 b = 38;
             }
             38 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[190] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 4, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[191] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
+                m.xmm[4] = m.xmm[0];
+                m.xmm[1] = m.xmm[0];
                 if let Op::Call { ret, .. } = &p.ops[192] { m.push(*ret)?; } b = 50; continue;
             }
             39 => {
@@ -52246,7 +52246,7 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 40;
             }
             40 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[195] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(0), imm: 0 }
+                m.xmm[1] = m.xmm[0];
                 if let Op::Call { ret, .. } = &p.ops[196] { m.push(*ret)?; } b = 50; continue;
             }
             41 => {
@@ -52263,7 +52263,7 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 44;
             }
             44 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[202] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(4), imm: 0 }
+                m.xmm[1] = m.xmm[4];
                 if let Op::Call { ret, .. } = &p.ops[203] { m.push(*ret)?; } b = 50; continue;
             }
             45 => {
@@ -52272,7 +52272,7 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 46;
             }
             46 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[206] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 1, src: Reg(3), imm: 0 }
+                m.xmm[1] = m.xmm[3];
                 if let Op::Call { ret, .. } = &p.ops[207] { m.push(*ret)?; } b = 50; continue;
             }
             47 => {
@@ -52281,7 +52281,7 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 48;
             }
             48 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[210] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 0, src: Reg(0), imm: 1 }
+                { let s: [u64; 2] = m.xmm[0]; let a = m.xmm[0]; m.xmm[0] = [a[1], s[0]]; }
                 b = 49;
             }
             49 => {
@@ -52289,10 +52289,10 @@ pub(super) fn f_d6d64c6228ce1b9c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             50 => {
                 if let Op::Gen(ins, nx, at) = &p.ops[212] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 2, src: Reg(0), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[213] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[214] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 2, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[215] { m.exec(ins, *nx, *at)?; } // Sse { op: Xor, dst: 0, src: Reg(6), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[216] { m.exec(ins, *nx, *at)?; } // Sse { op: HAddPd, dst: 0, src: Reg(2), imm: 0 }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[1]; let a = m.xmm[2]; m.xmm[2] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[6]; let a = m.xmm[0]; m.xmm[0] = [a[0] ^ s[0], a[1] ^ s[1]]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(a[1])).to_bits(), (f64::from_bits(s[0]) + f64::from_bits(s[1])).to_bits()]; }
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(43) => { b = 9; continue; } Some(48) => { b = 11; continue; } Some(53) => { b = 13; continue; } Some(85) => { b = 19; continue; } Some(102) => { b = 22; continue; } Some(120) => { b = 24; continue; } Some(141) => { b = 27; continue; } Some(158) => { b = 30; continue; } Some(175) => { b = 32; continue; } Some(185) => { b = 36; continue; } Some(193) => { b = 39; continue; } Some(197) => { b = 41; continue; } Some(204) => { b = 45; continue; } Some(208) => { b = 47; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
             _ => return Err(unsup(0, "bad block".into())),
@@ -52355,27 +52355,27 @@ pub(super) fn f_d8b70249414a637a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffb0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -52948,27 +52948,27 @@ pub(super) fn f_da4d7ed6aa1a21a0(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -53277,27 +53277,27 @@ pub(super) fn f_dbf3f2529d716fba(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffdau32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -53875,27 +53875,27 @@ pub(super) fn f_de14c307bf8b1b6d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = f[0] * f[0];
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -55811,27 +55811,27 @@ pub(super) fn f_e174b9fc466fd4d8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffffacu32))?;
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
@@ -57804,50 +57804,50 @@ pub(super) fn f_e537e77efcce6421(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[3]; m.push(v)?; }
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[3] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 2, src: Mem(Mem { base: Some(0), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[7] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 3, src: Mem(Mem { base: Some(1), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[8] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 2, src: Mem(Mem { base: Some(3), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: And, dst: 3, src: Mem(Mem { base: Some(3), index: None, disp: 0 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(3), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(3), index: None, disp: -48 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 7, src: Mem(Mem { base: Some(3), index: None, disp: -40 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Sse { op: SubPd, dst: 0, src: Reg(2), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Sse { op: SubSd, dst: 1, src: Reg(3), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 4, src: Reg(0), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Reg(1), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 4, src: Reg(4), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[18] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Reg(5), imm: 0 }
+                m.xmm[2] = { let a = m.regs[0].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                m.xmm[3] = { let a = m.regs[1].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: [u64; 2] = { let a = m.regs[3].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[2]; m.xmm[2] = [a[0] & s[0], a[1] & s[1]]; }
+                { let s: [u64; 2] = { let a = m.regs[3].wrapping_add(0x0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[3]; m.xmm[3] = [a[0] & s[0], a[1] & s[1]]; }
+                m.xmm[0] = { let a = m.regs[3].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[3].wrapping_add(0xffffffd0u32))?; m.xmm[1] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[3].wrapping_add(0xffffffd8u32))?; m.xmm[7] = [s, 0]; }
+                { let s: [u64; 2] = m.xmm[2]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) - f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) - f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[3][0]; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) - f64::from_bits(s)).to_bits(); }
+                m.xmm[4] = m.xmm[0];
+                m.xmm[5] = m.xmm[1];
+                { let s: [u64; 2] = m.xmm[4]; let a = m.xmm[4]; m.xmm[4] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
                 if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // Sse { op: Pshufd, dst: 6, src: Reg(4), imm: 78 }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 4, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 4, src: Reg(6), imm: 0 }
+                { let s: u64 = m.xmm[5][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let s: u64 = m.xmm[6][0]; let a = m.xmm[4][0]; m.xmm[4][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Sse { op: UComiSd, dst: 4, src: Mem(Mem { base: Some(3), index: None, disp: -32 }), imm: 0 }
                 if m.cond(3) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 7, src: Mem(Mem { base: Some(3), index: None, disp: -24 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[3].wrapping_add(0xffffffe8u32))?; m.xmm[7] = [s, 0]; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
             2 => {
                 if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Sse { op: UComiSd, dst: 4, src: Mem(Mem { base: Some(3), index: None, disp: 16 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 7, src: Mem(Mem { base: Some(3), index: None, disp: -16 }), imm: 0 }
+                { let s: u64 = m.rd64(m.regs[3].wrapping_add(0xfffffff0u32))?; m.xmm[7] = [s, 0]; }
                 if m.cond(3) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[29] { m.exec(ins, *nx, *at)?; } // Sse { op: DivSd, dst: 7, src: Reg(4), imm: 0 }
+                { let s: u64 = m.xmm[4][0]; let a = m.xmm[7][0]; m.xmm[7][0] = (f64::from_bits(a) / f64::from_bits(s)).to_bits(); }
                 b = 4;
             }
             4 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[30] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 7, src: Reg(7), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 24 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Sse { op: ShufPd, dst: 1, src: Reg(3), imm: 2 }
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Reg(7), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[34] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 1, src: Reg(7), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[35] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Reg(5), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: 40 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[37] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(0), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(1), index: None, disp: 0 }, src: 1 }
+                { let s: [u64; 2] = m.xmm[7]; let a = m.xmm[7]; m.xmm[7] = [a[0], s[0]]; }
+                m.xmm[5] = { let a = m.regs[6].wrapping_add(0x18u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: [u64; 2] = m.xmm[3]; let a = m.xmm[1]; m.xmm[1] = [a[0], s[1]]; }
+                { let s: [u64; 2] = m.xmm[7]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[7]; let a = m.xmm[1]; m.xmm[1] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: [u64; 2] = m.xmm[5]; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x28u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[0].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[1].wrapping_add(0x0u32); let x = m.xmm[1]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 { let v = m.pop()?; m.regs[3] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -58582,27 +58582,27 @@ pub(super) fn f_e82b27bfb496fde9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = f64::from_bits(0x0);
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
@@ -58912,27 +58912,27 @@ pub(super) fn f_ea26a7236e3f70b3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffe4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 m.regs[2] = m.rd32(m.regs[7].wrapping_add(0xffffffacu32))?;
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
@@ -59422,27 +59422,27 @@ pub(super) fn f_ed24077aa644cd15(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd4u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 
                 { let bv = 0xffffffd4u32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -59559,27 +59559,27 @@ pub(super) fn f_ed3aff44c27b1a75(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffbeu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
@@ -59748,27 +59748,27 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffb0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -60376,27 +60376,27 @@ pub(super) fn f_f0b104a05b743bd3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?; f[0] = f[0] * v; }
                 m.exec_op(&p.ops[18], &mut f)?; // FSincos { src: 0, dst: 1 }
@@ -62330,27 +62330,27 @@ pub(super) fn f_fd36b304692cf4cb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffd8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0x20u32))?;
@@ -62585,27 +62585,27 @@ pub(super) fn f_ff7c406ca39237b1(m: &mut Machine, p: &Prog, max_steps: u64) -> R
         match b {
             0 => {
                 { let bv = 0xffffffceu32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[1] { m.exec(ins, *nx, *at)?; } // Sse { op: MovU, dst: 0, src: Mem(Mem { base: Some(6), index: None, disp: -120 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[2] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 1, src: Mem(Mem { base: Some(6), index: None, disp: -104 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[3] { m.exec(ins, *nx, *at)?; } // Sse { op: MulPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[4] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[5] { m.exec(ins, *nx, *at)?; } // Sse { op: AddPd, dst: 0, src: Mem(Mem { base: Some(7), index: None, disp: -64 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Sse { op: AddSd, dst: 1, src: Mem(Mem { base: Some(7), index: None, disp: -48 }), imm: 0 }
+                m.xmm[0] = { let a = m.regs[6].wrapping_add(0xffffff88u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0xffffff98u32))?; m.xmm[1] = [s, 0]; }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffe0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) * f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) * f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let s: [u64; 2] = { let a = m.regs[7].wrapping_add(0xffffffc0u32); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }; let a = m.xmm[0]; m.xmm[0] = [(f64::from_bits(a[0]) + f64::from_bits(s[0])).to_bits(), (f64::from_bits(a[1]) + f64::from_bits(s[1])).to_bits()]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffd0u32))?; let a = m.xmm[1][0]; m.xmm[1][0] = (f64::from_bits(a) + f64::from_bits(s)).to_bits(); }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffb4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[9] { m.exec(ins, *nx, *at)?; } // Sse { op: MovSdLoad, dst: 5, src: Mem(Mem { base: Some(6), index: None, disp: 112 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Sse { op: MulSd, dst: 5, src: Mem(Mem { base: Some(7), index: None, disp: -32 }), imm: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(6), index: None, disp: -120 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[12] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: -104 }, src: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(6), index: None, disp: 112 }, src: 5 }
+                { let s: u64 = m.rd64(m.regs[6].wrapping_add(0x70u32))?; m.xmm[5] = [s, 0]; }
+                { let s: u64 = m.rd64(m.regs[7].wrapping_add(0xffffffe0u32))?; let a = m.xmm[5][0]; m.xmm[5][0] = (f64::from_bits(a) * f64::from_bits(s)).to_bits(); }
+                { let a = m.regs[6].wrapping_add(0xffffff88u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[6].wrapping_add(0xffffff98u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
+                { let a = m.regs[6].wrapping_add(0x70u32); let x = m.xmm[5][0]; m.wr64(a, x)?; }
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovStore, dst: Mem { base: Some(4), index: None, disp: 0 }, src: 0 }
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // SseStore { op: MovSdStore, dst: Mem { base: Some(4), index: None, disp: 16 }, src: 1 }
+                { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
+                { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }

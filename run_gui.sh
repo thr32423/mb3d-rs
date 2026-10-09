@@ -11,6 +11,12 @@ else
     cargo build --release || exit 1
     mb3d=./target/release/mb3d
 fi
+# an editor that is still running would answer instead of this one
+if curl -s -o /dev/null "http://127.0.0.1:$PORT/"; then
+    echo "Another mb3d gui is already running on port $PORT (stop it first, e.g. pkill -f 'mb3d gui'," >&2
+    echo "or start this one on another port: PORT=8081 $0)." >&2
+    exit 1
+fi
 "$mb3d" gui --port "$PORT" "$@" &
 pid=$!
 trap 'kill $pid 2>/dev/null' INT TERM

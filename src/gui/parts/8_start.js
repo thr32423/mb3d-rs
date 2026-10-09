@@ -23,10 +23,12 @@ async function loadFormulas() {
       poll();
       return;
     }
-    for (const id of store.get("open", [])) if (WINDOWS[id]) openWin(id);
+    // the Navigator is its own browser window: it is not reopened inside the page
+    for (const id of store.get("open", [])) if (WINDOWS[id] && id !== "navi") openWin(id);
     await sendView(true);
     api("/api/mapseq").then(m => { mapseq = m; $("frame").value = m.frame; }).catch(() => {});
-    msg("mb3d-rs editor. Open parameters (top left), edit them in the Formulas, Lighting and Post processing windows, and press \"Calculate 3D\".", "n");
+    const st0 = await api("/api/state");
+    msg(`mb3d-rs ${st0.version || "?"} editor. Open parameters (top left), edit them in the Formulas, Lighting and Post processing windows, and press \"Calculate 3D\".", "n");
   } catch (e) { showError(e); }
   poll();
 })();

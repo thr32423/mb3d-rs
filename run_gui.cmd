@@ -6,6 +6,14 @@ rem the port can be changed with: set PORT=8081 ^& run_gui.cmd
 setlocal
 cd /d "%~dp0"
 if "%PORT%"=="" set PORT=8080
+if not "%~1"==":open" (
+  curl -s -o nul "http://127.0.0.1:%PORT%/" && (
+    echo Another mb3d gui is already running on port %PORT%: close its window first,
+    echo or start this one on another port: set PORT=8081 ^& run_gui.cmd
+    pause
+    exit /b 1
+  )
+)
 if "%~1"==":open" goto open
 start "" /b cmd /c ""%~f0" :open"
 mb3d.exe gui --port %PORT% %*

@@ -54,7 +54,10 @@ function closeWin(id) {
 const isOpen = id => openWins.has(id);
 function popOut(id) {
   const def = WINDOWS[id];
-  const sz = store.get("pop." + id, { w: Math.min(screen.availWidth - 40, def.width + 24), h: Math.min(screen.availHeight - 80, id === "navi" ? 760 : 820) });
+  // sizes remembered from older versions may be too small for the window now
+  const want = { w: Math.min(screen.availWidth - 40, def.width + 24), h: Math.min(screen.availHeight - 80, id === "navi" ? 760 : 820) };
+  const got = store.get("pop." + id, want);
+  const sz = { w: Math.max(got.w || 0, want.w), h: Math.max(got.h || 0, Math.min(want.h, 600)) };
   const w = window.open("/?win=" + id, "mb3d_" + id, `popup,width=${sz.w},height=${sz.h}`);
   if (!w) { showError("The browser blocked the new window (allow pop-ups for this page); showing it inside the editor."); return openWin(id); }
   closeWin(id);

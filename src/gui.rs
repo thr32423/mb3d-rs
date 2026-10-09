@@ -219,7 +219,9 @@ pub fn run(args: &[String]) -> Result<(), String> {
         tools: tools::ToolsState::new(),
         navi: navi::NaviState::new(),
     });
-    let listener = TcpListener::bind((host.as_str(), port)).map_err(|e| format!("cannot listen on {host}:{port}: {e}"))?;
+    let listener = TcpListener::bind((host.as_str(), port)).map_err(|e| {
+        format!("cannot listen on {host}:{port}: {e}\n(is another `mb3d gui` still running? stop it, or use --port to choose another port)")
+    })?;
     eprintln!("mb3d gui: open http://{host}:{port}/ in your browser (Ctrl+C to stop)");
     {
         let app = app.clone();
@@ -999,7 +1001,8 @@ fn state_json(app: &App) -> String {
         None => "null".into(),
     };
     format!(
-        "{{\"scene\":\"{}\",\"gen\":{},\"title\":{},\"text\":{},\"notes\":{},\"view_w\":{},\"euler\":{}}}",
+        "{{\"version\":\"{}\",\"scene\":\"{}\",\"gen\":{},\"title\":{},\"text\":{},\"notes\":{},\"view_w\":{},\"euler\":{}}}",
+        env!("CARGO_PKG_VERSION"),
         hash_scene(&st),
         app.gen.load(Ordering::SeqCst),
         json_str(&st.title),

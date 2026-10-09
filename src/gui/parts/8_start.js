@@ -15,6 +15,14 @@ async function loadFormulas() {
   try {
     await loadFormulas();
     applyState(await api("/api/state"), true);
+    if (SOLO && WINDOWS[SOLO]) {
+      document.body.classList.add("solo");
+      document.title = WINDOWS[SOLO].title + " — Mandelbulb 3D";
+      openWin(SOLO);
+      addEventListener("resize", () => store.set("pop." + SOLO, { w: outerWidth, h: outerHeight }));
+      poll();
+      return;
+    }
     for (const id of store.get("open", [])) if (WINDOWS[id]) openWin(id);
     await sendView(true);
     api("/api/mapseq").then(m => { mapseq = m; $("frame").value = m.frame; }).catch(() => {});

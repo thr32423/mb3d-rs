@@ -5,7 +5,7 @@ const recalcCfg = Object.assign({ div: "1", nearer: false }, store.get("recalc",
 function recalcPanel(d) {
   d.append(el("div", { class: "hint" }, "Enable, mark a rectangle in the image, then recalculate it with the current parameters (e.g. a smaller raystep against overstepping). Uses the last \"Calculate 3D\" image."),
     el("div", { class: "grid" },
-      el("div", { class: "full" }, check("rcOn", recalcOn, c => { recalcOn = c; if (!c) { recalcSel = null; $("sel").style.display = "none"; } renderWin("postpro"); }, "Enable (mark the selection with the mouse)")),
+      el("div", { class: "full" }, check("rcOn", recalcOn, c => { recalcOn = c; if (chan) chan.postMessage({ type: "recalcOn", on: c }); if (!c) { recalcSel = null; $("sel").style.display = "none"; } renderWin("postpro"); }, "Enable (mark the selection with the mouse)")),
       lab("Raystep divisor:"), field("rcDiv", recalcCfg.div, v => { recalcCfg.div = v; store.set("recalc", recalcCfg); }, { class: "n" }),
       el("div", { class: "full" }, check("rcNear", recalcCfg.nearer, c => { recalcCfg.nearer = c; store.set("recalc", recalcCfg); }, "Keep only nearer parts", "To reduce overstepping"))),
     el("div", { class: "btns" }, btn("Calculate", async () => {

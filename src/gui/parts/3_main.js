@@ -18,7 +18,9 @@ function openWin(id) {
     const n = Object.keys(WINDOWS).indexOf(id);
     const pos = store.get("win." + id, { x: 60 + (n % 8) * 34, y: 80 + (n % 8) * 26 });
     w = el("div", { class: "win", id: "w_" + id },
-      el("div", { class: "wt" }, el("span", {}, def.title), el("button", { title: "Close", onclick: () => closeWin(id) }, "✕")),
+      el("div", { class: "wt" }, el("span", {}, def.title),
+        SOLO ? null : el("button", { class: "pop", title: "Open in its own browser window (to put it next to the editor or on another screen)", onclick: () => popOut(id) }, "⧉"),
+        el("button", { title: "Close", onclick: () => SOLO ? window.close() : closeWin(id) }, "✕")),
       el("div", { class: "wb" }));
     w.style.width = def.width + "px";
     w.style.left = Math.max(0, Math.min(innerWidth - 120, pos.x)) + "px";
@@ -40,16 +42,23 @@ function openWin(id) {
   raiseWin(w);
   renderWin(id);
   if (def.onopen) def.onopen();
-  store.set("open", [...openWins]);
+  if (!SOLO) store.set("open", [...openWins]);
 }
 function closeWin(id) {
   const w = $("w_" + id);
   if (w) w.hidden = true;
   openWins.delete(id);
   if (WINDOWS[id].onclose) WINDOWS[id].onclose();
-  store.set("open", [...openWins]);
+  if (!SOLO) store.set("open", [...openWins]);
 }
 const isOpen = id => openWins.has(id);
+function popOut(id) {
+  const def = WINDOWS[id];
+  const sz = store.get("pop." + id, { w: def.width + 24, h: Math.min(screen.availHeight - 80, 820) });
+  const w = window.open("/?win=" + id, "mb3d_" + id, `popup,width=${sz.w},height=${sz.h}`);
+  if (!w) return showError("The browser blocked the new window: allow pop-ups for this page.");
+  closeWin(id);
+}
 function renderWin(id) {
   const w = $("w_" + id);
   if (w && !w.hidden) rerender(w.querySelector(".wb"), WINDOWS[id].build);
@@ -199,6 +208,7 @@ function viewWidth() {
 }
 let sentView = 0;
 async function sendView(force) {
+  if (SOLO) return;
   applyViewing();
   const w = viewWidth();
   if (!force && Math.abs(w - sentView) < 24) return;

@@ -92,6 +92,10 @@ The page follows MB3D's main window:
   Calculation, Internal, Infos, Cutting, Julia, Camera, Coloring and
   Stereo, with the messages below.
 
+The ⧉ button in a window's title bar opens it in its own browser window, so
+you can arrange the windows next to the editor or on another screen (allow
+pop-ups for the page if the browser asks); all windows stay in sync.
+
 Every change shows a quick preview. *Calculate 3D* calculates the image at
 full size; after that, changes in the Lighting window only repaint it and
 changes of shadows or ambient occlusion only redo those, as in MB3D. *Save

@@ -980,7 +980,8 @@ fn state_json(app: &App) -> String {
         None => "null".into(),
     };
     format!(
-        "{{\"gen\":{},\"title\":{},\"text\":{},\"notes\":{},\"view_w\":{},\"euler\":{}}}",
+        "{{\"scene\":\"{}\",\"gen\":{},\"title\":{},\"text\":{},\"notes\":{},\"view_w\":{},\"euler\":{}}}",
+        hash_scene(&st),
         app.gen.load(Ordering::SeqCst),
         json_str(&st.title),
         json_str(&st.scene.to_text()),
@@ -990,10 +991,26 @@ fn state_json(app: &App) -> String {
     )
 }
 
+/// Hash of the scene and title, so that several editor pages (popped-out
+/// windows) notice changes made in another one.
+fn scene_hash(app: &App) -> String {
+    hash_scene(&app.scene.lock().unwrap())
+}
+
+fn hash_scene(st: &SceneState) -> String {
+    let mut h: u64 = 0xcbf29ce484222325;
+    for b in st.scene.to_text().bytes().chain(st.title.bytes()) {
+        h ^= b as u64;
+        h = h.wrapping_mul(0x100000001b3);
+    }
+    format!("{h:016x}")
+}
+
 fn status_json(app: &App) -> String {
+    let hash = scene_hash(app);
     let o = app.out.lock().unwrap();
     format!(
-        "{{\"gen\":{},\"img_ver\":{},\"w\":{},\"h\":{},\"rendering\":{},\"progress\":{},\"stage\":{},\"error\":{},\"final_ver\":{},\"full\":{},\"info\":{}}}",
+        "{{\"scene\":\"{hash}\",\"gen\":{},\"img_ver\":{},\"w\":{},\"h\":{},\"rendering\":{},\"progress\":{},\"stage\":{},\"error\":{},\"final_ver\":{},\"full\":{},\"info\":{}}}",
         app.gen.load(Ordering::SeqCst),
         o.img_ver,
         o.w,

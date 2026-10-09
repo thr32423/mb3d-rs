@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: cargo build --release
+      - name: Test
+        run: cargo test --release
+
+  mb3d-data:
+    # renders and compiles against the formulas, maps and parameter files of
+    # the original MB3D repository
+    name: test with the MB3D repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: mb3d-rs
+      - uses: actions/checkout@v4
+        with:
+          repository: thargor6/mb3d
+          path: mb3d
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: mb3d-rs
+      - name: Test
+        working-directory: mb3d-rs
+        run: cargo test --release
+        env:
+          MB3D_REPO: ${{ github.workspace }}/mb3d
+      - name: Render all example parameter files (small)
+        working-directory: mb3d-rs
+        run: |
+          mkdir -p ../out
+          ./target/release/mb3d batch ../mb3d/M3Parameter/*.m3p --scale 0.05 -o ../out --formulas ../mb3d/M3Formulas --maps ../mb3d/M3Maps
+      - name: The editor page is assembled from src/gui/parts
+        working-directory: mb3d-rs
+        run: ./build_gui.sh && git diff --exit-code src/gui/index.html

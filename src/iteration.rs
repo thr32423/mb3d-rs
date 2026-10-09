@@ -31,6 +31,10 @@ pub enum HybridMode {
     Alt3D,
     /// 4D alternating hybrid (`doHybrid4DPas`)
     Alt4D,
+    /// interpolation of two formulas (`doInterpolHybridPas`)
+    Ipol3D,
+    /// 4D interpolation hybrid (`doInterpolHybridPas4D`)
+    Ipol4D,
 }
 
 /// The per-thread iteration state, a subset of `TIteration3Dext`.
@@ -71,6 +75,9 @@ pub struct Iteration {
     pub dfree: [f64; 2],
     /// Interpreter for custom (.m3f) formulas, if the hybrid uses any.
     pub emu: Option<Box<Machine>>,
+    /// Weights of the two formulas of an interpolation hybrid
+    /// (`PSingle(@nHybrid[0..1])^`).
+    pub ipol: [f32; 2],
 }
 
 impl Iteration {
@@ -115,14 +122,7 @@ impl Iteration {
                 }
             }
             let slot = &slots[n];
-            if let Formula::Custom(c) = &slot.formula {
-                match &c.def.jit {
-                    Some(p) => p.run(self, &c.def, &c.values),
-                    None => self.run_custom(n),
-                }
-            } else {
-                slot.formula.iterate(&mut self.v, &mut self.j, self.rout, slot.ade);
-            }
+            self.call_slot(slots, n);
             btmp -= 1;
             if slot.uncounted {
                 uncounted_guard += 1;
@@ -141,6 +141,191 @@ impl Iteration {
             if self.it_result >= self.max_it || self.rout > self.rstop {
                 return n;
             }
+        }
+    }
+
+    /// `fHybrid[n](x, y, z, w, PIteration3D)` with `PVar = fHPVar[n]`.
+    #[inline]
+    fn call_slot(&mut self, slots: &[HybridSlot], n: usize) {
+        let slot = &slots[n];
+        if let Formula::Custom(c) = &slot.formula {
+            match &c.def.jit {
+                Some(p) => p.run(self, &c.def, &c.values),
+                None => self.run_custom(n),
+            }
+        } else {
+            slot.formula.iterate(&mut self.v, &mut self.j, self.rout, slot.ade);
+        }
+    }
+
+    /// The common loop of the interpolation hybrids: both formulas are
+    /// applied to the same vector, the results (and their lengths) are
+    /// blended with the weights.  `de`: blend the derivative (`w` in 3D,
+    /// `Deriv1` in 4D) of the analytic-DE variants.
+    fn run_ipol(&mut self, slots: &[HybridSlot], four_d: bool, de: bool) {
+        let (s1, s2) = (self.ipol[0] as f64, self.ipol[1] as f64);
+        self.first_it = 0;
+        self.it_result = 0;
+        loop {
+            self.rold = self.rout;
+            let y1 = self.v;
+            let dt = self.deriv1;
+            self.call_slot(slots, 0);
+            let x1 = self.v;
+            self.v = y1;
+            let dd = self.deriv1;
+            if four_d && de {
+                self.deriv1 = dt;
+            }
+            self.call_slot(slots, 1);
+            let [x, y, z, w] = self.v;
+            let (xx, yy) = if four_d {
+                ((x1[0] * x1[0] + x1[1] * x1[1] + x1[2] * x1[2] + x1[3] * x1[3]).sqrt(), (x * x + y * y + z * z + w * w).sqrt())
+            } else {
+                ((x1[0] * x1[0] + x1[1] * x1[1] + x1[2] * x1[2]).sqrt(), (x * x + y * y + z * z).sqrt())
+            };
+            let xx = xx * s1 + yy * s2;
+            let mut v = [x1[0] * s1 + x * s2, x1[1] * s1 + y * s2, x1[2] * s1 + z * s2, x1[3] * s1 + w * s2];
+            if de && !four_d {
+                v[3] = x1[3].abs() * s1 + w.abs() * s2;
+            }
+            if de && four_d {
+                self.deriv1 = dd.abs() * s1 + self.deriv1.abs() * s2;
+            }
+            let l2 = if four_d { v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3] } else { v[0] * v[0] + v[1] * v[1] + v[2] * v[2] };
+            let yy = xx / (l2 + 1e-40).sqrt();
+            v[0] *= yy;
+            v[1] *= yy;
+            v[2] *= yy;
+            if four_d {
+                v[3] *= yy;
+            }
+            self.v = v;
+            self.it_result += 1;
+            self.rout = xx * xx;
+            if self.rout < self.otrap {
+                self.otrap = self.rout;
+            }
+            if self.it_result >= self.max_it || self.rout > self.rstop {
+                break;
+            }
+        }
+    }
+
+    fn ipol_start_3d(&mut self) {
+        let c = self.c;
+        if self.do_julia {
+            self.j = [self.ju[0], self.ju[1], self.ju[2], self.j[3]];
+        } else {
+            self.j = [c[0], c[1], c[2], self.j[3]];
+        }
+        self.v[0] = c[0];
+        self.v[1] = c[1];
+        self.v[2] = c[2];
+        self.rout = c[0] * c[0] + c[1] * c[1] + c[2] * c[2];
+        self.otrap = self.rout;
+    }
+
+    fn start_4d(&mut self) {
+        let v4 = rotate_4dex(&self.c, &self.smatrix4);
+        self.v = v4;
+        if self.do_julia {
+            self.j = self.ju;
+        } else {
+            self.j = v4;
+        }
+        let [x, y, z, w] = v4;
+        self.rout = x * x + y * y + z * z + w * w;
+        self.otrap = self.rout;
+    }
+
+    /// `doInterpolHybridPas`
+    pub fn ipol_3d(&mut self, slots: &[HybridSlot]) {
+        self.ipol_start_3d();
+        self.v[3] = 0.0;
+        self.run_ipol(slots, false, false);
+        if self.calc_sit {
+            self.calc_smooth_iterations(0);
+        }
+    }
+
+    /// `doInterpolHybridPasDE`
+    pub fn ipol_3d_de(&mut self, slots: &[HybridSlot]) -> f64 {
+        self.ipol_start_3d();
+        self.v[3] = if (self.de_option & 0x18) == 16 { self.rout } else { 1.0 };
+        self.run_ipol(slots, false, true);
+        let w = self.v[3];
+        let r = match self.de_option & 7 {
+            4 => self.v[2].abs() * self.v[2].abs().ln() / w,
+            _ => self.rout.sqrt() / w.abs(),
+        };
+        if self.calc_sit {
+            self.calc_smooth_iterations(0);
+        }
+        r
+    }
+
+    /// `doInterpolHybridPas4D`
+    pub fn ipol_4d(&mut self, slots: &[HybridSlot]) {
+        self.start_4d();
+        self.run_ipol(slots, true, false);
+        if self.calc_sit {
+            self.calc_smooth_iterations(0);
+        }
+    }
+
+    /// `doInterpolHybridPas4DDE`
+    pub fn ipol_4d_de(&mut self, slots: &[HybridSlot]) -> f64 {
+        self.start_4d();
+        self.init_deriv_4d();
+        self.run_ipol(slots, true, true);
+        let r = self.de_4d_result();
+        if self.calc_sit {
+            self.calc_smooth_iterations(0);
+        }
+        r
+    }
+
+    fn init_deriv_4d(&mut self) {
+        match self.de_option & 0x38 {
+            16 => self.deriv1 = self.rout,
+            32 => {
+                self.deriv1 = 1.0;
+                self.deriv2 = 0.0;
+                self.deriv3 = 0.0;
+            }
+            _ => self.deriv1 = 1.0,
+        }
+    }
+
+    fn de_4d_result(&self) -> f64 {
+        match self.de_option & 7 {
+            4 => self.v[2].abs() * self.v[2].abs().ln() / self.deriv1,
+            _ => self.rout.sqrt() / self.deriv1.abs(),
+        }
+    }
+
+    /// `doHybrid4DDEPas` – 4D alternating hybrid with analytic DE (the
+    /// derivative is kept in `Deriv1`).
+    pub fn hybrid_4d_de(&mut self, slots: &[HybridSlot]) -> f64 {
+        self.start_4d();
+        self.init_deriv_4d();
+        let n = self.run(slots, true);
+        let r = self.de_4d_result();
+        if self.calc_sit {
+            self.calc_smooth_iterations(n);
+        }
+        r
+    }
+
+    /// `mMandFunctionDE` for the analytic-DE modes.
+    #[inline]
+    pub fn mand_function_de(&mut self, mode: HybridMode, slots: &[HybridSlot]) -> f64 {
+        match mode {
+            HybridMode::Alt3D => self.hybrid_3d_de(slots),
+            HybridMode::Alt4D => self.hybrid_4d_de(slots),
+            HybridMode::Ipol3D => self.ipol_3d_de(slots),
+            HybridMode::Ipol4D => self.ipol_4d_de(slots),
         }
     }
 
@@ -397,6 +582,8 @@ impl Iteration {
         match mode {
             HybridMode::Alt3D => self.hybrid_3d(slots),
             HybridMode::Alt4D => self.hybrid_4d(slots),
+            HybridMode::Ipol3D => self.ipol_3d(slots),
+            HybridMode::Ipol4D => self.ipol_4d(slots),
         }
     }
 }

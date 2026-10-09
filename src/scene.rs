@@ -45,6 +45,12 @@ pub struct Scene {
     pub iterations: i32,
     /// `MinimumIterations`
     pub min_iterations: i32,
+    /// `bColorOnIt`: 0 off, 1 colour on the start vector, n > 1 colour
+    /// after n - 1 iterations
+    pub color_on_it: u8,
+    /// 2D calculation of a plane (`bCalc3D` = 0, `bSliceCalc`):
+    /// 1 at Z start, 2 at the middle, 3 at Z end; 0 = 3D
+    pub slice_2d: u8,
     /// Bailout radius (`RStop`, not squared). `None` = use the formulas' default.
     pub rstop: Option<f64>,
     pub zoom: f64,
@@ -108,6 +114,9 @@ pub struct Scene {
     pub inside: InsideMode,
     /// DE combination of two hybrid parts, None = alternating hybrid
     pub decomb: Option<DeCombParams>,
+    /// Interpolation hybrid (`bOptions1` = 1): weights of the first two
+    /// formulas, which are both applied in each iteration and blended
+    pub interpolation: Option<[f32; 2]>,
     /// Depth of field, None = off
     pub dof: Option<crate::dof::DofParams>,
     /// Volumetric light (`bVolLightNr`), None = off
@@ -160,6 +169,8 @@ impl Default for Scene {
             height: 600,
             iterations: 60,
             min_iterations: 1,
+            color_on_it: 0,
+            slice_2d: 0,
             rstop: None,
             zoom: 1.0,
             mid: [0.0; 3],
@@ -195,6 +206,7 @@ impl Default for Scene {
             vol_light: None,
             dof: None,
             decomb: None,
+            interpolation: None,
             inside: InsideMode::Outside,
             cut_options: 0,
             cut_pos: [0.0; 3],
@@ -289,6 +301,12 @@ impl Scene {
             }
         }
         let _ = writeln!(t, "iterations = {}\nmin_iterations = {}", self.iterations, self.min_iterations);
+        if self.color_on_it != 0 {
+            let _ = writeln!(t, "color_on_iteration = {}", self.color_on_it as i32 - 1);
+        }
+        if self.slice_2d != 0 {
+            let _ = writeln!(t, "slice_2d = {}", ["start", "mid", "end"][(self.slice_2d.clamp(1, 3) - 1) as usize]);
+        }
         if let Some(r) = self.rstop {
             let _ = writeln!(t, "rstop = {r}");
         }
@@ -352,6 +370,9 @@ impl Scene {
         }
         if self.inside != InsideMode::Outside {
             let _ = writeln!(t, "inside = {}", if self.inside == InsideMode::Inside { "inside" } else { "both" });
+        }
+        if let Some(w) = self.interpolation {
+            let _ = writeln!(t, "interpolation = {}, {}", w[0], w[1]);
         }
         if let Some(d) = &self.decomb {
             let _ = writeln!(
@@ -712,6 +733,23 @@ impl Scene {
                     "background_add_light" => s.lighting.bg_add_light = boolean()?,
                     "iterations" | "max_iterations" => s.iterations = int()?.max(1),
                     "min_iterations" => s.min_iterations = int()?.max(0),
+                    // MB3D's "color on it" field: -1 = off, 0 = the start vector
+                    "color_on_iteration" | "color_on_it" => {
+                        s.color_on_it = if matches!(val.to_ascii_lowercase().as_str(), "off" | "none" | "no") {
+                            0
+                        } else {
+                            (int()? + 1).clamp(0, 255) as u8
+                        }
+                    }
+                    "slice_2d" | "2d" => {
+                        s.slice_2d = match val.to_ascii_lowercase().as_str() {
+                            "off" | "no" | "false" | "3d" | "0" => 0,
+                            "start" | "z_start" | "1" => 1,
+                            "mid" | "middle" | "z_mid" | "2" | "on" | "yes" | "true" => 2,
+                            "end" | "z_end" | "3" => 3,
+                            _ => return Err(err(format!("bad slice_2d '{val}' (off, start, mid, end)"))),
+                        }
+                    }
                     "rstop" | "bailout" => s.rstop = Some(num()?),
                     "zoom" => s.zoom = num()?,
                     "mid" | "position" => {
@@ -851,6 +889,15 @@ impl Scene {
                             "on" | "yes" | "true" | "inside" => InsideMode::Inside,
                             "both" | "in_and_outside" => InsideMode::Both,
                             _ => return Err(err(format!("bad inside mode '{val}' (outside, inside, both)"))),
+                        }
+                    }
+                    "interpolation" | "interpolation_hybrid" => {
+                        if matches!(val.to_ascii_lowercase().as_str(), "off" | "none" | "no") {
+                            s.interpolation = None;
+                        } else {
+                            let p = vec_n(2)?;
+                            s.interpolation = Some([p[0] as f32, p[1] as f32]);
+                            s.decomb = None;
                         }
                     }
                     "de_combination" | "decomb" => {

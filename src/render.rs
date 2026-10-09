@@ -65,7 +65,8 @@ fn calculate_inner(
 ) -> Result<(CalcParams, Vec<SiLight>), String> {
     let mut p = CalcParams::new(sc)?;
     let threads = thread_count(sc).min(p.rect[3] as usize).max(1);
-    if let Some(vp) = &sc.vol_light {
+    let two_d = p.slice_2d != 0;
+    if let Some(vp) = sc.vol_light.as_ref().filter(|_| !two_d) {
         let l = effective_lighting(sc);
         let lv = light_vals(sc, &l, &paint_camera(sc, &p));
         if let Some((ln, positional)) = lv.light_ln(vp.light) {
@@ -95,7 +96,11 @@ fn calculate_inner(
                     let yy = y + y0;
                     let seed = (0x24563487u32 as i64 + (yy as i64 + 1) * 0x324594A1i64) as i32;
                     let mut m = Marcher::new(p, seed);
-                    let row: Vec<SiLight> = (x0..x0 + w).map(|x| m.march_pixel(x as i32, yy as i32)).collect();
+                    let row: Vec<SiLight> = if two_d {
+                        (x0..x0 + w).map(|x| m.slice_pixel(x as i32, yy as i32)).collect()
+                    } else {
+                        (x0..x0 + w).map(|x| m.march_pixel(x as i32, yy as i32)).collect()
+                    };
                     out.push((y, row));
                     let d = done.fetch_add(1, Ordering::Relaxed) + 1;
                     progress(d, h);
@@ -114,7 +119,9 @@ fn calculate_inner(
         return Err("cancelled".into());
     }
     let mut gbuf: Vec<SiLight> = rows.into_iter().flatten().collect();
-    if image_space {
+    if two_d {
+        // MB3D runs no post calculations after a 2D calculation
+    } else if image_space {
         post_process(sc, &p, &mut gbuf, threads);
     } else if sc.shadows.is_some() || sc.deao.is_some() {
         let mut s2 = sc.clone();
@@ -339,7 +346,7 @@ pub fn paint(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> Vec<u8> {
             });
         }
     });
-    if let Some(d) = &sc.dof {
+    if let Some(d) = sc.dof.as_ref().filter(|_| p.slice_2d == 0) {
         crate::dof::apply(&mut rgb, gbuf, w as usize, h as usize, p.zc_mul, p.zcorr, sc.fov_y, d);
     }
     rgb

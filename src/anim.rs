@@ -423,10 +423,11 @@ fn set_formula_value(f: &mut crate::formulas::Formula, i: usize, v: f64) {
 /// `bInterpolateFormula` for all keyframes against the first, then the
 /// option values and iteration counts of the matching slots.
 fn interpolate_formulas(s: &mut Scene, h: &[&Scene], w: &[f64]) {
-    let same_kind = h.iter().all(|x| x.decomb.is_some() == h[0].decomb.is_some());
+    let same_kind = h.iter().all(|x| x.decomb.is_some() == h[0].decomb.is_some() && x.interpolation.is_some() == h[0].interpolation.is_some());
     if !same_kind {
         return;
     }
+    let ipol = h[0].interpolation.is_some();
     fn slot(x: &Scene, i: usize) -> Option<(String, &crate::scene::FormulaEntry)> {
         x.formulas.get(i).filter(|e| e.iterations > 0).map(|e| (e.formula.name(), e))
     }
@@ -454,6 +455,16 @@ fn interpolate_formulas(s: &mut Scene, h: &[&Scene], w: &[f64]) {
             }
             let v: f64 = d.iter().zip(w).map(|(d, w)| d * w).sum();
             set_formula_value(&mut s.formulas[i].formula, o, v);
+        }
+        if ipol {
+            // the weights are interpolated as singles
+            if i < 2 {
+                let v: f64 = h.iter().zip(w).map(|(x, w)| x.interpolation.unwrap_or_default()[i] as f64 * w).sum();
+                if let Some(iw) = s.interpolation.as_mut() {
+                    iw[i] = v as f32;
+                }
+            }
+            continue;
         }
         let its: f64 = entries.iter().zip(w).map(|(e, w)| e.as_ref().unwrap().1.iterations as f64 * w).sum();
         s.formulas[i].iterations = delphi_round(its).max(1) as i32;

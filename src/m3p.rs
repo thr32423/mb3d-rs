@@ -388,8 +388,14 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
     } else {
         None
     };
+    s.color_on_it = r.u8(19);
     if r.u8(344) == 0 {
-        w.push("2D slice calculation is not supported (rendered in 3D)".into());
+        // bSliceCalc: 1 start, 3 end, everything else the middle
+        s.slice_2d = match r.u8(345) {
+            1 => 1,
+            3 => 3,
+            _ => 2,
+        };
     }
     if r.u8(126) != 0 {
         w.push("stereo mode is not supported (rendered mono)".into());
@@ -478,8 +484,11 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
         let opt1 = r.u8(a + 1);
         let opt2 = r.u8(a + 2);
         let hyb1 = r.u8(a + 5);
+        let interp = opt1 & 3 == 1;
+        if interp {
+            s.interpolation = Some([r.f32(a + 8) as f32, r.f32(a + 8 + 188) as f32]);
+        }
         match opt1 & 3 {
-            1 => w.push("interpolation hybrids are not supported yet (iterated as alternating hybrid)".into()),
             2 => {
                 // CheckHybridOptions
                 let hyb2 = r.u16(a + 6) as usize;
@@ -528,6 +537,16 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
             let nopt = r.i32(o + 8).clamp(0, 16) as usize;
             let name = r.str(o + 12, 32);
             let vals: Vec<f64> = (0..16).map(|k| r.f64(o + 60 + 8 * k)).collect();
+            // interpolation hybrid: slots 0 and 1 hold weights (singles)
+            let its = if interp {
+                if i < 2 && fnr >= 0 {
+                    1
+                } else {
+                    0
+                }
+            } else {
+                its
+            };
             if its == 0 {
                 s.formulas.push(FormulaEntry { formula: Formula::default_for("Integer Power").unwrap(), iterations: 0 });
                 continue;
@@ -908,7 +927,9 @@ pub fn write(sc: &Scene) -> Vec<u8> {
         Some(v) => (v.light as u8 + 1) | (((v.map_size + 2).clamp(0, 15) as u8) << 4),
         None => 2 << 4,
     };
-    d[344] = 1;
+    d[344] = (sc.slice_2d == 0) as u8;
+    d[345] = if sc.slice_2d == 0 { 2 } else { sc.slice_2d };
+    d[19] = sc.color_on_it;
     pf32(&mut d, 104, sc.decomb.map(|c| c.mix_pow).unwrap_or(2.0));
     pf32(&mut d, 378, sc.decomb.map(|c| c.smooth).unwrap_or(0.5));
     pi32(&mut d, 418, sc.decomb.map(|c| c.iterations2).unwrap_or(sc.iterations));
@@ -1014,7 +1035,11 @@ pub fn write(sc: &Scene) -> Vec<u8> {
     // ---- THeaderCustomAddon ----
     let a = HEADER_SIZE;
     d[a] = 16;
-    if let Some(c) = &sc.decomb {
+    if sc.interpolation.is_some() {
+        d[a + 1] = 1;
+        d[a + 5] = 1;
+        pu16(&mut d, a + 6, 0x151);
+    } else if let Some(c) = &sc.decomb {
         d[a + 1] = 2;
         d[a + 3] = c.kind.clamp(1, 6) - 1;
         d[a + 5] = (c.end1 as u8 & 7) | ((sc.repeat_from.min(c.end1) as u8) << 4);
@@ -1030,11 +1055,18 @@ pub fn write(sc: &Scene) -> Vec<u8> {
             crate::scene::InsideMode::Inside => 2,
             crate::scene::InsideMode::Both => 4,
         };
-    d[a + 4] = sc.formulas.iter().rposition(|f| f.iterations != 0).map(|x| x as u8 + 1).unwrap_or(0);
-    for (i, f) in sc.formulas.iter().take(6).enumerate() {
+    d[a + 4] = if sc.interpolation.is_some() {
+        2
+    } else {
+        sc.formulas.iter().rposition(|f| f.iterations != 0).map(|x| x as u8 + 1).unwrap_or(0)
+    };
+    let nf = if sc.interpolation.is_some() { 2 } else { 6 };
+    for (i, f) in sc.formulas.iter().take(nf).enumerate() {
         let o = a + 8 + i * 188;
         pi32(&mut d, o, f.iterations);
-        if f.iterations == 0 {
+        if let Some(w) = sc.interpolation {
+            d[o..o + 4].copy_from_slice(&w[i].to_le_bytes());
+        } else if f.iterations == 0 {
             continue;
         }
         let opts = f.formula.options();

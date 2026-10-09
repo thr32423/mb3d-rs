@@ -146,3 +146,91 @@ fn cutting_plane_and_deao() {
     let occluded = rd.gbuffer.iter().filter(|g| !g.is_background() && g.amb_shadow > 2000).count();
     assert!(occluded > 0);
 }
+
+#[test]
+fn interpolation_hybrid_blends_two_formulas() {
+    // weights 1 : 0 give the first formula alone, for the gradient DE
+    // (Integer Power) and the analytic one (Amazing Box)
+    for (a, b) in [("Integer Power", "Real Power"), ("Amazing Box", "Integer Power")] {
+        let single = small(a);
+        let mut ip = single.clone();
+        ip.formulas.truncate(1);
+        ip.formulas[0].iterations = 1;
+        ip.formulas.push(mb3d::scene::FormulaEntry { formula: mb3d::formulas::lookup(b).unwrap(), iterations: 1 });
+        ip.interpolation = Some([2.0, 0.0]);
+        let p1 = CalcParams::new(&single).unwrap();
+        let p2 = CalcParams::new(&ip).unwrap();
+        assert_eq!(p1.is_custom_de, p2.is_custom_de, "{a}");
+        for pos in [[0.3, 0.2, -2.0], [0.7, -0.4, 0.5], [0.0, 1.5, -6.0]] {
+            let (d1, i1) = de_at(&p1, pos);
+            let (d2, i2) = de_at(&p2, pos);
+            assert_eq!(i1, i2, "{a} {pos:?}");
+            assert!((d1 - d2).abs() <= 1e-9 * d1.abs().max(1e-3), "{a} {pos:?}: {d1} {d2}");
+        }
+        // a real blend renders and differs
+        ip.interpolation = Some([0.5, 0.5]);
+        let p3 = CalcParams::new(&ip).unwrap();
+        let (d3, _) = de_at(&p3, [0.7, -0.4, 0.5]);
+        assert!(d3.is_finite());
+        let r = mb3d::render(&ip, &|_, _| {}).unwrap();
+        assert!(r.coverage() > 0.01, "{a}");
+        // .m3s and .m3p round trip
+        let back = Scene::parse(&ip.to_text()).unwrap();
+        assert_eq!(back.interpolation, Some([0.5, 0.5]));
+        let m3p = mb3d::m3p::write(&ip);
+        let l = mb3d::m3p::parse(&m3p).unwrap();
+        assert_eq!(l.scene.interpolation, Some([0.5, 0.5]));
+        assert_eq!(l.scene.formulas[1].formula.name(), b);
+    }
+}
+
+#[test]
+fn slices_2d_and_color_on_iteration() {
+    let mut s = small("Integer Power");
+    s.iterations = 20;
+    let mut imgs = Vec::new();
+    for plane in ["start", "mid", "end"] {
+        let t = s.clone().apply(&format!("slice_2d = {plane}")).unwrap();
+        let r = mb3d::render(&t, &|_, _| {}).unwrap();
+        // a 2D calculation fills every pixel with a flat normal
+        assert!(r.gbuffer.iter().all(|g| g.normal[2] == -32768 && !g.is_background()));
+        imgs.push(r.gbuffer.iter().map(|g| g.si_gradient).collect::<Vec<_>>());
+        assert_eq!(Scene::parse(&t.to_text()).unwrap().slice_2d, t.slice_2d);
+        let back = mb3d::m3p::parse(&mb3d::m3p::write(&t)).unwrap().scene;
+        assert_eq!(back.slice_2d, t.slice_2d);
+    }
+    assert_ne!(imgs[0], imgs[1]);
+    // the middle plane cuts the bulb: some pixels reach the iteration limit
+    assert!(imgs[1].iter().any(|&g| g >= 32768) && imgs[1].iter().any(|&g| g < 32768));
+
+    let c = s.clone().apply("color_on_iteration = 2\ncolor_option = 0").unwrap();
+    assert_eq!(c.color_on_it, 3);
+    assert_eq!(Scene::parse(&c.to_text()).unwrap().color_on_it, 3);
+    assert_eq!(mb3d::m3p::parse(&mb3d::m3p::write(&c)).unwrap().scene.color_on_it, 3);
+    let a = mb3d::render(&s, &|_, _| {}).unwrap();
+    let b = mb3d::render(&c, &|_, _| {}).unwrap();
+    let ot = |r: &mb3d::render::RenderResult| r.gbuffer.iter().filter(|g| !g.is_background()).map(|g| g.otrap as u64).sum::<u64>();
+    assert_ne!(ot(&a), ot(&b), "colour on iteration 2 changes the orbit trap colouring");
+}
+
+#[test]
+fn analytic_4d_de_uses_the_4d_loop() {
+    mb3d::formulas::add_formula_dir(std::path::PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/formulas")));
+    let mut s = Scene::preset("ABoxMod4d").unwrap();
+    s.width = 64;
+    s.height = 48;
+    let p = CalcParams::new(&s).unwrap();
+    assert!(p.is_custom_de && p.mode == mb3d::iteration::HybridMode::Alt4D);
+    // CalcDEanalytic with doHybrid4DDEPas: sqrt(Rout) / |Deriv1| (the
+    // derivative is not in w, which is the 4th coordinate)
+    let pos = [0.31, 0.27, -4.0];
+    let (d, _) = de_at(&p, pos);
+    let mut it = p.new_iteration();
+    it.c = pos;
+    let raw = it.hybrid_4d_de(&p.slots);
+    assert!((raw - it.rout.sqrt() / it.deriv1.abs()).abs() < 1e-12 && it.deriv1 > 1.0);
+    assert!((d - raw * p.d_de_scale as f64 * p.step_width).abs() < 1e-9 * d.abs(), "de = {d}, raw {raw}");
+    let r = mb3d::render(&s, &|_, _| {}).unwrap();
+    assert!(r.coverage() > 0.02, "coverage {}", r.coverage());
+}
+

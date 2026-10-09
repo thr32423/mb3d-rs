@@ -21,6 +21,12 @@ use crate::scene::{InsideMode, CameraOptic, Scene};
 pub struct CalcParams {
     pub slots: Vec<HybridSlot>,
     pub mode: HybridMode,
+    /// normalised weights of an interpolation hybrid
+    pub ipol: [f32; 2],
+    /// `ColorOnIt`
+    pub color_on_it: u8,
+    /// 2D calculation (`iSliceCalc` 1..3), 0 = 3D
+    pub slice_2d: u8,
     pub is_custom_de: bool,
     /// dIFS hybrid (`doHybridIFS3D`)
     pub difs: bool,
@@ -115,6 +121,61 @@ pub struct DeComb {
     pub mix_col: u8,
 }
 
+/// `CheckDEoption(0, 1)` of an interpolation hybrid: the formulas with a
+/// positive weight (`iItCount > 0` on the bits of the single).
+fn ipol_de_option(slots: &[HybridSlot], raw: [f32; 2]) -> i32 {
+    let mut de_option = -1;
+    for (x, s) in slots.iter().enumerate().take(2) {
+        if raw[x].to_bits() as i32 <= 0 {
+            continue;
+        }
+        let de = s.formula.de_option();
+        if !(0..=20).contains(&de) || de == de_option {
+            continue;
+        }
+        if ((0..20).contains(&de_option) && de > 19) || (de_option > 19 && (0..20).contains(&de)) {
+            return -1;
+        }
+        de_option = match de_option {
+            -1 => de,
+            2 if ![2, 5, 6, 11].contains(&de) => 0,
+            4 if ![5, 6].contains(&de) => 0,
+            5 => {
+                if de == 4 {
+                    4
+                } else if de == 2 || de == 11 {
+                    2
+                } else if de != 6 {
+                    0
+                } else {
+                    5
+                }
+            }
+            6 => {
+                if [2, 4, 5, 11].contains(&de) {
+                    de
+                } else {
+                    0
+                }
+            }
+            11 => {
+                if de == 2 || de == 5 {
+                    2
+                } else if de != 6 {
+                    0
+                } else {
+                    11
+                }
+            }
+            d => d,
+        };
+    }
+    if de_option > 19 {
+        de_option = 20;
+    }
+    de_option
+}
+
 /// `CheckFormulaOptions` – combine the DE options of all used formulas.
 fn combine_de_options(slots: &[HybridSlot], end_to: usize) -> i32 {
     combine_de_options_range(slots, 0, end_to)
@@ -183,28 +244,49 @@ impl CalcParams {
     pub fn new(sc: &Scene) -> Result<CalcParams, String> {
         let width = sc.width;
         let height = sc.height;
-        if sc.formulas.iter().all(|f| f.iterations == 0) {
+        // interpolation hybrid: the two first formulas with their weights
+        // (normalised to a sum of 1 like in GetMCTparasFromHeader)
+        let ipol: Option<[f32; 2]> = match sc.interpolation {
+            Some(w) => {
+                if sc.formulas.len() < 2 {
+                    return Err("an interpolation hybrid needs two formulas".into());
+                }
+                let (mut x1, mut x2) = (w[0], w[1]);
+                let mut y1 = x1 + x2;
+                if y1 < 1e-10 {
+                    y1 = 1.0;
+                    x1 = 1.0;
+                    x2 = 0.0;
+                } else {
+                    y1 = 1.0 / y1;
+                }
+                Some([x1 * y1, x2 * y1])
+            }
+            None => None,
+        };
+        if ipol.is_none() && sc.formulas.iter().all(|f| f.iterations == 0) {
             return Err("no formula with iterations > 0".into());
         }
         // hybrid slots (empty slots get 0 iterations)
         let mut slots: Vec<HybridSlot> = sc
             .formulas
             .iter()
-            .take(6)
+            .take(if ipol.is_some() { 2 } else { 6 })
             .map(|f| HybridSlot {
                 formula: f.formula.clone(),
-                iterations: f.iterations.abs(),
-                uncounted: f.iterations < 0,
+                iterations: if ipol.is_some() { 1 } else { f.iterations.abs() },
+                uncounted: ipol.is_none() && f.iterations < 0,
                 ade: false,
             })
             .collect();
+        let dc_scene = if ipol.is_some() { None } else { sc.decomb };
         // CheckHybridOptions: end = last slot with iterations
         let mut last = slots.len() - 1;
         while last > 0 && slots[last].iterations == 0 {
             last -= 1;
         }
         slots.truncate(last + 1);
-        let dc = sc.decomb.filter(|d| d.end1 < last && d.start2 <= last);
+        let dc = dc_scene.filter(|d| d.end1 < last && d.start2 <= last);
         let end_to = match &dc {
             Some(d) => d.end1.min(last),
             None => last,
@@ -248,10 +330,23 @@ impl CalcParams {
             }
             de_option = 20;
         }
-        if de_option < 0 {
+        if de_option < 0 && ipol.is_none() {
             return Err("formula option is not valid".into());
         }
-        let mode = if (4..=6).contains(&de_option) { HybridMode::Alt4D } else { HybridMode::Alt3D };
+        let mut mode = if (4..=6).contains(&de_option) { HybridMode::Alt4D } else { HybridMode::Alt3D };
+        if let Some(w) = ipol {
+            // CheckDEoption(0, 1)
+            let _ = w;
+            de_option = ipol_de_option(&slots, sc.interpolation.unwrap_or_default());
+            if de_option >= 20 {
+                return Err("dIFS formulas do not work in an interpolation hybrid".into());
+            }
+            if de_option < 0 {
+                return Err("formula option is not valid".into());
+            }
+            mode = if (4..=6).contains(&de_option) { HybridMode::Ipol4D } else { HybridMode::Ipol3D };
+        }
+        let mode = mode;
         let is_custom_de = [2, 5, 6, 11, 20].contains(&de_option);
         let difs = de_option == 20;
         // second part of a DE combination
@@ -314,11 +409,15 @@ impl CalcParams {
             let sip = s.formula.si_pow();
             let z1 = if sip > 1.0 { sip } else { s.formula.first_option() };
             fhln[x] = (1.0 / f64::max(2.0, z1.abs()).ln()) as f32;
-            let z1 = s.iterations as f64;
+            // interpolation hybrid: weighted by the weights, counted once
+            let (z1, cnt) = match ipol {
+                Some(w) => (w[x] as f64, 1.0),
+                None => (s.iterations as f64, s.iterations as f64),
+            };
             let j = s.formula.de_option();
             if is_custom_de && (j == 5 || j == 11) {
-                n += z1;
-                i += z1;
+                n += cnt;
+                i += cnt;
                 let mut x2 = s.formula.first_option();
                 if x2 == 0.0 {
                     x2 = 1e-40;
@@ -329,8 +428,8 @@ impl CalcParams {
                     x1 += (x2 * 1.2 + 1.0) / x2 * z1;
                 }
                 y1 += x2.abs() * z1;
-            } else if j >= 0 {
-                n += z1;
+            } else if j >= 0 || ipol.is_some() {
+                n += cnt;
                 x1 += if is_custom_de { s.formula.ade_scale() } else { s.formula.de_scale() } * z1;
             }
         }
@@ -343,7 +442,7 @@ impl CalcParams {
                 d_de_scale2 = x1 / n;
             }
         } else if n > 0.0 && de_option != 20 {
-            d_de_scale = x1 / n;
+            d_de_scale = if ipol.is_some() { x1 } else { x1 / n };
         }
         if n > 0.0 && i > 0.0 {
             d_col_plus = ((y1 / i).abs().powf(0.25) * 40.0 - 49.0) as f32;
@@ -352,8 +451,12 @@ impl CalcParams {
         let mut col_var = 0.6f32;
         {
             let (mut y1, mut z1) = (0f64, 0f64);
-            for s in slots.iter().filter(|s| s.iterations > 0) {
-                let x2 = s.iterations as f64;
+            for (x, s) in slots.iter().enumerate() {
+                let x2 = match ipol {
+                    Some(w) => w[x] as f64,
+                    None if s.iterations > 0 => s.iterations as f64,
+                    None => continue,
+                };
                 let de = s.formula.de_option();
                 if de == 0 || de == 4 {
                     y1 += x2 * 0.6;
@@ -431,8 +534,17 @@ impl CalcParams {
             (width as f64 * 0.5, height as f64 * 0.5)
         };
         // z1 := (dZstart - dZmid) / StepWidth
-        let z1 = (sc.z_start - sc.mid[2]) / step_width;
-        let vgrads = normalise_matrix_to(step_width, &sc.vgrads);
+        // 2D: the plane at Z start, the middle or Z end, with the pixel
+        // spacing of the perspective there
+        let (z1, x2) = match sc.slice_2d {
+            0 | 1 => ((sc.z_start - sc.mid[2]) / step_width, step_width),
+            3 => {
+                let x2 = step_width * (1.0 + fov_y.sin() * zend / height as f64);
+                ((sc.z_end - sc.mid[2]) / x2, x2)
+            }
+            _ => (0.0, step_width * (1.0 + fov_y.sin() * (sc.mid[2] - sc.z_start) / (step_width * height as f64))),
+        };
+        let vgrads = normalise_matrix_to(x2, &sc.vgrads);
         let mut ystart = [0.0; 3];
         for k in 0..3 {
             ystart[k] = sc.mid[k] + z1 * vgrads[2][k] - yh * vgrads[1][k] - xh * vgrads[0][k];
@@ -487,6 +599,9 @@ impl CalcParams {
         Ok(CalcParams {
             slots,
             mode,
+            ipol: ipol.unwrap_or([1.0, 0.0]),
+            color_on_it: sc.color_on_it,
+            slice_2d: sc.slice_2d.min(3),
             is_custom_de,
             de_option,
             difs,
@@ -581,6 +696,7 @@ impl CalcParams {
             first_it: 0,
             dfree: [0.0; 2],
             emu: self.machine.as_ref().map(|m| Box::new(self.init_machine(m))),
+            ipol: self.ipol,
         }
     }
 
@@ -666,7 +782,7 @@ impl<'a> Marcher<'a> {
         self.it.c = pos;
         self.it.calc_sit = false;
         if self.p.is_custom_de && !self.p.difs {
-            self.it.hybrid_3d_de(&self.p.slots);
+            self.it.mand_function_de(self.p.mode, &self.p.slots);
         } else {
             self.mand_function();
         }
@@ -852,7 +968,7 @@ impl<'a> Marcher<'a> {
             }
             return r;
         } else if part.is_custom_de {
-            result = self.it.hybrid_3d_de(&p.slots) * part.d_de_scale as f64;
+            result = self.it.mand_function_de(part.mode, &p.slots) * part.d_de_scale as f64;
         } else {
             self.it.mand_function(part.mode, &p.slots);
             if self.inside && self.it.it_result == self.it.max_it {
@@ -1234,6 +1350,65 @@ impl<'a> Marcher<'a> {
         nn
     }
 
+    /// `doColorOnIt`: colour on the start vector (1) or on the vector after
+    /// `ColorOnIt - 1` iterations.
+    fn do_color_on_it(&mut self) {
+        let p = self.p;
+        if p.color_on_it == 1 {
+            self.it.v[0] = self.it.c[0];
+            self.it.v[1] = self.it.c[1];
+            self.it.v[2] = self.it.c[2];
+        } else {
+            let i = self.it.max_it;
+            self.it.max_it = p.color_on_it as i32 - 1;
+            self.it.rstop = p.rstop3d;
+            self.calc_de();
+            self.it.max_it = i;
+            self.it.rstop = p.d_rstop;
+        }
+    }
+
+    /// `T2DcalcThread`: one pixel of a 2D calculation, the iteration
+    /// colouring of the plane with a flat normal.
+    pub fn slice_pixel(&mut self, x: i32, y: i32) -> SiLight {
+        let p = self.p;
+        let mut si = SiLight {
+            normal: [0, 0, -32768],
+            zpos_fine: 0x4E20_0000,
+            shadow: 0x0010,
+            amb_shadow: 0x1388,
+            si_gradient: 0,
+            otrap: 0,
+        };
+        self.inside = false;
+        self.calc_inside = false;
+        self.it.calc_sit = true;
+        for k in 0..3 {
+            self.it.c[k] = p.ystart[k] + y as f64 * p.vgrads[1][k] + x as f64 * p.vgrads[0][k];
+        }
+        self.mand_function();
+        if p.color_on_it != 0 {
+            self.do_color_on_it();
+        }
+        self.do_color(&mut si);
+        if p.decomb.is_some() {
+            // colour on the DE
+            let s = (self.calc_de() * 40.0).abs() as f32;
+            if self.it.it_result < self.max_its_result {
+                si.si_gradient = min_max_clip_15bit(s);
+                si.normal[1] = 5000;
+            } else {
+                si.si_gradient = (s.clamp(0.0, 32767.0).round_ties_even() as u16) | 32768;
+            }
+        } else if self.it.it_result < p.max_it {
+            si.si_gradient = min_max_clip_15bit(self.it.smooth_it * 32767.0 / p.max_it as f32);
+            si.normal[1] = 5000;
+        } else {
+            si.si_gradient = si.otrap.wrapping_add(32768);
+        }
+        si
+    }
+
     /// `RMdoColor` – the orbit trap / 2nd colour choice.
     fn do_color(&self, si: &mut SiLight) {
         let it = &self.it;
@@ -1405,6 +1580,9 @@ impl<'a> Marcher<'a> {
         }
         if self.it.it_result >= self.max_its_result || dtmp < self.ms_de_stop as f64 {
             // already inside the set at the start plane (or the cutting plane)
+            if p.color_on_it != 0 {
+                self.do_color_on_it();
+            }
             self.calc_nangles_for_cut(&mut si, cut_plane);
             self.do_color(&mut si);
             if p.color_option > 4 {
@@ -1524,6 +1702,9 @@ impl<'a> Marcher<'a> {
                     32767.0 - nn * p.mcts_m
                 };
                 si.si_gradient = min_max_clip_15bit(v);
+                if p.color_on_it != 0 {
+                    self.do_color_on_it();
+                }
                 self.do_color(&mut si);
                 self.calc_zpos_and_rough(&mut si);
                 if p.in_and_outside && !self.inside {

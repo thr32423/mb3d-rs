@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 const OPTION_TYPES: &str = ".DOUBLE.SINGLE.INTEGER.DOUBLEANGLE.SINGLEANGLE.3DOUBLEANGLES.3SINGLEANGLES.BOXSCALE.FOLDING.DSQUARE.NOVARIABLE.FOLDING16.6SINGLEANGLES.DRECIPRO.2DOUBLES..DSQRRECI..2SINGLES..4SINGLES..3SCALESANGLES.SCALESROT.2INTEGER..SRECI2....DRECI2.";
 
 /// Bytes of the option buffer used per option type (`MemNeeded`).
-const MEM_NEEDED: [usize; 23] = [8, 4, 4, 16, 8, 72, 36, 16, 40, 8, 0, 32, 64, 8, 16, 8, 8, 16, 36, 8, 8, 8, 16];
+pub const MEM_NEEDED: [usize; 23] = [8, 4, 4, 16, 8, 72, 36, 16, 40, 8, 0, 32, 64, 8, 16, 8, 8, 16, 36, 8, 8, 8, 16];
 
 /// Offset of `pConstPointer16` inside the 1024 byte variable buffer.
 pub const CONST_OFFSET: usize = 256;
@@ -58,6 +58,13 @@ pub struct M3f {
     pub consts: Vec<u8>,
     pub code: Vec<u8>,
     pub description: String,
+    /// `[SOURCE]` formulas: the Pascal source, compiled
+    pub source: String,
+    pub jit: Option<std::sync::Arc<crate::jit::Program>>,
+    /// names of the options as MB3D's JIT preprocessor sees them
+    pub param_names: Vec<String>,
+    /// named constants (`.Double name = value`)
+    pub const_defs: Vec<crate::jit::ConstDef>,
 }
 
 /// `StrFirstWord`: text up to '=' and then up to the first space.
@@ -115,6 +122,10 @@ impl M3f {
             consts: Vec::new(),
             code: Vec::new(),
             description: String::new(),
+            source: String::new(),
+            jit: None,
+            param_names: Vec::new(),
+            const_defs: Vec::new(),
         };
         let mut lines = text.lines().map(|l| l.trim()).filter(|l| !l.is_empty()).peekable();
         let mut s = lines.next().unwrap_or("").to_string();
@@ -161,6 +172,9 @@ impl M3f {
                         let ty = ((n + 8) / 10) as u8;
                         let val = num().unwrap_or(0.0);
                         let oname = second_word(&s);
+                        if ty != 12 {
+                            f.param_names.push(oname.clone());
+                        }
                         match ty {
                             12 => {
                                 for sfx in [" YZ", " XZ", " XY", " XW", " YW", " ZW"] {
@@ -207,6 +221,16 @@ impl M3f {
                 let n = "DOUBLINTINT64SINGLE".find(&up5(body)).map(|i| i + 1).unwrap_or(0);
                 let mut slot = [0u8; 8];
                 let lw = last_word(&s);
+                let cname = if s.len() > 1 && s.starts_with('.') {
+                    second_word(&s)
+                } else {
+                    // TJITFormula.NextValueName
+                    let mut k = 0;
+                    while f.const_defs.iter().any(|c| c.name == format!("Const{k}")) {
+                        k += 1;
+                    }
+                    format!("Const{k}")
+                };
                 match n {
                     1 => slot = parse_f(lw).unwrap_or(0.0).to_le_bytes(),
                     6 => slot[..4].copy_from_slice(&(parse_int(lw) as i32).to_le_bytes()),
@@ -214,12 +238,39 @@ impl M3f {
                     14 => slot[..4].copy_from_slice(&(parse_f(lw).unwrap_or(0.0) as f32).to_le_bytes()),
                     _ => continue,
                 }
+                let ty = match n {
+                    6 => 1,
+                    9 => 2,
+                    14 => 3,
+                    _ => 0,
+                };
+                f.const_defs.push(crate::jit::ConstDef { name: cname, ty });
                 consts.extend_from_slice(&slot);
             }
             f.consts = consts;
         }
         if s.eq_ignore_ascii_case("[SOURCE]") {
-            return Err(format!("{name}: formulas with [SOURCE] (JIT compiled Pascal) are not supported"));
+            // the raw lines up to the next section (comments and line numbers intact)
+            let raw: Vec<&str> = text.lines().collect();
+            let start = raw.iter().position(|l| l.trim().eq_ignore_ascii_case("[SOURCE]")).unwrap_or(0) + 1;
+            let mut src = Vec::new();
+            let mut end = raw.len();
+            for (k, l) in raw.iter().enumerate().skip(start) {
+                let t = l.trim();
+                if t.len() > 1 && t.starts_with('[') && t.ends_with(']') {
+                    end = k;
+                    break;
+                }
+                src.push(*l);
+            }
+            f.source = src.join("\n");
+            f.description = raw.get(end + 1..).map(|r| r.join("\n")).unwrap_or_default();
+            if f.consts.len() > VAR_BUFFER_SIZE - CONST_OFFSET {
+                f.consts.truncate(VAR_BUFFER_SIZE - CONST_OFFSET);
+            }
+            let prog = crate::jit::Program::compile(&f, &f.source).map_err(|e| format!("{name}: {e}"))?;
+            f.jit = Some(std::sync::Arc::new(prog));
+            return Ok(f);
         }
         if s.eq_ignore_ascii_case("[CODE]") {
             let mut code = Vec::new();

@@ -34,7 +34,7 @@ pub enum HybridMode {
 }
 
 /// The per-thread iteration state, a subset of `TIteration3Dext`.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Iteration {
     /// Iterated vector x, y, z, w.
     pub v: [f64; 4],
@@ -115,8 +115,11 @@ impl Iteration {
                 }
             }
             let slot = &slots[n];
-            if let Formula::Custom(_) = slot.formula {
-                self.run_custom(n);
+            if let Formula::Custom(c) = &slot.formula {
+                match &c.def.jit {
+                    Some(p) => p.run(self, &c.def, &c.values),
+                    None => self.run_custom(n),
+                }
             } else {
                 slot.formula.iterate(&mut self.v, &mut self.j, self.rout, slot.ade);
             }

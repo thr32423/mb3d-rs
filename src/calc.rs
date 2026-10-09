@@ -215,11 +215,12 @@ impl CalcParams {
         }
 
         // interpreter for .m3f formulas
-        let machine = if slots.iter().any(|s| matches!(s.formula, crate::formulas::Formula::Custom(_))) {
+        let is_x86 = |f: &crate::formulas::Formula| matches!(f, crate::formulas::Formula::Custom(c) if c.def.jit.is_none());
+        let machine = if slots.iter().any(|s| is_x86(&s.formula)) {
             let cfs: Vec<Option<&crate::custom::CustomFormula>> = slots
                 .iter()
                 .map(|s| match &s.formula {
-                    crate::formulas::Formula::Custom(c) => Some(&**c),
+                    crate::formulas::Formula::Custom(c) if c.def.jit.is_none() => Some(&**c),
                     _ => None,
                 })
                 .collect();

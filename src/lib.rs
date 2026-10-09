@@ -38,6 +38,7 @@ pub mod gbuffer;
 pub mod gui;
 pub mod image;
 pub mod iteration;
+pub mod jit;
 pub mod lighting;
 pub mod m3f;
 pub mod m3p;

@@ -119,7 +119,7 @@ pub fn formula_names() -> &'static [(String, Category)] {
         for name in crate::formulas::list_custom() {
             if let Ok(def) = crate::formulas::load_custom(&name) {
                 // [SOURCE] formulas cannot run here
-                if !def.code.is_empty() {
+                if !def.code.is_empty() || def.jit.is_some() {
                     v.push((name, category_of_de(def.de_option)));
                 }
             }

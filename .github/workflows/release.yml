@@ -20,9 +20,17 @@ jobs:
           - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, exe: mb3d }
           - { os: windows-latest, target: x86_64-pc-windows-msvc, exe: mb3d.exe }
           - { os: macos-latest, target: aarch64-apple-darwin, exe: mb3d }
-          - { os: macos-13, target: x86_64-apple-darwin, exe: mb3d }
+          # Intel Macs: cross-compiled on the Apple silicon runner (the
+          # Intel macOS runners are retired)
+          - { os: macos-latest, target: x86_64-apple-darwin, exe: mb3d }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      # the original Mandelbulb3D folder (formulas, maps, parameters, sources)
+      # is shipped next to the program
+      - uses: actions/checkout@v7
+        with:
+          repository: thargor6/mb3d
+          path: mb3d-original
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -33,20 +41,42 @@ jobs:
         run: |
           name=mb3d-rs-${GITHUB_REF_NAME}-${{ matrix.target }}
           mkdir -p "$name"
+          # the folder looks like a Mandelbulb3D installation: the program next
+          # to MB3D's data folders and documentation, MB3D's working folders,
+          # and the rest of the original repository (Delphi sources, project
+          # files) in MB3D-sources/
+          (cd mb3d-original && echo "https://github.com/thargor6/mb3d commit $(git rev-parse HEAD)" > ../MB3D-SOURCE.txt)
+          rm -rf mb3d-original/.git
+          mv mb3d-original "$name/MB3D-sources"
+          for item in M3Formulas M3Maps M3Parameter EM_JIT_M3Formulas License.txt CHANGELOG.txt \
+                      Mandelbulb3DMSeq.ini Style.vsf README_*.txt *.jpg; do
+            for f in "$name"/MB3D-sources/$item; do [ -e "$f" ] && mv "$f" "$name"/; done
+          done
+          mv "$name/MB3D-sources/README.md" "$name/README-MB3D.md"
+          for d in History Meshes BigRenders; do mkdir -p "$name/$d"; done
+          echo "Parameters of every image calculated with \"Calculate 3D\" (one folder per day), as in MB3D." > "$name/History/README.txt"
+          echo "Meshes exported with BTracer2 (mb3d gui) are also saved here." > "$name/Meshes/README.txt"
+          echo "Folder for big renders (tiles), as in MB3D." > "$name/BigRenders/README.txt"
+          mv MB3D-SOURCE.txt "$name"/
           cp target/${{ matrix.target }}/release/${{ matrix.exe }} README.md GETTING_STARTED.md LICENSE "$name"/
-          cp -r examples/*.m3s "$name"/
+          mkdir -p "$name/examples"
+          cp examples/*.m3s "$name/examples"/
           if [ "${{ runner.os }}" = "Windows" ]; then 7z a "$name.zip" "$name" > /dev/null; else tar czf "$name.tar.gz" "$name"; fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.target }}
-          path: mb3d-rs-*.*
+          path: |
+            mb3d-rs-*.tar.gz
+            mb3d-rs-*.zip
+          if-no-files-found: error
 
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    # publish what was built even if one platform failed
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true

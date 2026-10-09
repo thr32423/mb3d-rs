@@ -30,21 +30,35 @@ before the first start.
 
 ## 2. Get MB3D's formulas and maps
 
-The built-in formulas (Integer Power, Amazing Box, Quaternion, ...) work
-without anything else. Most parameter files use MB3D's formula files
-(`.m3f`) and maps (images), which come with MB3D:
+The release archives are laid out like a Mandelbulb3D installation, with
+the whole original Mandelbulb3D repository (from
+[thargor6/mb3d](https://github.com/thargor6/mb3d), see `MB3D-SOURCE.txt`):
+
+```
+mb3d(.exe)            this program
+M3Formulas/           MB3D's formula files
+M3Maps/               maps for light maps, colour maps and backgrounds
+M3Parameter/          80 example parameter files
+EM_JIT_M3Formulas/    more JIT formulas
+History/              parameters of every "Calculate 3D" (as in MB3D)
+Meshes/               meshes from BTracer2
+BigRenders/           big renders
+MB3D-sources/         MB3D's Delphi sources and project files
+README-MB3D.md, README_1.*.txt, CHANGELOG.txt, License.txt   MB3D's documents
+examples/             scenes in this port's .m3s format
+```
+
+Nothing else is needed: the program finds the formulas and maps next to
+itself.
+
+When you build mb3d yourself, get the same folders with
 
 ```sh
 git clone https://github.com/thargor6/mb3d
 ```
 
-(or download the repository as a ZIP from GitHub). You need its folders
-
-* `M3Formulas` — the formula files (`*.m3f`, about 460 of them),
-* `M3Maps` — the maps for light maps, colour maps and backgrounds,
-* `M3Parameter` — 80 example parameter files (`*.m3p`), a good start.
-
-An existing MB3D installation has the same folders.
+(or download the repository as a ZIP from GitHub), or use an existing MB3D
+installation, which has the same folders.
 
 ### Where mb3d looks for them
 

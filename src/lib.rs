@@ -26,6 +26,7 @@
 //! | `frames`    | Animation.pas (`Timer2Timer`), Mand.pas (`DoSaveAniImage`): frame rendering, output files |
 
 pub mod anim;
+pub mod appdirs;
 pub mod animfile;
 pub mod batch;
 pub mod calc;

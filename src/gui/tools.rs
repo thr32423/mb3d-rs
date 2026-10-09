@@ -324,7 +324,13 @@ pub(super) fn export_start(app: &Arc<App>, q: &HashMap<String, String>) -> Resul
                     m.faces.len(),
                     if open == 0 { ", closed".to_string() } else { format!(", {open} of {edges} edges open") }
                 );
-                Ok((msg, Some((format!("{name}.{fmt}"), Arc::new(buf))), String::new()))
+                // also into MB3D's Meshes folder next to the program
+                let path = crate::appdirs::work_folder("Meshes").join(format!("{name}.{fmt}"));
+                let folder = match std::fs::write(&path, &buf) {
+                    Ok(()) => path.display().to_string(),
+                    Err(_) => String::new(),
+                };
+                Ok((msg, Some((format!("{name}.{fmt}"), Arc::new(buf))), folder))
             })
         };
         let mut e = t.export.lock().unwrap();

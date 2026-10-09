@@ -783,6 +783,10 @@ fn parse_light(r: &Rd, w: &mut Vec<String>) -> Lighting {
             specular: [spe as u8, (spe >> 8) as u8, (spe >> 16) as u8],
         };
     }
+    let alpha: [u8; 10] = std::array::from_fn(|i| (r.u32(b + 260 + i * 10 + 6) >> 24) as u8);
+    if (0..10).any(|i| alpha[i] != l.palette_alpha(i)) {
+        l.palette_alpha = Some(alpha);
+    }
     for i in 0..4 {
         let o = b + 360 + i * 6;
         let c = r.u32(o + 2);
@@ -1030,7 +1034,7 @@ pub fn write(sc: &Scene) -> Vec<u8> {
         pu16(&mut d, o, c.position);
         prgb(&mut d, o + 2, c.diffuse);
         prgb(&mut d, o + 6, c.specular);
-        d[o + 9] = c.specular[0].max(c.specular[1]).max(c.specular[2]);
+        d[o + 9] = l.palette_alpha(i);
     }
     for (i, (pos, c)) in l.interior.iter().enumerate() {
         let o = b + 360 + i * 6;

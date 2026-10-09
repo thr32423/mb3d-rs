@@ -149,6 +149,10 @@ pub struct Lighting {
     pub bg_add_light: bool,
     /// Interior colour specular amounts (alpha byte of `ICols`)
     pub interior_spec: [u8; 4],
+    /// Alpha byte of the palette's specular colours (`LCols[].ColorSpe shr
+    /// 24`): the transparency of the Monte Carlo renderer.  None = MB3D's
+    /// default, the brightest specular component.
+    pub palette_alpha: Option<[u8; 10]>,
     /// "Internal gamma 2": light calculation in squared colour space
     /// (`AdditionalOptions` bit 0, `CalcPixelColorSqr`)
     pub internal_gamma2: bool,
@@ -267,6 +271,7 @@ impl Default for Lighting {
             bg_brightness: 40,
             bg_add_light: false,
             interior_spec: [160; 4],
+            palette_alpha: None,
             internal_gamma2: false,
             no_col_ipol: false,
             amb_rel_obj: false,
@@ -308,6 +313,17 @@ struct PaintMap {
 }
 
 impl Lighting {
+    /// The alpha byte of palette entry `i` (see [`Lighting::palette_alpha`]).
+    pub fn palette_alpha(&self, i: usize) -> u8 {
+        match self.palette_alpha {
+            Some(a) => a[i],
+            None => {
+                let s = self.palette[i].specular;
+                s[0].max(s[1]).max(s[2])
+            }
+        }
+    }
+
     /// Replace the surface palette by evenly spaced colours (diffuse only,
     /// specular = a lighter tint).
     pub fn set_palette(&mut self, cols: &[[u8; 3]]) {
@@ -501,6 +517,8 @@ pub struct LightVals {
     s_gamma: f32,
     col_dif: [SVec; 10],
     col_spe: [SVec; 10],
+    /// alpha of the specular colours (transparency in the MC renderer)
+    col_spe_a: [f32; 10],
     col_pos: [i32; 10],
     s_c_div: [f32; 10],
     col_int: [SVec; 4],
@@ -932,10 +950,13 @@ impl LightVals {
         }
         let mut col_dif = [[0f32; 3]; 10];
         let mut col_spe = [[0f32; 3]; 10];
+        let mut col_spe_a = [0f32; 10];
         let mut col_pos = [0i32; 10];
         for i in 0..10 {
             col_dif[i] = pcol(l.palette[i].diffuse);
             col_spe[i] = pcol(l.palette[i].specular);
+            let a = l.palette_alpha(i) as f32;
+            col_spe_a[i] = if sqr { a * a * 0.0000153787 } else { a / 255.0 };
             col_pos[i] = l.palette[i].position as i32;
         }
         let mut s_c_div = [1f32; 10];
@@ -1019,6 +1040,7 @@ impl LightVals {
             s_gamma,
             col_dif,
             col_spe,
+            col_spe_a,
             col_pos,
             s_c_div,
             col_int,
@@ -1219,6 +1241,7 @@ impl LightVals {
         for i in 0..10 {
             self.col_dif[i] = lin_sv(&|k| k.col_dif[i]);
             self.col_spe[i] = lin_sv(&|k| k.col_spe[i]);
+            self.col_spe_a[i] = lin(&|k| k.col_spe_a[i]);
             self.col_pos[i] = (lin(&|k| k.col_pos[i] as f32).round() as i32).clamp(0, 32767);
             self.s_c_div[i] = lin(&|k| k.s_c_div[i]).clamp(0.0, 1.0);
         }

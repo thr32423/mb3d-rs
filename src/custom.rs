@@ -128,7 +128,8 @@ fn host_map(m: &mut Machine, sphere: bool) -> Result<(), EmuError> {
             if sphere {
                 let l = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt().max(1e-300);
                 let d = [v[0] / l, v[1] / l, v[2] / l];
-                let x = d[0].atan2(d[1]) * (0.5 / std::f64::consts::PI) + 0.5;
+                // MPi05d = -0.5 / Pi
+                let x = d[0].atan2(d[1]) * (-0.5 / std::f64::consts::PI) + 0.5;
                 let y = 0.5 - d[2].clamp(-1.0, 1.0).asin() / std::f64::consts::PI;
                 lm.spline_px((x * w).clamp(0.0, w), (y * h).clamp(0.0, h))
             } else {

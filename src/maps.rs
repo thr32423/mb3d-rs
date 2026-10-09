@@ -225,9 +225,41 @@ impl LightMap {
                 s[0] * m[0][2] + s[1] * m[1][2] + s[2] * m[2][2],
             ];
         }
-        let x = s[0].atan2(s[2]) * (0.5 / std::f32::consts::PI) + 0.5;
+        // MB3D: ArcTan2(sv[0], sv[2]) * MPi05d + 0.5 (MPi05d = -0.5 / Pi)
+        let x = s[0].atan2(s[2]) * (-0.5 / std::f32::consts::PI) + 0.5;
         let y = 0.5 - s[1].clamp(-1.0, 1.0).asin() / std::f32::consts::PI;
         self.pixel_t(x, y, 2, sqr)
+    }
+
+    /// `GetLightMapPixelNN`: nearest neighbour lookup (x, y in 0..1).
+    pub fn pixel_nn(&self, x: f32, y: f32, sqr: bool) -> [f32; 3] {
+        if self.width == 0 || self.height == 0 {
+            return [0.0; 3];
+        }
+        let xf = (x.clamp(0.0, 1.0) * self.width as f32).round_ties_even() as usize;
+        let yf = (y.clamp(0.0, 1.0) * self.height as f32).round_ties_even() as usize;
+        let p = self.at(xf.min(self.width), yf.min(self.height));
+        if sqr {
+            p.map(|v| v * v * (1.0 / 65025.0))
+        } else {
+            p.map(|v| v * (1.0 / 255.0))
+        }
+    }
+
+    /// `GetLightMapPixelSphereNN`
+    pub fn sphere_pixel_nn(&self, v: [f32; 3], rot: Option<&[[f32; 3]; 3]>, sqr: bool) -> [f32; 3] {
+        let l = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt().max(1e-30);
+        let mut s = [v[0] / l, v[1] / l, v[2] / l];
+        if let Some(m) = rot {
+            s = [
+                s[0] * m[0][0] + s[1] * m[1][0] + s[2] * m[2][0],
+                s[0] * m[0][1] + s[1] * m[1][1] + s[2] * m[2][1],
+                s[0] * m[0][2] + s[1] * m[1][2] + s[2] * m[2][2],
+            ];
+        }
+        let x = s[0].atan2(s[2]) * (-0.5 / std::f32::consts::PI) + 0.5;
+        let y = 0.5 - s[1].clamp(-1.0, 1.0).asin() / std::f32::consts::PI;
+        self.pixel_nn(x, y, sqr)
     }
 }
 

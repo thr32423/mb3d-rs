@@ -497,6 +497,10 @@ impl Scene {
         let _ = writeln!(t, "interior_start = {}\ninterior_end = {}\ndiffuse_shadowing = {}", l.interior_start, l.interior_end, l.diffuse_shadowing);
         let pal: Vec<String> = l.palette.iter().map(|p| format!("{}:{}:{}", p.position, hex(p.diffuse), hex(p.specular))).collect();
         let _ = writeln!(t, "palette_full = {}", pal.join(", "));
+        if let Some(a) = l.palette_alpha {
+            let a: Vec<String> = a.iter().map(|v| v.to_string()).collect();
+            let _ = writeln!(t, "palette_alpha = {}", a.join(", "));
+        }
         let int: Vec<String> =
             l.interior.iter().zip(l.interior_spec).map(|((p, c), a)| format!("{}:{}:{}", p, hex(*c), a)).collect();
         let _ = writeln!(t, "interior_colors = {}", int.join(", "));
@@ -1161,6 +1165,13 @@ impl Scene {
                             if f.len() == 3 {
                                 s.lighting.interior_spec[i] = f[2].parse().map_err(|_| bad())?;
                             }
+                        }
+                    }
+                    "palette_alpha" | "palette_transparency" => {
+                        let v: Result<Vec<u8>, _> = val.split(',').map(|x| x.trim().parse::<u8>()).collect();
+                        match v {
+                            Ok(v) if v.len() == 10 => s.lighting.palette_alpha = Some(v.try_into().unwrap()),
+                            _ => return Err(err(format!("palette_alpha: 10 values 0..255 expected, got '{val}'"))),
                         }
                     }
                     "palette" => {

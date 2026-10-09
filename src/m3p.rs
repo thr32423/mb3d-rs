@@ -1171,6 +1171,23 @@ mod tests {
     use super::*;
 
     #[test]
+    fn m3i_round_trip() {
+        let mut sc = Scene::preset("Integer Power").unwrap();
+        sc.width = 24;
+        sc.height = 16;
+        let mut g = vec![crate::gbuffer::SiLight::default(); 24 * 16];
+        g[5].si_gradient = 1234;
+        g[5].normal = [1, -2, 3];
+        let d = write_m3i(&sc, &g);
+        assert_eq!(d.len(), HEADER_SIZE + 24 * 16 * 18 + ADDON_SIZE);
+        assert_eq!(&d[HEADER_SIZE + 5 * 18..HEADER_SIZE + 5 * 18 + 6], &[1, 0, 254, 255, 3, 0]);
+        let raw = raw_from_m3i(&d).unwrap();
+        let back = parse(&raw).unwrap().scene;
+        assert_eq!((back.width, back.height), (24, 16));
+        assert_eq!(back.formulas[0].formula.name(), "Integer Power");
+    }
+
+    #[test]
     fn text_parameters_round_trip() {
         let mut raw = vec![0u8; HEADER_SIZE + ADDON_SIZE];
         for (i, b) in raw.iter_mut().enumerate() {

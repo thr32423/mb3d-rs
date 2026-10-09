@@ -271,6 +271,8 @@ pub fn render_frame_to_file(
             c.finish(&raw)?;
             seconds += t0.elapsed().as_secs_f64();
         } else {
+            // map sequences show the image of the file index (AniFileIndex)
+            crate::maps::set_current_frame(a.file_index(frame) as i32);
             let mut s = frame_render_scene(a, frame, run)?;
             s.stereo_mode = mode;
             let img = render_scaled(&s, a.scale.max(1) as usize, a.save_depth, progress, cancel)?;

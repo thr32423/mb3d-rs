@@ -17,6 +17,7 @@ async function loadFormulas() {
     applyState(await api("/api/state"), true);
     for (const id of store.get("open", [])) if (WINDOWS[id]) openWin(id);
     await sendView(true);
+    api("/api/mapseq").then(m => { mapseq = m; $("frame").value = m.frame; }).catch(() => {});
     msg("mb3d-rs editor. Open parameters (top left), edit them in the Formulas, Lighting and Post processing windows, and press \"Calculate 3D\".", "n");
   } catch (e) { showError(e); }
   poll();

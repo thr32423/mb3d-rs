@@ -235,7 +235,7 @@ addEventListener("mousemove", e => {
   if (!drag) return;
   const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
   const vb = view.getBoundingClientRect();
-  if (mode === "zoom" && !pickCb && drag.button === 0) {
+  if ((mode === "zoom" || recalcOn) && !pickCb && drag.button === 0) {
     const w = Math.abs(dx), h = w * drag.r.height / drag.r.width;
     drag.maxw = Math.max(drag.maxw, w);
     const s = $("sel");
@@ -256,8 +256,19 @@ addEventListener("mouseup", async e => {
   const dx = e.clientX - d.x, dy = e.clientY - d.y, r = d.r;
   const W = gnum("width"), H = gnum("height");
   const k = W / r.width; // screen px -> image px
-  $("sel").style.display = "none";
+  if (!recalcOn) $("sel").style.display = "none";
   img.style.transform = "";
+  if (recalcOn && !pickCb) {
+    // "Recalculate a selection": the marked rectangle stays visible
+    if (d.sel && d.sel.w >= 4) {
+      const h = d.sel.w * r.height / r.width;
+      recalcSel = { u0: (d.sel.cx - d.sel.w / 2 - r.left) / r.width, v0: (d.sel.cy - h / 2 - r.top) / r.height,
+        u1: (d.sel.cx + d.sel.w / 2 - r.left) / r.width, v1: (d.sel.cy + h / 2 - r.top) / r.height };
+      $("sel").style.display = "block";
+      renderWin("postpro");
+    }
+    return;
+  }
   if (pickCb) {
     const { u, v } = uvOf(e, r);
     const cb = pickCb; endPick();

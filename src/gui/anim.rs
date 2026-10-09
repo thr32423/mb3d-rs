@@ -411,6 +411,8 @@ pub(super) fn start_flipbook(app: &Arc<App>, q: &HashMap<String, String>) -> Res
                 return;
             }
             st.flip_progress.store(0, Ordering::Relaxed);
+            // map sequences follow the frame number (AniPreviewWindow)
+            crate::maps::set_current_frame(f as i32 + 1);
             let r = crate::frames::frame_render_scene(&a, f, &run).and_then(|mut s| {
                 if fast {
                     // like MB3D's "fast + inaccurate" preview

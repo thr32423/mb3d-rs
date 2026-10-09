@@ -138,9 +138,23 @@ pub fn add_formula_dir(dir: PathBuf) {
 }
 
 /// Loads `<name>.m3f` from the formula directories (cached).
-pub fn load_custom(name: &str) -> Result<Arc<crate::m3f::M3f>, String> {
+fn custom_cache() -> &'static Mutex<Vec<Arc<crate::m3f::M3f>>> {
     static CACHE: OnceLock<Mutex<Vec<Arc<crate::m3f::M3f>>>> = OnceLock::new();
-    let cache = CACHE.get_or_init(|| Mutex::new(Vec::new()));
+    CACHE.get_or_init(|| Mutex::new(Vec::new()))
+}
+
+/// Drops a formula from the cache (after it was edited and saved).
+pub fn forget_custom(name: &str) {
+    custom_cache().lock().unwrap().retain(|f| !f.name.eq_ignore_ascii_case(name.trim()));
+}
+
+/// The file of a custom formula, if found in the formula directories.
+pub fn custom_path(name: &str) -> Option<PathBuf> {
+    crate::m3f::find_formula(name, &formula_dirs().lock().unwrap().clone())
+}
+
+pub fn load_custom(name: &str) -> Result<Arc<crate::m3f::M3f>, String> {
+    let cache = custom_cache();
     if let Some(f) = cache.lock().unwrap().iter().find(|f| f.name.eq_ignore_ascii_case(name.trim())) {
         return Ok(f.clone());
     }

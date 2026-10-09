@@ -70,6 +70,10 @@ enum Job {
     Final { gen: u64, aa: u32, big: Option<Big> },
     /// MB3D's quick 2D calculation of the plane at z start / mid / end
     Slice { gen: u64, view_w: u32, at: u8 },
+    /// "Recalculate a selection": part of the kept image (fractions left,
+    /// top, right, bottom) with the raystep divided, optionally keeping only
+    /// parts that come nearer
+    Recalc { gen: u64, sel: [f64; 4], div: f64, nearer: bool },
 }
 
 struct SceneState {
@@ -133,6 +137,9 @@ struct App {
     out: Mutex<Output>,
     pick: Mutex<Option<Pick>>,
     base: Mutex<Option<Arc<Base>>>,
+    /// the last "Calculate 3D" G-buffer, kept while previews of later
+    /// changes are shown (for "Recalculate a selection")
+    keep: Mutex<Option<Arc<Base>>>,
     /// progress of the running pass in 1/1000
     progress: AtomicU32,
     view_w: AtomicU32,
@@ -202,6 +209,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
         out: Mutex::new(Output::default()),
         pick: Mutex::new(None),
         base: Mutex::new(None),
+        keep: Mutex::new(None),
         progress: AtomicU32::new(0),
         view_w: AtomicU32::new(640),
         anim: anim::AnimState::new(),
@@ -310,6 +318,14 @@ fn post_sig(sc: &Scene) -> String {
     s.to_text()
 }
 
+fn set_base(app: &App, b: Base) {
+    let b = Arc::new(b);
+    if b.final_img {
+        *app.keep.lock().unwrap() = Some(b.clone());
+    }
+    *app.base.lock().unwrap() = Some(b);
+}
+
 fn needs_post(sc: &Scene, p: &CalcParams) -> bool {
     p.slice_2d == 0 && (sc.normals_on_zbuf || sc.shadows.is_some() || sc.ao.is_some())
 }
@@ -368,6 +384,15 @@ fn worker(app: Arc<App>) {
                 let s = final_scene(&sc, aa);
                 let stage = format!("calculated {}x{}{}", sc.width, sc.height, if aa > 1 { format!(", image scale 1:{aa}") } else { String::new() });
                 render_pass(&app, gen, &s, &stage, aa as usize, true, true);
+            }
+            Job::Recalc { gen, sel, div, nearer } => {
+                if let Err(e) = recalc_selection(&app, gen, &sc, sel, div, nearer) {
+                    let mut o = app.out.lock().unwrap();
+                    o.rendering = false;
+                    if e != "cancelled" {
+                        o.error = e;
+                    }
+                }
             }
             Job::Slice { gen, view_w, at } => {
                 let w = view_w.min(sc.width.max(16) as u32).max(16);
@@ -447,7 +472,7 @@ fn repaint(app: &App, gen: u64, b: &Arc<Base>, target: Scene) -> bool {
     publish(app, rgb, w, h, b.aa as usize, stage, b.final_img, info, t0);
     app.out.lock().unwrap().rendering = false;
     *app.pick.lock().unwrap() = Some(Pick { scene: target.clone(), params: b.params.clone(), gbuf: post.clone(), w, h });
-    *app.base.lock().unwrap() = Some(Arc::new(Base {
+    set_base(app, Base {
         final_img: b.final_img,
         aa: b.aa,
         calc_sig: b.calc_sig.clone(),
@@ -457,8 +482,78 @@ fn repaint(app: &App, gen: u64, b: &Arc<Base>, target: Scene) -> bool {
         params: b.params.clone(),
         raw: b.raw.clone(),
         post,
-    }));
+    });
     true
+}
+
+/// Recalculates a rectangle of the kept G-buffer with the current scene
+/// (PostProcessForm "Recalculate a selection") and repaints the image.
+fn recalc_selection(app: &App, gen: u64, sc: &Scene, sel: [f64; 4], div: f64, nearer: bool) -> Result<(), String> {
+    let b = app.keep.lock().unwrap().clone().ok_or("calculate the image first (Calculate 3D)")?;
+    let target = if b.final_img { final_scene(sc, b.aa) } else { preview_scene(sc, b.scene.width as u32, false) };
+    if target.width != b.scene.width || target.height != b.scene.height {
+        return Err("the image size changed: calculate the image again".into());
+    }
+    let raw = b.raw.clone().ok_or("the image is too big to keep its raw G-buffer")?;
+    let (w, h) = (target.width, target.height);
+    let px = |f: f64, n: i32| ((f.clamp(0.0, 1.0) * n as f64).round() as i32).clamp(0, n);
+    let (x0, y0, x1, y1) = (px(sel[0].min(sel[2]), w), px(sel[1].min(sel[3]), h), px(sel[0].max(sel[2]), w), px(sel[1].max(sel[3]), h));
+    if x1 - x0 < 1 || y1 - y0 < 1 {
+        return Err("mark a selection in the image first".into());
+    }
+    {
+        let mut o = app.out.lock().unwrap();
+        o.rendering = true;
+        o.stage = format!("recalculating {}x{} pixels", x1 - x0, y1 - y0);
+        o.error.clear();
+    }
+    let t0 = Instant::now();
+    let mut rs = target.clone();
+    rs.calc_rect = Some([x0, y0, x1 - x0, y1 - y0]);
+    rs.z_step_div = (rs.z_step_div / div.max(1.0)).max(1e-4);
+    let progress = |d: usize, t: usize| app.progress.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
+    let cancel = || app.gen.load(Ordering::SeqCst) != gen;
+    let (_, g) = crate::render::calculate_raw_cancellable(&rs, &progress, &cancel)?;
+    let mut merged = (*raw).clone();
+    let rw = (x1 - x0) as usize;
+    for y in 0..(y1 - y0) as usize {
+        for x in 0..rw {
+            let n = g[y * rw + x];
+            let o = &mut merged[(y0 as usize + y) * w as usize + x0 as usize + x];
+            if !nearer || n.zpos_fine < o.zpos_fine {
+                *o = n;
+            }
+        }
+    }
+    let p = CalcParams::new(&target)?;
+    let raw = Arc::new(merged);
+    let t1 = Instant::now();
+    let post = if needs_post(&target, &p) {
+        let mut g = (*raw).clone();
+        crate::render::post_process(&target, &p, &mut g, crate::render::thread_count(&target));
+        Arc::new(g)
+    } else {
+        raw.clone()
+    };
+    let t2 = Instant::now();
+    let rgb = crate::render::paint(&target, &p, &post);
+    let (wu, hu) = (w as usize, h as usize);
+    let info = info_json(&post, (t1 - t0).as_secs_f64(), (t2 - t1).as_secs_f64(), t2.elapsed().as_secs_f64(), wu / b.aa as usize, hu / b.aa as usize, b.final_img);
+    publish(app, rgb, wu, hu, b.aa as usize, "selection recalculated", b.final_img, info, t0);
+    app.out.lock().unwrap().rendering = false;
+    *app.pick.lock().unwrap() = Some(Pick { scene: target.clone(), params: p.clone(), gbuf: post.clone(), w: wu, h: hu });
+    set_base(app, Base {
+        final_img: b.final_img,
+        aa: b.aa,
+        calc_sig: calc_sig(&target),
+        post_sig: post_sig(&target),
+        full_sig: target.to_text(),
+        scene: target,
+        params: p,
+        raw: Some(raw),
+        post,
+    });
+    Ok(())
 }
 
 /// Renders one pass; false when cancelled or failed.  `keep` stores the
@@ -533,7 +628,7 @@ fn render_pass(app: &App, gen: u64, sc: &Scene, stage: &str, aa: usize, final_im
     *app.pick.lock().unwrap() = Some(Pick { scene: sc.clone(), params: p.clone(), gbuf: post.clone(), w, h });
     if keep {
         let raw = (Arc::ptr_eq(&raw, &post) || w * h <= MAX_KEPT_RAW).then_some(raw);
-        *app.base.lock().unwrap() = Some(Arc::new(Base {
+        set_base(app, Base {
             final_img,
             aa: aa as u32,
             calc_sig: calc_sig(sc),
@@ -543,7 +638,7 @@ fn render_pass(app: &App, gen: u64, sc: &Scene, stage: &str, aa: usize, final_im
             params: p,
             raw,
             post,
-        }));
+        });
     }
     true
 }
@@ -913,6 +1008,30 @@ fn status_json(app: &App) -> String {
     )
 }
 
+fn mapseq_json() -> String {
+    let list: Vec<String> = crate::maps::map_sequences()
+        .iter()
+        .map(|q| {
+            format!(
+                "{{\"channel\":{},\"filename\":{},\"first\":{},\"last\":{},\"increment\":{},\"loop\":{},\"current\":{}}}",
+                q.channel,
+                json_str(&q.filename),
+                q.first,
+                q.last,
+                q.increment,
+                q.looped,
+                json_str(&q.filename(crate::maps::current_frame()).unwrap_or_default())
+            )
+        })
+        .collect();
+    format!(
+        "{{\"list\":[{}],\"frame\":{},\"file\":{}}}",
+        list.join(","),
+        crate::maps::current_frame(),
+        json_str(&crate::maps::sequence_file().display().to_string())
+    )
+}
+
 fn dirs_json() -> String {
     let l = |v: Vec<std::path::PathBuf>| {
         json_list(&v.iter().map(|p| std::fs::canonicalize(p).unwrap_or(p.clone()).display().to_string()).collect::<Vec<_>>())
@@ -1007,6 +1126,80 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
             let gen = app.next_gen();
             app.queue(Job::Slice { gen, view_w: app.view_w.load(Ordering::Relaxed), at });
             ok_json(&mut stream, status_json(app))
+        }
+        ("POST", "/api/recalc") => {
+            let f = form();
+            let n = |k: &str, d: f64| f.get(k).and_then(|v| v.parse::<f64>().ok()).unwrap_or(d);
+            let gen = app.next_gen();
+            app.queue(Job::Recalc {
+                gen,
+                sel: [n("u0", 0.0), n("v0", 0.0), n("u1", 1.0), n("v1", 1.0)],
+                div: n("div", 1.0),
+                nearer: f.get("nearer").map(String::as_str) == Some("true"),
+            });
+            ok_json(&mut stream, status_json(app))
+        }
+        // ---- JIT formula editor
+        ("GET", "/api/jit") => {
+            let name = req.query.get("name").cloned().unwrap_or_default();
+            match crate::formulas::custom_path(&name).and_then(|p| std::fs::read(&p).ok().map(|d| (p, d))) {
+                Some((p, d)) => ok_json(&mut stream, format!("{{\"name\":{},\"file\":{},\"text\":{}}}",
+                    json_str(&name), json_str(&p.display().to_string()), json_str(&String::from_utf8_lossy(&d)))),
+                None => err_json(&mut stream, format!("formula '{name}' not found")),
+            }
+        }
+        ("POST", "/api/jit/compile") | ("POST", "/api/jit/save") => {
+            let name = req.query.get("name").map(|n| n.trim().to_string()).unwrap_or_default();
+            let text = String::from_utf8_lossy(&req.body).replace("\r\n", "\n");
+            let valid = !name.is_empty() && !name.contains(['/', '\\', '.', ':']);
+            let res = if !valid {
+                Err("give the formula a name (letters, digits, _ and -)".to_string())
+            } else if !text.contains("[SOURCE]") {
+                Err("a JIT formula needs a [SOURCE] section".to_string())
+            } else {
+                crate::m3f::M3f::parse(&name, &text).map(|f| (f.options.len(), f.de_option))
+            };
+            match res {
+                Err(e) => err_json(&mut stream, e),
+                Ok((n, de)) if req.path == "/api/jit/compile" => ok_json(&mut stream, format!("{{\"ok\":true,\"options\":{n},\"de\":{de}}}")),
+                Ok(_) => {
+                    // overwrite the file it came from, else the first formula folder
+                    let path = crate::formulas::custom_path(&name).unwrap_or_else(|| {
+                        let dirs = crate::formulas::formula_dir_list();
+                        let d = dirs.iter().find(|d| d.is_dir()).cloned().unwrap_or_else(|| "M3Formulas".into());
+                        d.join(format!("{name}.m3f"))
+                    });
+                    let w = path.parent().map(std::fs::create_dir_all).unwrap_or(Ok(())).and_then(|_| std::fs::write(&path, text.replace('\n', "\r\n")));
+                    match w {
+                        Ok(()) => {
+                            crate::formulas::forget_custom(&name);
+                            // rebuild the scene so that it uses the new code
+                            let sc = { let s = app.scene.lock().unwrap(); Scene::parse(&s.scene.to_text()) };
+                            if let Ok(sc) = sc { app.set_scene(sc); }
+                            ok_json(&mut stream, format!("{{\"ok\":true,\"file\":{}}}", json_str(&path.display().to_string())))
+                        }
+                        Err(e) => err_json(&mut stream, format!("{}: {e}", path.display())),
+                    }
+                }
+            }
+        }
+        // ---- map sequences
+        ("GET", "/api/mapseq") => ok_json(&mut stream, mapseq_json()),
+        ("POST", "/api/mapseq") => {
+            let text = String::from_utf8_lossy(&req.body).into_owned();
+            match crate::maps::set_map_sequences(crate::maps::parse_sequences(&text)) {
+                Ok(()) => {
+                    app.start(true);
+                    ok_json(&mut stream, mapseq_json())
+                }
+                Err(e) => err_json(&mut stream, e),
+            }
+        }
+        ("POST", "/api/frame") => {
+            let f = form().get("frame").and_then(|v| v.parse::<i32>().ok()).unwrap_or(1);
+            crate::maps::set_current_frame(f);
+            app.start(true);
+            ok_json(&mut stream, mapseq_json())
         }
         ("GET", "/api/pick") => match pick_json(app, &req.query) {
             Ok(j) => ok_json(&mut stream, j),

@@ -287,7 +287,14 @@ pub fn add_map_dir(dir: PathBuf) {
 
 /// The directories searched for maps (for the editor's "Ini Dirs").
 pub fn map_dir_list() -> Vec<PathBuf> {
-    search_dirs()
+    let mut v: Vec<PathBuf> = Vec::new();
+    for d in search_dirs() {
+        let c = std::fs::canonicalize(&d).unwrap_or(d);
+        if !v.contains(&c) {
+            v.push(c);
+        }
+    }
+    v
 }
 
 /// All directories searched, including `M3Maps` next to the formula dirs.
@@ -348,12 +355,145 @@ fn load_cached(key: String, find: impl FnOnce() -> Option<PathBuf>) -> Option<Ar
     m
 }
 
-/// Map number `nr` (`LoadLightMapNr`), cached.
+/// Map number `nr` (`LoadLightMapNr`), cached.  A map sequence for `nr`
+/// replaces it by the image of the current frame.
 pub fn by_number(nr: i32) -> Option<Arc<LightMap>> {
     if !(1..=32000).contains(&nr) {
         return None;
     }
+    if let Some(seq) = sequences().lock().unwrap().iter().find(|q| q.channel == nr).cloned() {
+        let name = seq.filename(current_frame())?;
+        let key = format!("s:{name}");
+        {
+            // keep only a few frames of sequences in memory
+            let mut c = cache().lock().unwrap();
+            if !c.contains_key(&key) && c.keys().filter(|k| k.starts_with("s:")).count() >= 16 {
+                c.retain(|k, _| !k.starts_with("s:"));
+            }
+        }
+        return load_cached(key, || {
+            let p = PathBuf::from(&name);
+            if p.is_file() {
+                return Some(p);
+            }
+            search_dirs().into_iter().map(|d| d.join(&name)).find(|p| p.is_file())
+        });
+    }
     load_cached(format!("#{nr}"), || find_map_file(nr))
+}
+
+// ---------------------------------------------------------------------------
+// map sequences (MB3D's "Map Sequences": animated maps)
+// ---------------------------------------------------------------------------
+
+/// An image sequence that replaces map number `channel`: the frame number
+/// is put into the digits before the extension of `filename`.
+#[derive(Clone, Debug, PartialEq)]
+pub struct MapSequence {
+    pub channel: i32,
+    pub filename: String,
+    pub first: i32,
+    pub last: i32,
+    pub increment: i32,
+    pub looped: bool,
+}
+
+impl MapSequence {
+    /// `TMapSequence.FormatFrameFilename`: replaces the number before the
+    /// extension, keeping its width; None without such a number.
+    pub fn format_frame(filename: &str, frame: i32) -> Option<String> {
+        let ext = filename.rfind('.')?;
+        let head = &filename[..ext];
+        let digits = head.chars().rev().take_while(|c| c.is_ascii_digit()).count();
+        if digits == 0 {
+            return None;
+        }
+        let start = ext - digits;
+        Some(format!("{}{:0w$}{}", &filename[..start], frame, &filename[ext..], w = digits))
+    }
+
+    /// `TMapSequence.GetFilename`: the image of animation frame `frame` (1-based).
+    pub fn filename(&self, frame: i32) -> Option<String> {
+        let inc = self.increment.max(1);
+        let mut f = (frame - 1) * inc + self.first;
+        let last = (self.last / inc) * inc;
+        if f < self.first {
+            f = self.first;
+        } else if f > last {
+            f = if self.looped { (f - 1) % (last - self.first + 1).max(1) + self.first } else { last };
+        }
+        Self::format_frame(&self.filename, f)
+    }
+}
+
+fn sequences() -> &'static Mutex<Vec<MapSequence>> {
+    static S: OnceLock<Mutex<Vec<MapSequence>>> = OnceLock::new();
+    S.get_or_init(|| Mutex::new(load_sequences(&sequence_file()).unwrap_or_default()))
+}
+
+static FRAME: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(1);
+
+/// The frame number used for map sequences (animations set it per frame).
+pub fn set_current_frame(frame: i32) {
+    FRAME.store(frame.max(1), std::sync::atomic::Ordering::Relaxed);
+}
+
+pub fn current_frame() -> i32 {
+    FRAME.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+/// The sequence list file (MB3D's `Mandelbulb3DMSeq.ini` format), in the
+/// working directory or `$MB3D_MAP_SEQUENCES`.
+pub fn sequence_file() -> PathBuf {
+    std::env::var("MB3D_MAP_SEQUENCES").map(PathBuf::from).unwrap_or_else(|_| PathBuf::from("Mandelbulb3DMSeq.ini"))
+}
+
+/// Reads a sequence list (`Count=`, `DestChannel#0=`, `ImageFilename#0=`, ...).
+pub fn load_sequences(path: &std::path::Path) -> Option<Vec<MapSequence>> {
+    let text = std::fs::read_to_string(path).ok()?;
+    Some(parse_sequences(&text))
+}
+
+pub fn parse_sequences(text: &str) -> Vec<MapSequence> {
+    let vals: std::collections::HashMap<String, String> = text
+        .lines()
+        .filter_map(|l| l.split_once('='))
+        .map(|(k, v)| (k.trim().to_ascii_lowercase(), v.trim().to_string()))
+        .collect();
+    let int = |k: String| vals.get(&k.to_ascii_lowercase()).and_then(|v| v.parse::<i32>().ok()).unwrap_or(0);
+    (0..int("count".into()).clamp(0, 1000))
+        .map(|i| MapSequence {
+            channel: int(format!("DestChannel#{i}")),
+            filename: vals.get(&format!("imagefilename#{i}")).cloned().unwrap_or_default(),
+            first: int(format!("FirstImage#{i}")),
+            last: int(format!("LastImage#{i}")),
+            increment: int(format!("Increment#{i}")).max(1),
+            looped: int(format!("Loop#{i}")) != 0,
+        })
+        .collect()
+}
+
+pub fn sequences_text(list: &[MapSequence]) -> String {
+    let mut t = format!("Count={}\r\n", list.len());
+    for (i, q) in list.iter().enumerate() {
+        t += &format!(
+            "DestChannel#{i}={}\r\nImageFilename#{i}={}\r\nFirstImage#{i}={}\r\nLastImage#{i}={}\r\nLoop#{i}={}\r\nIncrement#{i}={}\r\n",
+            q.channel, q.filename, q.first, q.last, q.looped as i32, q.increment
+        );
+    }
+    t
+}
+
+pub fn map_sequences() -> Vec<MapSequence> {
+    sequences().lock().unwrap().clone()
+}
+
+/// Replaces the sequence list and saves it to [`sequence_file`].
+pub fn set_map_sequences(list: Vec<MapSequence>) -> Result<(), String> {
+    *sequences().lock().unwrap() = list.clone();
+    cache().lock().unwrap().retain(|k, _| !k.starts_with("s:"));
+    let p = sequence_file();
+    std::fs::write(&p, sequences_text(&list)).map_err(|e| format!("{}: {e}", p.display()))
 }
 
 /// A picture by file name (background pictures), searched in the map dirs.
@@ -382,6 +522,21 @@ pub fn missing() -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn map_sequence_names() {
+        assert_eq!(MapSequence::format_frame("c:/maps/wave0001.png", 12).unwrap(), "c:/maps/wave0012.png");
+        assert_eq!(MapSequence::format_frame("x9.jpg", 123).unwrap(), "x123.jpg");
+        assert!(MapSequence::format_frame("plain.png", 3).is_none());
+        let q = MapSequence { channel: 5, filename: "w001.png".into(), first: 1, last: 10, increment: 1, looped: true };
+        assert_eq!(q.filename(1).unwrap(), "w001.png");
+        assert_eq!(q.filename(10).unwrap(), "w010.png");
+        assert_eq!(q.filename(11).unwrap(), "w001.png");
+        let q2 = MapSequence { looped: false, ..q.clone() };
+        assert_eq!(q2.filename(15).unwrap(), "w010.png");
+        let t = sequences_text(&[q.clone(), q2.clone()]);
+        assert_eq!(parse_sequences(&t), vec![q, q2]);
+    }
 
     #[test]
     fn spline_of_a_constant_map_is_constant() {

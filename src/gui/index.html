@@ -310,18 +310,19 @@ const LABELS = { stereo: "stereo eye image", stereo_screen: "stereo screen width
 const GROUPS = [
   ["Camera", /^(width|height|zoom|mid|z_start|z_end|slice_2d|stereo|stereo_screen|vgrads|rotation|fov|optic|cut_[xyz]|tiles|tile|tile_downscale)$/],
   ["Formula iteration", /^(iterations|min_iterations|rstop|julia|julia_c|rotation_4d|repeat_from|inside|interpolation|de_combination|decomb_.*|color_option|color_mul|color_on_iteration|dfog_on_it)$/],
-  ["Ray marching", /^(de_stop|raystep|raystep_limiter|smooth_normals|bin_search|first_step_random|step_sub_de_stop|vary_de_stop|normals_on_de|disable_analytic_de|threads)$/],
+  ["Ray marching", /^(de_stop|raystep|raystep_limiter|smooth_normals|bin_search|first_step_random|step_sub_de_stop|vary_de_stop|normals_on_de|normals_on_zbuf|disable_analytic_de|threads)$/],
   ["Ambient occlusion and shadows", /^(ao|ao_.*|deao_.*|shadows|shadow_.*)$/],
   ["Depth of field and volumetric light", /^(dof|dof_.*|vol_light|vol_light_.*)$/],
   ["Colours", /^(color_start|color_end|color_cycling|color_var_z|color_on_otrap|color_interpolation|palette_full|palette|interior_.*|fine_color_adjust|diffuse_map.*)$/],
   ["Light and fog", /^(ambient.*|depth_.*|dynfog.*|dyn_fog|fog_offset|far_fog|diffuse|specular|indirect_light|gamma|roughness|diffuse_shadowing|internal_gamma2|light_mode|lights)$/],
   ["Background", /^background.*$/],
+  ["Reflections and transparency", /^mc_(reflections|reflection_depth|reflection_amount|transparency|only_difs|refraction_index|absorption|scattering)$/],
   ["Monte Carlo", /^mc_.*$/],
 ];
 const TABS = [
   ["Formulas", () => formulasTab()],
   ["Camera", () => globalTab(["Camera", "Formula iteration"])],
-  ["Render", () => globalTab(["Ray marching", "Ambient occlusion and shadows", "Depth of field and volumetric light"])],
+  ["Render", () => globalTab(["Ray marching", "Ambient occlusion and shadows", "Reflections and transparency", "Depth of field and volumetric light"])],
   ["Colours", () => globalTab(["Colours", "Background"])],
   ["Lights", () => lightsTab()],
   ["Animation", () => animTab()],
@@ -340,7 +341,8 @@ const KNOWN_KEYS = ["inside", "interpolation", "slice_2d", "stereo", "stereo_scr
   "background_direct", "background_brightness", "background_add_light", "background_ambient", "diffuse_map", "diffuse_map_mode",
   "diffuse_map_offset", "diffuse_map_rotation", "diffuse_map_scale", "diffuse_map_brightness_only", "internal_gamma2",
   "color_interpolation", "ambient_relative_to_object", "dynfog_options", "light_mode", "fine_color_adjust", "rstop", "tiles", "tile",
-  "rotation", "lights"];
+  "rotation", "lights", "normals_on_zbuf", "mc_reflections", "mc_reflection_depth", "mc_reflection_amount", "mc_transparency",
+  "mc_only_difs", "mc_refraction_index", "mc_absorption", "mc_scattering"];
 
 function groupOf(k) { for (const [g, re] of GROUPS) if (re.test(k)) return g; return "Other"; }
 

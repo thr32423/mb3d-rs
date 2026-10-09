@@ -194,8 +194,7 @@ batch goes on (the exit code tells whether all succeeded). As with
 animations, outputs are locked while they are calculated: `--skip-existing`
 continues an interrupted batch and lets several processes share a list.
 `--format m3p` converts the files to MB3D parameter files instead.
-Over MB3D's 80 example parameter files, 79 render; the other one uses a
-formula compiled from Pascal source (see "Known differences and gaps").
+All 80 of MB3D's example parameter files render.
 
 ## Voxel export
 
@@ -345,6 +344,8 @@ and kept in the original evaluation order.
 | `iteration.rs` (interpolation) | formulas.pas | `doInterpolHybridPas`, `doInterpolHybridPasDE` and the 4D variants; `doHybrid4DDEPas` |
 | `calc.rs` (2D, colour on iteration) | CalcThread2D.pas, Calc.pas | `T2DcalcThread` (plane at Z start, middle or end), `doColorOnIt` |
 | `scene.rs`, `render.rs` (stereo) | HeaderTrafos.pas (`StereoChange`, `CalcXoff`) | the stereo eyes: shifted middle and off-axis view centre; left and right eye images combined (an addition) |
+| `reflect.rs` | CalcSR.pas, ImageProcess.pas (`NormalsOnZbuf`), Calc.pas (`CalcHS`, `CalcHSsoft`), CalcAmbShadowDE.pas (`CalcAmbShadowDEfor1pos`) | reflections and transparency of the normal renderer, normals on the z-buffer |
+| `lighting.rs` (`shade`) | PaintThread.pas | `CalcPixelColorSvec` and `CalcPixelColorSvecTrans` (the painter for any view ray) |
 | `mc.rs` | CalcMonteCarlo.pas, MonteCarloForm.pas, PaintThread.pas (`PaintMC`) | the Monte Carlo renderer: `CalcRay`, `CalcHSMC`, `CalcPhongLight`, `CalcVisLights`, `CalcBGLight`, `CalcN`, `DoDOF`, `CalcBokeh`, Halton sequences; `CalcAvrgNoise`, `.m3c` files; painting in Lab space |
 
 Tests check that the translated assembler matches the reference spherical
@@ -495,6 +496,31 @@ itself per light.
 The volumetric light map is calculated before the image, with a ray march
 per map pixel, so it adds noticeable time.
 
+## Reflections and transparency, normals on the z-buffer
+
+| key | values | MB3D |
+|---|---|---|
+| `mc_reflections` | `true`/`false` | "Calculate reflections" (post processing, and in the Monte Carlo renderer) |
+| `mc_reflection_depth` | 0.. | reflections of reflections |
+| `mc_reflection_amount` | 0..100 (0..1 realistic) | amount of reflected light |
+| `mc_transparency` | `true`/`false` | transparency: the alpha of the palette's specular colours (`palette_alpha`) |
+| `mc_only_difs` | `true`/`false` | only dIFS formulas are transparent |
+| `mc_refraction_index`, `mc_absorption`, `mc_scattering` | | refraction, absorption and light scattering inside transparent material |
+| `normals_on_zbuf` | `true`/`false` | "Normals on Z-buffer": normals from the positions of the neighbour pixels |
+
+```sh
+./target/release/mb3d "material colors.m3p" --formulas M3Formulas -o glass.png
+./target/release/mb3d examples/mandelbulb.m3s -s cut_y=-0.6 -s mc_reflections=true -s mc_reflection_amount=0.8 -o mirror.png
+```
+
+Like in MB3D these run after the calculation: the normals on the z-buffer
+before shadows and ambient occlusion, the reflections after painting (and
+before the depth of field). For every object pixel the view ray is
+reflected, or refracted into transparent material with Fresnel reflection,
+marched to the next surface, which gets its own normal, colour, hard or
+soft shadow and DE ambient occlusion and is lit like a painted pixel. The
+specular colours of the palette say how much light a surface reflects.
+
 ## Hybrids, inside rendering, maps
 
 | key | values | MB3D |
@@ -526,11 +552,13 @@ tile files that MB3D writes for big renders are rendered as that tile.
 ## Known differences and gaps
 
 * **Coverage:** all of MB3D's rendering modes are ported (with phase 9:
-  JIT formulas, interpolation hybrids, 2D slices, stereo and the Monte Carlo
-  renderer), and all 80 example parameter files render. The browser editor
-  covers the main window, navigator, editors, the animation maker, Monte
-  Carlo, MutaGen and the exports. Not ported: MB3D's post processing window
-  (sharpening, noise filters), the formula editor and map sequences.
+  JIT formulas, interpolation hybrids, 2D slices, stereo, the reflection
+  and z-buffer normal post processing and the Monte Carlo renderer), and all
+  80 example parameter files render. The browser editor covers the main
+  window, navigator, editors, the animation maker, Monte Carlo, MutaGen and
+  the exports. Not ported: the interactive tools of the post processing
+  window (recalculating a selection, doubling the image size), the formula
+  editor and map sequences.
 * **Monte Carlo:** the random numbers are seeded per row and pass, so an
   image is the same with any number of threads but not MB3D's; neighbour
   pixels steer the ray counts from their state at the start of a pass (MB3D
@@ -573,7 +601,7 @@ tile files that MB3D writes for big renders are rendered as that tile.
 6. ✅ Editor in the browser (`mb3d gui`): progressive preview, navigator, formula, camera, render, colour and light editors, file handling, final rendering
 7. ✅ Animation (keyframes, MB3D's interpolation incl. light values, `.m3a` and `.m3k` files, frame rendering shared by several processes, animation maker in the editor) and batch rendering
 8. ✅ Voxel export (`.m3v` projects), mesh export (BulbTracer2: OBJ, PLY, STL), the internal formula Aexion C, MutaGen; MutaGen and Export tabs in the editor
-9. ✅ The remaining gaps: JIT formulas (`[SOURCE]` Pascal), interpolation hybrids, 2D slices, colour on iteration, stereo images and animations, the Monte Carlo renderer (CLI and editor tab, `.m3c` files)
+9. ✅ The remaining gaps: JIT formulas (`[SOURCE]` Pascal), interpolation hybrids, 2D slices, colour on iteration, stereo images and animations, reflections and transparency in normal renders, normals on the z-buffer, the Monte Carlo renderer (CLI and editor tab, `.m3c` files)
 
 ## License
 

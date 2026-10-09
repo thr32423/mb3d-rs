@@ -14,9 +14,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2.9.2
       - name: Build
         run: cargo build --release
       - name: Test
@@ -28,15 +28,15 @@ jobs:
     name: test with the MB3D repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: mb3d-rs
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: thargor6/mb3d
           path: mb3d
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@v2.9.2
         with:
           workspaces: mb3d-rs
       - name: Test

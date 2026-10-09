@@ -24,10 +24,10 @@ jobs:
           # Intel macOS runners are retired)
           - { os: macos-latest, target: x86_64-apple-darwin, exe: mb3d }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # the original Mandelbulb3D folder (formulas, maps, parameters, sources)
       # is shipped next to the program
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: thargor6/mb3d
           path: mb3d-original
@@ -62,7 +62,7 @@ jobs:
           mkdir -p "$name/examples"
           cp examples/*.m3s "$name/examples"/
           if [ "${{ runner.os }}" = "Windows" ]; then 7z a "$name.zip" "$name" > /dev/null; else tar czf "$name.tar.gz" "$name"; fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.target }}
           path: |
@@ -76,7 +76,7 @@ jobs:
     # publish what was built even if one platform failed
     if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true

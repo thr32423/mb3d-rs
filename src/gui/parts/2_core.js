@@ -24,6 +24,10 @@ const store = {
 // [light] sections.  Every control edits this list and sends the whole text
 // back; the server answers with the normalised text.
 let model = { global: [], sections: [] };
+// a window popped out into its own browser window: index.html?win=<id>
+const SOLO = new URLSearchParams(location.search).get("win");
+const chan = "BroadcastChannel" in window ? new BroadcastChannel("mb3d-editor") : null;
+let sceneHash = "", stateFetch = null;
 let sceneText = "", euler = null, notes = [];
 let formulaNames = [], formulaDE = new Map();
 let undoStack = [], redoStack = [];
@@ -121,6 +125,7 @@ $("toast").onclick = () => $("toast").style.display = "none";
 function applyState(st, fromUndo) {
   if (!fromUndo && sceneText && st.text !== sceneText) { undoStack.push(sceneText); if (undoStack.length > 200) undoStack.shift(); redoStack = []; }
   sceneText = st.text;
+  if (st.scene) sceneHash = st.scene;
   model = parseM3s(st.text);
   euler = st.euler;
   if (st.title !== undefined) { title = st.title; document.title = `Mandelbulb 3D — ${title}`; }
@@ -156,6 +161,10 @@ async function poll() {
   try {
     const s = await api("/api/status");
     rendering = s.rendering;
+    // changed in another editor window: reload the parameters
+    if (s.scene && sceneHash && s.scene !== sceneHash && !stateFetch) {
+      stateFetch = api("/api/state").then(st => { if (st.scene !== sceneHash) applyState(st, true); }).catch(() => {}).finally(() => { stateFetch = null; });
+    }
     if (s.img_ver !== lastImg && s.img_ver > 0) { lastImg = s.img_ver; $("img").src = "/api/image?v=" + s.img_ver; imgFull = s.full; }
     $("progress").firstElementChild.style.width = s.rendering ? s.progress + "%" : "0";
     const st = $("stage");
@@ -267,7 +276,17 @@ function rerender(box, build) {
 // MB3D: "click image" buttons (get midpoint, julia/cutting values, light
 // position, DOF focus): the next click into the image picks a point.
 let pickCb = null;
+let pickToken = 0;
+const remotePicks = new Map();
 function pickFromImage(text, cb) {
+  if (SOLO && chan) {
+    // the image is in the main window: it picks the point and sends it back
+    const token = `${SOLO}-${++pickToken}`;
+    remotePicks.set(token, cb);
+    chan.postMessage({ type: "pick", text, token });
+    msg(text + ": click into the image of the main window.", "n");
+    return;
+  }
   pickCb = cb;
   $("hint").textContent = text + " — click into the image (Esc cancels)";
   $("hint").style.display = "block";
@@ -275,3 +294,13 @@ function pickFromImage(text, cb) {
 }
 function endPick() { pickCb = null; $("hint").style.display = "none"; $("view").classList.remove("m-pick"); }
 async function pickAt(u, v) { return api("/api/pick?" + form({ u, v })); }
+if (chan) chan.onmessage = async e => {
+  const d = e.data || {};
+  if (d.type === "pick" && !SOLO) pickFromImage(d.text, (u, v) => chan.postMessage({ type: "picked", token: d.token, u, v }));
+  if (d.type === "picked" && remotePicks.has(d.token)) {
+    const cb = remotePicks.get(d.token); remotePicks.delete(d.token);
+    try { await cb(d.u, d.v); } catch (x) { showError(x); }
+  }
+  if (d.type === "recalcOn" && !SOLO) { recalcOn = d.on; if (!d.on) { recalcSel = null; $("sel").style.display = "none"; } }
+  if (d.type === "recalcSel" && SOLO) { recalcSel = d.sel; if (isOpen("postpro")) renderWin("postpro"); }
+};

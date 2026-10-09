@@ -93,7 +93,9 @@ single-page editor laid out like MB3D's main window (see
   transparency, depth of field, recalculate a selection, double image size),
   *Navigator*, *Animation maker*, *MutaGen*, *Bulb Tracer2*, *Voxel export*,
   *Monte Carlo*, *Big renders*, *Batch processing*, *Map Sequences*, *Ini
-  Dirs*. Windows can be moved and stay open between sessions.
+  Dirs*. Windows can be moved and stay open between sessions; the ⧉ button
+  opens a window in its own browser window (e.g. on a second screen), which
+  stays in sync with the editor.
 
 Every change starts a progressive preview (⅛ … full view width; previews keep
 the DE stop in preview pixels, like MB3D's navigator). *Calculate 3D*

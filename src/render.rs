@@ -30,7 +30,7 @@ impl RenderResult {
     }
 }
 
-fn thread_count(sc: &Scene) -> usize {
+pub(crate) fn thread_count(sc: &Scene) -> usize {
     if sc.threads > 0 {
         sc.threads
     } else {
@@ -161,7 +161,7 @@ fn ssao(gbuf: &mut [SiLight], w: usize, h: usize, p: &CalcParams, ao: &crate::ss
 
 /// The lighting with the hard shadow state of the scene applied
 /// (`iHScalced`, `iHSmask`, "set diffuse function to cos").
-fn effective_lighting(sc: &Scene) -> crate::lighting::Lighting {
+pub(crate) fn effective_lighting(sc: &Scene) -> crate::lighting::Lighting {
     let mut l = sc.lighting.clone();
     if let Some(hs) = &sc.shadows {
         l.hs_calced = hs.lights & 0x3F;
@@ -171,7 +171,7 @@ fn effective_lighting(sc: &Scene) -> crate::lighting::Lighting {
     l
 }
 
-fn light_vals(sc: &Scene, l: &crate::lighting::Lighting, cam: &PaintCamera) -> LightVals {
+pub(crate) fn light_vals(sc: &Scene, l: &crate::lighting::Lighting, cam: &PaintCamera) -> LightVals {
     let z_range = sc.z_end - sc.z_start;
     let vol = |s: &Scene, l: &crate::lighting::Lighting| s.vol_light.is_some_and(|v| l.lights[v.light].on);
     let make = |s: &Scene, l: &crate::lighting::Lighting, all: bool| {

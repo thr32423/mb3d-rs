@@ -57,6 +57,8 @@ pub struct Scene {
     /// `StereoScreenWidth`, `StereoScreenDistance`, `StereoMinDistance`
     /// (real-world metres)
     pub stereo_screen: [f32; 3],
+    /// Settings of the Monte Carlo renderer
+    pub mc: McSettings,
     /// Bailout radius (`RStop`, not squared). `None` = use the formulas' default.
     pub rstop: Option<f64>,
     pub zoom: f64,
@@ -168,6 +170,62 @@ impl Tiling {
     }
 }
 
+/// Header values of MB3D's Monte Carlo renderer (`MonteCarloForm`).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct McSettings {
+    /// `MCDepth`: ambient (diffuse) bounces
+    pub depth: u8,
+    /// `SRreflectioncount`: reflection / transmission depth
+    pub reflection_depth: u8,
+    /// `SRamount`: amount of reflected light (0..1 realistic)
+    pub reflection_amount: f32,
+    /// `bCalcSRautomatic` bit 1: calculate reflections
+    pub reflections: bool,
+    /// bit 2: transparency (with reflections)
+    pub transparency: bool,
+    /// bit 3: transparency only for dIFS formulas
+    pub only_difs: bool,
+    /// `MCdiffReflects`: diffuse reflections 0..250 (shown as 0.00..2.50)
+    pub diffuse_reflects: u8,
+    /// `MCSoftShadowRadius`: size of the light sources
+    pub soft_shadow_radius: f32,
+    /// `MCcontrast`: exposure 0..255 (128 = 1)
+    pub contrast: u8,
+    /// `bMCSaturation`: 0..127 (32 = 1)
+    pub saturation: u8,
+    /// `MCoptions`: 1 soft clipping (HDR), 2 secant search, 4 clip the
+    /// diffuse plus specular colours, 8 gaussian anti-aliasing,
+    /// bits 4..6 bokeh shape
+    pub options: u8,
+    /// `sTRIndex`: refraction index of transparent surfaces
+    pub refraction_index: f32,
+    /// `sTransmissionAbsorption`
+    pub absorption: f32,
+    /// `sTRscattering`: light scattering inside transparent material
+    pub scattering: f32,
+}
+
+impl Default for McSettings {
+    fn default() -> Self {
+        McSettings {
+            depth: 3,
+            reflection_depth: 1,
+            reflection_amount: 0.5,
+            reflections: false,
+            transparency: false,
+            only_difs: false,
+            diffuse_reflects: 0,
+            soft_shadow_radius: 1.0,
+            contrast: 128,
+            saturation: 32,
+            options: 2,
+            refraction_index: 1.5,
+            absorption: 0.2,
+            scattering: 1.0,
+        }
+    }
+}
+
 impl Default for Scene {
     fn default() -> Self {
         Scene {
@@ -179,6 +237,7 @@ impl Default for Scene {
             slice_2d: 0,
             stereo_mode: 0,
             stereo_screen: [1.0, 2.0, 0.5],
+            mc: McSettings::default(),
             rstop: None,
             zoom: 1.0,
             mid: [0.0; 3],
@@ -353,6 +412,29 @@ impl Scene {
         if self.stereo_mode != 0 || self.stereo_screen != [1.0, 2.0, 0.5] {
             let [a, b, c] = self.stereo_screen;
             let _ = writeln!(t, "stereo_screen = {a}, {b}, {c}");
+        }
+        if self.mc != McSettings::default() {
+            let m = &self.mc;
+            let _ = writeln!(
+                t,
+                "mc_depth = {}\nmc_reflection_depth = {}\nmc_reflection_amount = {}\nmc_reflections = {}\nmc_transparency = {}\n\
+                 mc_only_difs = {}\nmc_diffuse_reflects = {}\nmc_soft_shadow_radius = {}\nmc_exposure = {}\nmc_saturation = {}\n\
+                 mc_options = {}\nmc_refraction_index = {}\nmc_absorption = {}\nmc_scattering = {}",
+                m.depth,
+                m.reflection_depth,
+                m.reflection_amount,
+                m.reflections,
+                m.transparency,
+                m.only_difs,
+                m.diffuse_reflects as f32 / 100.0,
+                m.soft_shadow_radius,
+                m.contrast,
+                m.saturation,
+                m.options,
+                m.refraction_index,
+                m.absorption,
+                m.scattering
+            );
         }
         if self.slice_2d != 0 {
             let _ = writeln!(t, "slice_2d = {}", ["start", "mid", "end"][(self.slice_2d.clamp(1, 3) - 1) as usize]);
@@ -795,6 +877,34 @@ impl Scene {
                             (int()? + 1).clamp(0, 255) as u8
                         }
                     }
+                    "mc_depth" => s.mc.depth = int()?.clamp(1, 255) as u8,
+                    "mc_reflection_depth" => s.mc.reflection_depth = int()?.clamp(0, 255) as u8,
+                    "mc_reflection_amount" => s.mc.reflection_amount = (num()? as f32).clamp(0.0, 100.0),
+                    "mc_reflections" => s.mc.reflections = boolean()?,
+                    "mc_transparency" => s.mc.transparency = boolean()?,
+                    "mc_only_difs" => s.mc.only_difs = boolean()?,
+                    "mc_diffuse_reflects" => s.mc.diffuse_reflects = (num()? * 100.0).round().clamp(0.0, 255.0) as u8,
+                    "mc_soft_shadow_radius" => s.mc.soft_shadow_radius = (num()? as f32).max(0.0),
+                    "mc_exposure" | "mc_contrast" => s.mc.contrast = int()?.clamp(0, 255) as u8,
+                    "mc_saturation" => s.mc.saturation = int()?.clamp(0, 127) as u8,
+                    "mc_options" => s.mc.options = int()?.clamp(0, 127) as u8,
+                    "mc_soft_clip" | "mc_secant_search" | "mc_autoclip" | "mc_gauss_aa" => {
+                        let bit = match key.as_str() {
+                            "mc_soft_clip" => 1,
+                            "mc_secant_search" => 2,
+                            "mc_autoclip" => 4,
+                            _ => 8,
+                        };
+                        if boolean()? {
+                            s.mc.options |= bit;
+                        } else {
+                            s.mc.options &= !bit;
+                        }
+                    }
+                    "mc_bokeh" => s.mc.options = (s.mc.options & 0x0F) | (((int()? - 1).clamp(0, 5) as u8) << 4),
+                    "mc_refraction_index" => s.mc.refraction_index = (num()? as f32).clamp(0.1, 10.0),
+                    "mc_absorption" => s.mc.absorption = (num()? as f32).max(1e-30),
+                    "mc_scattering" => s.mc.scattering = (num()? as f32).max(0.0),
                     "stereo" | "stereo_mode" => {
                         s.stereo_mode = match val.to_ascii_lowercase().as_str() {
                             "off" | "no" | "mono" | "0" => 0,

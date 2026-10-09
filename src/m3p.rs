@@ -389,6 +389,46 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
         None
     };
     s.color_on_it = r.u8(19);
+    if mand_id >= 27 {
+        let sf = |o: usize| short_float(r.u16(o));
+        let m = &mut s.mc;
+        let fin = |v: f64, d: f32| if v.is_finite() { v as f32 } else { d };
+        m.reflection_amount = fin(r.f32(332), 0.5);
+        let sr = r.u8(336);
+        m.reflections = sr & 1 != 0;
+        m.transparency = sr & 2 != 0;
+        m.only_difs = sr & 4 != 0;
+        m.reflection_depth = r.u8(337);
+        if mand_id >= 37 {
+            m.refraction_index = fin(r.f32(116), 1.5);
+            m.absorption = fin(r.f32(370), 0.2);
+        }
+        if mand_id >= 38 {
+            m.scattering = fin(r.f32(120), 1.0);
+        }
+        m.options = r.u8(124) & 0x7F;
+        m.diffuse_reflects = r.u8(125);
+        m.depth = r.u8(186).max(1);
+        m.soft_shadow_radius = sf(224);
+        m.saturation = r.u8(318) & 0x7F;
+        m.contrast = r.u8(423);
+        // the upgrades of LoadParameter
+        if mand_id < 40 {
+            m.soft_shadow_radius = 1.0;
+            m.depth = 3;
+            m.contrast = 128;
+            m.options = 2;
+            m.diffuse_reflects = 0;
+        }
+        if mand_id < 42 {
+            m.options |= 16;
+        }
+        if mand_id < 43 {
+            m.saturation = 32;
+        }
+    } else {
+        s.mc.options = 2 | 16;
+    }
     if r.u8(344) == 0 {
         // bSliceCalc: 1 start, 3 end, everything else the middle
         s.slice_2d = match r.u8(345) {
@@ -902,7 +942,8 @@ pub fn write(sc: &Scene) -> Vec<u8> {
         pf32(&mut d, 226, h.max_len_mul);
     } else {
         pf32(&mut d, 226, 1.0);
-        pu16(&mut d, 224, to_short_float(1.0));
+        // MCSoftShadowRadius is shared with the Monte Carlo renderer
+        pu16(&mut d, 224, to_short_float(sc.mc.soft_shadow_radius));
     }
     d[162] = sc.vary_de_stop_on_fov as u8;
     if let Some(f) = &sc.dof {
@@ -940,6 +981,20 @@ pub fn write(sc: &Scene) -> Vec<u8> {
     d[345] = if sc.slice_2d == 0 { 2 } else { sc.slice_2d };
     d[19] = sc.color_on_it;
     d[126] = sc.stereo_mode;
+    {
+        let m = &sc.mc;
+        pf32(&mut d, 332, m.reflection_amount);
+        d[336] = m.reflections as u8 | (m.transparency as u8) << 1 | (m.only_difs as u8) << 2;
+        d[337] = m.reflection_depth;
+        pf32(&mut d, 116, m.refraction_index);
+        pf32(&mut d, 370, m.absorption);
+        pf32(&mut d, 120, m.scattering);
+        d[124] = m.options;
+        d[125] = m.diffuse_reflects;
+        d[186] = m.depth;
+        d[318] = m.saturation;
+        d[423] = m.contrast;
+    }
     pf32(&mut d, 230, sc.stereo_screen[0]);
     pf32(&mut d, 234, sc.stereo_screen[1]);
     pf32(&mut d, 238, sc.stereo_screen[2]);

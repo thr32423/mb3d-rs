@@ -745,7 +745,7 @@ pub struct Marcher<'a> {
     pub inside: bool,
     pub calc_inside: bool,
     /// the last DE came from a dIFS part
-    last_difs: bool,
+    pub(crate) last_difs: bool,
 }
 
 impl<'a> Marcher<'a> {
@@ -767,7 +767,7 @@ impl<'a> Marcher<'a> {
     }
 
     #[inline]
-    fn mand_function(&mut self) {
+    pub(crate) fn mand_function(&mut self) {
         if self.p.difs {
             // dIFS formulas only work in their own loop
             let rstopd = self.ms_de_stop as f64 * self.p.step_width * 1.03;
@@ -1353,7 +1353,7 @@ impl<'a> Marcher<'a> {
 
     /// `doColorOnIt`: colour on the start vector (1) or on the vector after
     /// `ColorOnIt - 1` iterations.
-    fn do_color_on_it(&mut self) {
+    pub(crate) fn do_color_on_it(&mut self) {
         let p = self.p;
         if p.color_on_it == 1 {
             self.it.v[0] = self.it.c[0];
@@ -1411,7 +1411,7 @@ impl<'a> Marcher<'a> {
     }
 
     /// `RMdoColor` – the orbit trap / 2nd colour choice.
-    fn do_color(&self, si: &mut SiLight) {
+    pub(crate) fn do_color(&self, si: &mut SiLight) {
         let it = &self.it;
         let [x, y, z, _] = it.v;
         let c = it.c;
@@ -1435,7 +1435,7 @@ impl<'a> Marcher<'a> {
 
     /// `RMmaxLengthToCutPlane`: distance (in steps) from the start position
     /// to the cutting planes along the view ray, and the plane (1..3) hit.
-    fn max_length_to_cut_plane(&self) -> (f64, usize) {
+    pub(crate) fn max_length_to_cut_plane(&self) -> (f64, usize) {
         let p = self.p;
         let mut len = 0f64;
         let mut plane = 0;

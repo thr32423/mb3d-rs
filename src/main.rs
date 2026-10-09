@@ -17,6 +17,7 @@ USAGE:
     mb3d voxel FILE [OPTIONS]                                      voxel slices (PNG stack)
     mb3d mesh FILE -o mesh.obj|.ply|.stl [OPTIONS]                 triangle mesh
     mb3d mutagen FILE [-o DIR] [OPTIONS]                           random variations
+    mb3d montecarlo FILE [-o image.png] [OPTIONS]                  path traced image
     (mb3d animate --help, mb3d batch --help, ...)
 
 SCENE_FILE is an INI-style scene description (see examples/*.m3s), a
@@ -76,6 +77,7 @@ fn run() -> Result<(), String> {
         Some("voxel") | Some("voxels") => return voxel_cmd(&all[1..]),
         Some("mesh") => return mesh_cmd(&all[1..]),
         Some("mutagen") => return mutagen_cmd(&all[1..]),
+        Some("montecarlo") | Some("mc") => return mc_cmd(&all[1..]),
         _ => {}
     }
     let mut args = std::env::args().skip(1);
@@ -1378,4 +1380,185 @@ fn mutagen_cmd(argv: &[String]) -> Result<(), String> {
         eprintln!("done in {}: {}/sheet.png, <label>.m3p for each member", fmt_dur(t0.elapsed().as_secs_f64()), out);
     }
     Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// mb3d montecarlo
+
+const MC_USAGE: &str = "\
+mb3d montecarlo - path traced rendering (MB3D's Monte Carlo renderer)
+
+USAGE:
+    mb3d montecarlo FILE [-o image.png] [OPTIONS]
+
+FILE is a parameter file or scene, or a Monte Carlo file (.m3c) to continue.
+The image is refined in passes: the first pass shoots 4 rays per pixel, each
+further pass adds rays where the image is still noisy. Rendering stops when
+the average ray count, the pass count or the time limit is reached; the
+image is written after every pass. The MC settings are scene keys
+(mc_depth, mc_reflections, mc_transparency, ... see README) and can be
+changed with --set.
+
+OPTIONS:
+    -o, --output <FILE>      Output PNG (default: <name>.png)
+        --rays <N>           Stop at N rays per pixel on average (default 64)
+        --passes <N>         Stop after N passes
+        --time <SECONDS>     Stop after this time
+        --m3c <FILE>         Save the state as MB3D Monte Carlo file after every
+                             pass (continue later, also in MB3D)
+        --exposure <N>       0..255 (default: the file's, 128 = 1)
+        --saturation <N>     0..127 (32 = 1)
+        --scale <F>          Scale the image size
+    -s, --set <KEY=VALUE>    Change a scene key (may be repeated)
+    -t, --threads <N>        Number of threads (default: all cores)
+    -q, --quiet              No progress output
+        --formulas <DIR>     Directory with .m3f formula files
+        --maps <DIR>         Directory with maps
+";
+
+fn mc_cmd(argv: &[String]) -> Result<(), String> {
+    let (mut file, mut out, mut m3c): (Option<String>, Option<String>, Option<String>) = (None, None, None);
+    let mut overrides: Vec<String> = Vec::new();
+    let (mut threads, mut quiet) = (0usize, false);
+    let (mut rays, mut passes, mut time) = (None::<f64>, None::<u32>, None::<f64>);
+    let (mut exposure, mut saturation, mut scale) = (None::<u8>, None::<u8>, None::<f64>);
+    let mut args = argv.iter();
+    while let Some(a) = args.next() {
+        let mut val = || args.next().cloned().ok_or_else(|| format!("{a} needs a value"));
+        let f = |v: String| v.trim().parse::<f64>().map_err(|_| format!("bad value for {a}"));
+        match a.as_str() {
+            "-h" | "--help" => {
+                print!("{MC_USAGE}");
+                return Ok(());
+            }
+            "-o" | "--output" => out = Some(val()?),
+            "--rays" => rays = Some(f(val()?)?.max(1.0)),
+            "--passes" => passes = Some(f(val()?)?.max(1.0) as u32),
+            "--time" => time = Some(f(val()?)?.max(0.0)),
+            "--m3c" => m3c = Some(val()?),
+            "--exposure" => exposure = Some(f(val()?)?.clamp(0.0, 255.0) as u8),
+            "--saturation" => saturation = Some(f(val()?)?.clamp(0.0, 127.0) as u8),
+            "--scale" => scale = Some(f(val()?)?).filter(|v| *v > 0.0),
+            "-s" | "--set" => overrides.push(val()?),
+            "-t" | "--threads" => threads = val()?.parse().map_err(|_| "bad --threads value".to_string())?,
+            "-q" | "--quiet" => quiet = true,
+            "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
+            "--maps" => mb3d::maps::add_map_dir(val()?.into()),
+            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{MC_USAGE}")),
+            s => file = Some(s.to_string()),
+        }
+    }
+    let file = file.ok_or_else(|| format!("no parameter file given\n\n{MC_USAGE}"))?;
+    let path = std::path::Path::new(&file);
+    let is_m3c = path.extension().is_some_and(|e| e.eq_ignore_ascii_case("m3c"));
+    let (mut scene, mut img) = if is_m3c {
+        let data = std::fs::read(path).map_err(|e| format!("{file}: {e}"))?;
+        let (f, img) = mb3d::mc::read_m3c(&data)?;
+        if !quiet {
+            for n in &f.warnings {
+                eprintln!("  note: {n}");
+            }
+        }
+        let sc = if overrides.is_empty() { f.scene } else { f.scene.apply(&overrides.join("\n"))? };
+        if scale.is_some() {
+            return Err("--scale cannot be used when continuing a .m3c file".into());
+        }
+        (sc, Some(img))
+    } else {
+        let mut sc = load_for_export(&file, &overrides, quiet)?;
+        if let Some(f) = scale {
+            sc.scale_image(f);
+        }
+        (sc, None)
+    };
+    if let Some(e) = exposure {
+        scene.mc.contrast = e;
+    }
+    if let Some(s) = saturation {
+        scene.mc.saturation = s;
+    }
+    let mut img = img.take().unwrap_or_else(|| mb3d::mc::McImage::new(scene.width as usize, scene.height as usize));
+    let out = out.unwrap_or_else(|| path.with_extension("png").file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| "mc.png".into()));
+    let target = if rays.is_none() && passes.is_none() && time.is_none() { Some(64.0) } else { rays };
+    if !quiet {
+        let m = &scene.mc;
+        eprintln!(
+            "monte carlo: {}x{}, ambient depth {}, reflections {}{}, until {}",
+            scene.width,
+            scene.height,
+            m.depth,
+            if m.reflections { format!("on (depth {})", m.reflection_depth) } else { "off".into() },
+            if m.reflections && m.transparency { ", transparency" } else { "" },
+            [
+                target.map(|r| format!("{r} rays/pixel")),
+                passes.map(|p| format!("{p} passes")),
+                time.map(|t| format!("{t} s")),
+            ]
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>()
+            .join(" or ")
+        );
+    }
+    let t0 = Instant::now();
+    let start_passes = img.passes;
+    loop {
+        let st = img.stats();
+        if let Some(r) = target {
+            if !st.zero_counts && st.avg_rays >= r {
+                break;
+            }
+        }
+        if passes.is_some_and(|p| img.passes - start_passes >= p) {
+            break;
+        }
+        if time.is_some_and(|t| t0.elapsed().as_secs_f64() >= t) {
+            break;
+        }
+        let progress = |d: usize, n: usize| {
+            if !quiet && (d % 8 == 0 || d == n) {
+                eprint!("\r  pass {:3}: {:5.1} %", img_passes_hint(), 100.0 * d as f64 / n as f64);
+            }
+        };
+        PASS_HINT.store(img.passes + 1, std::sync::atomic::Ordering::Relaxed);
+        let deadline = time.map(|t| t0 + std::time::Duration::from_secs_f64(t));
+        let cancel = || deadline.is_some_and(|d| Instant::now() > d);
+        match mb3d::mc::pass(&scene, &mut img, threads, &progress, &cancel) {
+            Ok(()) => {}
+            Err(e) if e == "cancelled" => {
+                if !quiet {
+                    eprintln!("\r  time limit reached during pass {}", img.passes + 1);
+                }
+            }
+            Err(e) => return Err(e),
+        }
+        let st = img.stats();
+        if !quiet {
+            eprintln!(
+                "\r  pass {:3}: {:6.1} rays/pixel (max {}), noise {:.4}, {}",
+                img.passes,
+                st.avg_rays,
+                st.max_rays,
+                st.avg_noise,
+                fmt_dur(img.seconds)
+            );
+        }
+        let rgb = mb3d::mc::paint(&img, &scene.mc, scene.lighting.gamma);
+        mb3d::png::write_rgb(&out, img.width, img.height, &rgb).map_err(|e| format!("{out}: {e}"))?;
+        if let Some(m) = &m3c {
+            std::fs::write(m, mb3d::mc::write_m3c(&scene, &img)).map_err(|e| format!("{m}: {e}"))?;
+        }
+        if time.is_some_and(|t| t0.elapsed().as_secs_f64() >= t) {
+            break;
+        }
+    }
+    if !quiet {
+        eprintln!("wrote {out}{}", m3c.map(|m| format!(" and {m}")).unwrap_or_default());
+    }
+    Ok(())
+}
+
+static PASS_HINT: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+fn img_passes_hint() -> u32 {
+    PASS_HINT.load(std::sync::atomic::Ordering::Relaxed)
 }

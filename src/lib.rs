@@ -43,6 +43,7 @@ pub mod lighting;
 pub mod m3f;
 pub mod m3p;
 pub mod maps;
+pub mod mc;
 pub mod mclut;
 pub mod mesh;
 pub mod mutagen;

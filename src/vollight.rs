@@ -305,8 +305,6 @@ impl<'a> Marcher<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn vlight_encoding_round_trips_roughly() {
         use crate::lighting::{convert_vlight, encode_vlight};

@@ -306,10 +306,10 @@ fn pic_rot_matrix(b: [u8; 3]) -> [[f32; 3]; 3] {
 const IDENT3F: [[f32; 3]; 3] = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]];
 
 /// A map used by the painter, with its rotation and intensity.
-struct PaintMap {
-    map: std::sync::Arc<crate::maps::LightMap>,
-    rot: [[f32; 3]; 3],
-    intensity: f32,
+pub(crate) struct PaintMap {
+    pub(crate) map: std::sync::Arc<crate::maps::LightMap>,
+    pub(crate) rot: [[f32; 3]; 3],
+    pub(crate) intensity: f32,
 }
 
 impl Lighting {
@@ -458,108 +458,108 @@ fn col1(c: [u8; 3]) -> SVec {
 }
 
 #[derive(Clone)]
-struct LightVal {
+pub(crate) struct LightVal {
     /// header light index 0..5
-    idx: usize,
+    pub(crate) idx: usize,
     /// light switched on (`iLightOption = 0`); off lights only exist while
     /// the light values of animation keyframes are blended
-    on: bool,
-    sub_amb_sh: bool,
+    pub(crate) on: bool,
+    pub(crate) sub_amb_sh: bool,
     /// hard shadow calculated for this light
-    hs_calced: bool,
+    pub(crate) hs_calced: bool,
     /// shadow bit ($400 shl idx), u16::MAX = soft shadow value
-    hs_mask: u16,
-    ln: SVec,
-    col: SVec,
-    pow_func: i32,
-    diff_func: usize,
+    pub(crate) hs_mask: u16,
+    pub(crate) ln: SVec,
+    pub(crate) col: SVec,
+    pub(crate) pow_func: i32,
+    pub(crate) diff_func: usize,
     /// positional light: `ln` is the position relative to the scene middle
-    positional: bool,
+    pub(crate) positional: bool,
     /// visible light function (`iLightPos and 14`)
-    visible: u8,
+    pub(crate) visible: u8,
     /// `sLmaxL`: maximum squared distance of a positional light
-    lmax_l: f32,
+    pub(crate) lmax_l: f32,
     /// `sPosLightZpos`, `sPosLP`: depth of a visible light
-    pos_z: f32,
-    pos_lp: f32,
+    pub(crate) pos_z: f32,
+    pub(crate) pos_lp: f32,
 }
 
 /// Values pre-computed from the lighting record (`TLightVals`).
 pub struct LightVals {
-    lights: Vec<LightVal>,
-    amb_col: SVec,
-    amb_col2: SVec,
-    depth_col: SVec,
-    depth_col2: SVec,
-    dyn_fog_col: SVec,
-    dyn_fog_col2: SVec,
-    s_depth: f32,
-    s_shad: f32,
-    s_shad_gr: f32,
-    s_shad_zmul: f32,
-    s_dyn_fog_mul: f32,
-    s_amb_shad: f32,
-    s_diff: f32,
-    s_spec: f32,
-    s_ind_light_reflect: f32,
-    s_col_zmul: f32,
-    s_c_start: f32,
-    s_c_mul: f32,
-    s_ci_start: f32,
-    s_ci_mul: f32,
-    s_roughness_factor: f32,
-    col_cycling: bool,
-    col_on_otrap: bool,
-    far_fog: bool,
-    depth_func: u8,
-    s_diffuse_shadowing: f32,
-    gamma_h: i32,
-    s_gamma: f32,
-    col_dif: [SVec; 10],
-    col_spe: [SVec; 10],
+    pub(crate) lights: Vec<LightVal>,
+    pub(crate) amb_col: SVec,
+    pub(crate) amb_col2: SVec,
+    pub(crate) depth_col: SVec,
+    pub(crate) depth_col2: SVec,
+    pub(crate) dyn_fog_col: SVec,
+    pub(crate) dyn_fog_col2: SVec,
+    pub(crate) s_depth: f32,
+    pub(crate) s_shad: f32,
+    pub(crate) s_shad_gr: f32,
+    pub(crate) s_shad_zmul: f32,
+    pub(crate) s_dyn_fog_mul: f32,
+    pub(crate) s_amb_shad: f32,
+    pub(crate) s_diff: f32,
+    pub(crate) s_spec: f32,
+    pub(crate) s_ind_light_reflect: f32,
+    pub(crate) s_col_zmul: f32,
+    pub(crate) s_c_start: f32,
+    pub(crate) s_c_mul: f32,
+    pub(crate) s_ci_start: f32,
+    pub(crate) s_ci_mul: f32,
+    pub(crate) s_roughness_factor: f32,
+    pub(crate) col_cycling: bool,
+    pub(crate) col_on_otrap: bool,
+    pub(crate) far_fog: bool,
+    pub(crate) depth_func: u8,
+    pub(crate) s_diffuse_shadowing: f32,
+    pub(crate) gamma_h: i32,
+    pub(crate) s_gamma: f32,
+    pub(crate) col_dif: [SVec; 10],
+    pub(crate) col_spe: [SVec; 10],
     /// alpha of the specular colours (transparency in the MC renderer)
-    col_spe_a: [f32; 10],
-    col_pos: [i32; 10],
-    s_c_div: [f32; 10],
-    col_int: [SVec; 4],
-    icol_pos: [i32; 4],
-    s_ic_div: [f32; 4],
-    vol_light: bool,
+    pub(crate) col_spe_a: [f32; 10],
+    pub(crate) col_pos: [i32; 10],
+    pub(crate) s_c_div: [f32; 10],
+    pub(crate) col_int: [SVec; 4],
+    pub(crate) icol_pos: [i32; 4],
+    pub(crate) s_ic_div: [f32; 4],
+    pub(crate) vol_light: bool,
     /// background picture (`bBackBMP`) and its options
-    bg: Option<PaintMap>,
-    bg_direct: bool,
-    bg_add_light: bool,
+    pub(crate) bg: Option<PaintMap>,
+    pub(crate) bg_direct: bool,
+    pub(crate) bg_add_light: bool,
     /// light map lights
-    map_lights: Vec<PaintMap>,
+    pub(crate) map_lights: Vec<PaintMap>,
     /// light map lights relative to the object (rotation combined later)
-    map_lights_rel: Vec<bool>,
+    pub(crate) map_lights_rel: Vec<bool>,
     /// header light index of each map light
-    map_lights_idx: Vec<usize>,
-    col_int_spec: [f32; 4],
-    sqr: bool,
-    no_col_ipol: bool,
-    amb_rel_obj: bool,
-    dfog_options: u8,
-    ex_mode: bool,
-    yc_comb: bool,
-    diff_map: Option<DiffMap>,
+    pub(crate) map_lights_idx: Vec<usize>,
+    pub(crate) col_int_spec: [f32; 4],
+    pub(crate) sqr: bool,
+    pub(crate) no_col_ipol: bool,
+    pub(crate) amb_rel_obj: bool,
+    pub(crate) dfog_options: u8,
+    pub(crate) ex_mode: bool,
+    pub(crate) yc_comb: bool,
+    pub(crate) diff_map: Option<DiffMap>,
     /// `BGsmallLM` when the background picture is the ambient light
-    bg_small: Option<PaintMap>,
+    pub(crate) bg_small: Option<PaintMap>,
     /// `lvMidPos` (for the wrapped 3D diffuse map)
-    mid: [f64; 3],
+    pub(crate) mid: [f64; 3],
 }
 
 /// The diffuse colour map (`DiffColLightMap` + `iColOnOT`).
-struct DiffMap {
-    map: std::sync::Arc<crate::maps::LightMap>,
+pub(crate) struct DiffMap {
+    pub(crate) map: std::sync::Arc<crate::maps::LightMap>,
     /// `iColOnOT shr 1`: 1 = iterations + orbit trap, 2 = on normals,
     /// 3 = wrapped 3D (sine), 4 = wrapped 3D
-    kind: u8,
-    off: [f32; 2],
-    rot_sin: f32,
-    rot_cos: f32,
-    scale: f32,
-    rot: [[f32; 3]; 3],
+    pub(crate) kind: u8,
+    pub(crate) off: [f32; 2],
+    pub(crate) rot_sin: f32,
+    pub(crate) rot_cos: f32,
+    pub(crate) scale: f32,
+    pub(crate) rot: [[f32; 3]; 3],
 }
 
 /// `YofSVec`
@@ -642,7 +642,7 @@ impl PaintCamera {
     }
 
     /// scene -> view space (`RotateSVectorReverseS`)
-    fn to_view(&self, v: SVec) -> SVec {
+    pub(crate) fn to_view(&self, v: SVec) -> SVec {
         let m = &self.m;
         [sv_dot(m[0], v), sv_dot(m[1], v), sv_dot(m[2], v)]
     }
@@ -759,7 +759,7 @@ fn calc_z_pos_for_light(cam: &PaintCamera, lpos: SVec, positional: bool, view_z:
 
 /// `CalcPosLightShape`: brightness (`flux`) and transparency of a visible
 /// light source from the squared distance of the view ray to the light.
-fn pos_light_shape(flux: &mut f32, transp: &mut f32, func: u8, pos: bool, sqr: bool) {
+pub(crate) fn pos_light_shape(flux: &mut f32, transp: &mut f32, func: u8, pos: bool, sqr: bool) {
     let tmp_r = *transp;
     let rtmp_r = 1.0 / tmp_r;
     match func {
@@ -1367,15 +1367,22 @@ impl LightVals {
     }
 
     /// `CalcColors`
-    fn calc_colors(&self, si: &SiLight, idif0: f32) -> (SVec, SVec) {
+    pub(crate) fn calc_colors(&self, si: &SiLight, idif0: f32) -> (SVec, SVec) {
+        let (d, s, _) = self.calc_colors_alpha(si, idif0);
+        (d, s)
+    }
+
+    /// `CalcColors` with the alpha of the specular colour (`iSpe[3]`, the
+    /// transparency of the Monte Carlo renderer).
+    pub(crate) fn calc_colors_alpha(&self, si: &SiLight, idif0: f32) -> (SVec, SVec, f32) {
         let ir = if self.col_on_otrap { (si.otrap & 0x7FFF) as f32 } else { si.si_gradient as f32 };
         let mut ir = (((ir - self.s_c_start) * self.s_c_mul + idif0) * 16384.0).clamp(-1e9, 1e9).round() as i32;
         if self.col_cycling {
             ir &= 32767;
         } else if ir < 0 {
-            return (self.col_dif[0], self.col_spe[0]);
+            return (self.col_dif[0], self.col_spe[0], self.col_spe_a[0]);
         } else if ir >= self.col_pos[9] {
-            return (self.col_dif[9], self.col_spe[9]);
+            return (self.col_dif[9], self.col_spe[9], self.col_spe_a[9]);
         }
         let mut il2 = 5usize;
         if self.col_pos[il2] < ir {
@@ -1391,7 +1398,7 @@ impl LightVals {
             }
         }
         if self.no_col_ipol {
-            return (self.col_dif[il2 - 1], self.col_spe[il2 - 1]);
+            return (self.col_dif[il2 - 1], self.col_spe[il2 - 1], self.col_spe_a[il2 - 1]);
         }
         let il1 = il2 - 1;
         let il2 = if il2 > 9 { 0 } else { il2 };
@@ -1399,11 +1406,12 @@ impl LightVals {
         (
             lerp(self.col_dif[il2], self.col_dif[il1], t),
             lerp(self.col_spe[il2], self.col_spe[il1], t),
+            self.col_spe_a[il1] + t * (self.col_spe_a[il2] - self.col_spe_a[il1]),
         )
     }
 
     /// `CalcColorsInside`: diffuse colour and specular amount (alpha)
-    fn calc_colors_inside(&self, si: &SiLight, idif0: f32) -> (SVec, SVec) {
+    pub(crate) fn calc_colors_inside(&self, si: &SiLight, idif0: f32) -> (SVec, SVec) {
         let mut ir =
             (((si.si_gradient as f32 - self.s_ci_start) * self.s_ci_mul + idif0) * 16384.0).round() as i32;
         let (dif, spe);
@@ -1436,7 +1444,7 @@ impl LightVals {
     }
 
     /// The diffuse colour map lookup (`iColOnOT > 1`).
-    fn diff_map_color(&self, d: &DiffMap, si: &SiLight, lns: SVec, obj_pos: SVec, d_rough: f32, cam: &PaintCamera) -> SVec {
+    pub(crate) fn diff_map_color(&self, d: &DiffMap, si: &SiLight, lns: SVec, obj_pos: SVec, d_rough: f32, cam: &PaintCamera) -> SVec {
         let sqr = self.sqr;
         if d.kind > 1 {
             let c = if d.kind > 2 {

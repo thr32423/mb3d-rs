@@ -140,7 +140,7 @@ defWin("dirs", "Ini Dirs", 460, p => {
   const inp = el("input", { type: "text", id: "dirIn", placeholder: "folder on the server, e.g. /home/me/mb3d/M3Formulas" });
   const add = kind => post("/api/dirs", form({ kind, dir: inp.value })).then(d => { dirsState = d; renderWin("dirs"); loadFormulas(); msg(`${kind} folder added: ${inp.value}`); }).catch(showError);
   p.append(el("div", { class: "hint" }, "Folders searched by the server (first match wins). Also: mb3d gui --formulas DIR --maps DIR, or MB3D_FORMULAS / MB3D_MAPS."),
-    ...list("Formulas (.m3f)", dirsState.formulas), ...list("Maps", dirsState.maps),
+    ...list("Formulas (.m3f)", dirsState.formulas), ...list("Maps", dirsState.maps), ...list("Work folders (as in MB3D)", dirsState.work || []),
     el("div", { class: "sect" }, "Add a folder"), inp, el("div", { class: "btns" }, btn("Add formula folder", () => add("formulas")), btn("Add map folder", () => add("maps"))),
     el("div", { class: "hint mono" }, "server working folder: " + dirsState.cwd));
 }, { onopen: () => { dirsState = null; renderWin("dirs"); } });

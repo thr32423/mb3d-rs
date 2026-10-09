@@ -381,6 +381,9 @@ fn worker(app: Arc<App>) {
                 render_pass(&app, gen, &s, &stage, b.downscale as usize, true, false);
             }
             Job::Final { gen, aa, big: None } => {
+                // MB3D keeps the parameters of every calculation in History/
+                let title = app.scene.lock().unwrap().title.clone();
+                crate::appdirs::store_history(&sc, &title);
                 let s = final_scene(&sc, aa);
                 let stage = format!("calculated {}x{}{}", sc.width, sc.height, if aa > 1 { format!(", image scale 1:{aa}") } else { String::new() });
                 render_pass(&app, gen, &s, &stage, aa as usize, true, true);
@@ -1050,15 +1053,20 @@ fn mapseq_json() -> String {
 }
 
 fn dirs_json() -> String {
+    let work: Vec<String> = ["History", "Meshes", "BigRenders"]
+        .iter()
+        .map(|n| format!("{n}: {}", crate::appdirs::app_folder().join(n).display()))
+        .collect();
     let l = |v: Vec<std::path::PathBuf>| {
         json_list(&v.iter().map(|p| std::fs::canonicalize(p).unwrap_or(p.clone()).display().to_string()).collect::<Vec<_>>())
     };
     let cwd = std::env::current_dir().map(|p| p.display().to_string()).unwrap_or_default();
     format!(
-        "{{\"formulas\":{},\"maps\":{},\"cwd\":{}}}",
+        "{{\"formulas\":{},\"maps\":{},\"cwd\":{},\"work\":{}}}",
         l(crate::formulas::formula_dir_list()),
         l(crate::maps::map_dir_list()),
-        json_str(&cwd)
+        json_str(&cwd),
+        json_list(&work)
     )
 }
 

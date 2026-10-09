@@ -46,6 +46,23 @@ pub enum Formula {
     },
     /// 'Folding Int Pow' (f = 6).
     FoldingIntPow { power: i32, z_mul: f64, fold: f64 },
+    /// 'Aexion C' (f = 9): a real power bulb that also turns the constant C
+    /// by a power of its angles ("iterating C").
+    AexionC {
+        power: f64,
+        z_mul: f64,
+        /// rotate C each iteration
+        rot_c: bool,
+        /// conditional phi: negate the C angle when the chosen component is >= 0
+        cond_phi: bool,
+        power_c: f64,
+        cz_mul: f64,
+        /// multiply power C by the distance of Z and C
+        powc_dist: bool,
+        /// bits: 1 flip theta atan, 2 flip phi atan, 4 swap theta/phi,
+        /// 8 swap Cy/Cz, 16 use Z - C instead of C for the angles
+        mode: i32,
+    },
     /// A custom formula from a `.m3f` file, run by the x86 interpreter.
     Custom(Box<CustomFormula>),
 }
@@ -150,6 +167,7 @@ impl Formula {
             Formula::AmazingBox { .. } => "Amazing Box",
             Formula::Bulbox { .. } => "Bulbox",
             Formula::FoldingIntPow { .. } => "Folding Int Pow",
+            Formula::AexionC { .. } => "Aexion C",
         }
     }
 
@@ -163,6 +181,7 @@ impl Formula {
             "Amazing Box",
             "Bulbox",
             "Folding Int Pow",
+            "Aexion C",
         ]
     }
 
@@ -192,6 +211,17 @@ impl Formula {
             "folding int pow" | "foldingintpow" | "foldintpow" => {
                 Formula::FoldingIntPow { power: 2, z_mul: -1.0, fold: 2.0 }
             }
+            // GetHAddOnFromInternFormula: oa[9] = (8, 1), options 2..5 = 1, 1, 8, 1
+            "aexion c" | "aexionc" | "aexion" => Formula::AexionC {
+                power: 8.0,
+                z_mul: 1.0,
+                rot_c: true,
+                cond_phi: true,
+                power_c: 8.0,
+                cz_mul: 1.0,
+                powc_dist: false,
+                mode: 0,
+            },
             _ => return None,
         })
     }
@@ -232,6 +262,16 @@ impl Formula {
                 ("Z multiplier", z_mul),
                 ("R fold", fold),
             ],
+            Formula::AexionC { power, z_mul, rot_c, cond_phi, power_c, cz_mul, powc_dist, mode } => vec![
+                ("Float power", power),
+                ("Z multiplier", z_mul),
+                ("Enable rotate C (0,1)", rot_c as i32 as f64),
+                ("Condi. Phi (0,1)", cond_phi as i32 as f64),
+                ("Float power C", power_c),
+                ("Cz multiplier", cz_mul),
+                ("PowC on dist Vec-C (0,1)", powc_dist as i32 as f64),
+                ("Mode (0..31)", mode as f64),
+            ],
         };
         v.into_iter().map(|(k, x)| (k.to_string(), x)).collect()
     }
@@ -269,6 +309,22 @@ impl Formula {
             }
             Formula::FoldingIntPow { fold, .. } if matches!(k.as_str(), "fold" | "r fold") => {
                 *fold = value;
+                true
+            }
+            Formula::AexionC { power, z_mul, rot_c, cond_phi, power_c, cz_mul, powc_dist, mode } => {
+                // integer options (type 2) are rounded into the variable buffer
+                let on = value.round() != 0.0;
+                match k.as_str() {
+                    "power" | "float power" => *power = value,
+                    "z mul" | "z multiplier" | "zmul" => *z_mul = value,
+                    "rotate c" | "enable rotate c" | "enable rotate c (0,1)" | "rot c" => *rot_c = on,
+                    "cond phi" | "condi. phi" | "condi. phi (0,1)" | "conditional phi" => *cond_phi = on,
+                    "power c" | "float power c" => *power_c = value,
+                    "cz mul" | "cz multiplier" | "czmul" => *cz_mul = value,
+                    "powc on dist" | "powc on dist vec c (0,1)" | "powc on dist vec c" => *powc_dist = on,
+                    "mode" | "mode (0..31)" => *mode = (value.round() as i32).clamp(0, 31),
+                    _ => return Err(format!("unknown option '{key}' for Aexion C")),
+                }
                 true
             }
             Formula::RealPower { power, z_mul } => match k.as_str() {
@@ -387,7 +443,7 @@ impl Formula {
         match *self {
             Formula::Custom(ref c) => c.def.si_pow,
             Formula::IntPow { power, .. } => power.clamp(2, 8) as f64,
-            Formula::RealPower { power, .. } => {
+            Formula::RealPower { power, .. } | Formula::AexionC { power, .. } => {
                 if power == 0.0 {
                     1e-40
                 } else {
@@ -428,7 +484,7 @@ impl Formula {
     /// MB3D switches to the plain `HybridCube` when the hybrid as a whole is
     /// not calculated with analytic DE.
     #[inline]
-    pub fn iterate(&self, v: &mut [f64; 4], j: &[f64; 4], rout: f64, ade: bool) {
+    pub fn iterate(&self, v: &mut [f64; 4], j: &mut [f64; 4], rout: f64, ade: bool) {
         match *self {
             Formula::IntPow { power, z_mul } => int_pow(power, z_mul, v, j),
             Formula::RealPower { power, z_mul } => real_power(power, z_mul, v, j, rout),
@@ -487,8 +543,74 @@ impl Formula {
                 }
                 int_pow(power, z_mul, v, j);
             }
+            Formula::AexionC { .. } => aexion_c(self, v, j),
         }
     }
+}
+
+/// `AexionC` (formulas.pas, x87 code): a real power bulb step (angles as
+/// atan2, theta from the y axis), then, with "rotate C", the constant is
+/// replaced by a power of its own angles, so C changes from iteration to
+/// iteration.
+fn aexion_c(f: &Formula, v: &mut [f64; 4], j: &mut [f64; 4]) {
+    let Formula::AexionC { power, z_mul, rot_c, cond_phi, power_c, cz_mul, powc_dist, mode } = *f else { return };
+    let (x, y, z) = (v[0], v[1], v[2]);
+    let r1 = x * x + y * y + z * z;
+    let th = (x * x + z * z).sqrt().atan2(y) * power;
+    let ph = z.atan2(x) * power;
+    // fyl2x / f2xm1 power: r1^(power / 2)
+    let r1 = (r1.ln() * power * 0.5).exp();
+    let (st, ct) = th.sin_cos();
+    let (sp, cp) = ph.sin_cos();
+    v[0] = cp * ct * r1 + j[0];
+    v[2] = st * r1 * z_mul + j[2];
+    v[1] = ct * sp * r1 + j[1];
+    if !rot_c {
+        return;
+    }
+    let mut pd = power_c;
+    if powc_dist {
+        let d = [v[0] - j[0], v[1] - j[1], v[2] - j[2]];
+        pd *= (d[0] * d[0] + d[1] * d[1] + d[2] * d[2]).sqrt();
+    }
+    let r = (j[0] * j[0] + j[1] * j[1] + j[2] * j[2]).sqrt();
+    // the components for the angles: (a, b, c) = (Cy, Cz, Cx) or the
+    // differences of Z and C; bit 8 swaps the first two
+    let (mut a, mut b, c) = if mode & 16 != 0 { (v[1] - j[1], v[2] - j[2], v[0] - j[0]) } else { (j[1], j[2], j[0]) };
+    // offset of the component tested by "conditional phi": 0 = x, 8 = y, 16 = z
+    let mut ofs = 0;
+    let mut ecx = 8;
+    if mode & 8 != 0 {
+        std::mem::swap(&mut a, &mut b);
+        ecx = 16;
+    }
+    let s = (b * b + c * c).sqrt();
+    let mut th = if mode & 1 != 0 { a.atan2(s) } else { s.atan2(a) };
+    let mut ph = if mode & 2 != 0 {
+        ofs = 24 - ecx;
+        c.atan2(b)
+    } else {
+        b.atan2(c)
+    };
+    if mode & 4 != 0 {
+        std::mem::swap(&mut th, &mut ph);
+        ofs = ecx;
+    }
+    if cond_phi {
+        let t = match ofs {
+            0 => v[0],
+            8 => v[1],
+            _ => v[2],
+        };
+        if !t.is_sign_negative() {
+            ph = -ph;
+        }
+    }
+    let (sa, ca) = (ph * pd).sin_cos();
+    let (sb, cb) = (th * pd).sin_cos();
+    j[0] = ca * cb * r;
+    j[2] = sb * r * cz_mul;
+    j[1] = cb * sa * r;
 }
 
 /// `x = abs(x+fold) - abs(x-fold) - x`
@@ -644,6 +766,40 @@ fn int_pow(power: i32, zmul: f64, v: &mut [f64; 4], j: &[f64; 4]) {
 
 #[cfg(test)]
 mod tests {
+
+    /// `AexionC` against the Pascal reference kept in formulas.pas (mode 0,
+    /// which the x87 code extends with the mode bits).
+    #[test]
+    fn aexion_c_matches_pascal_reference() {
+        let f = Formula::default_for("Aexion C").unwrap();
+        for &(x, y, z, cx, cy, cz) in &[(0.3, -0.4, 0.5, 0.2, 0.1, -0.3), (-0.7, 0.2, 0.1, -0.5, 0.4, 0.6), (0.05, 0.9, -0.2, 0.3, -0.8, 0.1)] {
+            let mut v = [x, y, z, 0.0];
+            let mut j = [cx, cy, cz, 0.0];
+            f.iterate(&mut v, &mut j, 0.0, false);
+            // reference
+            let p = 8.0f64;
+            let r1 = x * x + y * y + z * z;
+            let th = (x * x + z * z).sqrt().atan2(y) * p;
+            let ph = z.atan2(x) * p;
+            let r1 = r1.powf(p * 0.5);
+            let (xn, yn, zn) = (th.cos() * ph.cos() * r1 + cx, th.cos() * ph.sin() * r1 + cy, r1 * th.sin() + cz);
+            let pd = 8.0;
+            let r = (cx * cx + cy * cy + cz * cz).sqrt();
+            let th2 = (cx * cx + cz * cz).sqrt().atan2(cy) * pd;
+            let mut ph2 = cz.atan2(cx) * pd;
+            if xn > 0.0 {
+                ph2 = -ph2;
+            }
+            let j_ref = [th2.cos() * ph2.cos() * r, th2.cos() * ph2.sin() * r, r * th2.sin()];
+            for (a, b) in v.iter().zip([xn, yn, zn]) {
+                assert!((a - b).abs() < 1e-9, "{v:?} vs {:?}", [xn, yn, zn]);
+            }
+            for k in 0..3 {
+                assert!((j[k] - j_ref[k]).abs() < 1e-9, "{j:?} vs {j_ref:?}");
+            }
+        }
+    }
+
     use super::*;
 
     /// Reference triplex power formula (spherical coordinates, as used by
@@ -662,7 +818,7 @@ mod tests {
         for n in 2..=8 {
             let mut v = [p[0], p[1], p[2], 0.0];
             let f = Formula::IntPow { power: n, z_mul: -1.0 };
-            f.iterate(&mut v, &[0.0; 4], 0.0, false);
+            f.iterate(&mut v, &mut [0.0; 4], 0.0, false);
             let r = triplex(n, p);
             for k in 0..3 {
                 let expect = r[k];
@@ -682,8 +838,8 @@ mod tests {
         let rout = p.iter().map(|a| a * a).sum::<f64>();
         let mut a = [p[0], p[1], p[2], 0.0];
         let mut b = a;
-        Formula::IntPow { power: 8, z_mul: -1.0 }.iterate(&mut a, &[0.0; 4], rout, false);
-        Formula::RealPower { power: 8.0, z_mul: -1.0 }.iterate(&mut b, &[0.0; 4], rout, false);
+        Formula::IntPow { power: 8, z_mul: -1.0 }.iterate(&mut a, &mut [0.0; 4], rout, false);
+        Formula::RealPower { power: 8.0, z_mul: -1.0 }.iterate(&mut b, &mut [0.0; 4], rout, false);
         for k in 0..3 {
             assert!((a[k] - b[k]).abs() < 1e-9);
         }
@@ -694,7 +850,7 @@ mod tests {
         let mut v = [0.1, 0.1, 0.1, 1.0];
         Formula::AmazingBox { scale: 2.0, min_r: 0.5, fold: 1.0 }.iterate(
             &mut v,
-            &[0.0; 4],
+            &mut [0.0; 4],
             0.0,
             true,
         );

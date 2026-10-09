@@ -118,7 +118,7 @@ impl Iteration {
             if let Formula::Custom(_) = slot.formula {
                 self.run_custom(n);
             } else {
-                slot.formula.iterate(&mut self.v, &self.j, self.rout, slot.ade);
+                slot.formula.iterate(&mut self.v, &mut self.j, self.rout, slot.ade);
             }
             btmp -= 1;
             if slot.uncounted {

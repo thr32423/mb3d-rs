@@ -105,8 +105,8 @@ fn host_int_pow(m: &mut Machine, n: i32) -> Result<(), EmuError> {
     let pvar = m.rd32(pit + 48)?;
     let zmul = m.rdf64(pvar - 16)?;
     let mut v = [m.rdf64(px)?, m.rdf64(py)?, m.rdf64(pz)?, 0.0];
-    let j = [m.rdf64(pit + 24)?, m.rdf64(pit + 32)?, m.rdf64(pit + 40)?, 0.0];
-    Formula::IntPow { power: n, z_mul: zmul }.iterate(&mut v, &j, 0.0, false);
+    let mut j = [m.rdf64(pit + 24)?, m.rdf64(pit + 32)?, m.rdf64(pit + 40)?, 0.0];
+    Formula::IntPow { power: n, z_mul: zmul }.iterate(&mut v, &mut j, 0.0, false);
     m.wrf64(px, v[0])?;
     m.wrf64(py, v[1])?;
     m.wrf64(pz, v[2])?;

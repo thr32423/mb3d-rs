@@ -547,6 +547,17 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
                     r_threshold2: if nopt < 6 { vals[4] } else { vals[5] },
                 },
                 6 => Formula::FoldingIntPow { power: (vals[0].round() as i32).clamp(2, 8), z_mul: vals[1], fold: vals[2] },
+                9 => Formula::AexionC {
+                    power: vals[0],
+                    z_mul: vals[1],
+                    rot_c: vals[2].round() != 0.0,
+                    cond_phi: vals[3].round() != 0.0,
+                    power_c: vals[4],
+                    cz_mul: vals[5],
+                    // files from before the 8 option version have 6 options
+                    powc_dist: nopt > 6 && vals[6].round() != 0.0,
+                    mode: if nopt > 7 { (vals[7].round() as i32).clamp(0, 31) } else { 0 },
+                },
                 0..=19 => return Err(format!("internal formula #{fnr} ('{name}') is not supported yet")),
                 _ => {
                     let mut f = crate::formulas::lookup(&name)?;
@@ -1036,6 +1047,7 @@ pub fn write(sc: &Scene) -> Vec<u8> {
             Formula::AmazingBox { .. } => (4, vec![0, 0, 0]),
             Formula::Bulbox { .. } => (5, vec![0; 6]),
             Formula::FoldingIntPow { .. } => (6, vec![2, 0, 0]),
+            Formula::AexionC { .. } => (9, vec![0, 0, 2, 2, 0, 0, 2, 2]),
         };
         pi32(&mut d, o + 4, fnr);
         pi32(&mut d, o + 8, opts.len().min(16) as i32);

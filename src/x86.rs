@@ -3451,6 +3451,19 @@ impl Prog {
                             format!("{ins:?}").replace('\n', " ")
                         ),
                     },
+                    Op::FSt { src, kind, mem } => format!("{{ let a = {}; m.fstore(FKind::{kind:?}, a, f[{}])?; }}", ea_expr(mem), src & 7),
+                    Op::FSin(i) => format!("f[{0}] = f[{0}].sin(); m.fsw_cc &= !0x0400;", i & 7),
+                    Op::FCos(i) => format!("f[{0}] = f[{0}].cos(); m.fsw_cc &= !0x0400;", i & 7),
+                    Op::FRndint(i) => format!("f[{0}] = m.round_int(f[{0}]);", i & 7),
+                    Op::F2xm1(i) => format!("f[{0}] = f[{0}].exp2() - 1.0;", i & 7),
+                    Op::FSincos { src, dst } => format!(
+                        "{{ let (s, c) = f[{0}].sin_cos(); f[{0}] = s; f[{1}] = c; m.fsw_cc &= !0x0400; }}",
+                        src & 7,
+                        dst & 7
+                    ),
+                    Op::FPatan { x, y } => format!("f[{0}] = f[{0}].atan2(f[{1}]);", y & 7, x & 7),
+                    Op::FYl2x { x, y } => format!("f[{0}] *= f[{1}].log2();", y & 7, x & 7),
+                    Op::FScale { a, s } => format!("f[{0}] *= f[{1}].trunc().exp2();", a & 7, s & 7),
                     _ => format!("m.exec_op(&p.ops[{k}], &mut f)?; // {}", format!("{op:?}").replace('\n', " ")),
                 };
                 let _ = writeln!(o, "                {line}");

@@ -483,12 +483,12 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[17], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[0])?; }
                 { let v = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?; f[0] = f[0] - v; }
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[22], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 28 } }
+                { let a = m.regs[4].wrapping_add(0x1cu32); m.fstore(FKind::I32, a, f[0])?; }
                 { let v = m.fload(FKind::I32, m.regs[4].wrapping_add(0x1cu32))?; f[0] = f[0] - v; }
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[0])?; }
@@ -778,11 +778,11 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x28u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[253], &mut f)?; // FSt { src: 1, kind: F32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::F32, a, f[1])?; }
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x1cu32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x20u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[257], &mut f)?; // FSt { src: 1, kind: F32, mem: Mem { base: Some(4), index: None, disp: 28 } }
+                { let a = m.regs[4].wrapping_add(0x1cu32); m.fstore(FKind::F32, a, f[1])?; }
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[2] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x24u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
@@ -825,7 +825,7 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x1cu32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x20u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[295], &mut f)?; // FSt { src: 1, kind: F32, mem: Mem { base: Some(4), index: None, disp: 28 } }
+                { let a = m.regs[4].wrapping_add(0x1cu32); m.fstore(FKind::F32, a, f[1])?; }
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[2] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
@@ -835,7 +835,7 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
                 f[2] = f[2] + f[3];
                 { let v = m.fload(FKind::F32, m.regs[4].wrapping_add(0x1cu32))?; f[2] = f[2] - v; }
-                m.exec_op(&p.ops[305], &mut f)?; // FSt { src: 2, kind: F32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::F32, a, f[2])?; }
                 f[1] = f[1] + f[2];
                 f[2] = f[1];
                 f[2] = f[2].abs();
@@ -992,7 +992,7 @@ pub(super) fn f_0202689ab0f2cd69(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[50], &mut f)?; // FSincos { src: 1, dst: 2 }
+                { let (s, c) = f[1].sin_cos(); f[1] = s; f[2] = c; m.fsw_cc &= !0x0400; }
                 
                 f[3] = f[0];
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
@@ -1000,9 +1000,9 @@ pub(super) fn f_0202689ab0f2cd69(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f64::from_bits(0x3ff0000000000000);
                 f[5] = f[3];
                 m.exec_op(&p.ops[57], &mut f)?; // FPrem { a: 5, b: 4, ieee: false }
-                m.exec_op(&p.ops[58], &mut f)?; // F2xm1(5)
+                f[5] = f[5].exp2() - 1.0;
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[60], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f.swap(4, 3);
                 f[4] = f[4];
                 
@@ -1056,7 +1056,7 @@ pub(super) fn f_0202689ab0f2cd69(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             2 => {
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[112], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 f[0] = f[0];
                 
@@ -1523,7 +1523,7 @@ pub(super) fn f_03738db42599e61c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
                 f[1] = f[0];
-                m.exec_op(&p.ops[111], &mut f)?; // FSincos { src: 1, dst: 2 }
+                { let (s, c) = f[1].sin_cos(); f[1] = s; f[2] = c; m.fsw_cc &= !0x0400; }
                 
                 f[3] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
@@ -1531,9 +1531,9 @@ pub(super) fn f_03738db42599e61c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f64::from_bits(0x3ff0000000000000);
                 f[5] = f[3];
                 m.exec_op(&p.ops[118], &mut f)?; // FPrem { a: 5, b: 4, ieee: false }
-                m.exec_op(&p.ops[119], &mut f)?; // F2xm1(5)
+                f[5] = f[5].exp2() - 1.0;
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[121], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f.swap(4, 3);
                 f[4] = f[4];
                 f[4] = f[3];
@@ -1709,7 +1709,7 @@ pub(super) fn f_039fe29ffd935c90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(3, 0);
                 f[3] = f[3] + f[3];
                 f.swap(3, 2);
-                m.exec_op(&p.ops[29], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 f[3] = f[0];
                 f[3] = f[3] * f[0];
                 f[3] = f[3] - f[1];
@@ -1717,15 +1717,15 @@ pub(super) fn f_039fe29ffd935c90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(3, 0);
                 f[3] = f[3] + f[3];
                 f.swap(3, 2);
-                m.exec_op(&p.ops[37], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 f[3] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[0] = f[0] * f[3];
                 f[2] = f[2] * f[3];
-                m.exec_op(&p.ops[41], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[3] = f[3] + f[1];
                 f[2] = f[2] / f[3];
                 f.swap(2, 0);
-                m.exec_op(&p.ops[45], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[3] = f[3] + f[1];
                 f[2] = f[2] / f[3];
                 f[3] = f[2];
@@ -1746,19 +1746,19 @@ pub(super) fn f_039fe29ffd935c90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = m.rdf64(m.regs[6].wrapping_add(0x38u32))?;
                 f[5] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(5, 4);
-                m.exec_op(&p.ops[66], &mut f)?; // FYl2x { x: 5, y: 4 }
+                f[4] *= f[5].log2();
                 f.swap(4, 3);
                 f[3] = f[3] * f[4];
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
                 f[3] = f[3] * f[4];
                 f[4] = f[3];
-                m.exec_op(&p.ops[72], &mut f)?; // FRndint(4)
+                f[4] = m.round_int(f[4]);
                 f[3] = f[3] - f[4];
                 f.swap(4, 3);
-                m.exec_op(&p.ops[75], &mut f)?; // F2xm1(4)
+                f[4] = f[4].exp2() - 1.0;
                 f[5] = f64::from_bits(0x3ff0000000000000);
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[78], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f[3] = f[4];
                 f[0] = f[0] * f[3];
                 f[1] = f[1] * f[3];
@@ -2063,7 +2063,7 @@ pub(super) fn f_069ac184d3b6d59b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[10], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f[1].abs();
                 f[0] = f[0] * f[1];
                 { let a = m.regs[0].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -2330,7 +2330,7 @@ pub(super) fn f_071393cecb2a880a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[17], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 1;
             }
@@ -2346,7 +2346,7 @@ pub(super) fn f_071393cecb2a880a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue;
             }
             3 => {
-                m.exec_op(&p.ops[25], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
@@ -2383,11 +2383,11 @@ pub(super) fn f_075f0c3a3cc4a54d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[8], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[12], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 
@@ -2438,7 +2438,7 @@ pub(super) fn f_07636de187847446(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[0] = f[0] + v; }
                 f[1] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 
                 
@@ -2503,7 +2503,7 @@ pub(super) fn f_091b83b22b60261b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
                 f[0] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?;
-                m.exec_op(&p.ops[20], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[0])?; }
                 
                 f[0] = m.rdf64((m.regs[4].wrapping_add(0x10u32)).wrapping_add(m.regs[2].wrapping_mul(1)))?;
                 f[0] = f[0].abs();
@@ -2530,30 +2530,30 @@ pub(super) fn f_091b83b22b60261b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             5 => {
                 f[2] = f[1];
-                m.exec_op(&p.ops[39], &mut f)?; // FCos(2)
+                f[2] = f[2].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[2] = f[2] * v; }
                 f[2] = f[2] + f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[3] = f[1];
                 f[3] = f[3] - f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff94u32))?; f[3] = f[3] * v; }
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[48], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?; f[2] = f[2] * v; }
                 f[2] = f[2] + f[0];
                 
                 f[3] = f[0];
-                m.exec_op(&p.ops[53], &mut f)?; // FCos(3)
+                f[3] = f[3].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[3] = f[3] * v; }
                 f[3] = f[3] + f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[57], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 f[4] = f[1];
                 f[4] = f[4] + f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff94u32))?; f[4] = f[4] * v; }
                 f[3] = f[3] + f[4];
-                m.exec_op(&p.ops[62], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?; f[3] = f[3] * v; }
                 f[3] = f[3] + f[1];
                 f[1] = f[3];
@@ -2952,7 +2952,7 @@ pub(super) fn f_09bec55c100b1dd9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[5] = m.regs[4];
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[4], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] + f[1];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -4055,7 +4055,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             96 => {
                 
                 
-                m.exec_op(&p.ops[339], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 
                 
                 { let bv = 0x2u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffd8u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
@@ -4085,7 +4085,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             100 => {
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[358], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 
@@ -4625,7 +4625,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             190 => {
                 
                 
-                m.exec_op(&p.ops[664], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let bv = 0x2u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffd0u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 192; continue; }
                 b = 191;
@@ -4653,7 +4653,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             194 => {
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[681], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[0])?; }
                 
@@ -4671,13 +4671,13 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[699], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[702], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[703], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[705], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
@@ -5016,14 +5016,14 @@ pub(super) fn f_0c5b508a8961b04d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[3];
                 f[3] = f[1];
                 f[4] = f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb0u32))?; f[3] = v - f[3]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[36], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[39], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f[5] = f[1];
                 f[5] = f[5] * f[4];
                 f[6] = f[2];
@@ -5174,13 +5174,13 @@ pub(super) fn f_0d2d38758758b123(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[1] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?;
                 f[2] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffa8u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[2] = f[2] / v; }
                 f[1] = f[1] + f[2];
                 f[0] = f[0] * f[1];
-                m.exec_op(&p.ops[24], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -5206,14 +5206,14 @@ pub(super) fn f_0d2d38758758b123(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
-                m.exec_op(&p.ops[50], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = v - f[0]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[54], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[57], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -5408,19 +5408,19 @@ pub(super) fn f_0d431bec7f8890e2(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(4, 3);
                 f[5] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(5, 4);
-                m.exec_op(&p.ops[102], &mut f)?; // FYl2x { x: 5, y: 4 }
+                f[4] *= f[5].log2();
                 f.swap(4, 3);
                 f[3] = f[3] * f[4];
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
                 f[3] = f[3] * f[4];
                 f[4] = f[3];
-                m.exec_op(&p.ops[108], &mut f)?; // FRndint(4)
+                f[4] = m.round_int(f[4]);
                 f[3] = f[3] - f[4];
                 f.swap(4, 3);
-                m.exec_op(&p.ops[111], &mut f)?; // F2xm1(4)
+                f[4] = f[4].exp2() - 1.0;
                 f[5] = f64::from_bits(0x3ff0000000000000);
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[114], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f[3] = f[4];
                 { let v = m.fload(FKind::F64, m.regs[6].wrapping_add(0xffffffe0u32))?; m.fcompare(f[3], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
@@ -5802,13 +5802,13 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[49], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[52], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[53], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[55], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
@@ -5816,13 +5816,13 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[63], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[66], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[67], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[69], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
@@ -5830,13 +5830,13 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[77], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[80], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[81], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[83], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
@@ -5850,7 +5850,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[97], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
@@ -5858,7 +5858,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[105], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
@@ -5866,7 +5866,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[113], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0x18u32))?;
@@ -5950,7 +5950,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[170], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x18u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[2] = f[2] * v; }
@@ -5963,7 +5963,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[183], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x20u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?; f[2] = f[2] * v; }
@@ -5976,7 +5976,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[196], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x28u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?; f[2] = f[2] * v; }
@@ -6021,9 +6021,9 @@ pub(super) fn f_0f43d2bea291cfc8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[12], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[14], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -16 } }
+                { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.fstore(FKind::F32, a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[0] = f[0] * f[0];
@@ -6031,12 +6031,12 @@ pub(super) fn f_0f43d2bea291cfc8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] * f[1];
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
-                m.exec_op(&p.ops[22], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -24 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.fstore(FKind::F32, a, f[0])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[24], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xfffffff0u32))?;
-                m.exec_op(&p.ops[27], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 
                 f[2] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe8u32))?;
                 f[0] = f[0] * f[2];
@@ -6060,9 +6060,9 @@ pub(super) fn f_0f43d2bea291cfc8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[6].wrapping_add(0x18u32))?;
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0x20u32))?;
-                m.exec_op(&p.ops[51], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[53], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -16 } }
+                { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.fstore(FKind::F32, a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[6].wrapping_add(0x18u32))?;
                 f[0] = f[0] * f[0];
@@ -6070,12 +6070,12 @@ pub(super) fn f_0f43d2bea291cfc8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] * f[1];
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
-                m.exec_op(&p.ops[61], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -24 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.fstore(FKind::F32, a, f[0])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[63], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xfffffff0u32))?;
-                m.exec_op(&p.ops[66], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 
                 f[2] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe8u32))?;
                 f[0] = f[0] * f[2];
@@ -6623,7 +6623,7 @@ pub(super) fn f_1303ccb7dbfec158(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
                 f[1] = f[0];
-                m.exec_op(&p.ops[17], &mut f)?; // FSincos { src: 1, dst: 2 }
+                { let (s, c) = f[1].sin_cos(); f[1] = s; f[2] = c; m.fsw_cc &= !0x0400; }
                 
                 f[3] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
@@ -6631,9 +6631,9 @@ pub(super) fn f_1303ccb7dbfec158(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f64::from_bits(0x3ff0000000000000);
                 f[5] = f[3];
                 m.exec_op(&p.ops[24], &mut f)?; // FPrem { a: 5, b: 4, ieee: false }
-                m.exec_op(&p.ops[25], &mut f)?; // F2xm1(5)
+                f[5] = f[5].exp2() - 1.0;
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[27], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f.swap(4, 3);
                 f[4] = f[4];
                 f[4] = f[3];
@@ -7272,13 +7272,13 @@ pub(super) fn f_170d88a7063dc19f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[8], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[1] = -f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[14], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[1] = -f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
@@ -7287,13 +7287,13 @@ pub(super) fn f_170d88a7063dc19f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[23], &mut f)?; // FCos(2)
+                f[2] = f[2].cos(); m.fsw_cc &= !0x0400;
                 f[2] = -f[2];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[29], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[2] = -f[2];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
@@ -7302,13 +7302,13 @@ pub(super) fn f_170d88a7063dc19f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[3] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[38], &mut f)?; // FCos(3)
+                f[3] = f[3].cos(); m.fsw_cc &= !0x0400;
                 f[3] = -f[3];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[3] = f[3] * v; }
                 f[2] = f[2] + f[3];
                 f[3] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[44], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 f[3] = -f[3];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[3] = f[3] * v; }
                 f[2] = f[2] + f[3];
@@ -8438,7 +8438,7 @@ pub(super) fn f_1b4a584dbcc33356(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[24], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(2), index: None, disp: 7 }), src: Rm(Reg(4)), size: 1 }
                 m.regs[0] = m.regs[3];
@@ -8524,7 +8524,7 @@ pub(super) fn f_1c26f158990d75db(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[56], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[1];
@@ -8544,7 +8544,7 @@ pub(super) fn f_1c26f158990d75db(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x18u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[76], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[1];
@@ -8903,7 +8903,7 @@ pub(super) fn f_1c9a2f979ccd5056(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[18], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?;
                 f[0] = f[0] - f[1];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -9603,19 +9603,19 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffecu32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[47], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[50], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[51], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[53], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[59], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffecu32))?; f[0] = f[0] * v; }
                 
                 
@@ -9633,14 +9633,14 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(2, 1);
                 
                 
-                m.exec_op(&p.ops[77], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 f[1] = f[1] + f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffecu32))?; f[1] = f[1] * v; }
                 
-                m.exec_op(&p.ops[81], &mut f)?; // FSincos { src: 1, dst: 2 }
+                { let (s, c) = f[1].sin_cos(); f[1] = s; f[2] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffb8u32); m.wrf64(a, f[2])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
-                m.exec_op(&p.ops[84], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
@@ -9704,7 +9704,7 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[137], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] + v; }
@@ -9737,10 +9737,10 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(1, 0);
                 f[1] = f[1].sqrt();
                 f[2] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[164], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[3] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[167], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffe4u32))?; f[2] = f[2] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?; f[2] = f[2] + v; }
@@ -9768,11 +9768,11 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[189], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] * f[1];
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[193], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[1] = f[1] * f[2];
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffe0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
@@ -9796,9 +9796,9 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[211], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 f[2] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[213], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f.swap(3, 1);
                 { let v = m.rdf64(m.regs[3].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffdcu32))?; f[3] = f[3] * v; }
@@ -9848,9 +9848,9 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[256], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[257], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[259], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
@@ -9859,13 +9859,13 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[3].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[268], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[3].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[274], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffb8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[0])?; }
                 
@@ -9877,9 +9877,9 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[285], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[286], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[288], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
@@ -9914,13 +9914,13 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[322], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[323], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[325], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[329], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] * f[1];
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffd8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
@@ -10163,7 +10163,7 @@ pub(super) fn f_217635cca6da9dd8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[22], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 1;
             }
@@ -10179,7 +10179,7 @@ pub(super) fn f_217635cca6da9dd8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue;
             }
             3 => {
-                m.exec_op(&p.ops[30], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
@@ -10192,7 +10192,7 @@ pub(super) fn f_217635cca6da9dd8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[43], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 4;
             }
@@ -10208,7 +10208,7 @@ pub(super) fn f_217635cca6da9dd8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
             6 => {
-                m.exec_op(&p.ops[51], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f[0];
                 f[2] = f[1];
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff8u32))?; f[2] = f[2] * v; }
@@ -10250,17 +10250,17 @@ pub(super) fn f_221797652ab837b5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[2] = f[2] + v; }
                 f[3] = f[1];
                 f[4] = f[2];
-                m.exec_op(&p.ops[9], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 f[3] = -f[3];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 f[4] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?;
                 f.swap(4, 3);
                 f[4] = f[4] * f[3];
-                m.exec_op(&p.ops[15], &mut f)?; // FRndint(4)
-                m.exec_op(&p.ops[16], &mut f)?; // FSt { src: 4, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                f[4] = m.round_int(f[4]);
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[4])?; }
                 f[3] = f[4] / f[3];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[19], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f[5] = f[1];
                 f[5] = f[5] * f[4];
                 f[6] = f[2];
@@ -11204,13 +11204,13 @@ pub(super) fn f_2514ff7bf0f8abc3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[23], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[26], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[27], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[29], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
@@ -11222,17 +11222,17 @@ pub(super) fn f_2514ff7bf0f8abc3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[41], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[49], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[51], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 
@@ -12149,13 +12149,13 @@ pub(super) fn f_2afaa6e446c39604(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffff60u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[57], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[60], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[61], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[63], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 f[0] = -f[0];
@@ -12163,17 +12163,17 @@ pub(super) fn f_2afaa6e446c39604(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffff68u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[71], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[74], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[75], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[77], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff80u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[81], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -12785,23 +12785,23 @@ pub(super) fn f_2e7bab9b5e660afa(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             5 => {
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffc4u32))?;
-                m.exec_op(&p.ops[91], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -28 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe4u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffc0u32))?;
-                m.exec_op(&p.ops[93], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffbcu32))?;
-                m.exec_op(&p.ops[95], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffb8u32))?;
-                m.exec_op(&p.ops[97], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffb4u32))?;
-                m.exec_op(&p.ops[99], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -44 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd4u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffb0u32))?;
-                m.exec_op(&p.ops[101], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffacu32))?;
-                m.exec_op(&p.ops[103], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffa8u32))?;
-                m.exec_op(&p.ops[105], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffa4u32))?;
-                m.exec_op(&p.ops[107], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -60 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc4u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[108] { m.push(*ret)?; } b = 31; continue;
             }
             6 => {
@@ -12812,46 +12812,46 @@ pub(super) fn f_2e7bab9b5e660afa(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             7 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[113], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[116], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[119], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[122], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[123] { m.push(*ret)?; } b = 1; continue;
             }
             8 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[126], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[129], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[132], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[135], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[136] { m.push(*ret)?; } b = 1; continue;
             }
             9 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[139], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[142], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[145], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[148], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[149] { m.push(*ret)?; } b = 1; continue;
             }
             10 => {
@@ -12865,46 +12865,46 @@ pub(super) fn f_2e7bab9b5e660afa(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             12 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[155], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[158], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[161], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[164], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[165] { m.push(*ret)?; } b = 1; continue;
             }
             13 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[168], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[171], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[174], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[177], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[178] { m.push(*ret)?; } b = 1; continue;
             }
             14 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[181], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[184], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[187], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[190], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[191] { m.push(*ret)?; } b = 1; continue;
             }
             15 => {
@@ -12918,46 +12918,46 @@ pub(super) fn f_2e7bab9b5e660afa(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             17 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[197], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[200], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[203], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[206], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[207] { m.push(*ret)?; } b = 1; continue;
             }
             18 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[210], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[213], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[216], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[219], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[220] { m.push(*ret)?; } b = 1; continue;
             }
             19 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[223], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[226], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[229], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[232], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[233] { m.push(*ret)?; } b = 1; continue;
             }
             20 => {
@@ -12972,46 +12972,46 @@ pub(super) fn f_2e7bab9b5e660afa(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[243], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[246], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[249], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[252], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[253] { m.push(*ret)?; } b = 1; continue;
             }
             22 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[256], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[259], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[262], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[265], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[266] { m.push(*ret)?; } b = 1; continue;
             }
             23 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[269], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[272], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[275], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[278], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[279] { m.push(*ret)?; } b = 1; continue;
             }
             24 => {
@@ -13774,7 +13774,7 @@ pub(super) fn f_31d3d4fa897a6b4a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x0u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[46], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff94u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -13797,7 +13797,7 @@ pub(super) fn f_31d3d4fa897a6b4a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x0u32))?; f[1] = f[1] / v; }
                 f[2] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(2, 1);
-                m.exec_op(&p.ops[69], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f.swap(1, 0);
                 f[1] = -f[1];
@@ -13947,7 +13947,7 @@ pub(super) fn f_31f1cc5bee2024dc(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[25], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(3), index: None, disp: 7 }), src: Rm(Reg(0)), size: 1 }
                 m.regs[0] = m.regs[3];
@@ -14218,7 +14218,7 @@ pub(super) fn f_327c8d0feb18147a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[56], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[1];
@@ -14238,7 +14238,7 @@ pub(super) fn f_327c8d0feb18147a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x18u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[76], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[1];
@@ -14997,7 +14997,7 @@ pub(super) fn f_37744c623877da48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[24], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffa8u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -15006,9 +15006,9 @@ pub(super) fn f_37744c623877da48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[29], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[30], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 b = 4;
@@ -15016,10 +15016,10 @@ pub(super) fn f_37744c623877da48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             4 => {
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[37], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[40], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x10u32))?; f[0] = f[0] + v; }
@@ -15210,7 +15210,7 @@ pub(super) fn f_37edf90f328708a6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x8u32))?;
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[1] = f[1] / v; }
-                m.exec_op(&p.ops[19], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
                 { let a = m.regs[1].wrapping_add(0x8u32); m.wrf64(a, f[0])?; }
@@ -15232,7 +15232,7 @@ pub(super) fn f_37edf90f328708a6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] / v; }
-                m.exec_op(&p.ops[35], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -15255,7 +15255,7 @@ pub(super) fn f_37edf90f328708a6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[1] = f[1] / v; }
-                m.exec_op(&p.ops[52], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -15278,7 +15278,7 @@ pub(super) fn f_37edf90f328708a6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[1] = f[1] / v; }
-                m.exec_op(&p.ops[69], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -15345,9 +15345,9 @@ pub(super) fn f_38a9042ac272996b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[7] = f[7] * f[7];
                 f[6] = f[6] + f[7];
                 f[6] = f[6].sqrt();
-                m.exec_op(&p.ops[28], &mut f)?; // FPatan { x: 6, y: 5 }
+                f[5] = f[5].atan2(f[6]);
                 f.swap(5, 3);
-                m.exec_op(&p.ops[30], &mut f)?; // FPatan { x: 5, y: 4 }
+                f[4] = f[4].atan2(f[5]);
                 f[5] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[3] = f[3] * f[5];
                 f[4] = f[4] * f[5];
@@ -15416,9 +15416,9 @@ pub(super) fn f_38a9042ac272996b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffecu32))?;
                 f[1] = f[1] * f[3];
                 f[2] = f[2] * f[3];
-                m.exec_op(&p.ops[76], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f.swap(3, 1);
-                m.exec_op(&p.ops[78], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f[4] = f[4] * f[1];
                 f[4] = f[4] * f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0x18u32))?; f[4] = f[4] + v; }
@@ -15572,7 +15572,7 @@ pub(super) fn f_38cbe2a25848f82c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f.swap(1, 0);
-                m.exec_op(&p.ops[102], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 f[1] = f[0];
@@ -15599,7 +15599,7 @@ pub(super) fn f_38cbe2a25848f82c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[123], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 b = 10;
@@ -15607,10 +15607,10 @@ pub(super) fn f_38cbe2a25848f82c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             10 => {
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[128], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[131], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] * f[1];
                 
                 m.fcompare(f[0], 0.0);
@@ -16129,23 +16129,23 @@ pub(super) fn f_3b497cfee4d7d687(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[12], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[14], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[19], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[21], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[26], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[28], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 
@@ -16161,13 +16161,13 @@ pub(super) fn f_3b497cfee4d7d687(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[44], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[47], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[48], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[50], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[0])?; }
@@ -16340,14 +16340,14 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             7 => {
                 f[0] = f64::from_bits(0x0);
-                m.exec_op(&p.ops[42], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -24 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[1];
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 f[0] = f64::from_bits(0x0);
-                m.exec_op(&p.ops[49], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -44 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd4u32); m.fstore(FKind::I32, a, f[0])?; }
                 
                 b = 8;
             }
@@ -16359,7 +16359,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
                 
                 f[0] = f64::from_bits(0x0);
-                m.exec_op(&p.ops[58], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -20 } }
+                { let a = m.regs[5].wrapping_add(0xffffffecu32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xfffffff8u32))?;
@@ -16374,7 +16374,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].abs();
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
                 f[0] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[70], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -20 } }
+                { let a = m.regs[5].wrapping_add(0xffffffecu32); m.fstore(FKind::I32, a, f[0])?; }
                 
                 b = 10;
             }
@@ -16393,7 +16393,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].abs();
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[83], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -20 } }
+                { let a = m.regs[5].wrapping_add(0xffffffecu32); m.fstore(FKind::I32, a, f[0])?; }
                 
                 b = 12;
             }
@@ -16417,7 +16417,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             14 => {
                 f[0] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[98], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -24 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.fstore(FKind::I32, a, f[0])?; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[5].wrapping_add(0xffffffecu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue; }
                 b = 15;
@@ -16448,7 +16448,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[126], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
@@ -16465,7 +16465,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[143], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[1].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
@@ -16507,7 +16507,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[180], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[3].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
@@ -16524,7 +16524,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[197], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[1].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
@@ -16571,7 +16571,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[242], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
@@ -16588,7 +16588,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[259], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[3].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
@@ -17146,7 +17146,7 @@ pub(super) fn f_3dde1df1a9f1ef97(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             10 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[60], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?;
                 f[0] = f[0] - f[1];
                 f[1] = f[0];
@@ -17534,7 +17534,7 @@ pub(super) fn f_41988a06b6cbcd15(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[18], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -17863,13 +17863,13 @@ pub(super) fn f_43f63d71687dcf8b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
                 f[1] = f64::from_bits(0x400921fb54442d18);
                 f[0] = f[0] * f[1];
-                m.exec_op(&p.ops[9], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[0] = f[0] - v; }
                 { let v = m.rdf64(m.regs[6].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[6].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[15], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] * f[1];
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -18057,7 +18057,7 @@ pub(super) fn f_45ed33e74dab57e4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[25], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[2] = f[2] * v; }
@@ -18066,7 +18066,7 @@ pub(super) fn f_45ed33e74dab57e4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa0u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[34], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f[1].abs();
                 f[0] = f[0] * f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa8u32))?; f[0] = f[0] * v; }
@@ -18173,34 +18173,34 @@ pub(super) fn f_46845563a43f43ed(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[4] * f[4];
                 f[3] = f[3] - f[4];
                 f[3] = f[3].sqrt();
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 f[2] = f[2] * f[0];
                 f[3] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[4] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[22], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 f[0] = f[0] * f[3];
-                m.exec_op(&p.ops[24], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f.swap(3, 0);
-                m.exec_op(&p.ops[26], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f.swap(4, 1);
                 f[5] = f64::from_bits(0x3ff0000000000000);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[5] = v - f[5]; }
                 f.swap(5, 4);
                 f[6] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(6, 5);
-                m.exec_op(&p.ops[33], &mut f)?; // FYl2x { x: 6, y: 5 }
+                f[5] *= f[6].log2();
                 f.swap(5, 4);
                 f[4] = f[4] * f[5];
                 f[5] = f64::from_bits(0x3ff71547652b82fe);
                 f[4] = f[4] * f[5];
                 f[5] = f[4];
-                m.exec_op(&p.ops[39], &mut f)?; // FRndint(5)
+                f[5] = m.round_int(f[5]);
                 f[4] = f[4] - f[5];
                 f.swap(5, 4);
-                m.exec_op(&p.ops[42], &mut f)?; // F2xm1(5)
+                f[5] = f[5].exp2() - 1.0;
                 f[6] = f64::from_bits(0x3ff0000000000000);
                 f[5] = f[5] + f[6];
-                m.exec_op(&p.ops[45], &mut f)?; // FScale { a: 5, s: 4 }
+                f[5] *= f[4].trunc().exp2();
                 f[4] = f[5];
                 f[2] = f[2] * f[4];
                 f[0] = f[0] * f[4];
@@ -18245,7 +18245,7 @@ pub(super) fn f_46d47e37f06af0b5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
-                m.exec_op(&p.ops[14], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] + v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
@@ -18254,7 +18254,7 @@ pub(super) fn f_46d47e37f06af0b5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
                 { let bv = 0xfffffff0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 
-                m.exec_op(&p.ops[23], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] / v; }
@@ -18262,7 +18262,7 @@ pub(super) fn f_46d47e37f06af0b5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[31], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[2] = f[2] * f[1];
@@ -18449,7 +18449,7 @@ pub(super) fn f_496394d990bca45e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[67], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 m.fcompare(f[0], 0.0);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
@@ -18470,7 +18470,7 @@ pub(super) fn f_496394d990bca45e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             5 => {
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[80], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 m.fcompare(f[0], 0.0);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
@@ -18491,7 +18491,7 @@ pub(super) fn f_496394d990bca45e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             8 => {
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[93], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 m.fcompare(f[0], 0.0);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
@@ -19414,7 +19414,7 @@ pub(super) fn f_4db7c59473d3ce72(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffccu32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[50], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc4u32))?; f[0] = f[0] * v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
@@ -19435,10 +19435,10 @@ pub(super) fn f_4db7c59473d3ce72(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 6;
             }
             6 => {
-                m.exec_op(&p.ops[61], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[1])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffbcu32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[64], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb4u32))?; f[1] = f[1] * v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue;
             }
@@ -19457,11 +19457,11 @@ pub(super) fn f_4db7c59473d3ce72(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[79], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] * f[1];
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[83], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[1] = f[1] * f[2];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -19525,17 +19525,17 @@ pub(super) fn f_4f619e28b1880b12(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] + v; }
                 f[2] = f[0];
                 f[3] = f[1];
-                m.exec_op(&p.ops[8], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 f[2] = -f[2];
                 
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[13], &mut f)?; // FRndint(2)
-                m.exec_op(&p.ops[14], &mut f)?; // FSt { src: 2, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                f[2] = m.round_int(f[2]);
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[2])?; }
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[2] = f[2] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[18], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = f[0];
                 f[4] = f[4] * f[3];
                 f[5] = f[1];
@@ -19684,11 +19684,11 @@ pub(super) fn f_4fc28fd4347db636(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] / v; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[22], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -20590,13 +20590,13 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[49], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[52], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[53], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[55], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
@@ -20604,13 +20604,13 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[63], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[66], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[67], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[69], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
@@ -20618,13 +20618,13 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[77], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[80], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[81], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[83], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
@@ -20638,7 +20638,7 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[97], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
@@ -20646,7 +20646,7 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[105], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
@@ -20654,13 +20654,13 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[113], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[119], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x18u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[2] = f[2] * v; }
@@ -20672,7 +20672,7 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[131], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x20u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?; f[2] = f[2] * v; }
@@ -20684,7 +20684,7 @@ pub(super) fn f_52acd88c7bcf018e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[143], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x28u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?; f[2] = f[2] * v; }
@@ -20904,15 +20904,15 @@ pub(super) fn f_55905c9bc6aae0dd(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x18u32))?; f[0] = v - f[0]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb4u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[19], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 40 } }
+                { let a = m.regs[4].wrapping_add(0x28u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x28u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb4u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[23], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
@@ -21420,14 +21420,14 @@ pub(super) fn f_58fc3b5da2368ee2(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[2] = f[0];
                 f[3] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[22], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[2] = f[2] - v; }
                 { let v = m.rdf64(m.regs[6].wrapping_add(0x0u32))?; f[2] = f[2] - v; }
                 
                 
                 f[3] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[4] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[29], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[3])?; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[2])?; }
@@ -21473,13 +21473,13 @@ pub(super) fn f_590eb8dce25dd57b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[23], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[26], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[27], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[29], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
@@ -21491,17 +21491,17 @@ pub(super) fn f_590eb8dce25dd57b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[41], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[49], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[51], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 
@@ -21712,7 +21712,7 @@ pub(super) fn f_5a71ce685b892e52(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                m.exec_op(&p.ops[58], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 44 } }
+                { let a = m.regs[4].wrapping_add(0x2cu32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x18u32))?;
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x2cu32))?;
                 f[0] = f[0] - f[1];
@@ -21724,7 +21724,7 @@ pub(super) fn f_5a71ce685b892e52(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x3cu32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x44u32))?; f[0] = f[0] / v; }
-                m.exec_op(&p.ops[70], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x44u32))?; f[0] = f[0] * v; }
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x3cu32))?; f[0] = f[0] + v; }
@@ -21755,7 +21755,7 @@ pub(super) fn f_5a71ce685b892e52(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] - f[1];
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
-                m.exec_op(&p.ops[93], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 48 } }
+                { let a = m.regs[4].wrapping_add(0x30u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x20u32))?;
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x30u32))?;
                 f[0] = f[0] - f[1];
@@ -21772,7 +21772,7 @@ pub(super) fn f_5a71ce685b892e52(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x3cu32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x44u32))?; f[0] = f[0] / v; }
-                m.exec_op(&p.ops[110], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x44u32))?; f[0] = f[0] * v; }
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x3cu32))?; f[0] = f[0] + v; }
@@ -21803,7 +21803,7 @@ pub(super) fn f_5a71ce685b892e52(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x28u32); m.wrf64(a, f[0])?; }
-                m.exec_op(&p.ops[133], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 52 } }
+                { let a = m.regs[4].wrapping_add(0x34u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x28u32))?;
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x34u32))?;
                 f[0] = f[0] - f[1];
@@ -21821,7 +21821,7 @@ pub(super) fn f_5a71ce685b892e52(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].abs();
                 { let a = m.regs[4].wrapping_add(0x3cu32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x44u32))?; f[0] = f[0] / v; }
-                m.exec_op(&p.ops[151], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x44u32))?; f[0] = f[0] * v; }
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x3cu32))?; f[0] = f[0] + v; }
@@ -22253,7 +22253,7 @@ pub(super) fn f_5ddbed1ac19ab491(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[62], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x20u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?;
                 f[2] = f[2] + f[2];
@@ -22491,9 +22491,9 @@ pub(super) fn f_5e75ec9f6e3108ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[1] = f[1] - v; }
-                m.exec_op(&p.ops[19], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
-                m.exec_op(&p.ops[21], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?; f[0] = f[0] / v; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
@@ -22505,14 +22505,14 @@ pub(super) fn f_5e75ec9f6e3108ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] - v; }
-                m.exec_op(&p.ops[33], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
-                m.exec_op(&p.ops[35], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[0] = f[0] / v; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[40], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 1;
             }
@@ -22530,7 +22530,7 @@ pub(super) fn f_5e75ec9f6e3108ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             3 => {
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[50], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
@@ -22544,7 +22544,7 @@ pub(super) fn f_5e75ec9f6e3108ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[64], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 4;
             }
@@ -22562,7 +22562,7 @@ pub(super) fn f_5e75ec9f6e3108ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             6 => {
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[74], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[0] = f[0] * v; }
                 f[1] = f[0];
                 f[2] = f[1];
@@ -24089,31 +24089,31 @@ pub(super) fn f_6405c0b3abe12770(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[1] = f[0];
-                m.exec_op(&p.ops[7], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[10], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[0] = f[0] * v; }
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[0].wrapping_add(0x0u32))?; f[1] = f[1] + v; }
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[0] = f[1] - f[0];
-                m.exec_op(&p.ops[16], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = f[1];
-                m.exec_op(&p.ops[22], &mut f)?; // FCos(2)
+                f[2] = f[2].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[26], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[0].wrapping_add(0x0u32))?; f[2] = v - f[2]; }
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[31], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[0].wrapping_add(0x0u32))?; f[1] = f[1] + v; }
                 
@@ -24612,23 +24612,23 @@ pub(super) fn f_678128fecceada90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[12], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[14], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[19], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[21], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[26], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[28], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 
@@ -24644,13 +24644,13 @@ pub(super) fn f_678128fecceada90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[44], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[47], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[48], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[50], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[0])?; }
@@ -24755,14 +24755,14 @@ pub(super) fn f_67c5196c872080e3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.shift_reg_const(Shift::Shr, 2, 1, 4);
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[34], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = v - f[0]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[38], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[41], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x28u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x30u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -25207,7 +25207,7 @@ pub(super) fn f_6854a716e8b9b884(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
-                m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] + v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
@@ -25217,7 +25217,7 @@ pub(super) fn f_6854a716e8b9b884(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0xcu32); m.wrf64(a, f[0])?; }
                 
                 
-                m.exec_op(&p.ops[25], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] / v; }
@@ -25225,7 +25225,7 @@ pub(super) fn f_6854a716e8b9b884(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[33], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = f[2] * f[1];
@@ -25651,12 +25651,12 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[0] = f64::from_bits(0x0);
-                m.exec_op(&p.ops[25], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -60 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc4u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = f64::from_bits(0x0);
-                m.exec_op(&p.ops[27], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -80 } }
+                { let a = m.regs[5].wrapping_add(0xffffffb0u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffc0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[30], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 
@@ -25950,7 +25950,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] / v; }
                 { let a = m.regs[5].wrapping_add(0xffffffbcu32); m.wrf64(a, f[0])?; }
                 f[0] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[251], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -80 } }
+                { let a = m.regs[5].wrapping_add(0xffffffb0u32); m.fstore(FKind::I32, a, f[0])?; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 30; continue;
             }
             27 => {
@@ -26062,10 +26062,10 @@ pub(super) fn f_6be71cd5d3317381(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[21], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -26306,7 +26306,7 @@ pub(super) fn f_6dd65a6c7247a4c4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb4u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[104], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?;
                 f[0] = f[0] + f[1];
@@ -26315,7 +26315,7 @@ pub(super) fn f_6dd65a6c7247a4c4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[113], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?;
                 f[0] = f[0] + f[1];
@@ -26327,13 +26327,13 @@ pub(super) fn f_6dd65a6c7247a4c4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc4u32))?; f[1] = f[1] * v; }
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[125], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[128], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[129], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[131], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffbcu32))?; f[0] = f[0] + v; }
@@ -26471,15 +26471,15 @@ pub(super) fn f_6f49871a86722e2e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[52], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[56], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[60], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[3] = f[2];
                 f[3] = f[3] - f[1];
                 f[3] = f[3] - f[0];
@@ -26806,9 +26806,9 @@ pub(super) fn f_706f52a872fbf811(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[5]; m.push(v)?; }
                 m.regs[5] = m.regs[4];
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[3], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 f[2] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[5], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f.swap(3, 1);
                 { let v = m.rdf64(m.regs[0].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[3])?; }
@@ -27081,7 +27081,7 @@ pub(super) fn f_709fa2c048d4bdda(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             4 => {
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 
-                m.exec_op(&p.ops[92], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[1])?; }
                 
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
@@ -27350,12 +27350,12 @@ pub(super) fn f_711477437943726a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[0];
                 f[3] = m.rdf64(m.regs[6].wrapping_add(0xffffff88u32))?;
                 f[3] = -f[3];
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] - v; }
                 f[2] = f[2].abs();
                 f[3] = m.rdf64(m.regs[6].wrapping_add(0xffffff90u32))?;
                 f[4] = m.rdf64(m.regs[6].wrapping_add(0xffffff98u32))?;
-                m.exec_op(&p.ops[23], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 f[3] = f[3].abs();
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
@@ -27384,7 +27384,7 @@ pub(super) fn f_711477437943726a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[5] = f[4];
                 f[5] = f[5] / f[3];
                 
-                m.exec_op(&p.ops[46], &mut f)?; // FRndint(5)
+                f[5] = m.round_int(f[5]);
                 f[5] = f[5] * f[3];
                 
                 f[4] = f[4] - f[5];
@@ -27427,7 +27427,7 @@ pub(super) fn f_711477437943726a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[3];
                 f[4] = f[4] / f[2];
                 
-                m.exec_op(&p.ops[83], &mut f)?; // FRndint(4)
+                f[4] = m.round_int(f[4]);
                 f[4] = f[4] * f[2];
                 
                 f[3] = f[3] - f[4];
@@ -28141,7 +28141,7 @@ pub(super) fn f_731ce2b1f7de0ce3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             10 => {
                 f[2] = f[1];
-                m.exec_op(&p.ops[44], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[3] = f[3] * v; }
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[3])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[2] = f[2] * v; }
@@ -28239,15 +28239,15 @@ pub(super) fn f_737c34e38f81a08f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 5;
             }
             5 => {
-                m.exec_op(&p.ops[36], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue;
             }
             6 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[39], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[42], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] + f[1];
                 b = 7;
             }
@@ -28869,7 +28869,7 @@ pub(super) fn f_76665bf51ca8f80e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffccu32))?; f[2] = f[2] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[49], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = f[3];
                 f[4] = f[4] * f[1];
                 f[5] = f[2];
@@ -28924,19 +28924,19 @@ pub(super) fn f_76665bf51ca8f80e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[3].abs();
                 f[4] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(4, 3);
-                m.exec_op(&p.ops[102], &mut f)?; // FYl2x { x: 4, y: 3 }
+                f[3] *= f[4].log2();
                 f.swap(3, 2);
                 f[2] = f[2] * f[3];
                 f[3] = f64::from_bits(0x3ff71547652b82fe);
                 f[2] = f[2] * f[3];
                 f[3] = f[2];
-                m.exec_op(&p.ops[108], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 f[2] = f[2] - f[3];
                 f.swap(3, 2);
-                m.exec_op(&p.ops[111], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[4] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[3] + f[4];
-                m.exec_op(&p.ops[114], &mut f)?; // FScale { a: 3, s: 2 }
+                f[3] *= f[2].trunc().exp2();
                 f[2] = f[3];
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(46) => { b = 1; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
@@ -29665,13 +29665,13 @@ pub(super) fn f_7802538289b5cfe3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[23], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[26], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[27], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[29], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
@@ -29683,17 +29683,17 @@ pub(super) fn f_7802538289b5cfe3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[41], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[49], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[51], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 
@@ -30215,7 +30215,7 @@ pub(super) fn f_7a6c90aeb7f60905(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[24], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(1), index: None, disp: 7 }), src: Rm(Reg(4)), size: 1 }
                 m.regs[0] = m.regs[3];
@@ -30279,7 +30279,7 @@ pub(super) fn f_7c6826de0d986081(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 { let bv = 0xfffffff8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                m.exec_op(&p.ops[40], &mut f)?; // FSt { src: 2, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[2])?; }
                 f[2] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x0u32))?;
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x0u32))?;
                 f[2] = f[2] * f[0];
@@ -30301,7 +30301,7 @@ pub(super) fn f_7c6826de0d986081(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[2];
                 f[3] = f[3] / f[1];
                 
-                m.exec_op(&p.ops[56], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 { let bv = 0x8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 f[3] = f[3] * f[1];
                 
@@ -30332,15 +30332,15 @@ pub(super) fn f_7db073976a2f1e2e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?;
                 f[0] = f[0] * f[1];
-                m.exec_op(&p.ops[8], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?;
                 f[0] = f[0] * f[1];
-                m.exec_op(&p.ops[13], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[16], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?;
                 f[0] = f[0] * f[1];
                 f[0] = -f[0];
@@ -30351,15 +30351,15 @@ pub(super) fn f_7db073976a2f1e2e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?;
                 f[1] = f[1] * f[2];
-                m.exec_op(&p.ops[27], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[1] = f[1] + f[2];
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?;
                 f[1] = f[1] * f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[35], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?;
                 f[1] = f[1] * f[2];
                 f[1] = -f[1];
@@ -30370,15 +30370,15 @@ pub(super) fn f_7db073976a2f1e2e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[3] = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?;
                 f[2] = f[2] * f[3];
-                m.exec_op(&p.ops[46], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[3] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = f[2] + f[3];
                 f[3] = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?;
                 f[2] = f[2] * f[3];
-                m.exec_op(&p.ops[51], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[3] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[54], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[3] = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?;
                 f[2] = f[2] * f[3];
                 f[2] = -f[2];
@@ -30832,7 +30832,7 @@ pub(super) fn f_7fb5cdafeec5dbf0(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[5]; m.push(v)?; }
                 m.regs[5] = m.regs[4];
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[3], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[0] = f[0] * f[2];
                 f[1] = f[1] * f[2];
@@ -30917,7 +30917,7 @@ pub(super) fn f_80c7c458bee44a90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = v - f[0]; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[57], &mut f)?; // FSt { src: 1, kind: I32, mem: Mem { base: Some(4), index: None, disp: 32 } }
+                { let a = m.regs[4].wrapping_add(0x20u32); m.fstore(FKind::I32, a, f[1])?; }
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x20u32))?;
                 f[0] = f[0] - f[1];
                 f[0] = f[0].abs();
@@ -30929,13 +30929,13 @@ pub(super) fn f_80c7c458bee44a90(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[1];
                 f[3] = f[3] + f[2];
                 f[4] = f[3];
-                m.exec_op(&p.ops[69], &mut f)?; // FSt { src: 4, kind: I32, mem: Mem { base: Some(4), index: None, disp: 36 } }
+                { let a = m.regs[4].wrapping_add(0x24u32); m.fstore(FKind::I32, a, f[4])?; }
                 f[4] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x24u32))?;
                 f[3] = f[3] - f[4];
                 f[3] = f[3].abs();
                 f.swap(3, 1);
                 f[2] = f[2] - f[3];
-                m.exec_op(&p.ops[75], &mut f)?; // FSt { src: 2, kind: I32, mem: Mem { base: Some(4), index: None, disp: 40 } }
+                { let a = m.regs[4].wrapping_add(0x28u32); m.fstore(FKind::I32, a, f[2])?; }
                 f[3] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x28u32))?;
                 f[2] = f[2] - f[3];
                 f[2] = f[2].abs();
@@ -31033,7 +31033,7 @@ pub(super) fn f_81da671ec8d37132(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffa4u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x10u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[20], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[3] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[4] = f[0];
@@ -31855,11 +31855,11 @@ pub(super) fn f_84835daba033d91f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] / v; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[22], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -32054,7 +32054,7 @@ pub(super) fn f_856a2efce798530c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 
-                m.exec_op(&p.ops[22], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[2] = f[2] * f[0];
                 
                 f[1] = f[1] - f[2];
@@ -32094,7 +32094,7 @@ pub(super) fn f_856a2efce798530c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 
-                m.exec_op(&p.ops[56], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[2] = f[2] * f[0];
                 
                 f[1] = f[1] - f[2];
@@ -32135,7 +32135,7 @@ pub(super) fn f_856a2efce798530c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 
-                m.exec_op(&p.ops[91], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[2] = f[2] * f[0];
                 
                 f[1] = f[1] - f[2];
@@ -32176,7 +32176,7 @@ pub(super) fn f_856a2efce798530c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 
-                m.exec_op(&p.ops[126], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[2] = f[2] * f[0];
                 
                 f[1] = f[1] - f[2];
@@ -32276,14 +32276,14 @@ pub(super) fn f_857d56de27b2f9d7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wrf64(a, f[0])?; }
                 { let bv = 0x2cu32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[50], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[52], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[0] = f[0] / f[1];
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[57], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x10u32))?; f[0] = f[0] - v; }
                 
@@ -32804,7 +32804,7 @@ pub(super) fn f_85d0642781938c8d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x0u32))?; f[1] = f[1] / v; }
                 f[2] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(2, 1);
-                m.exec_op(&p.ops[53], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f.swap(1, 0);
                 f[1] = -f[1];
@@ -33633,22 +33633,22 @@ pub(super) fn f_8713cb10fb46f160(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let a = m.regs[4].wrapping_add(0x28u32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x18u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[23], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x28u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = v - f[0]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[30], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[33], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x28u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x30u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -33727,21 +33727,21 @@ pub(super) fn f_887131ff4a1b0a62(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[0] = f[0] + v; }
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[12], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] + v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[19], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[26], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[2] = f[2] * f[1];
@@ -33793,7 +33793,7 @@ pub(super) fn f_8895d8ee74f58c13(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.rd32(m.regs[0].wrapping_add(0x30u32))?;
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?;
                 m.regs[0] = m.regs[3].wrapping_add(0x20u32);
@@ -33828,7 +33828,7 @@ pub(super) fn f_8895d8ee74f58c13(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             3 => {
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
-                m.exec_op(&p.ops[42], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[6].wrapping_add(0x0u32))?;
@@ -34028,13 +34028,13 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[49], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[52], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[53], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[55], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
@@ -34042,13 +34042,13 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[63], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[66], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[67], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[69], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
@@ -34056,13 +34056,13 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[77], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[80], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[81], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[83], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
@@ -34076,7 +34076,7 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[97], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
@@ -34084,7 +34084,7 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[105], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
@@ -34092,13 +34092,13 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[113], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[119], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[3] = f64::from_bits(0x0);
@@ -34124,7 +34124,7 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[139], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[3] = f64::from_bits(0x0);
@@ -34150,7 +34150,7 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[159], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[3] = f64::from_bits(0x0);
@@ -35205,13 +35205,13 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[49], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[52], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[53], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[55], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
@@ -35219,13 +35219,13 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[63], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[66], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[67], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[69], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
@@ -35233,13 +35233,13 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[77], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[80], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[81], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[83], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
@@ -35253,7 +35253,7 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[97], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
@@ -35261,7 +35261,7 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[105], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
@@ -35269,13 +35269,13 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[113], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[119], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x18u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[2] = f[2] * v; }
@@ -35301,7 +35301,7 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[137], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x20u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?; f[2] = f[2] * v; }
@@ -35327,7 +35327,7 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[155], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x28u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?; f[2] = f[2] * v; }
@@ -35404,18 +35404,18 @@ pub(super) fn f_8cca213c07130873(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[3];
                 f[3] = f[1];
                 f[4] = f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb0u32))?; f[3] = v - f[3]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[36], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 { let bv = 0xfffffff0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 
-                m.exec_op(&p.ops[39], &mut f)?; // FSt { src: 3, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[3])?; }
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f[5] = f[1];
                 f[5] = f[5] * f[4];
                 f[6] = f[2];
@@ -35452,18 +35452,18 @@ pub(super) fn f_8cca213c07130873(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[1];
                 
                 
-                m.exec_op(&p.ops[74], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[2] = v - f[2]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[78], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 { let bv = 0xfffffff0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 
-                m.exec_op(&p.ops[81], &mut f)?; // FSt { src: 2, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[2])?; }
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[2] = f[2] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[85], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = f[0];
                 f[4] = f[4] * f[3];
                 f[5] = f[1];
@@ -35599,18 +35599,18 @@ pub(super) fn f_8e1d3abf1bb89335(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[3];
                 f[3] = f[1];
                 f[4] = f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb0u32))?; f[3] = v - f[3]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[36], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 { let bv = 0xfffffff0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 
-                m.exec_op(&p.ops[39], &mut f)?; // FSt { src: 3, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[3])?; }
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f[5] = f[1];
                 f[5] = f[5] * f[4];
                 f[6] = f[2];
@@ -35757,7 +35757,7 @@ pub(super) fn f_8e4e8be2b0066d00(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             10 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[72], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 15; continue; }
@@ -35903,14 +35903,14 @@ pub(super) fn f_8e56fc6ffe930349(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[2];
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f.swap(2, 1);
-                m.exec_op(&p.ops[73], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 f[2] = f[0];
                 f[3] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[2] + f[3];
                 f[3] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[3] = -f[3];
                 f.swap(3, 2);
-                m.exec_op(&p.ops[80], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 f[2] = -f[2];
                 f[1] = f[1] + f[2];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
@@ -35935,7 +35935,7 @@ pub(super) fn f_8e56fc6ffe930349(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2] / f[3];
                 f[3] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(3, 2);
-                m.exec_op(&p.ops[105], &mut f)?; // FYl2x { x: 3, y: 2 }
+                f[2] *= f[3].log2();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[2] = f[2] * v; }
                 f[2] = f[2] / f[0];
                 
@@ -35975,7 +35975,7 @@ pub(super) fn f_8e56fc6ffe930349(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0];
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[141], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
@@ -36118,19 +36118,19 @@ pub(super) fn f_8ec11a48c046b175(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(4, 3);
                 f[5] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(5, 4);
-                m.exec_op(&p.ops[87], &mut f)?; // FYl2x { x: 5, y: 4 }
+                f[4] *= f[5].log2();
                 f.swap(4, 3);
                 f[3] = f[3] * f[4];
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
                 f[3] = f[3] * f[4];
                 f[4] = f[3];
-                m.exec_op(&p.ops[93], &mut f)?; // FRndint(4)
+                f[4] = m.round_int(f[4]);
                 f[3] = f[3] - f[4];
                 f.swap(4, 3);
-                m.exec_op(&p.ops[96], &mut f)?; // F2xm1(4)
+                f[4] = f[4].exp2() - 1.0;
                 f[5] = f64::from_bits(0x3ff0000000000000);
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[99], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f[3] = f[4];
                 { let v = m.fload(FKind::F64, m.regs[6].wrapping_add(0xffffffe0u32))?; m.fcompare(f[3], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
@@ -36325,7 +36325,7 @@ pub(super) fn f_8f5d0319bab0a995(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[47], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
@@ -36335,7 +36335,7 @@ pub(super) fn f_8f5d0319bab0a995(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] - f[1];
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?;
-                m.exec_op(&p.ops[57], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = v - f[0]; }
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
@@ -36349,7 +36349,7 @@ pub(super) fn f_8f5d0319bab0a995(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = f64::from_bits(0x3ff71547652b82fe);
                 f.swap(1, 0);
-                m.exec_op(&p.ops[71], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
                 m.regs[0] = m.regs[3];
@@ -36468,21 +36468,21 @@ pub(super) fn f_8ff930dbacf31149(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[32], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[35], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[36], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[38], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[44], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[46], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
@@ -36492,9 +36492,9 @@ pub(super) fn f_8ff930dbacf31149(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2] * f[2];
                 f[1] = f[1] + f[2];
                 f[1] = f[1].sqrt();
-                m.exec_op(&p.ops[56], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[58], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?;
@@ -37408,17 +37408,17 @@ pub(super) fn f_98b9d24b2038668c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[3];
                 f[3] = f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc0u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[78], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[4])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[3])?; }
                 f[3] = f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc0u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[83], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[4])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[3])?; }
                 f[3] = f[2];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc0u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[88], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[4])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[3])?; }
                 
@@ -38036,13 +38036,13 @@ pub(super) fn f_9caf95e667741341(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[23], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[26], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[27], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[29], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
@@ -38061,13 +38061,13 @@ pub(super) fn f_9caf95e667741341(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[43], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[46], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[47], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[49], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[0])?; }
@@ -38092,17 +38092,17 @@ pub(super) fn f_9caf95e667741341(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[2];
                 f[1] = f[1].sqrt();
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[71], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0] + f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[74], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 
                 
-                m.exec_op(&p.ops[81], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffd8u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 4;
@@ -38141,7 +38141,7 @@ pub(super) fn f_9caf95e667741341(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             8 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[106], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 
@@ -38230,7 +38230,7 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             1 => {
                 f[1] = f[0];
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[29], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 f[2] = f[0];
                 f[1] = f[1] / f[2];
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -38250,7 +38250,7 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[2];
                 f[4] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(4, 3);
-                m.exec_op(&p.ops[46], &mut f)?; // FYl2x { x: 4, y: 3 }
+                f[3] *= f[4].log2();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
@@ -38289,7 +38289,7 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(1, 0);
-                m.exec_op(&p.ops[75], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue;
             }
@@ -38420,7 +38420,7 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
                 f[1] = f[0];
-                m.exec_op(&p.ops[201], &mut f)?; // FSincos { src: 1, dst: 2 }
+                { let (s, c) = f[1].sin_cos(); f[1] = s; f[2] = c; m.fsw_cc &= !0x0400; }
                 
                 f[3] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
@@ -38428,9 +38428,9 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f64::from_bits(0x3ff0000000000000);
                 f[5] = f[3];
                 m.exec_op(&p.ops[208], &mut f)?; // FPrem { a: 5, b: 4, ieee: false }
-                m.exec_op(&p.ops[209], &mut f)?; // F2xm1(5)
+                f[5] = f[5].exp2() - 1.0;
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[211], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f.swap(4, 3);
                 f[4] = f[4];
                 f[4] = f[3];
@@ -38826,7 +38826,7 @@ pub(super) fn f_9d4f87250c50ef8f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[67], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = f[3];
                 f[4] = f[4] * f[1];
                 f[5] = f[2];
@@ -40001,13 +40001,13 @@ pub(super) fn f_a050848733dce3db(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[23], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[26], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[27], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[29], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
@@ -40019,17 +40019,17 @@ pub(super) fn f_a050848733dce3db(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[41], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[49], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[51], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 
@@ -40303,7 +40303,7 @@ pub(super) fn f_a17f8ba9b9d3f95f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[34], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x14u32))?;
                 { let bv = 0x80000000u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
@@ -40315,7 +40315,7 @@ pub(super) fn f_a17f8ba9b9d3f95f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             6 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[40], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -40329,11 +40329,11 @@ pub(super) fn f_a17f8ba9b9d3f95f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x18u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[54], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] / v; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[58], &mut f)?; // FSt { src: 1, kind: I32, mem: Mem { base: Some(4), index: None, disp: 28 } }
+                { let a = m.regs[4].wrapping_add(0x1cu32); m.fstore(FKind::I32, a, f[1])?; }
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x1cu32))?;
                 f[0] = f[0] - f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
@@ -40682,7 +40682,7 @@ pub(super) fn f_a22ef99f3a072d7d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff8u32))?; f[1] = f[1] - v; }
-                m.exec_op(&p.ops[17], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
@@ -41036,13 +41036,13 @@ pub(super) fn f_a3b564facf4224ee(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[23], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[26], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[27], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[29], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
@@ -41061,13 +41061,13 @@ pub(super) fn f_a3b564facf4224ee(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[43], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[46], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[47], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[49], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[0])?; }
@@ -41077,7 +41077,7 @@ pub(super) fn f_a3b564facf4224ee(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[0] = -f[0];
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[56], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffd8u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 4;
@@ -41116,14 +41116,14 @@ pub(super) fn f_a3b564facf4224ee(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             8 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[81], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[86], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[88], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 
@@ -41183,7 +41183,7 @@ pub(super) fn f_a4250598b4a80ded(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[8], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[1] = -f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
@@ -41199,7 +41199,7 @@ pub(super) fn f_a4250598b4a80ded(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[24], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 f[1] = -f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
@@ -41585,10 +41585,10 @@ pub(super) fn f_a6dbf2766292a63e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(1, 0);
                 f[1] = f[1].sqrt();
                 f[2] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[14], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 f[2] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[3] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[17], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[2])?; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[0].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -41738,7 +41738,7 @@ pub(super) fn f_a85da18b6fe095bc(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[0].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 { let v = m.pop()?; m.regs[6] = v; }
@@ -41937,12 +41937,12 @@ pub(super) fn f_aa054baa11be9c8e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wrf64(a, f[0])?; }
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[44], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[4].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[6].wrapping_add(0xffffff90u32))?;
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffff88u32))?;
-                m.exec_op(&p.ops[49], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?;
@@ -41951,7 +41951,7 @@ pub(super) fn f_aa054baa11be9c8e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
                 f[1] = f[0];
-                m.exec_op(&p.ops[58], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[1] - f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[6].wrapping_add(0xffffff88u32); m.wrf64(a, f[0])?; }
@@ -41962,7 +41962,7 @@ pub(super) fn f_aa054baa11be9c8e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = -f[1];
                 f[0] = f[0] + f[1];
                 f[1] = f[0];
-                m.exec_op(&p.ops[69], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[1] - f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[6].wrapping_add(0xffffff90u32); m.wrf64(a, f[0])?; }
@@ -42360,7 +42360,7 @@ pub(super) fn f_aba24ce0b8f5885d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
                 f[0] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?;
-                m.exec_op(&p.ops[20], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[0])?; }
                 
                 f[0] = m.rdf64((m.regs[4].wrapping_add(0x10u32)).wrapping_add(m.regs[2].wrapping_mul(1)))?;
                 f[0] = f[0].abs();
@@ -42388,22 +42388,22 @@ pub(super) fn f_aba24ce0b8f5885d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             5 => {
                 f[2] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[40], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[2] = f[2] + f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[2] = f[2] + f[1];
-                m.exec_op(&p.ops[45], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?; f[2] = f[2] * v; }
                 f[2] = f[2] + f[0];
                 f[3] = f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[50], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 f[3] = f[3] + f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[53], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 f[3] = f[3] + f[0];
-                m.exec_op(&p.ops[55], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff94u32))?; f[3] = f[3] * v; }
                 f[3] = f[3] + f[1];
                 f[0] = f[3];
@@ -42775,7 +42775,7 @@ pub(super) fn f_ad64becab40dc2e6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[27], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 1;
             }
@@ -42791,7 +42791,7 @@ pub(super) fn f_ad64becab40dc2e6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue;
             }
             3 => {
-                m.exec_op(&p.ops[35], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 f[1] = f[0];
@@ -42803,7 +42803,7 @@ pub(super) fn f_ad64becab40dc2e6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[1].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
-                m.exec_op(&p.ops[47], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 4;
             }
@@ -42819,7 +42819,7 @@ pub(super) fn f_ad64becab40dc2e6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
             6 => {
-                m.exec_op(&p.ops[55], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 f[1] = f[0];
@@ -43142,7 +43142,7 @@ pub(super) fn f_afc7526b3b5df48b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[26], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x18u32))?;
                 m.fcompare(f[1], 0.0);
@@ -43162,7 +43162,7 @@ pub(super) fn f_afc7526b3b5df48b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] / v; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[40], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -43897,7 +43897,7 @@ pub(super) fn f_b31dd057e6ca45d3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             1 => {
                 f[1] = f[0];
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[26], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 f[2] = f[0];
                 f[1] = f[1] / f[2];
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -43917,7 +43917,7 @@ pub(super) fn f_b31dd057e6ca45d3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[2];
                 f[4] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(4, 3);
-                m.exec_op(&p.ops[43], &mut f)?; // FYl2x { x: 4, y: 3 }
+                f[3] *= f[4].log2();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
@@ -43956,7 +43956,7 @@ pub(super) fn f_b31dd057e6ca45d3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(1, 0);
-                m.exec_op(&p.ops[72], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue;
             }
@@ -44677,7 +44677,7 @@ pub(super) fn f_b7d4c8cbb7787dd9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 { let bv = 0xfffffff8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
-                m.exec_op(&p.ops[40], &mut f)?; // FSt { src: 2, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[2])?; }
                 f[2] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x0u32))?;
                 f[2] = f[2] * f[0];
                 f[1] = f[1] - f[2];
@@ -44689,7 +44689,7 @@ pub(super) fn f_b7d4c8cbb7787dd9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[2];
                 f[3] = f[3] / f[1];
                 
-                m.exec_op(&p.ops[52], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 { let bv = 0x8u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 f[3] = f[3] * f[1];
                 
@@ -45871,7 +45871,7 @@ pub(super) fn f_be2af6ca70ee34ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[58], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 
                 m.fcompare(f[0], 0.0);
                 
@@ -45896,7 +45896,7 @@ pub(super) fn f_be2af6ca70ee34ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x18u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
-                m.exec_op(&p.ops[75], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 
                 m.fcompare(f[0], 0.0);
                 
@@ -45921,7 +45921,7 @@ pub(super) fn f_be2af6ca70ee34ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x18u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[92], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 
                 m.fcompare(f[0], 0.0);
                 
@@ -45943,7 +45943,7 @@ pub(super) fn f_be2af6ca70ee34ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             11 => {
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x28u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[106], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
                 
                 m.fcompare(f[0], 0.0);
@@ -45969,7 +45969,7 @@ pub(super) fn f_be2af6ca70ee34ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[1] - f[0];
-                m.exec_op(&p.ops[124], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
                 
                 m.fcompare(f[0], 0.0);
@@ -45995,7 +45995,7 @@ pub(super) fn f_be2af6ca70ee34ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[142], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
                 
                 m.fcompare(f[0], 0.0);
@@ -46071,7 +46071,7 @@ pub(super) fn f_be4b6278d59c92da(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff8u32))?; f[1] = f[1] - v; }
-                m.exec_op(&p.ops[17], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
@@ -46277,13 +46277,13 @@ pub(super) fn f_bf79183e66c994f5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffecu32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[15], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[18], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[19], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[21], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe4u32))?; f[0] = f[0] * v; }
@@ -46291,13 +46291,13 @@ pub(super) fn f_bf79183e66c994f5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffecu32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[29], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[32], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[33], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[35], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffdcu32))?; f[0] = f[0] * v; }
@@ -46306,13 +46306,13 @@ pub(super) fn f_bf79183e66c994f5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffecu32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[44], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[47], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[48], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[50], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd4u32))?; f[0] = f[0] * v; }
@@ -46325,13 +46325,13 @@ pub(super) fn f_bf79183e66c994f5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[1] = f[1] / f[2];
                 f.swap(1, 0);
-                m.exec_op(&p.ops[63], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[66], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[67], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[69], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 b = 2;
@@ -46543,14 +46543,14 @@ pub(super) fn f_c0dcddf31e72bec8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = v - f[0]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xfffffff4u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[22], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xfffffff4u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[25], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -46568,14 +46568,14 @@ pub(super) fn f_c0dcddf31e72bec8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
-                m.exec_op(&p.ops[43], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = v - f[0]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[47], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[50], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -46773,7 +46773,7 @@ pub(super) fn f_c2617e0c54c1c2de(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             16 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[83], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?;
                 f[0] = f[0] - f[1];
                 f[1] = f[0];
@@ -46868,13 +46868,13 @@ pub(super) fn f_c2c95d1d71e3f677(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x2cu32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[51], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[54], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[4] = f[4] * v; }
-                m.exec_op(&p.ops[57], &mut f)?; // FSincos { src: 4, dst: 5 }
+                { let (s, c) = f[4].sin_cos(); f[4] = s; f[5] = c; m.fsw_cc &= !0x0400; }
                 f[2] = f[2] * f[5];
                 f[1] = f[1] * f[4];
                 f[0] = f[0] * f[3];
@@ -48023,7 +48023,7 @@ pub(super) fn f_c7afd221a296d6e4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[17], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 1;
             }
@@ -48039,7 +48039,7 @@ pub(super) fn f_c7afd221a296d6e4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue;
             }
             3 => {
-                m.exec_op(&p.ops[25], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 f[1] = f[0];
@@ -48078,15 +48078,15 @@ pub(super) fn f_c8b3802efdcf5a9b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?;
                 f[0] = f[0] * f[1];
-                m.exec_op(&p.ops[8], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?;
                 f[0] = f[0] * f[1];
-                m.exec_op(&p.ops[13], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[16], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?;
                 f[0] = f[0] * f[1];
                 f[0] = -f[0];
@@ -48097,15 +48097,15 @@ pub(super) fn f_c8b3802efdcf5a9b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?;
                 f[1] = f[1] * f[2];
-                m.exec_op(&p.ops[27], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[1] = f[1] + f[2];
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?;
                 f[1] = f[1] * f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[35], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?;
                 f[1] = f[1] * f[2];
                 f[1] = -f[1];
@@ -48474,7 +48474,7 @@ pub(super) fn f_ca112d82bc2dc67f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[10], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[0].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -48969,7 +48969,7 @@ pub(super) fn f_cb020d7c1a106e2b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             7 => {
                 f.swap(1, 0);
-                m.exec_op(&p.ops[104], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[0] = f[0] * f[0];
                 f[0] = -f[0];
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 13; continue;
@@ -48981,7 +48981,7 @@ pub(super) fn f_cb020d7c1a106e2b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             9 => {
                 f.swap(1, 0);
-                m.exec_op(&p.ops[111], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] + v; }
@@ -49002,19 +49002,19 @@ pub(super) fn f_cb020d7c1a106e2b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             12 => {
                 f.swap(1, 0);
-                m.exec_op(&p.ops[124], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 
                 b = 13;
             }
             13 => {
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[128], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
                 f[1] = f[0];
-                m.exec_op(&p.ops[133], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[1] - f[0];
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa8u32))?; f[0] = f[0] * v; }
@@ -49478,9 +49478,9 @@ pub(super) fn f_d02a4629db0ffb5f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.regs[0];
                 
                 f[0] = f64::from_bits(0x0);
-                m.exec_op(&p.ops[11], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -12 } }
-                m.exec_op(&p.ops[12], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -8 } }
-                m.exec_op(&p.ops[13], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -4 } }
+                { let a = m.regs[5].wrapping_add(0xfffffff4u32); m.fstore(FKind::F32, a, f[0])?; }
+                { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.fstore(FKind::F32, a, f[0])?; }
+                { let a = m.regs[5].wrapping_add(0xfffffffcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 f[1] = f64::from_bits(0x0);
@@ -49499,7 +49499,7 @@ pub(super) fn f_d02a4629db0ffb5f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 f[0] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[29], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -4 } }
+                { let a = m.regs[5].wrapping_add(0xfffffffcu32); m.fstore(FKind::F32, a, f[0])?; }
                 b = 2;
             }
             2 => {
@@ -49521,7 +49521,7 @@ pub(super) fn f_d02a4629db0ffb5f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 f[0] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[45], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -8 } }
+                { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.fstore(FKind::F32, a, f[0])?; }
                 b = 4;
             }
             4 => {
@@ -49543,7 +49543,7 @@ pub(super) fn f_d02a4629db0ffb5f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 f[0] = f64::from_bits(0x3ff0000000000000);
-                m.exec_op(&p.ops[61], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -12 } }
+                { let a = m.regs[5].wrapping_add(0xfffffff4u32); m.fstore(FKind::F32, a, f[0])?; }
                 b = 6;
             }
             6 => {
@@ -49772,19 +49772,19 @@ pub(super) fn f_d0bca413e7f68945(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(5, 4);
                 f[6] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(6, 5);
-                m.exec_op(&p.ops[78], &mut f)?; // FYl2x { x: 6, y: 5 }
+                f[5] *= f[6].log2();
                 f.swap(5, 4);
                 f[4] = f[4] * f[5];
                 f[5] = f64::from_bits(0x3ff71547652b82fe);
                 f[4] = f[4] * f[5];
                 f[5] = f[4];
-                m.exec_op(&p.ops[84], &mut f)?; // FRndint(5)
+                f[5] = m.round_int(f[5]);
                 f[4] = f[4] - f[5];
                 f.swap(5, 4);
-                m.exec_op(&p.ops[87], &mut f)?; // F2xm1(5)
+                f[5] = f[5].exp2() - 1.0;
                 f[6] = f64::from_bits(0x3ff0000000000000);
                 f[5] = f[5] + f[6];
-                m.exec_op(&p.ops[90], &mut f)?; // FScale { a: 5, s: 4 }
+                f[5] *= f[4].trunc().exp2();
                 f[4] = f[5];
                 b = 4;
             }
@@ -50350,7 +50350,7 @@ pub(super) fn f_d30116ddfc64d6a6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 
-                m.exec_op(&p.ops[49], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[2] = f[2] * f[0];
                 
                 f[1] = f[1] - f[2];
@@ -50390,7 +50390,7 @@ pub(super) fn f_d30116ddfc64d6a6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 
-                m.exec_op(&p.ops[83], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[2] = f[2] * f[0];
                 
                 f[1] = f[1] - f[2];
@@ -50430,7 +50430,7 @@ pub(super) fn f_d30116ddfc64d6a6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[1];
                 f[2] = f[2] / f[0];
                 
-                m.exec_op(&p.ops[117], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[2] = f[2] * f[0];
                 
                 f[1] = f[1] - f[2];
@@ -50514,7 +50514,7 @@ pub(super) fn f_d33fc0325b377dec(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[13], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[1];
@@ -50534,7 +50534,7 @@ pub(super) fn f_d33fc0325b377dec(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x18u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] - v; }
-                m.exec_op(&p.ops[33], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 f[0] = f[0] + f[0];
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[1];
@@ -51015,13 +51015,13 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[49], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[52], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[53], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[55], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
@@ -51029,13 +51029,13 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[63], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[66], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[67], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[69], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
@@ -51043,13 +51043,13 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[2] = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?;
                 f[2] = f[2].abs();
-                m.exec_op(&p.ops[77], &mut f)?; // FYl2x { x: 2, y: 1 }
+                f[1] *= f[2].log2();
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[3] = f[1];
                 m.exec_op(&p.ops[80], &mut f)?; // FPrem { a: 3, b: 2, ieee: false }
-                m.exec_op(&p.ops[81], &mut f)?; // F2xm1(3)
+                f[3] = f[3].exp2() - 1.0;
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[83], &mut f)?; // FScale { a: 2, s: 1 }
+                f[2] *= f[1].trunc().exp2();
                 f.swap(2, 1);
                 f[2] = f[2];
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
@@ -51063,7 +51063,7 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[97], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
@@ -51071,7 +51071,7 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[105], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
@@ -51079,13 +51079,13 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 f[2] = f[0];
                 f.swap(2, 1);
-                m.exec_op(&p.ops[113], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[119], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffd0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x18u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[2] = f[2] * v; }
@@ -51098,7 +51098,7 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[132], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x20u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?; f[2] = f[2] * v; }
@@ -51111,7 +51111,7 @@ pub(super) fn f_d4ac4a8e5a1330a8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[145], &mut f)?; // FCos(1)
+                f[1] = f[1].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffffc0u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x28u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?; f[2] = f[2] * v; }
@@ -51275,7 +51275,7 @@ pub(super) fn f_d54901684b942437(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[54], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 f[2] = f[1];
                 f[2] = f[2] * f[2];
@@ -51405,9 +51405,9 @@ pub(super) fn f_d585070180966e37(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = v - f[0]; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[51], &mut f)?; // FSt { src: 1, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[1])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] + v; }
-                m.exec_op(&p.ops[53], &mut f)?; // FSt { src: 1, kind: I32, mem: Mem { base: Some(4), index: None, disp: 32 } }
+                { let a = m.regs[4].wrapping_add(0x20u32); m.fstore(FKind::I32, a, f[1])?; }
                 f[1] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?;
                 f[0] = f[0] - f[1];
                 f[0] = f[0].abs();
@@ -51419,18 +51419,18 @@ pub(super) fn f_d585070180966e37(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[1];
                 f[3] = f[3] + f[2];
                 f[4] = f[3];
-                m.exec_op(&p.ops[65], &mut f)?; // FSt { src: 4, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[4])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[4] = f[4] + v; }
-                m.exec_op(&p.ops[67], &mut f)?; // FSt { src: 4, kind: I32, mem: Mem { base: Some(4), index: None, disp: 36 } }
+                { let a = m.regs[4].wrapping_add(0x24u32); m.fstore(FKind::I32, a, f[4])?; }
                 f[4] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?;
                 f[3] = f[3] - f[4];
                 f[3] = f[3].abs();
                 f.swap(3, 1);
                 f[2] = f[2] - f[3];
                 f[3] = f[2];
-                m.exec_op(&p.ops[74], &mut f)?; // FSt { src: 3, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[3])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] + v; }
-                m.exec_op(&p.ops[76], &mut f)?; // FSt { src: 3, kind: I32, mem: Mem { base: Some(4), index: None, disp: 40 } }
+                { let a = m.regs[4].wrapping_add(0x28u32); m.fstore(FKind::I32, a, f[3])?; }
                 f[3] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?;
                 f[2] = f[2] - f[3];
                 f[2] = f[2].abs();
@@ -52411,13 +52411,13 @@ pub(super) fn f_d8b70249414a637a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x2cu32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[51], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[54], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[4] = f[4] * v; }
-                m.exec_op(&p.ops[57], &mut f)?; // FSincos { src: 4, dst: 5 }
+                { let (s, c) = f[4].sin_cos(); f[4] = s; f[5] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[5])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[4])?; }
                 { let a = m.regs[4].wrapping_add(0x28u32); m.wrf64(a, f[3])?; }
@@ -52425,11 +52425,11 @@ pub(super) fn f_d8b70249414a637a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x38u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x40u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
-                m.exec_op(&p.ops[65], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[67], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[69], &mut f)?; // FSincos { src: 4, dst: 5 }
+                { let (s, c) = f[4].sin_cos(); f[4] = s; f[5] = c; m.fsw_cc &= !0x0400; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x20u32))?; f[5] = f[5] * v; }
                 f[2] = f[2] * f[5];
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x40u32))?; f[4] = f[4] * v; }
@@ -52735,19 +52735,19 @@ pub(super) fn f_d94ee991646a3d7b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[4].abs();
                 f[5] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(5, 4);
-                m.exec_op(&p.ops[129], &mut f)?; // FYl2x { x: 5, y: 4 }
+                f[4] *= f[5].log2();
                 f.swap(4, 3);
                 f[3] = f[3] * f[4];
                 f[4] = f64::from_bits(0x3ff71547652b82fe);
                 f[3] = f[3] * f[4];
                 f[4] = f[3];
-                m.exec_op(&p.ops[135], &mut f)?; // FRndint(4)
+                f[4] = m.round_int(f[4]);
                 f[3] = f[3] - f[4];
                 f.swap(4, 3);
-                m.exec_op(&p.ops[138], &mut f)?; // F2xm1(4)
+                f[4] = f[4].exp2() - 1.0;
                 f[5] = f64::from_bits(0x3ff0000000000000);
                 f[4] = f[4] + f[5];
-                m.exec_op(&p.ops[141], &mut f)?; // FScale { a: 4, s: 3 }
+                f[4] *= f[3].trunc().exp2();
                 f[3] = f[4];
                 let r = m.pop()?; m.regs[ESP] = m.regs[ESP].wrapping_add(0);                              if r != RETURN_SENTINEL { match p.rets.iter().find(|e| e.0 == r).map(|e| e.1) { Some(78) => { b = 15; continue; } Some(81) => { b = 16; continue; } Some(86) => { b = 18; continue; } Some(90) => { b = 20; continue; } _ => return Err(unsup(r, "bad return".into())) } }                              m.st = f; return Ok(());
             }
@@ -52870,7 +52870,7 @@ pub(super) fn f_da1d5e182a89a43a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
-                m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[1] = f[1] + v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
@@ -52880,7 +52880,7 @@ pub(super) fn f_da1d5e182a89a43a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0xcu32); m.wrf64(a, f[0])?; }
                 
                 
-                m.exec_op(&p.ops[25], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x0u32))?;
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] / v; }
@@ -52888,7 +52888,7 @@ pub(super) fn f_da1d5e182a89a43a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[33], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[2] = f[2] * f[1];
@@ -53645,13 +53645,13 @@ pub(super) fn f_dd0e13f47b61ba55(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[23], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[26], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[27], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[29], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
@@ -53663,17 +53663,17 @@ pub(super) fn f_dd0e13f47b61ba55(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0].sqrt();
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[41], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[49], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[51], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[0])?; }
                 
@@ -53850,7 +53850,7 @@ pub(super) fn f_ddde751ec8e90b97(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[24], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(3), index: None, disp: 7 }), src: Rm(Reg(4)), size: 1 }
                 m.regs[0] = m.regs[3];
@@ -55032,9 +55032,9 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 84; continue;
             }
             84 => {
-                m.exec_op(&p.ops[333], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffccu32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[335], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wrf64(a, f[0])?; }
                 
@@ -55544,9 +55544,9 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 168; continue;
             }
             168 => {
-                m.exec_op(&p.ops[629], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffc4u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[631], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffc0u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.wrf64(a, f[0])?; }
                 
@@ -55747,7 +55747,7 @@ pub(super) fn f_e15d68fb5acad786(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.fload(FKind::I32, m.regs[6].wrapping_add(0xd0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffccu32))?; f[2] = f[2] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[45], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = f[3];
                 f[4] = f[4] * f[1];
                 f[5] = f[2];
@@ -55836,7 +55836,7 @@ pub(super) fn f_e174b9fc466fd4d8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
                 f[0] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?;
-                m.exec_op(&p.ops[20], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[0])?; }
                 
                 f[0] = m.rdf64((m.regs[4].wrapping_add(0x10u32)).wrapping_add(m.regs[2].wrapping_mul(1)))?;
                 f[0] = f[0].abs();
@@ -55871,13 +55871,13 @@ pub(super) fn f_e174b9fc466fd4d8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[3] + f[4];
                 f[4] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(4, 3);
-                m.exec_op(&p.ops[47], &mut f)?; // FYl2x { x: 4, y: 3 }
+                f[3] *= f[4].log2();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[3] = f[3] + v; }
                 f[4] = f[2];
                 f[4] = f[4].abs();
                 f[5] = f[1];
-                m.exec_op(&p.ops[53], &mut f)?; // FPatan { x: 5, y: 4 }
+                f[4] = f[4].atan2(f[5]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?; f[4] = f[4] + v; }
                 f[2] = f[4];
                 f[1] = f[3];
@@ -55916,7 +55916,7 @@ pub(super) fn f_e174b9fc466fd4d8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = f64::from_bits(0x3fe62e42fefa39ef);
                 f.swap(1, 0);
-                m.exec_op(&p.ops[89], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f[0];
                 f[2] = m.rdf64(m.regs[7].wrapping_add(0xffffff8cu32))?;
                 f[3] = f64::from_bits(0x0);
@@ -57695,14 +57695,14 @@ pub(super) fn f_e481d9d21cb9b5a3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[12], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[0])?; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[15], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
-                m.exec_op(&p.ops[19], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xffffffe8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -57712,9 +57712,9 @@ pub(super) fn f_e481d9d21cb9b5a3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[29], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[31], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
                 { let bv = 0x0u32; let av = m.rd32(m.regs[7].wrapping_add(0xffffffd4u32))?; let r = m.alu(Alu::Cmp, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
@@ -57748,13 +57748,13 @@ pub(super) fn f_e481d9d21cb9b5a3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 f.swap(1, 0);
                 f[1] = f[1].abs();
-                m.exec_op(&p.ops[59], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[2] = f[0];
                 m.exec_op(&p.ops[62], &mut f)?; // FPrem { a: 2, b: 1, ieee: false }
-                m.exec_op(&p.ops[63], &mut f)?; // F2xm1(2)
+                f[2] = f[2].exp2() - 1.0;
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[65], &mut f)?; // FScale { a: 1, s: 0 }
+                f[1] *= f[0].trunc().exp2();
                 f.swap(1, 0);
                 f[1] = f[1];
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -57979,7 +57979,7 @@ pub(super) fn f_e5b10d9b6546bbe5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64((m.regs[0].wrapping_add(0x0u32)).wrapping_add(m.regs[6].wrapping_mul(8)))?;
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] - v; }
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffecu32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[11], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffe8u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffe4u32))?; f[0] = f[0] + v; }
                 { let a = (m.regs[0].wrapping_add(0x0u32)).wrapping_add(m.regs[6].wrapping_mul(8)); m.wrf64(a, f[0])?; }
@@ -58378,18 +58378,18 @@ pub(super) fn f_e64650665d88ef3d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[3];
                 f[3] = f[1];
                 f[4] = f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[3] = v - f[3]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[36], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 { let bv = 0xfffffff0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 
-                m.exec_op(&p.ops[39], &mut f)?; // FSt { src: 3, kind: I32, mem: Mem { base: Some(4), index: None, disp: 0 } }
+                { let a = m.regs[4].wrapping_add(0x0u32); m.fstore(FKind::I32, a, f[3])?; }
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f[5] = f[1];
                 f[5] = f[5] * f[4];
                 f[6] = f[2];
@@ -58639,7 +58639,7 @@ pub(super) fn f_e82b27bfb496fde9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x2cu32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[52], &mut f)?; // FRndint(0)
+                f[0] = m.round_int(f[0]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x8u32))?; f[0] = f[0] + v; }
                 f[0] = f[0].abs();
@@ -58647,7 +58647,7 @@ pub(super) fn f_e82b27bfb496fde9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x20u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[60], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x18u32))?; f[1] = f[1] * v; }
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[2] = f[2] * v; }
@@ -58937,7 +58937,7 @@ pub(super) fn f_ea26a7236e3f70b3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x1u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 4, 4);
                 f[0] = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?;
-                m.exec_op(&p.ops[20], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[0])?; }
                 
                 f[0] = m.rdf64((m.regs[4].wrapping_add(0x10u32)).wrapping_add(m.regs[2].wrapping_mul(1)))?;
                 f[0] = f[0].abs();
@@ -58965,9 +58965,9 @@ pub(super) fn f_ea26a7236e3f70b3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             5 => {
                 f[2] = f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[40], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 f[2] = f[2] + f[1];
-                m.exec_op(&p.ops[42], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[2] = f[2] * v; }
                 f[2] = -f[2];
                 f[3] = f[1];
@@ -58976,24 +58976,24 @@ pub(super) fn f_ea26a7236e3f70b3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[4].sqrt();
                 f[3] = f[3] * f[4];
                 f[2] = f[2] + f[3];
-                m.exec_op(&p.ops[51], &mut f)?; // FSin(2)
+                f[2] = f[2].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?; f[2] = f[2] * v; }
                 f[2] = -f[2];
                 f[2] = f[2] + f[0];
                 
                 f[3] = f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[58], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 f[3] = f[3] + f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[61], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 f[4] = f[0];
                 f[5] = f[4];
                 f[5] = f[5].abs();
                 f[5] = f[5].sqrt();
                 f[4] = f[4] * f[5];
                 f[3] = f[3] + f[4];
-                m.exec_op(&p.ops[68], &mut f)?; // FSin(3)
+                f[3] = f[3].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff94u32))?; f[3] = f[3] * v; }
                 f[3] = f[3] + f[1];
                 f[0] = f[3];
@@ -59582,15 +59582,15 @@ pub(super) fn f_ed3aff44c27b1a75(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = v - f[0]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[22], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(4), index: None, disp: 48 } }
+                { let a = m.regs[4].wrapping_add(0x30u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x30u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[26], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -59616,7 +59616,7 @@ pub(super) fn f_ed3aff44c27b1a75(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x18u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[52], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -59840,10 +59840,10 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[1];
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[74], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffff8cu32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[77], &mut f)?; // FSt { src: 1, kind: I32, mem: Mem { base: Some(4), index: None, disp: 24 } }
+                { let a = m.regs[4].wrapping_add(0x18u32); m.fstore(FKind::I32, a, f[1])?; }
                 f[2] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x18u32))?;
                 f[1] = f[1] - f[2];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[1] = f[1] * v; }
@@ -59868,7 +59868,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x20u32))?; f[1] = f[1] / v; }
-                m.exec_op(&p.ops[102], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x20u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wrf64(a, f[0])?; }
@@ -60399,7 +60399,7 @@ pub(super) fn f_f0b104a05b743bd3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff9cu32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[18], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -60413,11 +60413,11 @@ pub(super) fn f_f0b104a05b743bd3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x18u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] / v; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[36], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -60442,11 +60442,11 @@ pub(super) fn f_f0b104a05b743bd3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[2];
                 f[1] = f[1].sqrt();
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
-                m.exec_op(&p.ops[55], &mut f)?; // FPatan { x: 2, y: 1 }
+                f[1] = f[1].atan2(f[2]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff8cu32))?; f[1] = f[1] / v; }
                 f[2] = f[1];
-                m.exec_op(&p.ops[59], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 f[1] = f[1] - f[2];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffff8cu32))?; f[1] = f[1] * v; }
                 f[1] = f[1].abs();
@@ -60596,14 +60596,14 @@ pub(super) fn f_f11bef59dface564(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[3];
                 f[3] = f[1];
                 f[4] = f[2];
-                m.exec_op(&p.ops[32], &mut f)?; // FPatan { x: 4, y: 3 }
+                f[3] = f[3].atan2(f[4]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffb0u32))?; f[3] = v - f[3]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[3] = f[3] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[36], &mut f)?; // FRndint(3)
+                f[3] = m.round_int(f[3]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb8u32))?; f[3] = f[3] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[3] = f[3] * v; }
-                m.exec_op(&p.ops[39], &mut f)?; // FSincos { src: 3, dst: 4 }
+                { let (s, c) = f[3].sin_cos(); f[3] = s; f[4] = c; m.fsw_cc &= !0x0400; }
                 f[5] = f[1];
                 f[5] = f[5] * f[4];
                 f[6] = f[2];
@@ -60631,14 +60631,14 @@ pub(super) fn f_f11bef59dface564(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[1];
                 
                 
-                m.exec_op(&p.ops[67], &mut f)?; // FPatan { x: 3, y: 2 }
+                f[2] = f[2].atan2(f[3]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[2] = v - f[2]; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[2] = f[2] * v; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[71], &mut f)?; // FRndint(2)
+                f[2] = m.round_int(f[2]);
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[2] = f[2] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[2] = f[2] * v; }
-                m.exec_op(&p.ops[74], &mut f)?; // FSincos { src: 2, dst: 3 }
+                { let (s, c) = f[2].sin_cos(); f[2] = s; f[3] = c; m.fsw_cc &= !0x0400; }
                 f[4] = f[0];
                 f[4] = f[4] * f[3];
                 f[5] = f[1];
@@ -61229,7 +61229,7 @@ pub(super) fn f_f37a6105e1854b32(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[18], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?;
                 f[0] = f[0] - f[1];
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
@@ -61449,7 +61449,7 @@ pub(super) fn f_f7d7af6ba66543c7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             4 => {
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 
-                m.exec_op(&p.ops[92], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[1])?; }
                 
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
@@ -61489,7 +61489,7 @@ pub(super) fn f_f7d7af6ba66543c7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[5].wrapping_add(0xfffffff0u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[123], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[0] = f[0].abs();
                 b = 8;
             }
@@ -61505,7 +61505,7 @@ pub(super) fn f_f7d7af6ba66543c7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue;
             }
             10 => {
-                m.exec_op(&p.ops[131], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 f[1] = f[0];
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
@@ -61681,23 +61681,23 @@ pub(super) fn f_f7f9bff8d369f709(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             5 => {
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffccu32))?;
-                m.exec_op(&p.ops[86], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -28 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe4u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffc8u32))?;
-                m.exec_op(&p.ops[88], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffc4u32))?;
-                m.exec_op(&p.ops[90], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffc0u32))?;
-                m.exec_op(&p.ops[92], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffbcu32))?;
-                m.exec_op(&p.ops[94], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -44 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd4u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffb8u32))?;
-                m.exec_op(&p.ops[96], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffb4u32))?;
-                m.exec_op(&p.ops[98], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffb0u32))?;
-                m.exec_op(&p.ops[100], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[7].wrapping_add(0xffffffacu32))?;
-                m.exec_op(&p.ops[102], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -60 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc4u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[103] { m.push(*ret)?; } b = 1; continue;
             }
             6 => {
@@ -61708,46 +61708,46 @@ pub(super) fn f_f7f9bff8d369f709(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             7 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[108], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[111], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[114], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[117], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[118] { m.push(*ret)?; } b = 1; continue;
             }
             8 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[121], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[124], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[127], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[130], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[131] { m.push(*ret)?; } b = 1; continue;
             }
             9 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[134], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[137], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[140], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[143], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[144] { m.push(*ret)?; } b = 1; continue;
             }
             10 => {
@@ -61761,46 +61761,46 @@ pub(super) fn f_f7f9bff8d369f709(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             12 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[150], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[153], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[156], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[159], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[160] { m.push(*ret)?; } b = 1; continue;
             }
             13 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[163], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[166], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[169], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[172], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[173] { m.push(*ret)?; } b = 1; continue;
             }
             14 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[176], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[179], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[182], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[185], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[186] { m.push(*ret)?; } b = 1; continue;
             }
             15 => {
@@ -61814,46 +61814,46 @@ pub(super) fn f_f7f9bff8d369f709(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             17 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[192], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[195], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[198], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[201], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[202] { m.push(*ret)?; } b = 1; continue;
             }
             18 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[205], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[208], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[211], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[214], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[215] { m.push(*ret)?; } b = 1; continue;
             }
             19 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[218], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[221], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[224], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[227], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[228] { m.push(*ret)?; } b = 1; continue;
             }
             20 => {
@@ -61868,46 +61868,46 @@ pub(super) fn f_f7f9bff8d369f709(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[238], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[241], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[244], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[247], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[248] { m.push(*ret)?; } b = 1; continue;
             }
             22 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffdcu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[251], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -36 } }
+                { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[254], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffccu32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[257], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -52 } }
+                { let a = m.regs[5].wrapping_add(0xffffffccu32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[260], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[261] { m.push(*ret)?; } b = 1; continue;
             }
             23 => {
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffe0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[264], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -32 } }
+                { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd0u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[267], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -48 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd0u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffd8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[270], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -40 } }
+                { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.fstore(FKind::F32, a, f[0])?; }
                 f[0] = m.fload(FKind::F32, m.regs[5].wrapping_add(0xffffffc8u32))?;
                 f[0] = -f[0];
-                m.exec_op(&p.ops[273], &mut f)?; // FSt { src: 0, kind: F32, mem: Mem { base: Some(5), index: None, disp: -56 } }
+                { let a = m.regs[5].wrapping_add(0xffffffc8u32); m.fstore(FKind::F32, a, f[0])?; }
                 if let Op::Call { ret, .. } = &p.ops[274] { m.push(*ret)?; } b = 1; continue;
             }
             24 => {
@@ -62029,11 +62029,11 @@ pub(super) fn f_f8a79f471f2fd4a3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = m.rdf64(m.regs[6].wrapping_add(0x10u32))?;
                 f[1] = f[1] * f[4];
                 f[4] = f[3];
-                m.exec_op(&p.ops[16], &mut f)?; // FRndint(4)
+                f[4] = m.round_int(f[4]);
                 f[5] = f[2];
-                m.exec_op(&p.ops[18], &mut f)?; // FRndint(5)
+                f[5] = m.round_int(f[5]);
                 f[6] = f[1];
-                m.exec_op(&p.ops[20], &mut f)?; // FRndint(6)
+                f[6] = m.round_int(f[6]);
                 f[1] = f[1] - f[6];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?; f[6] = f[6] * v; }
                 { let a = m.regs[6].wrapping_add(0x28u32); m.wrf64(a, f[6])?; }
@@ -62082,13 +62082,13 @@ pub(super) fn f_fb5ac68d1c9c59f0(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[1])?; }
-                m.exec_op(&p.ops[15], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] / v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[21], &mut f)?; // FSt { src: 0, kind: I32, mem: Mem { base: Some(5), index: None, disp: -8 } }
+                { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.fstore(FKind::I32, a, f[0])?; }
                 f[0] = m.fload(FKind::I32, m.regs[5].wrapping_add(0xfffffff8u32))?;
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] / v; }
@@ -62096,7 +62096,7 @@ pub(super) fn f_fb5ac68d1c9c59f0(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
-                m.exec_op(&p.ops[29], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[2] = f[2] * f[1];
@@ -62373,7 +62373,7 @@ pub(super) fn f_fd36b304692cf4cb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             5 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x30u32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[30], &mut f)?; // FSin(0)
+                f[0] = f[0].sin(); m.fsw_cc &= !0x0400;
                 b = 6;
             }
             6 => {
@@ -62395,7 +62395,7 @@ pub(super) fn f_fd36b304692cf4cb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             9 => {
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?;
                 f.swap(1, 0);
-                m.exec_op(&p.ops[40], &mut f)?; // FYl2x { x: 1, y: 0 }
+                f[0] *= f[1].log2();
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x14u32))?;
                 { let bv = 0x80000000u32; let av = m.regs[2]; let r = m.alu(Alu::And, av, bv, 4); m.regs[2] = r; }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 11; continue; }
@@ -62407,7 +62407,7 @@ pub(super) fn f_fd36b304692cf4cb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             11 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa4u32))?; f[0] = f[0] + v; }
-                m.exec_op(&p.ops[46], &mut f)?; // FSincos { src: 0, dst: 1 }
+                { let (s, c) = f[0].sin_cos(); f[0] = s; f[1] = c; m.fsw_cc &= !0x0400; }
                 { let a = m.regs[4].wrapping_add(0x20u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -62421,11 +62421,11 @@ pub(super) fn f_fd36b304692cf4cb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x18u32))?; f[2] = f[2] * v; }
                 f[1] = f[1] + f[2];
-                m.exec_op(&p.ops[60], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] / v; }
                 f[1] = f[0];
-                m.exec_op(&p.ops[64], &mut f)?; // FRndint(1)
+                f[1] = m.round_int(f[1]);
                 f[0] = f[0] - f[1];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -62608,7 +62608,7 @@ pub(super) fn f_ff7c406ca39237b1(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
-                m.exec_op(&p.ops[18], &mut f)?; // FPatan { x: 1, y: 0 }
+                f[0] = f[0].atan2(f[1]);
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
                 f[1] = f[1] * f[1];
                 f[2] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
@@ -62629,14 +62629,14 @@ pub(super) fn f_ff7c406ca39237b1(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffb0u32))?; f[0] = f[0] / v; }
                 { let a = m.regs[4].wrapping_add(0x18u32); m.wrf64(a, f[0])?; }
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffacu32))?; f[0] = f[0] * v; }
-                m.exec_op(&p.ops[36], &mut f)?; // FCos(0)
+                f[0] = f[0].cos(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa0u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x0u32))?; f[0] = f[0] + v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] - v; }
                 f[0] = f[0] * f[0];
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x18u32))?;
                 { let v = m.fload(FKind::I32, m.regs[7].wrapping_add(0xffffffa8u32))?; f[1] = f[1] * v; }
-                m.exec_op(&p.ops[43], &mut f)?; // FSin(1)
+                f[1] = f[1].sin(); m.fsw_cc &= !0x0400;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffa0u32))?; f[1] = f[1] * v; }
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x10u32))?; f[1] = f[1] + v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[1] = f[1] - v; }

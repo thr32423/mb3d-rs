@@ -23,6 +23,12 @@ jobs:
           - { os: macos-13, target: x86_64-apple-darwin, exe: mb3d }
     steps:
       - uses: actions/checkout@v4
+      # the original Mandelbulb3D folder (formulas, maps, parameters, sources)
+      # is shipped next to the program
+      - uses: actions/checkout@v4
+        with:
+          repository: thargor6/mb3d
+          path: mb3d-original
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -33,8 +39,16 @@ jobs:
         run: |
           name=mb3d-rs-${GITHUB_REF_NAME}-${{ matrix.target }}
           mkdir -p "$name"
+          # everything of the original MB3D repository (without its git data);
+          # its README is renamed so that it does not replace ours
+          (cd mb3d-original && echo "https://github.com/thargor6/mb3d commit $(git rev-parse HEAD)" > ../MB3D-SOURCE.txt)
+          rm -rf mb3d-original/.git
+          cp -R mb3d-original/. "$name"/
+          mv "$name/README.md" "$name/README-MB3D.md"
+          mv MB3D-SOURCE.txt "$name"/
           cp target/${{ matrix.target }}/release/${{ matrix.exe }} README.md GETTING_STARTED.md LICENSE "$name"/
-          cp -r examples/*.m3s "$name"/
+          mkdir -p "$name/examples"
+          cp examples/*.m3s "$name/examples"/
           if [ "${{ runner.os }}" = "Windows" ]; then 7z a "$name.zip" "$name" > /dev/null; else tar czf "$name.tar.gz" "$name"; fi
       - uses: actions/upload-artifact@v4
         with:

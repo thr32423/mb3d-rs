@@ -285,6 +285,11 @@ pub fn add_map_dir(dir: PathBuf) {
     map_dirs().lock().unwrap().insert(0, dir);
 }
 
+/// The directories searched for maps (for the editor's "Ini Dirs").
+pub fn map_dir_list() -> Vec<PathBuf> {
+    search_dirs()
+}
+
 /// All directories searched, including `M3Maps` next to the formula dirs.
 fn search_dirs() -> Vec<PathBuf> {
     let mut v = map_dirs().lock().unwrap().clone();

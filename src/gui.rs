@@ -25,8 +25,13 @@ const INDEX_HTML: &str = include_str!("gui/index.html");
 
 #[derive(Clone, Copy, PartialEq)]
 enum Job {
-    Preview { gen: u64, view_w: u32 },
+    /// progressive previews; `force` recalculates even when the kept
+    /// G-buffer could be repainted
+    Preview { gen: u64, view_w: u32, force: bool },
+    /// "Calculate 3D": the full image
     Final { gen: u64, aa: u32 },
+    /// MB3D's quick 2D calculation of the plane at z start / mid / end
+    Slice { gen: u64, view_w: u32, at: u8 },
 }
 
 struct SceneState {
@@ -35,13 +40,30 @@ struct SceneState {
     notes: Vec<String>,
 }
 
-/// The last calculated preview pass (for picking points in the image).
+/// The last calculated pass (for picking points in the image).
 struct Pick {
     scene: Scene,
     params: CalcParams,
-    gbuf: Vec<SiLight>,
+    gbuf: Arc<Vec<SiLight>>,
     w: usize,
     h: usize,
+}
+
+/// The G-buffer of the image on screen, kept like MB3D keeps its siLight
+/// buffer: changes of the lighting only repaint it, changes of the post
+/// processing (shadows, ambient occlusion) redo those on the raw buffer.
+struct Base {
+    /// a "Calculate 3D" image (else the last preview pass)
+    final_img: bool,
+    aa: u32,
+    calc_sig: String,
+    post_sig: String,
+    full_sig: String,
+    scene: Scene,
+    params: CalcParams,
+    /// before the post calculations; None when it was too big to keep
+    raw: Option<Arc<Vec<SiLight>>>,
+    post: Arc<Vec<SiLight>>,
 }
 
 #[derive(Default)]
@@ -56,6 +78,12 @@ struct Output {
     final_png: Option<Arc<Vec<u8>>>,
     final_ver: u64,
     rendering: bool,
+    /// the image on screen is a full calculation ("Calculate 3D")
+    full: bool,
+    /// calculation statistics of the image on screen (JSON object)
+    info: String,
+    /// pixels of the last full image (for saving it scaled)
+    final_rgb: Option<(Arc<Vec<u8>>, usize, usize)>,
 }
 
 struct App {
@@ -66,6 +94,7 @@ struct App {
     job_cv: Condvar,
     out: Mutex<Output>,
     pick: Mutex<Option<Pick>>,
+    base: Mutex<Option<Arc<Base>>>,
     /// progress of the running pass in 1/1000
     progress: AtomicU32,
     view_w: AtomicU32,
@@ -82,10 +111,22 @@ impl App {
     }
 
     fn restart(&self) {
+        self.start(false);
+    }
+
+    fn start(&self, force: bool) {
         let gen = self.gen.fetch_add(1, Ordering::SeqCst) + 1;
         let view_w = self.view_w.load(Ordering::Relaxed);
-        *self.job.lock().unwrap() = Some(Job::Preview { gen, view_w });
+        self.queue(Job::Preview { gen, view_w, force });
+    }
+
+    fn queue(&self, job: Job) {
+        *self.job.lock().unwrap() = Some(job);
         self.job_cv.notify_all();
+    }
+
+    fn next_gen(&self) -> u64 {
+        self.gen.fetch_add(1, Ordering::SeqCst) + 1
     }
 }
 
@@ -122,6 +163,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
         job_cv: Condvar::new(),
         out: Mutex::new(Output::default()),
         pick: Mutex::new(None),
+        base: Mutex::new(None),
         progress: AtomicU32::new(0),
         view_w: AtomicU32::new(640),
         anim: anim::AnimState::new(),
@@ -188,6 +230,55 @@ fn preview_scene(sc: &Scene, w: u32, light: bool) -> Scene {
     s
 }
 
+/// The scene of a "Calculate 3D" with anti-aliasing (image scale) `aa`.
+fn final_scene(sc: &Scene, aa: u32) -> Scene {
+    let mut s = sc.clone();
+    s.calc_rect = None;
+    if aa > 1 {
+        s.scale_image(aa as f64);
+    }
+    s
+}
+
+/// Everything the ray marching depends on (the scene without lighting and
+/// the post calculations).
+fn calc_sig(sc: &Scene) -> String {
+    let mut s = sc.clone();
+    if s.vol_light.is_none() {
+        s.lighting = Default::default();
+    }
+    s.ao = None;
+    s.shadows = None;
+    s.deao = None;
+    s.normals_on_zbuf = false;
+    s.dof = None;
+    s.mc = Default::default();
+    s.threads = 0;
+    s.to_text()
+}
+
+/// Everything the post calculations depend on (the light directions only
+/// matter for hard shadows).
+fn post_sig(sc: &Scene) -> String {
+    let mut s = sc.clone();
+    let lights = s.lighting.lights.clone();
+    s.lighting = Default::default();
+    if s.shadows.is_some() {
+        s.lighting.lights = lights;
+    }
+    s.dof = None;
+    s.mc = Default::default();
+    s.threads = 0;
+    s.to_text()
+}
+
+fn needs_post(sc: &Scene, p: &CalcParams) -> bool {
+    p.slice_2d == 0 && (sc.normals_on_zbuf || sc.shadows.is_some() || sc.ao.is_some())
+}
+
+/// Raw G-buffers above this pixel count are not kept (memory).
+const MAX_KEPT_RAW: usize = 12_000_000;
+
 fn worker(app: Arc<App>) {
     loop {
         let job = {
@@ -199,8 +290,19 @@ fn worker(app: Arc<App>) {
         };
         let sc = app.scene.lock().unwrap().scene.clone();
         match job {
-            Job::Preview { gen, view_w } => {
+            Job::Preview { gen, view_w, force } => {
                 let full = view_w.min(sc.width.max(16) as u32).max(16);
+                if !force {
+                    let base = app.base.lock().unwrap().clone();
+                    if let Some(b) = base {
+                        let target = if b.final_img { final_scene(&sc, b.aa) } else { preview_scene(&sc, full, false) };
+                        if target.width == b.scene.width && target.height == b.scene.height && calc_sig(&target) == b.calc_sig
+                            && repaint(&app, gen, &b, target)
+                        {
+                            continue;
+                        }
+                    }
+                }
                 let mut widths: Vec<u32> = [full / 8, full / 4, full / 2].into_iter().filter(|&w| w >= 40).collect();
                 widths.push(full);
                 let n = widths.len();
@@ -211,25 +313,111 @@ fn worker(app: Arc<App>) {
                     let last = i + 1 == n;
                     let ps = preview_scene(&sc, w, !last && n > 1);
                     let stage = if last { format!("preview {}x{}", ps.width, ps.height) } else { format!("pass {} of {}", i + 1, n) };
-                    if !render_pass(&app, gen, &ps, &stage, 1, false) {
+                    if !render_pass(&app, gen, &ps, &stage, 1, false, last) {
                         break;
                     }
                 }
             }
             Job::Final { gen, aa } => {
-                let mut s = sc.clone();
-                if aa > 1 {
-                    s.scale_image(aa as f64);
-                }
-                let stage = format!("final {}x{}{}", sc.width, sc.height, if aa > 1 { format!(", anti-aliasing {aa}x") } else { String::new() });
-                render_pass(&app, gen, &s, &stage, aa as usize, true);
+                let s = final_scene(&sc, aa);
+                let stage = format!("calculated {}x{}{}", sc.width, sc.height, if aa > 1 { format!(", image scale 1:{aa}") } else { String::new() });
+                render_pass(&app, gen, &s, &stage, aa as usize, true, true);
+            }
+            Job::Slice { gen, view_w, at } => {
+                let w = view_w.min(sc.width.max(16) as u32).max(16);
+                let mut ps = preview_scene(&sc, w, true);
+                ps.slice_2d = at;
+                let name = ["", "z start", "z mid", "z end"][at.min(3) as usize];
+                render_pass(&app, gen, &ps, &format!("2D slice at {name}"), 1, false, false);
             }
         }
     }
 }
 
-/// Renders one pass; false when cancelled or failed.
-fn render_pass(app: &App, gen: u64, sc: &Scene, stage: &str, aa: usize, final_img: bool) -> bool {
+/// Statistics of a calculated image for the "Infos" tab.
+fn info_json(g: &[SiLight], calc: f64, post: f64, paint: f64, w: usize, h: usize, full: bool) -> String {
+    let hits: Vec<&SiLight> = g.iter().filter(|s| !s.is_background()).collect();
+    let steps = if g.is_empty() { 0.0 } else { g.iter().map(|s| (s.shadow & 0x3FF) as f64).sum::<f64>() / g.len() as f64 };
+    format!(
+        "{{\"calc\":{calc:.3},\"post\":{post:.3},\"paint\":{paint:.3},\"steps\":{steps:.1},\"hits\":{:.1},\"w\":{w},\"h\":{h},\"full\":{full}}}",
+        100.0 * hits.len() as f64 / g.len().max(1) as f64
+    )
+}
+
+fn publish(app: &App, rgb: Vec<u8>, w: usize, h: usize, aa: usize, stage: &str, final_img: bool, info: String, t0: Instant) {
+    let (rgb, w, h) = if aa > 1 { crate::render::downsample(&rgb, w, h, aa) } else { (rgb, w, h) };
+    let png = Arc::new(crate::png::encode_rgb(w, h, &rgb));
+    let mut o = app.out.lock().unwrap();
+    o.png = png.clone();
+    o.img_ver += 1;
+    o.w = w;
+    o.h = h;
+    o.seconds = t0.elapsed().as_secs_f64();
+    o.stage = format!("{stage} — {:.1} s", o.seconds);
+    o.full = final_img;
+    o.info = info;
+    if final_img {
+        o.final_png = Some(png);
+        o.final_rgb = Some((Arc::new(rgb), w, h));
+        o.final_ver += 1;
+    }
+}
+
+/// Repaints the kept G-buffer for a scene that differs only in lighting or
+/// post processing; false when that is not possible.
+fn repaint(app: &App, gen: u64, b: &Arc<Base>, target: Scene) -> bool {
+    let full_sig = target.to_text();
+    if full_sig == b.full_sig {
+        return true; // nothing changed for this image
+    }
+    let t0 = Instant::now();
+    let psig = post_sig(&target);
+    let post = if psig == b.post_sig {
+        b.post.clone()
+    } else {
+        let Some(raw) = &b.raw else { return false };
+        {
+            let mut o = app.out.lock().unwrap();
+            o.rendering = true;
+            o.stage = "post processing".into();
+            o.error.clear();
+        }
+        let mut g = (**raw).clone();
+        if needs_post(&target, &b.params) {
+            crate::render::post_process(&target, &b.params, &mut g, crate::render::thread_count(&target));
+        }
+        Arc::new(g)
+    };
+    if app.gen.load(Ordering::SeqCst) != gen {
+        app.out.lock().unwrap().rendering = false;
+        return true;
+    }
+    app.out.lock().unwrap().stage = "painting".into();
+    let t1 = Instant::now();
+    let rgb = crate::render::paint(&target, &b.params, &post);
+    let (w, h) = (target.width as usize, target.height as usize);
+    let info = info_json(&post, 0.0, (t1 - t0).as_secs_f64(), t1.elapsed().as_secs_f64(), w / b.aa as usize, h / b.aa as usize, b.final_img);
+    let stage = if b.final_img { "repainted" } else { "preview repainted" };
+    publish(app, rgb, w, h, b.aa as usize, stage, b.final_img, info, t0);
+    app.out.lock().unwrap().rendering = false;
+    *app.pick.lock().unwrap() = Some(Pick { scene: target.clone(), params: b.params.clone(), gbuf: post.clone(), w, h });
+    *app.base.lock().unwrap() = Some(Arc::new(Base {
+        final_img: b.final_img,
+        aa: b.aa,
+        calc_sig: b.calc_sig.clone(),
+        post_sig: psig,
+        full_sig,
+        scene: target,
+        params: b.params.clone(),
+        raw: b.raw.clone(),
+        post,
+    }));
+    true
+}
+
+/// Renders one pass; false when cancelled or failed.  `keep` stores the
+/// G-buffer for repainting.
+fn render_pass(app: &App, gen: u64, sc: &Scene, stage: &str, aa: usize, final_img: bool, keep: bool) -> bool {
     {
         let mut o = app.out.lock().unwrap();
         o.rendering = true;
@@ -240,49 +428,78 @@ fn render_pass(app: &App, gen: u64, sc: &Scene, stage: &str, aa: usize, final_im
     let t0 = Instant::now();
     let cancel = || app.gen.load(Ordering::SeqCst) != gen;
     let progress = |d: usize, t: usize| app.progress.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
-    let res = if sc.tiling.is_some() && final_img {
-        crate::render::render_tiled(sc, false, &progress, &|_, _, _| {}).map(|r| (r.rgb, r.width, r.height, None))
-    } else {
-        crate::render::calculate_cancellable(sc, &progress, &cancel).map(|(p, g)| {
-            let rgb = crate::render::paint(sc, &p, &g);
-            (rgb, sc.width as usize, sc.height as usize, Some((p, g)))
-        })
-    };
-    let mut o = app.out.lock().unwrap();
-    o.rendering = false;
-    match res {
-        Ok((rgb, w, h, pg)) => {
-            if cancel() && !final_img {
+    if sc.tiling.is_some() && final_img {
+        // big renders: tile by tile, nothing is kept
+        let res = crate::render::render_tiled(sc, false, &progress, &|_, _, _| {});
+        app.out.lock().unwrap().rendering = false;
+        match res {
+            Ok(r) => {
+                *app.base.lock().unwrap() = None;
+                let info = format!("{{\"calc\":{:.3},\"w\":{},\"h\":{},\"full\":true}}", t0.elapsed().as_secs_f64(), r.width, r.height);
+                publish(app, r.rgb, r.width, r.height, 1, stage, true, info, t0);
+                return true;
+            }
+            Err(e) => {
+                let mut o = app.out.lock().unwrap();
+                o.stage = if e == "cancelled" { "cancelled".into() } else { "error".into() };
+                o.error = if e == "cancelled" { String::new() } else { e };
                 return false;
             }
-            let (rgb, w, h) = if aa > 1 { crate::render::downsample(&rgb, w, h, aa) } else { (rgb, w, h) };
-            let png = Arc::new(crate::png::encode_rgb(w, h, &rgb));
-            o.png = png.clone();
-            o.img_ver += 1;
-            o.w = w;
-            o.h = h;
-            o.seconds = t0.elapsed().as_secs_f64();
-            o.stage = format!("{stage} — {:.1} s", o.seconds);
-            if final_img {
-                o.final_png = Some(png);
-                o.final_ver += 1;
-            }
-            drop(o);
-            if let (Some((p, g)), false) = (pg, final_img) {
-                *app.pick.lock().unwrap() = Some(Pick { scene: sc.clone(), params: p, gbuf: g, w, h });
-            }
-            true
         }
+    }
+    let res = crate::render::calculate_raw_cancellable(sc, &progress, &cancel);
+    let (p, raw) = match res {
+        Ok(r) => r,
         Err(e) => {
+            let mut o = app.out.lock().unwrap();
+            o.rendering = false;
             if e != "cancelled" {
                 o.error = e;
                 o.stage = "error".into();
             } else {
                 o.stage = "cancelled".into();
             }
-            false
+            return false;
         }
+    };
+    let t1 = Instant::now();
+    let raw = Arc::new(raw);
+    let post = if needs_post(sc, &p) {
+        if final_img || !cancel() {
+            app.out.lock().unwrap().stage = format!("{stage}: post processing");
+        }
+        let mut g = (*raw).clone();
+        crate::render::post_process(sc, &p, &mut g, crate::render::thread_count(sc));
+        Arc::new(g)
+    } else {
+        raw.clone()
+    };
+    let t2 = Instant::now();
+    if cancel() && !final_img {
+        app.out.lock().unwrap().rendering = false;
+        return false;
     }
+    let rgb = crate::render::paint(sc, &p, &post);
+    let (w, h) = (sc.width as usize, sc.height as usize);
+    let info = info_json(&post, (t1 - t0).as_secs_f64(), (t2 - t1).as_secs_f64(), t2.elapsed().as_secs_f64(), w / aa, h / aa, final_img);
+    publish(app, rgb, w, h, aa, stage, final_img, info, t0);
+    app.out.lock().unwrap().rendering = false;
+    *app.pick.lock().unwrap() = Some(Pick { scene: sc.clone(), params: p.clone(), gbuf: post.clone(), w, h });
+    if keep {
+        let raw = (Arc::ptr_eq(&raw, &post) || w * h <= MAX_KEPT_RAW).then_some(raw);
+        *app.base.lock().unwrap() = Some(Arc::new(Base {
+            final_img,
+            aa: aa as u32,
+            calc_sig: calc_sig(sc),
+            post_sig: post_sig(sc),
+            full_sig: sc.to_text(),
+            scene: sc.clone(),
+            params: p,
+            raw,
+            post,
+        }));
+    }
+    true
 }
 
 // ---------------------------------------------------------------------------
@@ -374,9 +591,22 @@ fn pick_at(app: &App, u: f64, v: f64) -> Option<(Option<Vec3>, Vec3)> {
     let x = ((u * pk.w as f64) as i64).clamp(0, pk.w as i64 - 1) as i32;
     let y = ((v * pk.h as f64) as i64).clamp(0, pk.h as i64 - 1) as i32;
     let cam = crate::render::paint_camera(&pk.scene, &pk.params);
-    let si = &pk.gbuf[y as usize * pk.w + x as usize];
+    let si = pk.gbuf.get(y as usize * pk.w + x as usize)?;
     let pos = cam.object_pos(si, x, y).map(|p| [p[0] + pk.scene.mid[0], p[1] + pk.scene.mid[1], p[2] + pk.scene.mid[2]]);
     Some((pos, cam.pixel_dir(x as f32, y as f32)))
+}
+
+/// `/api/pick`: the object position under a point of the image and its
+/// distance from the camera as a fraction of the image width (DOF Z sharp).
+fn pick_json(app: &App, q: &HashMap<String, String>) -> Result<String, String> {
+    let num = |k: &str| q.get(k).and_then(|v| v.parse::<f64>().ok()).unwrap_or(0.5);
+    let (pos, _) = pick_at(app, num("u"), num("v")).ok_or("no image to pick from yet")?;
+    let Some(p) = pos else { return Ok("{\"pos\":null}".into()) };
+    let sc = app.scene.lock().unwrap().scene.clone();
+    let cam = camera_pos(&sc);
+    let vz = normalize(sc.vgrads[2]);
+    let z = (p[0] - cam[0]) * vz[0] + (p[1] - cam[1]) * vz[1] + (p[2] - cam[2]) * vz[2];
+    Ok(format!("{{\"pos\":[{},{},{}],\"z\":{}}}", p[0], p[1], p[2], z / (sc.step_width() * sc.width as f64)))
 }
 
 fn navigate(app: &App, q: &HashMap<String, String>) -> Result<(), String> {
@@ -400,6 +630,75 @@ fn navigate(app: &App, q: &HashMap<String, String>) -> Result<(), String> {
             }
         }
         "zoom" => sc.zoom = (sc.zoom * num("factor", 1.25)).clamp(1e-12, 1e12),
+        "pan" => {
+            // the main window's mouse modes (Image1MouseUp): xx, yy offset of
+            // the new middle in image pixels, dz zoom factor, zt z move
+            let (xx, yy, dz, zt) = (num("dx", 0.0), num("dy", 0.0), num("dz", 1.0), num("zt", 0.0));
+            let mut yh = 2.1345 / (sc.zoom * sc.width as f64);
+            yh *= 1.0 + sc.fov_y.to_radians().sin() * (sc.mid[2] - sc.z_start) / (yh * sc.height as f64);
+            let m = crate::math::normalise_matrix_to(yh, &sc.vgrads);
+            sc.mid[0] += xx * m[0][0] + yy * m[1][0] - zt * m[2][0];
+            sc.mid[1] += xx * m[0][1] + yy * m[1][1] - zt * m[2][1];
+            let d = xx * m[0][2] + yy * m[1][2] - zt * m[2][2];
+            if (dz - 1.0).abs() > 1e-4 && dz > 0.0 {
+                sc.zoom *= dz;
+                sc.z_start = sc.mid[2] + (sc.z_start - sc.mid[2]) / dz;
+                sc.z_end = sc.mid[2] + (sc.z_end - sc.mid[2]) / dz;
+            }
+            sc.z_end += d;
+            sc.mid[2] += d;
+            sc.z_start += d;
+        }
+        "rotmid" => {
+            // the rotation buttons: left click turns the object around the
+            // viewer's axes at the middle, right click around its own axes at 0
+            let r = num("deg", 5.0).to_radians();
+            let m = match num("axis", 0.0) as i32 {
+                0 => crate::math::build_rot_matrix(r, 0.0, 0.0),
+                1 => crate::math::build_rot_matrix(0.0, r, 0.0),
+                _ => crate::math::build_rot_matrix(0.0, 0.0, r),
+            };
+            if num("obj", 0.0) != 0.0 {
+                sc.vgrads = crate::math::mat_mul(&sc.vgrads, &m);
+                sc.mid = crate::math::rotate_vector_reverse(&sc.mid, &m);
+            } else {
+                sc.vgrads = crate::math::mat_mul(&m, &sc.vgrads);
+            }
+        }
+        "euler" => {
+            let l = dot(&sc.vgrads[0], &sc.vgrads[0]).sqrt();
+            let m = crate::math::build_rot_matrix(num("x", 0.0).to_radians(), num("y", 0.0).to_radians(), num("z", 0.0).to_radians());
+            sc.vgrads = crate::math::normalise_matrix_to(if l > 0.0 { l } else { 1.0 }, &m);
+        }
+        "scale" => {
+            // "Scale" of the image box: size times 2 or / 2, with "DEstop+C"
+            // also the DE stop and the DOF clipping radius
+            let f = num("f", 2.0);
+            if num("destop", 0.0) != 0.0 {
+                sc.scale_image(f);
+            } else {
+                sc.width = ((sc.width as f64 * f).round() as i32).max(16);
+                sc.height = ((sc.height as f64 * f).round() as i32).max(16);
+            }
+            sc.tiling = None;
+        }
+        "midpoint" => {
+            let (pos, _) = pick_at(app, num("u", 0.5), num("v", 0.5)).ok_or("no image to pick from yet")?;
+            let p = pos.ok_or("background picked")?;
+            let (zs, ze) = (sc.mid[2] - sc.z_start, sc.z_end - sc.mid[2]);
+            sc.mid = p;
+            sc.z_start = p[2] - zs;
+            sc.z_end = p[2] + ze;
+        }
+        "reset_pos" => {
+            let big = sc.rstop.unwrap_or(16.0) > 500.0;
+            sc.z_start = if big { -8.0 } else { -2.0 };
+            sc.z_end = if big { 120.0 } else { 30.0 };
+            sc.mid = [0.0; 3];
+            sc.zoom = if big { 0.18 } else { 0.8 };
+            sc.fov_y = 30.0;
+            sc.vgrads = crate::math::build_rot_matrix(0.0001, -0.0001, 0.0);
+        }
         "fly" | "look" => {
             let (pos, dir) = pick_at(app, num("u", 0.5), num("v", 0.5)).ok_or("no preview to pick from yet")?;
             if op == "look" {
@@ -535,20 +834,25 @@ fn json_list(v: &[String]) -> String {
 
 fn state_json(app: &App) -> String {
     let st = app.scene.lock().unwrap();
+    let euler = match crate::math::matrix_to_angles(&st.scene.vgrads) {
+        Some(e) => format!("[{},{},{}]", e[0].to_degrees(), e[1].to_degrees(), e[2].to_degrees()),
+        None => "null".into(),
+    };
     format!(
-        "{{\"gen\":{},\"title\":{},\"text\":{},\"notes\":{},\"view_w\":{}}}",
+        "{{\"gen\":{},\"title\":{},\"text\":{},\"notes\":{},\"view_w\":{},\"euler\":{}}}",
         app.gen.load(Ordering::SeqCst),
         json_str(&st.title),
         json_str(&st.scene.to_text()),
         json_list(&st.notes),
-        app.view_w.load(Ordering::Relaxed)
+        app.view_w.load(Ordering::Relaxed),
+        euler
     )
 }
 
 fn status_json(app: &App) -> String {
     let o = app.out.lock().unwrap();
     format!(
-        "{{\"gen\":{},\"img_ver\":{},\"w\":{},\"h\":{},\"rendering\":{},\"progress\":{},\"stage\":{},\"error\":{},\"final_ver\":{}}}",
+        "{{\"gen\":{},\"img_ver\":{},\"w\":{},\"h\":{},\"rendering\":{},\"progress\":{},\"stage\":{},\"error\":{},\"final_ver\":{},\"full\":{},\"info\":{}}}",
         app.gen.load(Ordering::SeqCst),
         o.img_ver,
         o.w,
@@ -557,7 +861,22 @@ fn status_json(app: &App) -> String {
         app.progress.load(Ordering::Relaxed) as f64 / 10.0,
         json_str(&o.stage),
         json_str(&o.error),
-        o.final_ver
+        o.final_ver,
+        o.full,
+        if o.info.is_empty() { "null" } else { &o.info }
+    )
+}
+
+fn dirs_json() -> String {
+    let l = |v: Vec<std::path::PathBuf>| {
+        json_list(&v.iter().map(|p| std::fs::canonicalize(p).unwrap_or(p.clone()).display().to_string()).collect::<Vec<_>>())
+    };
+    let cwd = std::env::current_dir().map(|p| p.display().to_string()).unwrap_or_default();
+    format!(
+        "{{\"formulas\":{},\"maps\":{},\"cwd\":{}}}",
+        l(crate::formulas::formula_dir_list()),
+        l(crate::maps::map_dir_list()),
+        json_str(&cwd)
     )
 }
 
@@ -634,8 +953,99 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
             ok_json(&mut stream, status_json(app))
         }
         ("POST", "/api/refresh") => {
-            app.restart();
+            app.start(true);
             ok_json(&mut stream, status_json(app))
+        }
+        ("POST", "/api/slice") => {
+            let at = form().get("at").and_then(|v| v.parse::<u8>().ok()).unwrap_or(2).clamp(1, 3);
+            let gen = app.next_gen();
+            app.queue(Job::Slice { gen, view_w: app.view_w.load(Ordering::Relaxed), at });
+            ok_json(&mut stream, status_json(app))
+        }
+        ("GET", "/api/pick") => match pick_json(app, &req.query) {
+            Ok(j) => ok_json(&mut stream, j),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("GET", "/api/pic") => {
+            // the last full image, reduced by the viewing scale 1:n (MB3D
+            // anti-aliases on saving at 1:2 and 1:3)
+            let n = req.query.get("scale").and_then(|v| v.parse::<usize>().ok()).unwrap_or(1).clamp(1, 10);
+            let (img, title) = (app.out.lock().unwrap().final_rgb.clone(), app.scene.lock().unwrap().title.clone());
+            match img {
+                Some((rgb, w, h)) => {
+                    let (rgb, w, h) = if n > 1 { crate::render::downsample(&rgb, w, h, n) } else { ((*rgb).clone(), w, h) };
+                    let png = crate::png::encode_rgb(w, h, &rgb);
+                    respond(&mut stream, "200 OK", "image/png", &png,
+                        &format!("Content-Disposition: attachment; filename=\"{}.png\"\r\n", safe_name(&title)))
+                }
+                None => respond(&mut stream, "404 Not Found", "text/plain", b"calculate the image first (Calculate 3D)", ""),
+            }
+        }
+        ("GET", "/api/zbuf.png") => {
+            // 16 bit z-buffer of the image on screen (near = bright)
+            let pk = app.pick.lock().unwrap().as_ref().map(|p| (p.gbuf.clone(), p.w, p.h));
+            let title = app.scene.lock().unwrap().title.clone();
+            match pk {
+                Some((g, w, h)) if g.len() == w * h => {
+                    let z: Vec<u16> = g.iter().map(|s| if s.is_background() { 0 } else { (65535 - (s.zpos() * 2).min(65535)) as u16 }).collect();
+                    respond(&mut stream, "200 OK", "image/png", &crate::png::encode_gray16(w, h, &z),
+                        &format!("Content-Disposition: attachment; filename=\"{}_zbuf.png\"\r\n", safe_name(&title)))
+                }
+                _ => respond(&mut stream, "404 Not Found", "text/plain", b"no image yet", ""),
+            }
+        }
+        ("POST", "/api/batch/store") => {
+            // batch processing: writes the last calculated image (and the
+            // .m3i) into a folder on the server
+            let f = form();
+            let dir = std::path::PathBuf::from(f.get("folder").cloned().filter(|d| !d.trim().is_empty()).unwrap_or_else(|| "batch".into()));
+            let name = safe_name(f.get("name").map(String::as_str).unwrap_or("image"));
+            let n = f.get("scale").and_then(|v| v.parse::<usize>().ok()).unwrap_or(1).clamp(1, 10);
+            let img = app.out.lock().unwrap().final_rgb.clone();
+            let res = (|| -> Result<String, String> {
+                let (rgb, w, h) = img.ok_or("no calculated image")?;
+                std::fs::create_dir_all(&dir).map_err(|e| format!("{}: {e}", dir.display()))?;
+                let (rgb, w, h) = if n > 1 { crate::render::downsample(&rgb, w, h, n) } else { ((*rgb).clone(), w, h) };
+                let path = dir.join(format!("{name}.png"));
+                crate::png::write_rgb(&path.to_string_lossy(), w, h, &rgb).map_err(|e| format!("{}: {e}", path.display()))?;
+                if f.get("m3i").map(String::as_str) == Some("true") {
+                    if let Some(b) = app.base.lock().unwrap().clone().filter(|b| b.final_img && b.aa == 1) {
+                        let p = dir.join(format!("{name}.m3i"));
+                        std::fs::write(&p, crate::m3p::write_m3i(&b.scene, &b.post)).map_err(|e| format!("{}: {e}", p.display()))?;
+                    }
+                }
+                Ok(std::fs::canonicalize(&path).unwrap_or(path).display().to_string())
+            })();
+            match res {
+                Ok(p) => ok_json(&mut stream, format!("{{\"file\":{}}}", json_str(&p))),
+                Err(e) => err_json(&mut stream, e),
+            }
+        }
+        ("GET", "/api/m3i") => {
+            // the kept G-buffer with its parameters (MB3D opens it without
+            // recalculating)
+            let b = app.base.lock().unwrap().clone();
+            let title = app.scene.lock().unwrap().title.clone();
+            match b {
+                Some(b) if b.aa == 1 => respond(&mut stream, "200 OK", "application/octet-stream", &crate::m3p::write_m3i(&b.scene, &b.post),
+                    &format!("Content-Disposition: attachment; filename=\"{}.m3i\"\r\n", safe_name(&title))),
+                _ => respond(&mut stream, "404 Not Found", "text/plain", b"calculate the image first (Calculate 3D)", ""),
+            }
+        }
+        ("GET", "/api/dirs") => ok_json(&mut stream, dirs_json()),
+        ("POST", "/api/dirs") => {
+            let f = form();
+            let dir = f.get("dir").map(|d| d.trim().to_string()).unwrap_or_default();
+            if dir.is_empty() || !std::path::Path::new(&dir).is_dir() {
+                err_json(&mut stream, format!("'{dir}' is not a directory on the server"))
+            } else {
+                if f.get("kind").map(String::as_str) == Some("maps") {
+                    crate::maps::add_map_dir(dir.into());
+                } else {
+                    crate::formulas::add_formula_dir(dir.into());
+                }
+                ok_json(&mut stream, dirs_json())
+            }
         }
         ("POST", "/api/open") => {
             let name = req.query.get("name").cloned().unwrap_or_else(|| "pasted.txt".into());
@@ -667,9 +1077,17 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
             }
         }
         ("GET", "/api/formulas") => {
-            let builtin: Vec<String> = crate::formulas::Formula::all_names().iter().map(|s| s.to_string()).collect();
-            let custom = crate::formulas::list_custom();
-            ok_json(&mut stream, format!("{{\"builtin\":{},\"custom\":{}}}", json_list(&builtin), json_list(&custom)))
+            let names = crate::formulas::Formula::all_names();
+            let builtin: Vec<String> = names.iter().map(|s| s.to_string()).collect();
+            let custom = crate::formulas::list_custom_with_de();
+            let de: Vec<String> = names
+                .iter()
+                .map(|n| crate::formulas::Formula::default_for(n).map(|f| f.de_option()).unwrap_or(0))
+                .chain(custom.iter().map(|c| c.1))
+                .map(|d| d.to_string())
+                .collect();
+            let cnames: Vec<String> = custom.into_iter().map(|c| c.0).collect();
+            ok_json(&mut stream, format!("{{\"builtin\":{},\"custom\":{},\"de\":[{}]}}", json_list(&builtin), json_list(&cnames), de.join(",")))
         }
         ("GET", "/api/save") => {
             let fmt = req.query.get("fmt").cloned().unwrap_or_else(|| "m3s".into());

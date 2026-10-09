@@ -54,14 +54,27 @@ pub fn calculate_cancellable(
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
 ) -> Result<(CalcParams, Vec<SiLight>), String> {
-    calculate_inner(sc, progress, cancel, true)
+    calculate_inner(sc, progress, cancel, 2)
+}
+
+/// Like [`calculate_cancellable`] but without the post calculations (hard
+/// shadows, ambient occlusion, normals on the z-buffer): run
+/// [`post_process`] on (a copy of) the result.  The editor keeps the raw
+/// G-buffer to redo only the post calculations or the painting after a
+/// change, like MB3D's lighting and post processing windows.
+pub fn calculate_raw_cancellable(
+    sc: &Scene,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+) -> Result<(CalcParams, Vec<SiLight>), String> {
+    calculate_inner(sc, progress, cancel, 0)
 }
 
 fn calculate_inner(
     sc: &Scene,
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
-    image_space: bool,
+    post: u8,
 ) -> Result<(CalcParams, Vec<SiLight>), String> {
     let mut p = CalcParams::new(sc)?;
     let threads = thread_count(sc).min(p.rect[3] as usize).max(1);
@@ -119,9 +132,9 @@ fn calculate_inner(
         return Err("cancelled".into());
     }
     let mut gbuf: Vec<SiLight> = rows.into_iter().flatten().collect();
-    if two_d {
+    if two_d || post == 0 {
         // MB3D runs no post calculations after a 2D calculation
-    } else if image_space {
+    } else if post == 2 {
         post_process(sc, &p, &mut gbuf, threads);
     } else if sc.shadows.is_some() || sc.deao.is_some() {
         let mut s2 = sc.clone();
@@ -509,7 +522,7 @@ pub fn render_tiled(
             }
             let mut ts = sc.clone();
             ts.calc_rect = Some(t);
-            let (_, gbuf) = calculate_inner(&ts, progress, &|| false, false)?;
+            let (_, gbuf) = calculate_inner(&ts, progress, &|| false, 1)?;
             let tw = t[2] as usize;
             for y in 0..t[3] as usize {
                 let d = (t[1] as usize + y) * wu + t[0] as usize;

@@ -446,3 +446,51 @@ mod tests {
         assert!((fast_int_pow(0.9, 64) - 0.9f32.powi(64)).abs() < 1e-6);
     }
 }
+
+/// `BuildRotMatrix`: rotation matrix from the Euler angles (radians) shown
+/// in MB3D's main window ("Rotation" panel).
+pub fn build_rot_matrix(xa: f64, ya: f64, za: f64) -> Mat3 {
+    let (sx, cx) = xa.sin_cos();
+    let (sy, cy) = ya.sin_cos();
+    let (sz, cz) = za.sin_cos();
+    [
+        [cy * cz, -cy * sz, sy],
+        [sx * sy * cz + cx * sz, cx * cz - sx * sy * sz, -sx * cy],
+        [sx * sz - cx * sy * cz, cx * sy * sz + sx * cz, cx * cy],
+    ]
+}
+
+/// `MatrixToAngles`: the Euler angles (radians) of a view matrix, None
+/// when the y angle is +-90 degrees.
+pub fn matrix_to_angles(m: &Mat3) -> Option<Vec3> {
+    let m1 = normalise_matrix_to(1.0, m);
+    let ay = arcsin_safe(m1[0][2]);
+    let cy = ay.cos();
+    if cy.abs() <= 0.0001 {
+        return None;
+    }
+    let flip = |a: f64| if a > 0.0 { std::f64::consts::PI - a } else { -std::f64::consts::PI - a };
+    let mut best = (1e6, [0.0; 3]);
+    for i in 0..8 {
+        let mut dt = -cy;
+        let mut yy = ay;
+        if i > 3 {
+            dt = -dt;
+            yy = flip(yy);
+        }
+        let mut xx = arcsin_safe(m1[1][2] / dt);
+        if (i & 3) > 1 {
+            xx = flip(xx);
+        }
+        let mut zz = arcsin_safe(m1[0][1] / dt);
+        if (i & 1) > 0 {
+            zz = flip(zz);
+        }
+        let mt = build_rot_matrix(xx, yy, zz);
+        let e: f64 = (0..3).flat_map(|r| (0..3).map(move |c| (r, c))).map(|(r, c)| (mt[r][c] - m1[r][c]).abs()).sum();
+        if e < best.0 {
+            best = (e, [xx, yy, zz]);
+        }
+    }
+    Some(best.1)
+}

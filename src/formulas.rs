@@ -109,6 +109,29 @@ pub fn list_custom() -> Vec<String> {
     v
 }
 
+/// The custom formulas with their `.DEoption` (MB3D sorts its formula
+/// lists by it: 2/11 3Da, 4 4D, 5/6 4Da, -1/-2 Ads, 20 dIFS, 21/22 dIFS
+/// transformations, others 3D).
+pub fn list_custom_with_de() -> Vec<(String, i32)> {
+    let dirs = formula_dirs().lock().unwrap().clone();
+    list_custom()
+        .into_iter()
+        .map(|name| {
+            let de = dirs
+                .iter()
+                .find_map(|d| std::fs::read(d.join(format!("{name}.m3f"))).ok())
+                .and_then(|b| {
+                    let t = String::from_utf8_lossy(&b).to_ascii_lowercase();
+                    let i = t.find(".deoption")?;
+                    let rest = t[i + 9..].trim_start().strip_prefix('=')?;
+                    rest.trim_start().split(|c: char| !(c == '-' || c.is_ascii_digit())).next()?.parse::<i32>().ok()
+                })
+                .unwrap_or(0);
+            (name, de)
+        })
+        .collect()
+}
+
 /// Adds a directory that is searched for `.m3f` files (searched first).
 pub fn add_formula_dir(dir: PathBuf) {
     formula_dirs().lock().unwrap().insert(0, dir);

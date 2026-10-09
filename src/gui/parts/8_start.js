@@ -28,7 +28,7 @@ async function loadFormulas() {
     await sendView(true);
     api("/api/mapseq").then(m => { mapseq = m; $("frame").value = m.frame; }).catch(() => {});
     const st0 = await api("/api/state");
-    msg(`mb3d-rs ${st0.version || "?"} editor. Open parameters (top left), edit them in the Formulas, Lighting and Post processing windows, and press \"Calculate 3D\".", "n");
+    msg(`mb3d-rs ${st0.version || "?"} editor. Open parameters (top left), edit them in the Formulas, Lighting and Post processing windows, and press "Calculate 3D".`, "n");
   } catch (e) { showError(e); }
   poll();
 })();

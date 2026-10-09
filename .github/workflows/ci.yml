@@ -52,3 +52,8 @@ jobs:
       - name: The editor page is assembled from src/gui/parts
         working-directory: mb3d-rs
         run: ./build_gui.sh && git diff --exit-code src/gui/index.html
+      - name: The editor page's script has no syntax errors
+        working-directory: mb3d-rs
+        run: |
+          sed -n '/^<script>$/,/^<\/script>$/p' src/gui/index.html | sed '1d;$d' > /tmp/page.js
+          node --check /tmp/page.js

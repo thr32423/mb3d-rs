@@ -89,6 +89,10 @@ mb3d gui "M3Parameter/6 AM - Torii temple.m3p"
 mb3d gui --port 9000 --host 0.0.0.0        # reachable from other machines
 ```
 
+`run_gui.sh` (Linux, macOS) and `run_gui.cmd` (Windows, double-click it) in
+the release folder start the editor and open the page in the default
+browser; arguments are passed on to `mb3d gui`.
+
 The page follows MB3D's main window:
 
 * **Top left:** *Animations*, *BTracer2* (meshes), *Navigator*, *MutaGen*,

@@ -59,7 +59,7 @@ jobs:
           echo "Folder for big renders (tiles), as in MB3D." > "$name/BigRenders/README.txt"
           mv MB3D-SOURCE.txt "$name"/
           cp target/${{ matrix.target }}/release/${{ matrix.exe }} README.md GETTING_STARTED.md LICENSE "$name"/
-          [ "${{ runner.os }}" != "Windows" ] && cp run_gui.sh "$name"/
+          if [ "${{ runner.os }}" = "Windows" ]; then cp run_gui.cmd "$name"/; else cp run_gui.sh "$name"/; fi
           mkdir -p "$name/examples"
           cp examples/*.m3s "$name/examples"/
           if [ "${{ runner.os }}" = "Windows" ]; then 7z a "$name.zip" "$name" > /dev/null; else tar czf "$name.tar.gz" "$name"; fi

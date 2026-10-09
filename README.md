@@ -62,24 +62,44 @@ than a pixel shows up as noise, which is why MB3D authors often render at
 ```
 
 `mb3d gui` is a small built-in web server (std only, no dependencies) with a
-single-page editor:
+single-page editor laid out like MB3D's main window (see
+[GETTING_STARTED.md](GETTING_STARTED.md) for a tour):
 
-* **Preview** in progressive passes (⅛, ¼, ½, full view width) that restart
-  on every change; the early passes skip shadows, DEAO and volumetric light.
-  Like MB3D's navigator, previews keep the DE stop in preview pixels, so they
-  are fast and a little coarse. *Render image…* calculates the final image
-  with the scene's full settings (size, anti-aliasing, tiles) for download.
-* **Navigation** with the mouse (click: fly towards the point / turn to it /
-  set the DOF focus; drag: turn; wheel: forward/back), the keyboard (W/S,
-  A/D, R/F move, arrow keys turn, Q/E roll, +/− zoom, Shift for small steps)
-  or the buttons. Moves are a percentage of the distance estimate at the
-  camera, like MB3D's navigator.
-* **Editors** for formulas (hybrid slots with the options of built-in and
-  `.m3f` formulas), camera, ray marching, ambient occlusion, shadows, DOF,
-  colours (palette, interior colours, maps), lights and background; every
-  scene key can be added, the whole scene can be edited as text; undo/redo.
-* **Files:** open `.m3p`, `.m3i`, `.m3s` and pasted text parameters; save as
-  `.m3s`, `.m3p` or MB3D text parameters (to paste into MB3D).
+* **Top bar:** *Animations*, *BTracer2*, *Navigator*, *MutaGen*,
+  *ZBuf16Bit*; the pages *Open* (m3i, m3p/m3s, from the clipboard, new
+  presets), *Save* (m3i with the calculated G-buffer, m3p, m3s, to the
+  clipboard), *Save pic* (PNG and JPEG reduced by the viewing scale, 16 bit
+  Z-buffer), *Tools* (batch processing, voxel stack, big renders, Monte
+  Carlo, parameter text) and *Prefs* (formula and map folders, map
+  sequences, light/dark theme); viewing scale (fit, 1:1 … 1:10) and image
+  size (aspect buttons, ×2 / ÷2 with "DEstop+C").
+* **Below the image:** MB3D's mouse modes *2D zoom* (click, right click,
+  mark an area), *X,Y* and *Z* move, plus *walk* (navigator: click flies
+  towards a point, drag turns, wheel moves; W/S A/D R/F, arrows, Q/E), the
+  rotation buttons (right click: around the object's axes at 0) and the
+  frame number for map sequences.
+* **Right column:** Position (with the quick 2D slices at z start / mid /
+  end, *get midpoint*, *reset*), Rotation (Euler angles), undo/redo,
+  *Calc-*, *Calculate 3D*, the quality presets preview/video/mid/high, and
+  the pages Calculation, Internal, Infos, Cutting, Julia Off, Camera,
+  Coloring and Stereo; messages below.
+* **Windows:** *Formulas* (six slots, MB3D's formula lists 3D, 3Da, 4D, 4Da,
+  Ads, dIFS, exchange, hybrid type alternate / interpolate / DE combination,
+  bailout, iterations, inside rendering, 4D rotation), *JIT formula editor*
+  (options, constants, Pascal code; compile and save as `.m3f`),
+  *Lighting* (lights 1–6 global/positional/light map, gamma, the Object,
+  Ambient, d.Fog and Back pic pages with palette editors), *Post processing*
+  (normals on the z-buffer, hard and ambient shadows, reflections and
+  transparency, depth of field, recalculate a selection, double image size),
+  *Navigator*, *Animation maker*, *MutaGen*, *Bulb Tracer2*, *Voxel export*,
+  *Monte Carlo*, *Big renders*, *Batch processing*, *Map Sequences*, *Ini
+  Dirs*. Windows can be moved and stay open between sessions.
+
+Every change starts a progressive preview (⅛ … full view width; previews keep
+the DE stop in preview pixels, like MB3D's navigator). *Calculate 3D*
+calculates the full image; as in MB3D its G-buffer is kept, so changes in the
+Lighting window only repaint it and changes of the post processing redo only
+those steps on the kept buffer, without a new ray march.
 
 The page and the renderer talk over a few JSON/PNG endpoints (`src/gui.rs`),
 so the server can also run on a bigger machine than the browser.
@@ -554,11 +574,13 @@ tile files that MB3D writes for big renders are rendered as that tile.
 * **Coverage:** all of MB3D's rendering modes are ported (with phase 9:
   JIT formulas, interpolation hybrids, 2D slices, stereo, the reflection
   and z-buffer normal post processing and the Monte Carlo renderer), and all
-  80 example parameter files render. The browser editor covers the main
-  window, navigator, editors, the animation maker, Monte Carlo, MutaGen and
-  the exports. Not ported: the interactive tools of the post processing
-  window (recalculating a selection, doubling the image size), the formula
-  editor and map sequences.
+  80 example parameter files render. The browser editor follows MB3D's main
+  window and its tool windows. Not ported: the height map generator
+  (HMapGen, a script editor), the "shortdistance check DE" option, light and
+  colour presets of the Lighting window, MB3D's random light strokes and the
+  ambient light pass of the post processing window. *Double imagesize*
+  recalculates the image at twice the size instead of MB3D's interpolation
+  of the G-buffer.
 * **Monte Carlo:** the random numbers are seeded per row and pass, so an
   image is the same with any number of threads but not MB3D's; neighbour
   pixels steer the ray counts from their state at the start of a pass (MB3D
@@ -570,18 +592,19 @@ tile files that MB3D writes for big renders are rendered as that tile.
   not vertex for vertex. MutaGen uses its own random generator, so
   a seed gives other mutations than in MB3D; mutating map or light settings
   (not in MB3D's MutaGen either) is not done.
-* **Animation:** map sequences (per-frame maps,
-  `MapSequences.pas`), JPEG output and `.m3a` files before version 5 are not
-  supported. Without a loop, MB3D's render loop also counts the sub-frames of
+* **Animation:** JPEG output and `.m3a` files before version 5 are not
+  supported. Map sequences (`Mandelbulb3DMSeq.ini` in the working folder or
+  `$MB3D_MAP_SEQUENCES`) follow the file index of animation frames. Without a loop, MB3D's render loop also counts the sub-frames of
   the last keyframe (repeating it); the port renders the last keyframe once,
   as MB3D's own frame count (`TotalBMPsToRender`) and time estimate do.
   MB3D's per-frame `.m3p` files carry the keyframe's light settings
-  unchanged; the port writes the interpolated sliders instead. Batch
-  rendering writes images (or `.m3p`), not `.m3i` files with G-buffer.
-* **Speed:** custom formulas run as translated native code, but still read
-  and write their values through the emulated 32-bit memory, so they are
-  slower than MB3D's hand-written assembler (not benchmarked against MB3D
-  itself). Use `--scale` for previews; speed scales with the number of cores.
+  unchanged; the port writes the interpolated sliders instead. `mb3d
+  batch` writes images (or `.m3p`); the editor's batch processing also
+  writes `.m3i` files with the G-buffer.
+* **Speed:** custom formulas run as translated native code (including their
+  SSE2 and x87 math), but still read and write their values through the
+  emulated 32-bit memory, so they are slower than MB3D's hand-written
+  assembler (not benchmarked against MB3D itself). Use `--scale` for previews; speed scales with the number of cores.
 * **Pixel exactness:** the x87 code computed in 80-bit precision; this port
   uses f64, and f32 wherever MB3D stored values as `Single`. Images match in
   structure but are not bit-identical. The per-thread random seed of the
@@ -602,6 +625,7 @@ tile files that MB3D writes for big renders are rendered as that tile.
 7. ✅ Animation (keyframes, MB3D's interpolation incl. light values, `.m3a` and `.m3k` files, frame rendering shared by several processes, animation maker in the editor) and batch rendering
 8. ✅ Voxel export (`.m3v` projects), mesh export (BulbTracer2: OBJ, PLY, STL), the internal formula Aexion C, MutaGen; MutaGen and Export tabs in the editor
 9. ✅ The remaining gaps: JIT formulas (`[SOURCE]` Pascal), interpolation hybrids, 2D slices, colour on iteration, stereo images and animations, reflections and transparency in normal renders, normals on the z-buffer, the Monte Carlo renderer (CLI and editor tab, `.m3c` files)
+10. ✅ Editor in MB3D's layout (main window, Formulas, Lighting, Post processing and tool windows), repainting of the kept G-buffer, recalculate a selection, double image size, JIT formula editor, map sequences, `.m3i` writing, batch processing in the editor; SSE2/x87 formula code translated natively (2× on dIFS scenes); CI and release builds for Linux, Windows and macOS
 
 ## License
 

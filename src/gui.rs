@@ -19,6 +19,7 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::time::Instant;
 
 mod anim;
+mod tools;
 
 const INDEX_HTML: &str = include_str!("gui/index.html");
 
@@ -70,6 +71,8 @@ struct App {
     view_w: AtomicU32,
     /// the animation (keyframes, previews, frame rendering)
     anim: anim::AnimState,
+    /// MutaGen and the voxel / mesh export
+    tools: tools::ToolsState,
 }
 
 impl App {
@@ -122,6 +125,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
         progress: AtomicU32::new(0),
         view_w: AtomicU32::new(640),
         anim: anim::AnimState::new(),
+        tools: tools::ToolsState::new(),
     });
     let listener = TcpListener::bind((host.as_str(), port)).map_err(|e| format!("cannot listen on {host}:{port}: {e}"))?;
     eprintln!("mb3d gui: open http://{host}:{port}/ in your browser (Ctrl+C to stop)");
@@ -740,6 +744,60 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
                 Err(e) => err_json(&mut stream, e),
             }
         }
+        // ---- MutaGen
+        ("GET", "/api/muta") => ok_json(&mut stream, tools::muta_json(app)),
+        ("POST", "/api/muta/start") => match tools::muta_start(app, &form()) {
+            Ok(()) => ok_json(&mut stream, tools::muta_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/muta/use") => {
+            let i = form().get("i").and_then(|v| v.parse::<usize>().ok()).unwrap_or(0);
+            match tools::muta_use(app, i) {
+                Ok(()) => ok_json(&mut stream, state_json(app)),
+                Err(e) => err_json(&mut stream, e),
+            }
+        }
+        ("POST", "/api/muta/nav") => {
+            let d = form().get("d").and_then(|v| v.parse::<i64>().ok()).unwrap_or(0);
+            tools::muta_nav(app, d);
+            ok_json(&mut stream, tools::muta_json(app))
+        }
+        ("POST", "/api/muta/stop") => {
+            tools::muta_stop(app);
+            ok_json(&mut stream, tools::muta_json(app))
+        }
+        ("GET", "/api/muta/img") => {
+            let g = req.query.get("g").and_then(|v| v.parse::<usize>().ok()).unwrap_or(0);
+            let i = req.query.get("i").and_then(|v| v.parse::<usize>().ok()).unwrap_or(0);
+            match tools::muta_img(app, g, i) {
+                Some(p) => respond(&mut stream, "200 OK", "image/png", &p, ""),
+                None => respond(&mut stream, "404 Not Found", "text/plain", b"no image", ""),
+            }
+        }
+        // ---- voxel / mesh export
+        ("GET", "/api/export") => ok_json(&mut stream, tools::export_json(app)),
+        ("POST", "/api/export/start") => match tools::export_start(app, &form()) {
+            Ok(()) => ok_json(&mut stream, tools::export_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/export/stop") => {
+            tools::export_stop(app);
+            ok_json(&mut stream, tools::export_json(app))
+        }
+        ("GET", "/api/export/voxpreview") => match tools::voxel_preview(app, &req.query) {
+            Ok(p) => respond(&mut stream, "200 OK", "image/png", &p, ""),
+            Err(e) => respond(&mut stream, "400 Bad Request", "text/plain", e.as_bytes(), ""),
+        },
+        ("GET", "/api/export/file") => match tools::export_file(app) {
+            Some((name, d)) => respond(
+                &mut stream,
+                "200 OK",
+                "application/octet-stream",
+                &d,
+                &format!("Content-Disposition: attachment; filename=\"{}\"\r\n", safe_name(&name)),
+            ),
+            None => respond(&mut stream, "404 Not Found", "text/plain", b"no mesh yet", ""),
+        },
         ("POST", "/api/title") => {
             app.scene.lock().unwrap().title = String::from_utf8_lossy(&req.body).trim().to_string();
             ok_json(&mut stream, state_json(app))

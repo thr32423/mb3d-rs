@@ -94,6 +94,15 @@ dialog .actions { display: flex; gap: 6px; justify-content: flex-end; margin-top
 .bar div { height: 100%; width: 0; background: var(--accent); }
 .flipctl { display: flex; gap: 6px; align-items: center; }
 .flipctl input[type=range] { flex: 1; }
+.mtree { position: relative; width: 100%; background: #0d0e11; border-radius: 4px; margin: 6px 0; }
+.mtree svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.mtree .mm { position: absolute; transform: translate(-50%, -50%); border: 1px solid var(--line); border-radius: 3px;
+  background: var(--panel); cursor: pointer; overflow: hidden; }
+.mtree .mm img { display: block; width: 100%; }
+.mtree .mm span { position: absolute; left: 2px; top: 1px; font-size: 10px; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; }
+.mtree .mm.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.mtree .mm.wait { aspect-ratio: 5 / 4; display: flex; align-items: center; justify-content: center; color: var(--dim); font-size: 10px; }
+#voxImg { display: block; width: min(240px, 100%); margin: 6px auto; background: #0d0e11; min-height: 40px; image-rendering: pixelated; }
 .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; word-break: break-all; }
 kbd { background: var(--panel2); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; font-size: 11px; }
 @media (max-width: 900px) { main { grid-template-columns: 1fr; grid-template-rows: 55vh auto; } aside { border-left: 0; } }
@@ -312,6 +321,8 @@ const TABS = [
   ["Colours", () => globalTab(["Colours", "Background"])],
   ["Lights", () => lightsTab()],
   ["Animation", () => animTab()],
+  ["MutaGen", () => mutaTab()],
+  ["Export", () => exportTab()],
   ["All", () => globalTab(null)],
   ["Text", () => textTab()],
   ["Info", () => infoTab()],
@@ -763,10 +774,222 @@ function animTab() {
   animUpdate();
 }
 
+// ------------------------------------------------------------ MutaGen
+// MB3D's MutaGen: a tree of 15 mutations of the editor's scene (two
+// children per member, four levels). Click to select, double-click to load
+// a mutation into the editor, "Breed" makes a new generation from it.
+let muta = null, mutaVer = -1, mutaSel = -1, mutaPollTimer = null;
+const mutaCfg = { formula_weight: "0.75", params_weight: "1", params_strength: "1", julia_weight: "0.5", julia_strength: "1",
+  its_weight: "0.5", its_strength: "1", probing: true };
+async function mutaLoad() { try { setMuta(await api("/api/muta")); } catch (e) { showError(e.message); } }
+function setMuta(m) {
+  const structural = !muta || m.current !== muta.current || m.count !== muta.count || m.running !== muta.running;
+  if (structural && muta && (m.current !== muta.current || m.count !== muta.count)) mutaSel = -1;
+  const changed = m.ver !== mutaVer;
+  muta = m; mutaVer = m.ver;
+  if (tab === "MutaGen" && changed) { if (structural) renderPanel(); else mutaUpdate(); }
+  clearTimeout(mutaPollTimer);
+  if (tab === "MutaGen" || m.running) mutaPollTimer = setTimeout(mutaLoad, m.running ? 300 : 1500);
+}
+function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+function sceneAspect() {
+  const g = k => parseFloat((model && model.global.find(l => l.k === k) || { v: "" }).v);
+  const w = g("width"), h = g("height");
+  return w > 0 && h > 0 ? h / w : 0.75;
+}
+async function mutaStart(i) {
+  const o = { ...mutaCfg };
+  if (i !== undefined) o.i = i;
+  try { mutaSel = -1; setMuta(await post("/api/muta/start", form(o))); } catch (e) { showError(e.message); }
+}
+async function mutaUse(i) {
+  try { applyState(await post("/api/muta/use", form({ i }))); setStatus(`mutation ${muta.members[i].label} loaded into the editor`); }
+  catch (e) { showError(e.message); }
+}
+function mutaUpdate() {
+  if (!muta) return;
+  for (const m of muta.members) {
+    const box = $("mm" + m.i);
+    if (!box || box.dataset.key) continue;
+    const key = hashStr(m.caption);
+    box.dataset.key = key;
+    box.classList.remove("wait");
+    box.textContent = "";
+    box.title = m.caption;
+    box.append(el("img", { alt: "", src: `/api/muta/img?g=${muta.current}&i=${m.i}&k=${key}` }), el("span", {}, m.label));
+  }
+  const n = muta.members.length;
+  const st = $("mutaState");
+  if (st) st.textContent = muta.error ? muta.error : muta.count ? `generation ${muta.current + 1} of ${muta.count} · ${n} of 15 mutations` + (muta.running ? " …" : "") : "";
+  const bar = $("mutaBar"); if (bar) bar.firstElementChild.style.width = (100 * n / 15) + "%";
+  for (const id of ["mutaUse", "mutaBreed"]) { const b = $(id); if (b) b.disabled = mutaSel < 0 || mutaSel >= n || muta.running; }
+  const cap = $("mutaCap");
+  if (cap) cap.textContent = mutaSel >= 0 && mutaSel < n ? `${muta.members[mutaSel].label}: ${muta.members[mutaSel].caption}` : "";
+  for (let i = 0; i < 15; i++) { const b = $("mm" + i); if (b) b.classList.toggle("sel", i === mutaSel); }
+}
+function mutaTab() {
+  const p = $("panel");
+  if (!muta) { p.append(el("div", { class: "hint" }, "loading…")); mutaLoad(); return; }
+  const m = muta;
+  const inp = (k, title) => {
+    const e = el("input", { type: "text", class: "num", id: "mc_" + k, value: mutaCfg[k], title: title || "" });
+    e.addEventListener("change", () => { mutaCfg[k] = e.value; });
+    return e;
+  };
+  const prob = el("input", { type: "checkbox", id: "mc_probing" });
+  prob.checked = mutaCfg.probing;
+  prob.addEventListener("change", () => { mutaCfg.probing = prob.checked; });
+  p.append(el("div", { class: "card" }, el("h3", {}, "Mutations"),
+    el("div", { class: "hint" }, "Weights: how often a kind of mutation is chosen (0 = never). Strengths: how far parameters move."),
+    el("div", { class: "row" }, el("label", { title: "Add, replace or remove a formula of the hybrid" }, "formulas: weight"), el("div", { class: "multi" }, inp("formula_weight"))),
+    el("div", { class: "row" }, el("label", {}, "parameters: weight / strength"), el("div", { class: "multi" }, inp("params_weight"), inp("params_strength"))),
+    el("div", { class: "row" }, el("label", {}, "julia: weight / strength"), el("div", { class: "multi" }, inp("julia_weight"), inp("julia_strength"))),
+    el("div", { class: "row" }, el("label", {}, "iterations: weight / strength"), el("div", { class: "multi" }, inp("its_weight"), inp("its_strength"))),
+    el("div", { class: "row" }, el("label", { title: "Try up to 9 mutations in a tiny render and keep the one with the most structure that differs from its parent" }, "probing"), prob),
+    el("div", { class: "multi" },
+      el("button", { class: "primary", id: "mutaGo", disabled: m.running ? "" : null, onclick: () => mutaStart() }, "Mutate editor scene"),
+      el("button", { onclick: async () => setMuta(await post("/api/muta/stop", "")) }, "Stop"))));
+
+  // the tree
+  const asp = sceneAspect();
+  const cw = 1 / 0.9, ch = asp / 0.8; // cell size in units of the preview width
+  const tree = el("div", { class: "mtree", id: "mtree" });
+  tree.style.aspectRatio = `${5 * cw} / ${4 * ch}`;
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 5 4"); svg.setAttribute("preserveAspectRatio", "none");
+  m.parents.forEach((par, i) => {
+    if (par < 0) return;
+    const [ax, ay] = m.layout[par], [bx, by] = m.layout[i];
+    const ln = document.createElementNS(ns, "line");
+    Object.entries({ x1: ax + 2.5, y1: ay + 2, x2: bx + 2.5, y2: by + 2, stroke: "#e0a24a", "stroke-width": 1.5, "vector-effect": "non-scaling-stroke",
+      opacity: i < m.members.length ? 0.9 : 0.25 }).forEach(([k, v]) => ln.setAttribute(k, v));
+    svg.append(ln);
+  });
+  tree.append(svg);
+  m.layout.forEach(([x, y], i) => {
+    if (!m.count) return;
+    const box = el("div", { class: "mm wait", id: "mm" + i, onclick: () => { mutaSel = i; mutaUpdate(); },
+      ondblclick: () => { if (i < muta.members.length) mutaUse(i); } }, m.running ? "…" : "–");
+    box.style.left = `${(x + 2.5) * 20}%`; box.style.top = `${(y + 2) * 25}%`;
+    box.style.width = `${100 / (5 * cw)}%`;
+    tree.append(box);
+  });
+  p.append(el("div", { class: "card" }, el("h3", {}, "Generation", el("span", { class: "sp" }),
+      el("button", { title: "Previous generation", disabled: m.current > 0 && !m.running ? null : "", onclick: async () => setMuta(await post("/api/muta/nav", form({ d: -1 }))) }, "◀"),
+      el("button", { title: "Next generation", disabled: m.current + 1 < m.count && !m.running ? null : "", onclick: async () => setMuta(await post("/api/muta/nav", form({ d: 1 }))) }, "▶")),
+    el("div", { class: "bar", id: "mutaBar" }, el("div")),
+    el("div", { class: "hint", id: "mutaState" }),
+    m.count ? tree : el("div", { class: "hint" }, "No mutations yet. \"Mutate editor scene\" makes a tree of 15: 1 is a mutation of the editor's scene, 1.1 and 1.2 mutations of 1, and so on."),
+    el("div", { class: "hint mono", id: "mutaCap" }),
+    el("div", { class: "multi" },
+      el("button", { id: "mutaUse", class: "primary", onclick: () => mutaUse(mutaSel) }, "Open in editor"),
+      el("button", { id: "mutaBreed", title: "A new generation with the selected mutation as its parent", onclick: () => mutaStart(mutaSel) }, "Breed from this")),
+    el("div", { class: "hint" }, "Double-click a mutation to open it in the editor. On the command line: mb3d mutagen scene.m3p")));
+  mutaUpdate();
+}
+
+// ------------------------------------------------------------ export
+// MB3D's voxel stack export (PNG slices for voxel and 3D-printing tools) and
+// BulbTracer2's mesh export.
+let exp = null, expPollTimer = null, expWasRunning = false; let voxPrevUrl = "";
+const expCfg = { slices: "100", test: "de", de: "", zscale: "", axes: false, vfolder: "voxels",
+  resolution: "128", sharpness: "0.5", scale: "0.5", format: "stl", colors: false, close: false, smooth: "0" };
+async function exportLoad() { try { setExport(await api("/api/export")); } catch (e) { showError(e.message); } }
+function setExport(e) {
+  const first = !exp;
+  exp = e;
+  if (tab === "Export") { if (first || expWasRunning !== e.running) renderPanel(); else exportUpdate(); }
+  expWasRunning = e.running;
+  clearTimeout(expPollTimer);
+  if (e.running) expPollTimer = setTimeout(exportLoad, 300);
+}
+function voxQuery() {
+  const o = { slices: expCfg.slices, test: expCfg.test, axes: expCfg.axes };
+  if (expCfg.de) o.de = expCfg.de;
+  if (expCfg.zscale) o.zscale = expCfg.zscale;
+  return o;
+}
+async function exportStart(kind) {
+  const o = kind === "voxel" ? { kind, ...voxQuery(), folder: expCfg.vfolder }
+    : { kind, resolution: expCfg.resolution, sharpness: expCfg.sharpness, scale: expCfg.scale, format: expCfg.format,
+        colors: expCfg.colors, close: expCfg.close, smooth: expCfg.smooth };
+  try { setExport(await post("/api/export/start", form(o))); } catch (e) { showError(e.message); }
+}
+function exportUpdate() {
+  if (!exp) return;
+  const b = $("expBar"); if (b) b.firstElementChild.style.width = (exp.running || exp.message ? exp.progress : 0) + "%";
+  const s = $("expState");
+  if (s) {
+    const what = exp.kind === "voxel" ? "voxel slices" : exp.kind === "mesh" ? "mesh" : "";
+    s.textContent = exp.running ? `${what} · ${exp.progress.toFixed(0)} %` : exp.error ? `${what}: ${exp.error}` : exp.message ? `${what}: ${exp.message}` : "";
+    s.style.color = exp.error && !exp.running ? "var(--err)" : "";
+  }
+  const f = $("expFile"); if (f) f.hidden = exp.running || !exp.file;
+  const fd = $("expFolder"); if (fd) fd.textContent = !exp.running && exp.folder ? "written to " + exp.folder : "";
+  for (const id of ["expVox", "expMesh"]) { const x = $(id); if (x) x.disabled = exp.running; }
+}
+function exportTab() {
+  const p = $("panel");
+  if (!exp) { p.append(el("div", { class: "hint" }, "loading…")); exportLoad(); return; }
+  const inp = (k, title, ph) => {
+    const e = el("input", { type: "text", id: "ex_" + k, value: expCfg[k], title: title || "", placeholder: ph || "" });
+    e.addEventListener("change", () => { expCfg[k] = e.value; });
+    return e;
+  };
+  const chk = k => {
+    const e = el("input", { type: "checkbox", id: "ex_" + k });
+    e.checked = expCfg[k];
+    e.addEventListener("change", () => { expCfg[k] = e.checked; });
+    return e;
+  };
+  const sel = (k, opts) => {
+    const e = el("select", { id: "ex_" + k }, ...opts.map(([v, l]) => el("option", { value: v }, l)));
+    e.value = expCfg[k];
+    e.addEventListener("change", () => { expCfg[k] = e.value; });
+    return e;
+  };
+  const voxImg = el("img", { id: "voxImg", alt: "" });
+  if (voxPrevUrl) voxImg.src = voxPrevUrl;
+  const voxPrev = () => { voxPrevUrl = voxImg.src = "/api/export/voxpreview?" + form({ ...voxQuery(), t: Date.now() }); };
+  voxImg.onerror = () => { voxImg.removeAttribute("src"); voxPrevUrl = ""; showError("voxel preview failed"); };
+  p.append(el("div", { class: "card" }, el("h3", {}, "Voxel slices"),
+    el("div", { class: "hint" }, "A stack of black-and-white PNG slices through the object's bounding cube (as in MB3D's voxel export), for voxel editors and 3D printing. The cube is the area seen by the camera."),
+    el("div", { class: "row" }, el("label", {}, "slices"), inp("slices", "Number of slices; the images are as large")),
+    el("div", { class: "row" }, el("label", {}, "inside when"), sel("test", [["de", "distance estimate < DE stop"], ["iterations", "max. iterations reached"]])),
+    el("div", { class: "row" }, el("label", { title: "A voxel is solid where the distance estimate is below this (in voxels)" }, "DE threshold"), inp("de", "", "from the DE stop")),
+    el("div", { class: "row" }, el("label", {}, "z scale"), inp("zscale", "Slice spacing relative to the pixel size", "1")),
+    el("div", { class: "row" }, el("label", { title: "Slice along the formula's x/y/z axes instead of the camera's view" }, "formula axes"), chk("axes")),
+    el("div", { class: "row" }, el("label", {}, "folder"), inp("vfolder", "Relative to the server's working directory; a subfolder per scene")),
+    el("div", { class: "multi" },
+      el("button", { onclick: voxPrev, title: "All slices stacked, seen from the front" }, "Preview"),
+      el("button", { class: "primary", id: "expVox", onclick: () => exportStart("voxel") }, "Write slices")),
+    voxImg));
+  p.append(el("div", { class: "card" }, el("h3", {}, "Mesh"),
+    el("div", { class: "hint" }, "A triangle mesh by marching cubes over the distance estimate (MB3D's BulbTracer2): binary STL, OBJ or PLY. Vertex colours come from the scene's palette."),
+    el("div", { class: "row" }, el("label", { title: "Grid cells per side of the cube; time and memory grow with its cube" }, "resolution"), inp("resolution")),
+    el("div", { class: "row" }, el("label", { title: "0.5: the cube is twice the visible 2.2 / zoom; larger = smaller cube" }, "scale"), inp("scale")),
+    el("div", { class: "row" }, el("label", { title: "Higher values make finer surfaces (and lower the DE stop)" }, "sharpness"), inp("sharpness")),
+    el("div", { class: "row" }, el("label", {}, "format"), sel("format", [["stl", "STL (binary)"], ["obj", "OBJ"], ["ply", "PLY"]])),
+    el("div", { class: "row" }, el("label", { title: "OBJ and PLY only" }, "vertex colours"), chk("colors")),
+    el("div", { class: "row" }, el("label", { title: "Close the mesh where the object leaves the cube (for 3D printing)" }, "close at the cube"), chk("close")),
+    el("div", { class: "row" }, el("label", { title: "Taubin smoothing passes (0 = off)" }, "smoothing passes"), inp("smooth")),
+    el("div", { class: "multi" }, el("button", { class: "primary", id: "expMesh", onclick: () => exportStart("mesh") }, "Build mesh"))));
+  p.append(el("div", { class: "card" }, el("h3", {}, "Progress"),
+    el("div", { class: "bar", id: "expBar" }, el("div")),
+    el("div", { class: "hint", id: "expState" }),
+    el("div", { class: "hint mono", id: "expFolder" }),
+    el("div", { class: "multi" },
+      el("a", { id: "expFile", href: "/api/export/file", hidden: "" }, el("button", { class: "primary" }, "Download " + (exp.file ? `${exp.file.name} (${(exp.file.size / 1048576).toFixed(1)} MB)` : ""))),
+      el("button", { onclick: async () => setExport(await post("/api/export/stop", "")) }, "Stop")),
+    el("div", { class: "hint" }, "On the command line: mb3d voxel scene.m3p -o voxels · mb3d mesh scene.m3p -o mesh.stl")));
+  exportUpdate();
+}
+
 function renderPanel() {
   const tabs = $("tabs");
   tabs.textContent = "";
-  for (const [name] of TABS) tabs.append(el("button", { class: name === tab ? "on" : "", onclick: () => { tab = name; renderPanel(); if (name === "Animation") animLoad(); } }, name));
+  for (const [name] of TABS) tabs.append(el("button", { class: name === tab ? "on" : "", onclick: () => { tab = name; renderPanel(); if (name === "Animation") animLoad(); if (name === "MutaGen") mutaLoad(); if (name === "Export") exportLoad(); } }, name));
   const p = $("panel");
   const active = document.activeElement && document.activeElement.id;
   const scroll = p.scrollTop;

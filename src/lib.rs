@@ -42,6 +42,8 @@ pub mod lighting;
 pub mod m3f;
 pub mod m3p;
 pub mod maps;
+pub mod mclut;
+pub mod mesh;
 pub mod math;
 pub mod png;
 pub mod render;
@@ -49,6 +51,7 @@ pub mod scene;
 pub mod ssao;
 pub mod ssao15;
 pub mod vollight;
+pub mod voxel;
 pub mod x86;
 
 pub use formulas::Formula;

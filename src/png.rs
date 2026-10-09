@@ -204,6 +204,36 @@ fn encode(width: usize, height: usize, pixels: &[u8], color_type: u8, bit_depth:
     out
 }
 
+/// PNG file contents of a 1 bit greyscale image (`Save1bitPNG`): `on`
+/// pixels are white.
+pub fn encode_gray1(width: usize, height: usize, on: &[bool]) -> Vec<u8> {
+    let table = crc32_table();
+    let rb = width.div_ceil(8);
+    let mut raw = Vec::with_capacity((rb + 1) * height);
+    for y in 0..height {
+        raw.push(0);
+        for b in 0..rb {
+            let mut byte = 0u8;
+            for k in 0..8 {
+                let x = b * 8 + k;
+                if x < width && on[y * width + x] {
+                    byte |= 0x80 >> k;
+                }
+            }
+            raw.push(byte);
+        }
+    }
+    let mut out = vec![0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
+    let mut ihdr = Vec::new();
+    ihdr.extend((width as u32).to_be_bytes());
+    ihdr.extend((height as u32).to_be_bytes());
+    ihdr.extend([1, 0, 0, 0, 0]);
+    chunk(&mut out, &table, b"IHDR", &ihdr);
+    chunk(&mut out, &table, b"IDAT", &zlib(&raw));
+    chunk(&mut out, &table, b"IEND", &[]);
+    out
+}
+
 /// PNG file contents of an 8 bit RGB image.
 pub fn encode_rgb(width: usize, height: usize, rgb: &[u8]) -> Vec<u8> {
     encode(width, height, rgb, 2, 8, 3)

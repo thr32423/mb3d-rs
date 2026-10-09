@@ -1320,6 +1320,29 @@ impl LightVals {
         }
     }
 
+    /// The surface palette colour (0..1) and the position in the palette
+    /// (0..1) for a colouring value, as the mesh export uses them
+    /// (BulbTracer2's `CalcColors` and `CalcColorsIdx`).
+    pub fn palette_color(&self, si_gradient: u16, otrap: u16) -> ([f32; 3], f32) {
+        let si = SiLight { si_gradient, otrap, ..Default::default() };
+        let (dif, _) = self.calc_colors(&si, 0.0);
+        let ir = if self.col_on_otrap { (otrap & 0x7FFF) as f32 } else { si_gradient as f32 };
+        let mut ir = (((ir - self.s_c_start) * self.s_c_mul) * 16384.0).clamp(-1e9, 1e9).round() as i32;
+        let idx = if self.col_cycling {
+            ir &= 32767;
+            ir as f32 / self.col_pos[9].max(1) as f32
+        } else if ir < 0 {
+            0.0
+        } else if ir >= self.col_pos[9] {
+            1.0
+        } else {
+            ir as f32 / self.col_pos[9].max(1) as f32
+        };
+        // internal gamma 2 stores (v / 255)^2
+        let c = if self.sqr { dif.map(|v| v.max(0.0).sqrt()) } else { dif };
+        (c, idx)
+    }
+
     /// `CalcColors`
     fn calc_colors(&self, si: &SiLight, idif0: f32) -> (SVec, SVec) {
         let ir = if self.col_on_otrap { (si.otrap & 0x7FFF) as f32 } else { si.si_gradient as f32 };

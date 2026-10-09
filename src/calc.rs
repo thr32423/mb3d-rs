@@ -659,6 +659,50 @@ impl<'a> Marcher<'a> {
         self.it.mand_function(self.p.mode, &self.p.slots);
     }
 
+    /// `mMandFunction` / `mMandFunctionDE` at a point (voxel export "on
+    /// maximum iterations"): returns the iteration count reached.
+    pub fn iterations_at(&mut self, pos: Vec3) -> i32 {
+        self.it.c = pos;
+        self.it.calc_sit = false;
+        if self.p.is_custom_de && !self.p.difs {
+            self.it.hybrid_3d_de(&self.p.slots);
+        } else {
+            self.mand_function();
+        }
+        self.it.it_result
+    }
+
+    /// `CalcDE` at a point, in units of the step width (voxel and mesh
+    /// export).  `smooth`: also calculate the smoothed iterations
+    /// (`CalcSIT`) for colouring.
+    pub fn de_at_point(&mut self, pos: Vec3, smooth: bool) -> f64 {
+        self.it.c = pos;
+        self.it.calc_sit = smooth;
+        self.calc_de()
+    }
+
+    /// Colouring values (`SIgradient`, `OTrap`) of the point last passed to
+    /// [`Marcher::de_at_point`] with `smooth` (BulbTracer2's
+    /// `CalcSIgradient1`); `de` is the distance estimate it returned.
+    pub fn color_values(&self, de: f64) -> (u16, u16) {
+        let mut si = SiLight::default();
+        self.do_color(&mut si);
+        if self.p.decomb.is_some() {
+            // colour on the DE
+            let s = (de * 40.0).abs();
+            if self.it.it_result < self.max_its_result {
+                si.si_gradient = min_max_clip_15bit(s as f32);
+            } else {
+                si.si_gradient = (s.clamp(0.0, 32767.0).round() as u16) | 32768;
+            }
+        } else if self.it.it_result < self.p.max_it {
+            si.si_gradient = min_max_clip_15bit(self.it.smooth_it * 32767.0 / self.p.max_it.max(1) as f32);
+        } else {
+            si.si_gradient = si.otrap.wrapping_add(32768);
+        }
+        (si.si_gradient, si.otrap)
+    }
+
     /// `CalcDEanalytic` / `CalcDEnoADE`
     pub fn calc_de(&mut self) -> f64 {
         let p = self.p;

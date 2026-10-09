@@ -14,7 +14,9 @@ USAGE:
     mb3d gui [--port 8080] [--formulas DIR] [--maps DIR] [FILE]    editor in the browser
     mb3d animate ANIMATION | KEYFRAME_FILES... [OPTIONS]           render an animation
     mb3d batch FILES... | --list LISTFILE [OPTIONS]                render many files
-    (mb3d animate --help, mb3d batch --help)
+    mb3d voxel FILE [OPTIONS]                                      voxel slices (PNG stack)
+    mb3d mesh FILE -o mesh.obj|.ply|.stl [OPTIONS]                 triangle mesh
+    (mb3d animate --help, mb3d batch --help, ...)
 
 SCENE_FILE is an INI-style scene description (see examples/*.m3s), a
 Mandelbulb3D parameter file (.m3p), image file (.m3i, parameters only) or a
@@ -67,6 +69,8 @@ fn run() -> Result<(), String> {
         Some("gui") => return mb3d::gui::run(&all[1..]),
         Some("animate") | Some("anim") => return animate(&all[1..]),
         Some("batch") => return batch(&all[1..]),
+        Some("voxel") | Some("voxels") => return voxel_cmd(&all[1..]),
+        Some("mesh") => return mesh_cmd(&all[1..]),
         _ => {}
     }
     let mut args = std::env::args().skip(1);
@@ -889,4 +893,326 @@ fn batch(argv: &[String]) -> Result<(), String> {
             failed.iter().map(|(n, e)| format!("  {n}: {e}")).collect::<Vec<_>>().join("\n")
         ))
     }
+}
+
+// ---------------------------------------------------------------------------
+// mb3d voxel / mb3d mesh
+
+/// "x, y, z" (or more values) as numbers.
+fn parse_list_f64(s: &str, n: usize, what: &str) -> Result<Vec<f64>, String> {
+    let v: Vec<f64> = s
+        .split([',', ' '])
+        .filter(|t| !t.trim().is_empty())
+        .map(|t| t.trim().parse::<f64>().map_err(|_| format!("{what}: bad number '{t}'")))
+        .collect::<Result<_, _>>()?;
+    if v.len() != n {
+        return Err(format!("{what}: expected {n} numbers, got {}", v.len()));
+    }
+    Ok(v)
+}
+
+/// Loads a scene for the exports and applies `-s` changes.
+fn load_for_export(file: &str, overrides: &[String], quiet: bool) -> Result<Scene, String> {
+    let (s, notes) = mb3d::animfile::load_scene(std::path::Path::new(file))?;
+    if !quiet {
+        for n in notes {
+            eprintln!("  note: {n}");
+        }
+    }
+    if overrides.is_empty() {
+        Ok(s)
+    } else {
+        s.apply(&overrides.join("\n"))
+    }
+}
+
+const VOXEL_USAGE: &str = "\
+mb3d voxel - export the object as a stack of slice images (MB3D's voxel export)
+
+USAGE:
+    mb3d voxel FILE [OPTIONS]
+
+FILE is a parameter file or scene, or a MB3D voxel project (.m3v) that brings
+its own settings. Each slice is a 1 bit PNG (white = object), named
+<name><index>.png. The stack covers 2.2 / zoom scene units around the scene
+middle in the view direction (like MB3D).
+
+OPTIONS:
+    -o, --output <DIR>       Output folder (default: voxels)
+        --name <NAME>        File name prefix (default: name of FILE)
+        --slices <N>         Number of slices = resolution in z (default 100)
+        --scale <X,Y,Z>      Box proportions (default 1,1,1; z = 1 is 2.2 / zoom)
+        --offset <X,Y,Z>     Move the box (scene units)
+        --axes               Slice along the scene axes instead of the view
+        --iterations         Object = iterations reach the maximum (default: DE)
+        --max-its <N>        Maximum iterations (default: the scene's)
+        --de <F>             DE threshold in voxels (default: from the DE stop)
+        --min-its <N>        In-and-outside rendering: inner limits
+        --min-de <F>
+        --white-outside      White background, black object
+        --no-leading-zeros   name1.png instead of name000001.png
+        --preview <FILE>     Only write a small preview image of the voxel object
+        --save-m3v <FILE>    Save the settings as MB3D voxel project (no export
+                             unless --render)
+        --render             Export too when saving
+    -s, --set <KEY=VALUE>    Change a scene key (may be repeated)
+    -t, --threads <N>        Number of threads (default: all cores)
+    -q, --quiet              No progress output
+        --formulas <DIR>     Directory with .m3f formula files
+        --maps <DIR>         Directory with maps
+";
+
+fn voxel_cmd(argv: &[String]) -> Result<(), String> {
+    use mb3d::voxel::{ObjectTest, VoxelParams};
+    let mut file: Option<String> = None;
+    let mut overrides: Vec<String> = Vec::new();
+    let (mut out, mut name, mut preview, mut save): (Option<String>, Option<String>, Option<String>, Option<String>) = (None, None, None, None);
+    let (mut quiet, mut render_too) = (false, false);
+    let mut threads = 0usize;
+    let mut changes: Vec<Box<dyn Fn(&mut VoxelParams)>> = Vec::new();
+    let mut slices: Option<u32> = None;
+    let mut args = argv.iter();
+    while let Some(a) = args.next() {
+        let mut val = || args.next().cloned().ok_or_else(|| format!("{a} needs a value"));
+        match a.as_str() {
+            "-h" | "--help" => {
+                print!("{VOXEL_USAGE}");
+                return Ok(());
+            }
+            "-o" | "--output" => out = Some(val()?),
+            "--name" => name = Some(val()?),
+            "--slices" => slices = Some(val()?.parse::<u32>().map_err(|_| "bad --slices value".to_string())?.clamp(2, 100_000)),
+            "--scale" => {
+                let v = parse_list_f64(&val()?, 3, "--scale")?;
+                changes.push(Box::new(move |p| p.scale = [v[0].max(1e-6), v[1].max(1e-6), v[2].max(1e-6)]));
+            }
+            "--offset" => {
+                let v = parse_list_f64(&val()?, 3, "--offset")?;
+                changes.push(Box::new(move |p| p.offset = [v[0], v[1], v[2]]));
+            }
+            "--axes" => changes.push(Box::new(|p| p.default_orientation = true)),
+            "--iterations" => changes.push(Box::new(|p| p.test = ObjectTest::Iterations)),
+            "--max-its" => {
+                let v: i32 = val()?.parse().map_err(|_| "bad --max-its value".to_string())?;
+                changes.push(Box::new(move |p| p.max_its = v.max(1)));
+            }
+            "--min-its" => {
+                let v: i32 = val()?.parse().map_err(|_| "bad --min-its value".to_string())?;
+                changes.push(Box::new(move |p| p.min_its = v.max(0)));
+            }
+            "--de" => {
+                let v: f64 = val()?.parse().map_err(|_| "bad --de value".to_string())?;
+                changes.push(Box::new(move |p| {
+                    p.de = v.max(1e-6);
+                    p.min_de = p.min_de.max(p.de * 0.254);
+                }));
+            }
+            "--min-de" => {
+                let v: f64 = val()?.parse().map_err(|_| "bad --min-de value".to_string())?;
+                changes.push(Box::new(move |p| p.min_de = v.max(p.de * 0.254)));
+            }
+            "--white-outside" => changes.push(Box::new(|p| p.white_outside = true)),
+            "--no-leading-zeros" => changes.push(Box::new(|p| p.leading_zeros = false)),
+            "--preview" => preview = Some(val()?),
+            "--save-m3v" => save = Some(val()?),
+            "--render" => render_too = true,
+            "-s" | "--set" => overrides.push(val()?),
+            "-t" | "--threads" => threads = val()?.parse().map_err(|_| "bad --threads value".to_string())?,
+            "-q" | "--quiet" => quiet = true,
+            "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
+            "--maps" => mb3d::maps::add_map_dir(val()?.into()),
+            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{VOXEL_USAGE}")),
+            s => file = Some(s.to_string()),
+        }
+    }
+    let file = file.ok_or_else(|| format!("no parameter file given\n\n{VOXEL_USAGE}"))?;
+    let path = std::path::Path::new(&file);
+    let stem = path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "voxel".into());
+    let (mut vp, scene) = if path.extension().is_some_and(|e| e.eq_ignore_ascii_case("m3v")) {
+        let data = std::fs::read(path).map_err(|e| format!("{file}: {e}"))?;
+        let (mut vp, s, notes) = mb3d::voxel::read_m3v(&data)?;
+        if !quiet {
+            for n in notes {
+                eprintln!("  note: {n}");
+            }
+        }
+        let s = if overrides.is_empty() { s } else { s.apply(&overrides.join("\n"))? };
+        if let Some(n) = slices {
+            // keep the DE threshold in proportion to the resolution
+            vp.de *= n as f64 / vp.slices as f64;
+            vp.min_de *= n as f64 / vp.slices as f64;
+            vp.slices = n;
+        }
+        (vp, s)
+    } else {
+        let s = load_for_export(&file, &overrides, quiet)?;
+        (VoxelParams::from_scene(&s, slices.unwrap_or(100)), s)
+    };
+    for c in &changes {
+        c(&mut vp);
+    }
+    let (w, h) = vp.size();
+    if let Some(f) = &save {
+        let mut v2 = vp.clone();
+        if let Some(o) = &out {
+            v2.output_folder = o.clone();
+        }
+        std::fs::write(f, mb3d::voxel::write_m3v(&v2, &scene)).map_err(|e| format!("{f}: {e}"))?;
+        if !quiet {
+            eprintln!("  wrote {f}");
+        }
+        if !render_too && preview.is_none() {
+            return Ok(());
+        }
+    }
+    if let Some(pf) = &preview {
+        let (rgb, pw, ph) = mb3d::voxel::preview(&scene, &vp, 160, threads)?;
+        mb3d::png::write_rgb(pf, pw, ph, &rgb).map_err(|e| format!("{pf}: {e}"))?;
+        if !quiet {
+            eprintln!("  wrote preview {pf} ({pw}x{ph})");
+        }
+        return Ok(());
+    }
+    let dir = std::path::PathBuf::from(out.unwrap_or_else(|| {
+        let f = vp.output_folder.clone();
+        if f.is_empty() || f.contains('\\') { "voxels".into() } else { f }
+    }));
+    let name = name.unwrap_or(stem);
+    if !quiet {
+        eprintln!(
+            "voxel export: {} slices of {w}x{h} ({}, {}) to {}",
+            vp.slices,
+            if vp.test == ObjectTest::De { format!("DE < {:.3}", vp.de) } else { format!("{} iterations", vp.max_its) },
+            if vp.default_orientation { "scene axes" } else { "view orientation" },
+            vp.slice_file(&dir, &name, 1).display()
+        );
+    }
+    let t0 = Instant::now();
+    let tty = std::io::IsTerminal::is_terminal(&std::io::stderr());
+    let progress = |i: u32, n: u32| {
+        if !quiet && tty {
+            eprint!("\r  slice {i}/{n}");
+            let _ = std::io::stderr().flush();
+        }
+    };
+    let n = mb3d::voxel::export(&scene, &vp, &dir, &name, threads, &progress, &|| false)?;
+    if !quiet {
+        eprintln!("\r  {n} slices written in {}          ", fmt_dur(t0.elapsed().as_secs_f64()));
+    }
+    Ok(())
+}
+
+const MESH_USAGE: &str = "\
+mb3d mesh - export the object as a triangle mesh (MB3D's BulbTracer2)
+
+USAGE:
+    mb3d mesh FILE -o OUTPUT [OPTIONS]
+
+The distance estimate is sampled on a grid of N x N x N steps in a cube around
+the scene middle (2.2 / (zoom * scale) scene units wide), and marching cubes
+builds the surface where the DE is 1 / sharpness steps. OUTPUT is .obj or .ply
+(as MB3D writes them, with normals and optional vertex colours) or binary .stl.
+The mesh is centred and scaled to size 1.
+
+OPTIONS:
+    -o, --output <FILE>      Output mesh (.obj, .ply, .stl)
+        --resolution <N>     Grid steps per side (default 128; time and size grow with N^3)
+        --sharpness <F>      Surface sharpness (default 0.5; larger = closer to the
+                             surface, more detail)
+        --scale <F>          Size of the cube (default 0.5: twice the visible
+                             2.2 / zoom; larger = smaller cube)
+        --offset <X,Y,Z>     Move the cube (scene units)
+        --rotate <X,Y,Z>     Turn the cube (degrees)
+        --bounds <X0,X1,Y0,Y1,Z0,Z1>  Only this part of the cube (0..100 each)
+        --close              Close the mesh at the bounds (for 3D printing)
+        --colors             Vertex colours from the palette
+        --smooth <N>         Taubin smoothing passes afterwards
+    -s, --set <KEY=VALUE>    Change a scene key (may be repeated)
+    -t, --threads <N>        Number of threads (default: all cores)
+    -q, --quiet              No progress output
+        --formulas <DIR>     Directory with .m3f formula files
+        --maps <DIR>         Directory with maps
+";
+
+fn mesh_cmd(argv: &[String]) -> Result<(), String> {
+    let mut mp = mb3d::mesh::MeshParams::default();
+    let mut file: Option<String> = None;
+    let mut out: Option<String> = None;
+    let mut overrides: Vec<String> = Vec::new();
+    let mut quiet = false;
+    let mut threads = 0usize;
+    let mut args = argv.iter();
+    while let Some(a) = args.next() {
+        let mut val = || args.next().cloned().ok_or_else(|| format!("{a} needs a value"));
+        let num = |v: String, what: &str| v.trim().parse::<f64>().map_err(|_| format!("bad {what} value"));
+        match a.as_str() {
+            "-h" | "--help" => {
+                print!("{MESH_USAGE}");
+                return Ok(());
+            }
+            "-o" | "--output" => out = Some(val()?),
+            "--resolution" => mp.resolution = num(val()?, "--resolution")?.clamp(4.0, 4096.0) as usize,
+            "--sharpness" => mp.sharpness = num(val()?, "--sharpness")?,
+            "--scale" => mp.scale = num(val()?, "--scale")?.max(1e-9),
+            "--offset" => {
+                let v = parse_list_f64(&val()?, 3, "--offset")?;
+                mp.offset = [v[0], v[1], v[2]];
+            }
+            "--rotate" => {
+                let v = parse_list_f64(&val()?, 3, "--rotate")?;
+                mp.angles = [v[0], v[1], v[2]];
+            }
+            "--bounds" => {
+                let v = parse_list_f64(&val()?, 6, "--bounds")?;
+                mp.bounds = [[v[0], v[1]], [v[2], v[3]], [v[4], v[5]]];
+            }
+            "--close" => mp.close = true,
+            "--colors" | "--colours" => mp.colors = true,
+            "--smooth" => mp.smooth = num(val()?, "--smooth")?.clamp(0.0, 1000.0) as u32,
+            "-s" | "--set" => overrides.push(val()?),
+            "-t" | "--threads" => threads = val()?.parse().map_err(|_| "bad --threads value".to_string())?,
+            "-q" | "--quiet" => quiet = true,
+            "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
+            "--maps" => mb3d::maps::add_map_dir(val()?.into()),
+            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{MESH_USAGE}")),
+            s => file = Some(s.to_string()),
+        }
+    }
+    let file = file.ok_or_else(|| format!("no parameter file given\n\n{MESH_USAGE}"))?;
+    let out = out.ok_or("no output file given (-o mesh.obj / .ply / .stl)")?;
+    let ext = std::path::Path::new(&out).extension().and_then(|e| e.to_str()).unwrap_or("").to_ascii_lowercase();
+    if !["obj", "ply", "stl"].contains(&ext.as_str()) {
+        return Err(format!("{out}: use .obj, .ply or .stl"));
+    }
+    let scene = load_for_export(&file, &overrides, quiet)?;
+    if !quiet {
+        eprintln!("mesh export: {0}x{0}x{0} grid, sharpness {1}, scale {2}", mp.resolution, mp.sharpness, mp.scale);
+        if let Some(d) = mb3d::mesh::de_stop_for(&scene, &mp) {
+            eprintln!("  note: DE stop {} lowered to {d:.4} for this sharpness (inside points must stay inside)", scene.de_stop);
+        }
+    }
+    let t0 = Instant::now();
+    let tty = std::io::IsTerminal::is_terminal(&std::io::stderr());
+    let progress = |i: usize, n: usize| {
+        if !quiet && tty && (i % 4 == 0 || i == n) {
+            eprint!("\r  {:5.1}%", 100.0 * i as f64 / n as f64);
+            let _ = std::io::stderr().flush();
+        }
+    };
+    let mesh = mb3d::mesh::trace(&scene, &mp, threads, &progress, &|| false)?;
+    if mesh.faces.is_empty() {
+        return Err("no surface found in the cube (check --scale, --offset and --sharpness)".into());
+    }
+    mesh.save(std::path::Path::new(&out))?;
+    if !quiet {
+        let (e, open, _) = mesh.edge_stats();
+        eprintln!(
+            "\r  {} vertices, {} triangles{} in {}, wrote {out}",
+            mesh.vertices.len(),
+            mesh.faces.len(),
+            if open == 0 { ", closed".to_string() } else { format!(", {open} of {e} edges open") },
+            fmt_dur(t0.elapsed().as_secs_f64())
+        );
+    }
+    Ok(())
 }

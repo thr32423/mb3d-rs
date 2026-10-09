@@ -260,6 +260,43 @@ from this" makes the next generation from it, and the arrows go back and
 forth between generations. The **Export** tab writes voxel slices (with a
 preview of the stack) and builds meshes for download.
 
+## Monte Carlo rendering
+
+```sh
+./target/release/mb3d montecarlo "Mengerplus for MC.m3p" --rays 64 -o menger.png
+./target/release/mb3d montecarlo scene.m3p --time 600 --m3c scene.m3c   # stop after 10 minutes
+./target/release/mb3d montecarlo scene.m3c --rays 256                   # continue later
+./target/release/mb3d montecarlo bulb.m3s -s mc_reflections=true -s mc_depth=4 --exposure 150
+```
+
+A port of MB3D's Monte Carlo renderer: path tracing with the scene's lights,
+palette and background. Ambient light comes from bounces between the
+surfaces (`mc_depth`), lights have a size and cast soft shadows
+(`mc_soft_shadow_radius`), and with `mc_reflections` the specular colours of
+the palette reflect (sharp, or rough with `mc_diffuse_reflects`) up to
+`mc_reflection_depth` times. With `mc_transparency` the alpha of the
+specular colours (`palette_alpha`) makes surfaces transparent: refraction
+(`mc_refraction_index`), Fresnel reflection, absorption coloured by the
+diffuse colour (`mc_absorption`) and light scattering inside the material
+(`mc_scattering`); `mc_only_difs` limits it to dIFS formulas. Depth of field
+(`dof`, `dof_aperture`, `dof_focus`) uses the bokeh shapes 1..6
+(`mc_bokeh`). Volumetric light, depth and dynamic fog and visible lights
+work as in normal renders.
+
+The image is refined in passes, like in MB3D's Monte Carlo window: the first
+pass shoots 4 rays per pixel (Halton sampled), every further pass adds rays
+where the noise estimate and the contrast to the neighbours ask for them.
+`--rays`, `--passes` and `--time` say when to stop; the image (and with
+`--m3c` the state, as MB3D's `.m3c` file) is written after every pass.
+Exposure (`mc_exposure`, `--exposure`), colour saturation (`mc_saturation`),
+HDR soft clipping (`mc_soft_clip`) and the gamma slider only change the
+painting. MB3D's own `.m3c` files can be continued and the port's opened
+in MB3D.
+
+In the editor, the **Monte Carlo** tab has these settings, renders the
+editor's scene in the background (Continue adds rays to the image) and
+saves PNG or `.m3c`.
+
 ## What is ported
 
 Each Delphi routine was ported from its assembler or Pascal source. Where only
@@ -303,7 +340,12 @@ and kept in the original evaluation order.
 | `mesh.rs`, `mclut.rs` | BulbTracer2.pas, ObjectScanner2.pas, VertexList.pas, MeshWriter.pas | the DE grid (`TObjectScanner2`), marching cubes with BulbTracer2's tables, vertex merging, centring, OBJ and PLY writers; STL and Taubin smoothing (new) |
 | `formulas.rs` (Aexion C) | formulas.pas | the internal formula Aexion C (`HybridAexionC`, translated from x87 assembler) with all its modes |
 | `mutagen.rs` | mutagen/MutaGen.pas, MutaGenGUI.pas, PreviewRenderer.pas, FormulaNames.pas | mutation operators, probing (Sobel and difference coverage), the 15-member tree and its layout, formula categories |
-| `gui/tools.rs` | MutaGenGUI.pas, VoxelExport.pas, BulbTracer2UI.pas | the editor's MutaGen and Export tabs |
+| `gui/tools.rs` | MutaGenGUI.pas, VoxelExport.pas, BulbTracer2UI.pas, MonteCarloForm.pas | the editor's Monte Carlo, MutaGen and Export tabs |
+| `jit.rs` | paxCompiler (JIT formulas), formulas/JIT*.m3f | a compiler for the Delphi subset of `[SOURCE]` formulas: preprocessor (options and constants), Delphi typing, `Math`/`System` functions, compiled to closures over the iteration state |
+| `iteration.rs` (interpolation) | formulas.pas | `doInterpolHybridPas`, `doInterpolHybridPasDE` and the 4D variants; `doHybrid4DDEPas` |
+| `calc.rs` (2D, colour on iteration) | CalcThread2D.pas, Calc.pas | `T2DcalcThread` (plane at Z start, middle or end), `doColorOnIt` |
+| `scene.rs`, `render.rs` (stereo) | HeaderTrafos.pas (`StereoChange`, `CalcXoff`) | the stereo eyes: shifted middle and off-axis view centre; left and right eye images combined (an addition) |
+| `mc.rs` | CalcMonteCarlo.pas, MonteCarloForm.pas, PaintThread.pas (`PaintMC`) | the Monte Carlo renderer: `CalcRay`, `CalcHSMC`, `CalcPhongLight`, `CalcVisLights`, `CalcBGLight`, `CalcN`, `DoDOF`, `CalcBokeh`, Halton sequences; `CalcAvrgNoise`, `.m3c` files; painting in Lab space |
 
 Tests check that the translated assembler matches the reference spherical
 triplex formulas for all integer powers, that renders are deterministic and
@@ -371,9 +413,14 @@ All 449 testable formulas, dIFS formulas included, agree with the CPU to
 1e-9 relative, in every tier (the check runs the translated code by default,
 `MB3D_NO_NATIVE=1` checks the micro ops). The only differences are in the
 last bits, because the x87 computes with 80-bit precision and the port uses
-f64. Not checked: 3 formulas compiled from Pascal source (`[SOURCE]`, not
-supported) and the formulas that read image maps through `PMapFunc` (the
-oracle has no maps; they work in the renderer).
+f64. Not checked by the oracle: the formulas compiled from Pascal source
+(`[SOURCE]`, no machine code; see below) and the formulas that read image
+maps through `PMapFunc` (the oracle has no maps; they work in the renderer).
+
+Formulas written in Pascal (`[SOURCE]`, compiled by paxCompiler in MB3D) are
+compiled by `jit.rs` from the Delphi subset they use; all 40 of the MB3D
+repository compile, and the tests compare two of them with equivalent
+formulas.
 
 Formulas are looked up in `--formulas DIR`, `$MB3D_FORMULAS`, `./M3Formulas`
 and `M3Formulas` next to the executable.
@@ -478,17 +525,24 @@ tile files that MB3D writes for big renders are rendered as that tile.
 
 ## Known differences and gaps
 
-* **Not yet ported:** interpolation hybrids, stereo, 2D slices and formulas
-  compiled from Pascal source (`[SOURCE]`). The loader reports which of these
-  a parameter file uses. The browser editor covers the main window,
-  navigator, editors, the animation maker, MutaGen and the exports; MB3D's
-  Monte Carlo rendering is not ported.
+* **Coverage:** all of MB3D's rendering modes are ported (with phase 9:
+  JIT formulas, interpolation hybrids, 2D slices, stereo and the Monte Carlo
+  renderer), and all 80 example parameter files render. The browser editor
+  covers the main window, navigator, editors, the animation maker, Monte
+  Carlo, MutaGen and the exports. Not ported: MB3D's post processing window
+  (sharpening, noise filters), the formula editor and map sequences.
+* **Monte Carlo:** the random numbers are seeded per row and pass, so an
+  image is the same with any number of threads but not MB3D's; neighbour
+  pixels steer the ray counts from their state at the start of a pass (MB3D
+  reads them while other threads change them). The z-buffer output of MB3D's
+  MC batch is not written. MB3D's development record format (`MCoptions`
+  bit 8) is not read.
 * **Exports and MutaGen:** the mesh export reads but does not reproduce
   BulbTracer2's floating-point order exactly, so meshes match MB3D's in shape,
   not vertex for vertex. MutaGen uses its own random generator, so
   a seed gives other mutations than in MB3D; mutating map or light settings
   (not in MB3D's MutaGen either) is not done.
-* **Animation:** stereo animations, map sequences (per-frame maps,
+* **Animation:** map sequences (per-frame maps,
   `MapSequences.pas`), JPEG output and `.m3a` files before version 5 are not
   supported. Without a loop, MB3D's render loop also counts the sub-frames of
   the last keyframe (repeating it); the port renders the last keyframe once,
@@ -519,6 +573,7 @@ tile files that MB3D writes for big renders are rendered as that tile.
 6. ✅ Editor in the browser (`mb3d gui`): progressive preview, navigator, formula, camera, render, colour and light editors, file handling, final rendering
 7. ✅ Animation (keyframes, MB3D's interpolation incl. light values, `.m3a` and `.m3k` files, frame rendering shared by several processes, animation maker in the editor) and batch rendering
 8. ✅ Voxel export (`.m3v` projects), mesh export (BulbTracer2: OBJ, PLY, STL), the internal formula Aexion C, MutaGen; MutaGen and Export tabs in the editor
+9. ✅ The remaining gaps: JIT formulas (`[SOURCE]` Pascal), interpolation hybrids, 2D slices, colour on iteration, stereo images and animations, the Monte Carlo renderer (CLI and editor tab, `.m3c` files)
 
 ## License
 

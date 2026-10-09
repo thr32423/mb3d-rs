@@ -139,6 +139,9 @@ fn calculate_inner(
 /// The automatic post calculations on the G-buffer (hard shadows, ambient
 /// occlusion), as MB3D runs them after the main calculation.
 pub fn post_process(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: usize) {
+    if sc.normals_on_zbuf {
+        crate::reflect::normals_on_zbuf(sc, p, gbuf);
+    }
     if sc.shadows.is_some() {
         hard_shadows(sc, p, gbuf, threads);
     }
@@ -346,6 +349,9 @@ pub fn paint(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> Vec<u8> {
             });
         }
     });
+    if sc.mc.reflections && p.slice_2d == 0 {
+        crate::reflect::reflections(sc, p, gbuf, &mut rgb, &cam, &lv, threads);
+    }
     if let Some(d) = sc.dof.as_ref().filter(|_| p.slice_2d == 0) {
         crate::dof::apply(&mut rgb, gbuf, w as usize, h as usize, p.zc_mul, p.zcorr, sc.fov_y, d);
     }

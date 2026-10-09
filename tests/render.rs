@@ -263,3 +263,46 @@ fn stereo_eyes_shift_the_camera() {
     let (sbs, w, h) = mb3d::render::compose_stereo(&il.rgb, &ir.rgb, il.width, il.height, mb3d::render::StereoLayout::Parallel);
     assert_eq!((w, h, sbs.len()), (il.width * 2, il.height, il.rgb.len() * 2));
 }
+
+#[test]
+fn reflections_and_normals_on_zbuffer() {
+    // a bulb over a cutting plane floor, reflecting
+    let mut s = small("Integer Power");
+    s = s.apply("cut_y = -0.6\nmc_reflections = true\nmc_reflection_depth = 2\nmc_reflection_amount = 0.8\nshadows = 1").unwrap();
+    s.lighting.palette.iter_mut().for_each(|c| c.specular = [200, 200, 200]);
+    let mut plain = s.clone();
+    plain.mc.reflections = false;
+    s.threads = 1;
+    let r1 = mb3d::render(&s, &|_, _| {}).unwrap();
+    let mut s3 = s.clone();
+    s3.threads = 3;
+    let r3 = mb3d::render(&s3, &|_, _| {}).unwrap();
+    assert_eq!(r1.rgb, r3.rgb, "reflections depend on the thread count");
+    let r0 = mb3d::render(&plain, &|_, _| {}).unwrap();
+    assert_eq!(r0.gbuffer, r1.gbuffer);
+    let changed = r0.rgb.chunks(3).zip(r1.rgb.chunks(3)).filter(|(a, b)| a != b).count();
+    assert!(changed > 200, "only {changed} pixels changed by the reflections");
+    // the background is not touched
+    for ((a, b), g) in r0.rgb.chunks(3).zip(r1.rgb.chunks(3)).zip(&r1.gbuffer) {
+        if g.is_background() {
+            assert_eq!(a, b);
+        }
+    }
+
+    // normals from the z-buffer: close to the calculated ones
+    let mut n = small("Integer Power");
+    n.normals_on_zbuf = true;
+    let rn = mb3d::render(&n, &|_, _| {}).unwrap();
+    let ro = mb3d::render(&small("Integer Power"), &|_, _| {}).unwrap();
+    let (mut sum, mut cnt) = (0.0, 0);
+    for (a, b) in ro.gbuffer.iter().zip(&rn.gbuffer) {
+        if a.is_background() || a.si_gradient >= 32768 {
+            continue;
+        }
+        let d: f64 = (0..3).map(|k| a.normal[k] as f64 * b.normal[k] as f64).sum::<f64>() / (32767.0 * 32767.0);
+        sum += d;
+        cnt += 1;
+    }
+    assert!(cnt > 500);
+    assert!(sum / cnt as f64 > 0.8, "mean cosine {}", sum / cnt as f64);
+}

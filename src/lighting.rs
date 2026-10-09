@@ -613,7 +613,7 @@ pub struct PaintCamera {
 
 impl PaintCamera {
     /// `CalcViewVec` for image coordinates in 0..1
-    fn view_vec(&self, x_pos: f32, y_pos: f32, aspect: f32) -> SVec {
+    pub(crate) fn view_vec(&self, x_pos: f32, y_pos: f32, aspect: f32) -> SVec {
         let cx = (self.x_off - x_pos) * self.fov * aspect;
         let cy = (y_pos - 0.5) * self.fov;
         match self.planar {
@@ -632,7 +632,7 @@ impl PaintCamera {
     }
 
     /// view space -> scene (`RotateSVectorS` with the paint matrix)
-    fn to_abs(&self, v: SVec) -> SVec {
+    pub(crate) fn to_abs(&self, v: SVec) -> SVec {
         let m = &self.m;
         [
             v[0] * m[0][0] + v[1] * m[1][0] + v[2] * m[2][0],
@@ -667,7 +667,7 @@ impl PaintCamera {
     }
 
     /// Camera position of a (fractional) pixel on the start plane.
-    fn cam_pos(&self, x: f32, y: f32) -> SVec {
+    pub(crate) fn cam_pos(&self, x: f32, y: f32) -> SVec {
         if self.planar == 2 {
             self.start_pos
         } else {
@@ -1490,36 +1490,80 @@ impl LightVals {
 
     /// `CalcPixelColor2` for pixel (x, y). Returns RGB.
     pub fn pixel_color(&self, si: &SiLight, x: i32, y: i32, cam: &PaintCamera) -> [u8; 3] {
-        // CalcViewVec
+        let plv = self.plv_for_pixel(si, x, y, cam);
+        let sh = self.shade(si, &plv, cam, &ShadeOpts::default());
+        let out = sh.light;
+        let sqr = self.sqr;
+        let mut c = if sqr {
+            out.map(|v| (v * 255.0).clamp(0.0, 65025.0).sqrt())
+        } else {
+            [out[0].clamp(0.0, 255.0), out[1].clamp(0.0, 255.0), out[2].clamp(0.0, 255.0)]
+        };
+        if self.gamma_h != 0 {
+            let g = if self.gamma_h > 0 {
+                [(c[0] * 255.0).sqrt(), (c[1] * 255.0).sqrt(), (c[2] * 255.0).sqrt()]
+            } else {
+                [c[0] * c[0] / 255.0, c[1] * c[1] / 255.0, c[2] * c[2] / 255.0]
+            };
+            c = lerp(g, c, self.s_gamma);
+        }
+        [c[0].round() as u8, c[1].round() as u8, c[2].round() as u8]
+    }
+
+    /// The paint values of a pixel of the G-buffer (`CalcViewVec`,
+    /// `CalcObjPos`, `PreCalcDepthCol`).
+    pub(crate) fn plv_for_pixel(&self, si: &SiLight, x: i32, y: i32, cam: &PaintCamera) -> Plv {
         let x_pos = (x + 1) as f32 / cam.width as f32;
         let y_pos = y as f32 / cam.height as f32;
         let view = cam.view_vec(x_pos, y_pos, cam.aspect);
-        // PreCalcDepthCol (Dfunc 0)
         let ys = match self.depth_func {
             1 => y_pos * y_pos,
             0 => y_pos,
             _ => y_pos.max(0.0).sqrt(),
         };
-        let mut dep_c = lerp(self.depth_col2, self.depth_col, ys);
         let zpos_word = si.zpos();
-        // CalcObjPos: z distance (only zPos is used here)
         let z1 = if zpos_word > 32767 {
             ((8388352.0 / cam.zc_mul + 1.0).powi(2) - 1.0) * cam.step_width / cam.zcorr
         } else {
-            (((8388352 - (si.zpos_fine >> 8) as i64) as f64 / cam.zc_mul + 1.0).powi(2) - 1.0)
-                * cam.step_width
-                / cam.zcorr
+            (((8388352 - (si.zpos_fine >> 8) as i64) as f64 / cam.zc_mul + 1.0).powi(2) - 1.0) * cam.step_width / cam.zcorr
         };
-        let plv_zpos = (z1 + cam.zz_stmit_dif) as f32;
-        // CalcObjPos: camera and object position relative to the scene middle
+        let z_pos = (z1 + cam.zz_stmit_dif) as f32;
         let abs_view = cam.to_abs(view);
+        let cam_pos = cam.cam_pos(x as f32, y as f32);
+        Plv {
+            view,
+            abs_view,
+            cam_pos,
+            obj_pos: sv_add(cam_pos, sv_scale(abs_view, z1 as f32)),
+            z_pos,
+            zpos_dyn_fog: z_pos,
+            x_pos,
+            y_pos,
+            dep_c: lerp(self.depth_col2, self.depth_col, ys),
+        }
+    }
+
+    /// `CalcPixelColor2` / `CalcPixelColorSvec(Trans)`: the light (0..255
+    /// scale, before clipping and gamma) a view ray `plv` gets from the
+    /// G-buffer value `si`, plus the transmission factor and the surface
+    /// colours used by the reflection pass.
+    pub(crate) fn shade(&self, si: &SiLight, plv: &Plv, cam: &PaintCamera, o: &ShadeOpts) -> Shaded {
+        let view = plv.view;
+        let abs_view = plv.abs_view;
+        let mut dep_c = plv.dep_c;
+        let zpos_word = si.zpos();
+        let plv_zpos = plv.z_pos;
         if self.amb_rel_obj {
             let w = abs_view[1].clamp(-1.0, 1.0).asin() * std::f32::consts::FRAC_1_PI + 0.5;
             dep_c = lerp(self.depth_col2, self.depth_col, w);
         }
         let sqr = self.sqr;
-        let cam_pos = cam.cam_pos(x as f32, y as f32);
-        let obj_pos = sv_add(cam_pos, sv_scale(abs_view, z1 as f32));
+        let cam_pos = plv.cam_pos;
+        let obj_pos = plv.obj_pos;
+        let mut result = [1f32; 3];
+        let mut spe_out = [0f32; 3];
+        let mut spe_a = 0f32;
+        let mut dif_out = [0f32; 3];
 
         let mut out: SVec;
         let mut dtmp;
@@ -1594,10 +1638,11 @@ impl LightVals {
                 sv_add_w(&mut li_dif, c, d_amb_sh);
             }
             let idif0 = self.s_col_zmul * plv_zpos;
-            let (mut idif, ispe) = if si.si_gradient > 32767 {
-                self.calc_colors_inside(si, idif0)
+            let (mut idif, ispe, ia) = if si.si_gradient > 32767 {
+                let (d, s) = self.calc_colors_inside(si, idif0);
+                (d, s, s[0])
             } else {
-                self.calc_colors(si, idif0)
+                self.calc_colors_alpha(si, idif0)
             };
             if let Some(d) = &self.diff_map {
                 let pal = idif;
@@ -1605,6 +1650,15 @@ impl LightVals {
                 if self.yc_comb {
                     idif = sv_scale(pal, luma(idif) / (0.01 + luma(pal)));
                 }
+            }
+            spe_out = ispe;
+            spe_a = ia;
+            dif_out = idif;
+            let mut s_diff = self.s_diff;
+            if let Some(sr) = o.scale_amb_diff_down {
+                let t = 1.0 - ia * sr;
+                d_amb_sh *= t;
+                s_diff *= t;
             }
             let mut iamb = if let Some(bs) = &self.bg_small {
                 // the small background picture as ambient light
@@ -1628,7 +1682,7 @@ impl LightVals {
                 sv_add(sv_scale(self.amb_col, t1), sv_scale(self.amb_col2, t2))
             };
             iamb = sv_mul(iamb, idif);
-            let dif_s = sv_scale(idif, self.s_diff); // LiLSDAI[0]
+            let dif_s = sv_scale(idif, s_diff); // LiLSDAI[0]
             let total = sv_add(sv_add(iamb, sv_mul(dif_s, li_dif)), sv_mul(ispe, li_spe)); // [1]
             if !self.ex_mode {
                 // CalcTotalLight1
@@ -1654,7 +1708,7 @@ impl LightVals {
             out = match &self.bg {
                 Some(bg) => {
                     let px = if self.bg_direct {
-                        bg.map.pixel_t(x_pos, y_pos, 0, sqr)
+                        bg.map.pixel_t(plv.x_pos, plv.y_pos, 0, sqr)
                     } else {
                         bg.map.sphere_pixel_t(abs_view, Some(&bg.rot), sqr)
                     };
@@ -1662,43 +1716,52 @@ impl LightVals {
                 }
                 None => dep_c,
             };
-            dtmp = (1.0 - 28000.0 * self.s_depth).max(0.0);
+            // with the reflection pass the depth fog towards infinity is
+            // added exactly (`60768 - Zpos`; 1 - 28000 sDepth for Zpos = 32768)
+            dtmp = (1.0 - (60768 - zpos_word as i32) as f32 * self.s_depth).max(0.0);
         }
-        if sqr {
-            if dtmp < 1.0 {
-                let mut t = (1.0 - dtmp) * (1.0 - dtmp);
-                if self.far_fog {
-                    t *= t;
+        if o.inside_trans.is_none() {
+            if sqr {
+                if dtmp < 1.0 {
+                    let mut t = (1.0 - dtmp) * (1.0 - dtmp);
+                    if self.far_fog {
+                        t *= t;
+                    }
+                    dtmp = 1.0 - t;
                 }
-                dtmp = 1.0 - t;
+            } else if self.far_fog && dtmp < 1.0 {
+                dtmp = 1.0 - (1.0 - dtmp) * (1.0 - dtmp);
             }
-        } else if self.far_fog && dtmp < 1.0 {
-            dtmp = 1.0 - (1.0 - dtmp) * (1.0 - dtmp);
+            if zpos_word < 32768 || self.bg.is_none() || !self.bg_add_light {
+                out = sv_scale(out, dtmp);
+            }
+            // dynamic fog
+            let ir = if self.vol_light { convert_vlight(si.shadow) as f32 } else { (si.shadow & 0x3FF) as f32 };
+            let mut dfog = (ir - self.s_shad - self.s_shad_zmul * plv.zpos_dyn_fog) * self.s_shad_gr;
+            if self.dfog_options & 2 != 0 {
+                dfog = dfog.max(0.0);
+            }
+            let mut dtmp3 = (ir * self.s_dyn_fog_mul).min(1.0) * dfog;
+            out = sv_add(out, sv_scale(dep_c, (1.0 - dtmp).max(0.0)));
+            if self.dfog_options & 1 != 0 {
+                dfog = dfog.clamp(0.0, 1.0);
+                dtmp3 = dtmp3.clamp(0.0, 1.0);
+                out = sv_scale(out, 1.0 - dfog);
+                result = sv_scale(result, 1.0 - dfog);
+            }
+            out = sv_add(
+                out,
+                sv_add(sv_scale(self.dyn_fog_col, dfog - dtmp3), sv_scale(self.dyn_fog_col2, dtmp3)),
+            );
+            result = sv_scale(result, dtmp.min(1.0));
         }
-        if zpos_word < 32768 || self.bg.is_none() || !self.bg_add_light {
-            out = sv_scale(out, dtmp);
-        }
-        // dynamic fog
-        let ir = if self.vol_light { convert_vlight(si.shadow) as f32 } else { (si.shadow & 0x3FF) as f32 };
-        let mut dfog = (ir - self.s_shad - self.s_shad_zmul * plv_zpos) * self.s_shad_gr;
-        if self.dfog_options & 2 != 0 {
-            dfog = dfog.max(0.0);
-        }
-        let mut dtmp3 = (ir * self.s_dyn_fog_mul).min(1.0) * dfog;
-        out = sv_add(out, sv_scale(dep_c, (1.0 - dtmp).max(0.0)));
-        if self.dfog_options & 1 != 0 {
-            dfog = dfog.clamp(0.0, 1.0);
-            dtmp3 = dtmp3.clamp(0.0, 1.0);
-            out = sv_scale(out, 1.0 - dfog);
-        }
-        out = sv_add(
-            out,
-            sv_add(sv_scale(self.dyn_fog_col, dfog - dtmp3), sv_scale(self.dyn_fog_col2, dtmp3)),
-        );
         // visible lights
         let il1 = if zpos_word < 32768 { 32768 - zpos_word as i32 } else { zpos_word as i32 };
         let d_rough_v = 1.0 / il1 as f32;
-        for lv in self.lights.iter().filter(|lv| lv.visible != 0) {
+        for (li, lv) in self.lights.iter().enumerate() {
+            if lv.visible == 0 {
+                continue;
+            }
             let pos = lv.positional;
             let mut behind = false;
             let mut flux = if pos {
@@ -1733,50 +1796,92 @@ impl LightVals {
             if behind {
                 continue;
             }
-            pos_light_shape(&mut flux, &mut transp, lv.visible, pos, sqr);
-            let mut fog_at = 1.0 - (1.0 + (lv.pos_lp - 28000.0) * self.s_depth).max(0.0);
-            if sqr && fog_at > 0.0 {
-                fog_at *= fog_at;
-            }
-            if self.far_fog && fog_at > 0.0 {
-                fog_at *= fog_at;
-            }
-            flux *= 1.0 - fog_at * 0.9;
-            if lv.visible == 2 || lv.visible == 8 {
-                out = sv_add(out, sv_scale(lv.col, flux));
-            } else {
-                let fog_at = fog_at.max(0.0);
-                let il = if self.vol_light { convert_vlight(si.shadow) as f32 } else { (si.shadow & 0x3FF) as f32 };
-                let k = il * (32768.0 - lv.pos_lp) * d_rough_v;
-                let dfog = (k - self.s_shad - self.s_shad_zmul * (lv.pos_z + cam.zz_stmit_dif as f32))
-                    * self.s_shad_gr
-                    * (1.0 - transp)
-                    * (1.0 - fog_at);
-                let damb = (k * self.s_dyn_fog_mul).min(1.0) * dfog;
-                out = sv_add(
-                    sv_add(sv_scale(out, transp), sv_scale(dep_c, fog_at * (1.0 - transp))),
-                    sv_add(
-                        sv_add(sv_scale(self.dyn_fog_col, dfog - damb), sv_scale(self.dyn_fog_col2, damb)),
-                        sv_scale(lv.col, flux),
-                    ),
-                );
-            }
-        }
-        let mut c = if sqr {
-            out.map(|v| (v * 255.0).clamp(0.0, 65025.0).sqrt())
-        } else {
-            [out[0].clamp(0.0, 255.0), out[1].clamp(0.0, 255.0), out[2].clamp(0.0, 255.0)]
-        };
-        if self.gamma_h != 0 {
-            let g = if self.gamma_h > 0 {
-                [(c[0] * 255.0).sqrt(), (c[1] * 255.0).sqrt(), (c[2] * 255.0).sqrt()]
-            } else {
-                [c[0] * c[0] / 255.0, c[1] * c[1] / 255.0, c[2] * c[2] / 255.0]
+            let (pos_z, pos_lp) = match o.light_z.and_then(|z| z.get(li)) {
+                Some(&(z, lp)) if pos => (z, lp),
+                _ => (lv.pos_z, lv.pos_lp),
             };
-            c = lerp(g, c, self.s_gamma);
+            pos_light_shape(&mut flux, &mut transp, lv.visible, pos, sqr);
+            if let Some((din, absorp)) = o.inside_trans {
+                // inside transparent material: the light is coloured by the way through it
+                let t = 1.0 - (1.0 + (pos_lp - 28000.0) * self.s_depth).max(0.0);
+                let c = [din[0].powf(t * absorp), din[1].powf(t * absorp), din[2].powf(t * absorp)];
+                out = sv_add(out, sv_mul(c, sv_scale(lv.col, flux)));
+            } else {
+                let mut fog_at = 1.0 - (1.0 + (pos_lp - 28000.0) * self.s_depth).max(0.0);
+                if sqr && fog_at > 0.0 {
+                    fog_at *= fog_at;
+                }
+                if self.far_fog && fog_at > 0.0 {
+                    fog_at *= fog_at;
+                }
+                flux *= 1.0 - fog_at * 0.9;
+                if lv.visible == 2 || lv.visible == 8 {
+                    out = sv_add(out, sv_scale(lv.col, flux));
+                } else {
+                    let fog_at = fog_at.max(0.0);
+                    let il = if self.vol_light { convert_vlight(si.shadow) as f32 } else { (si.shadow & 0x3FF) as f32 };
+                    let k = il * (32768.0 - pos_lp) * d_rough_v;
+                    let dfog = (k - self.s_shad - self.s_shad_zmul * (pos_z + cam.zz_stmit_dif as f32))
+                        * self.s_shad_gr
+                        * (1.0 - transp)
+                        * (1.0 - fog_at);
+                    let damb = (k * self.s_dyn_fog_mul).min(1.0) * dfog;
+                    out = sv_add(
+                        sv_add(sv_scale(out, transp), sv_scale(dep_c, fog_at * (1.0 - transp))),
+                        sv_add(
+                            sv_add(sv_scale(self.dyn_fog_col, dfog - damb), sv_scale(self.dyn_fog_col2, damb)),
+                            sv_scale(lv.col, flux),
+                        ),
+                    );
+                }
+            }
+            result = sv_scale(result, transp.min(1.0));
         }
-        [c[0].round() as u8, c[1].round() as u8, c[2].round() as u8]
+        Shaded { light: out, result, spe: spe_out, spe_a, dif: dif_out }
     }
+}
+
+/// The view ray of a shaded point (`TPaintLightVals`): directions in view
+/// and scene space, camera (ray start) and object position relative to the
+/// scene middle, z for the colour and the dynamic fog, image position for
+/// a direct background picture, the depth colour.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Plv {
+    pub(crate) view: SVec,
+    pub(crate) abs_view: SVec,
+    pub(crate) cam_pos: SVec,
+    pub(crate) obj_pos: SVec,
+    pub(crate) z_pos: f32,
+    pub(crate) zpos_dyn_fog: f32,
+    pub(crate) x_pos: f32,
+    pub(crate) y_pos: f32,
+    pub(crate) dep_c: SVec,
+}
+
+/// Options of [`LightVals::shade`] for the reflection pass.
+#[derive(Default)]
+pub(crate) struct ShadeOpts<'a> {
+    /// `bScaleAmbDiffDown`: ambient and diffuse light are reduced by the
+    /// transparency (alpha) times this light amount
+    pub(crate) scale_amb_diff_down: Option<f32>,
+    /// inside transparent material (`bDivOptions`): no depth or dynamic
+    /// fog; visible lights coloured by (diffuse colour, absorption)
+    pub(crate) inside_trans: Option<(SVec, f32)>,
+    /// depth (`sPosLightZpos`, `sPosLP`) of positional lights as seen from
+    /// the start of a reflected ray, per entry of `lights`
+    pub(crate) light_z: Option<&'a [(f32, f32)]>,
+}
+
+/// Result of [`LightVals::shade`].
+pub(crate) struct Shaded {
+    /// light, 0..255 scale (not clipped)
+    pub(crate) light: SVec,
+    /// share of the light that passes the fogs and visible lights
+    pub(crate) result: SVec,
+    /// specular colour and its alpha, diffuse colour of the surface
+    pub(crate) spe: SVec,
+    pub(crate) spe_a: f32,
+    pub(crate) dif: SVec,
 }
 
 #[cfg(test)]

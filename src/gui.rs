@@ -176,6 +176,7 @@ fn preview_scene(sc: &Scene, w: u32, light: bool) -> Scene {
     }
     if light {
         s.shadows = None;
+        s.mc.reflections = false;
         s.vol_light = None;
         if s.deao.is_some() {
             s.deao = None;

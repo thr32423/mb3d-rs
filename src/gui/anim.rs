@@ -415,6 +415,7 @@ pub(super) fn start_flipbook(app: &Arc<App>, q: &HashMap<String, String>) -> Res
                 if fast {
                     // like MB3D's "fast + inaccurate" preview
                     s.shadows = None;
+                    s.mc.reflections = false;
                     s.vol_light = None;
                     s.deao = None;
                     if let Some(ao) = s.ao.as_mut() {

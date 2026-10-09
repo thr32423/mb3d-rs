@@ -1017,7 +1017,7 @@ impl<'a> Marcher<'a> {
 
     /// `RMCalculateVgradsFOV`
     #[inline]
-    fn calc_vgrads_fov(&mut self, ix: i32) {
+    pub(crate) fn calc_vgrads_fov(&mut self, ix: i32) {
         let p = self.p;
         let cafx = ((p.fovx_off - ix as f32) * p.fovx_mul) as f64;
         let v = match p.optic {
@@ -1032,7 +1032,7 @@ impl<'a> Marcher<'a> {
 
     /// `RMCalculateStartPos`
     #[inline]
-    fn calc_start_pos(&mut self, ix: i32, iy: i32) {
+    pub(crate) fn calc_start_pos(&mut self, ix: i32, iy: i32) {
         let p = self.p;
         if p.optic == CameraOptic::Panorama {
             self.it.c = p.ystart;
@@ -1057,7 +1057,7 @@ impl<'a> Marcher<'a> {
     }
 
     /// `RMdoBinSearch`
-    fn bin_search(&mut self, de: &mut f64, last_step_width: f64) {
+    pub(crate) fn bin_search(&mut self, de: &mut f64, last_step_width: f64) {
         let mut itmp = self.p.de_add_steps;
         let mut dt1 = last_step_width * -0.5;
         while (*de - self.ms_de_stop as f64).abs() > 0.001 {
@@ -1080,7 +1080,7 @@ impl<'a> Marcher<'a> {
     }
 
     /// `RMdoBinSearchIt` – refine the surface on the iteration count.
-    fn bin_search_it(&mut self) {
+    pub(crate) fn bin_search_it(&mut self) {
         let yp = self.it.max_it as f32 - 0.99;
         let saved_max = self.it.max_it;
         self.it.max_it += 1;
@@ -1156,7 +1156,7 @@ impl<'a> Marcher<'a> {
 
     /// `RMCalculateNormals` (normals from the DE gradient). Returns NN (the
     /// smoothed iteration count used for colouring).
-    fn calculate_normals(&mut self, si: &mut SiLight) -> f32 {
+    pub(crate) fn calculate_normals(&mut self, si: &mut SiLight) -> f32 {
         let p = self.p;
         let vg = p.vgrads;
         self.it.calc_sit = true;
@@ -1253,7 +1253,7 @@ impl<'a> Marcher<'a> {
 
     /// `RMCalculateNormalsOnSmoothIt` (normals from the smooth iteration
     /// gradient, used when "Normals on DE" is off and no analytic DE).
-    fn calculate_normals_on_smooth_it(&mut self, si: &mut SiLight) -> f32 {
+    pub(crate) fn calculate_normals_on_smooth_it(&mut self, si: &mut SiLight) -> f32 {
         let p = self.p;
         let vg = p.vgrads;
         let mut noffset =

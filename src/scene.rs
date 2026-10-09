@@ -54,6 +54,9 @@ pub struct Scene {
     /// Stereo image (`bStereoMode`): 0 mono, 1 "very left from midpos",
     /// 3 right eye, 4 left eye
     pub stereo_mode: u8,
+    /// Normals calculated from the z-buffer after the calculation
+    /// (`byCalcNsOnZBufAuto`)
+    pub normals_on_zbuf: bool,
     /// `StereoScreenWidth`, `StereoScreenDistance`, `StereoMinDistance`
     /// (real-world metres)
     pub stereo_screen: [f32; 3],
@@ -236,6 +239,7 @@ impl Default for Scene {
             color_on_it: 0,
             slice_2d: 0,
             stereo_mode: 0,
+            normals_on_zbuf: false,
             stereo_screen: [1.0, 2.0, 0.5],
             mc: McSettings::default(),
             rstop: None,
@@ -401,6 +405,9 @@ impl Scene {
         let _ = writeln!(t, "iterations = {}\nmin_iterations = {}", self.iterations, self.min_iterations);
         if self.color_on_it != 0 {
             let _ = writeln!(t, "color_on_iteration = {}", self.color_on_it as i32 - 1);
+        }
+        if self.normals_on_zbuf {
+            let _ = writeln!(t, "normals_on_zbuf = true");
         }
         if self.stereo_mode != 0 {
             let _ = writeln!(t, "stereo = {}", match self.stereo_mode {
@@ -905,6 +912,7 @@ impl Scene {
                     "mc_refraction_index" => s.mc.refraction_index = (num()? as f32).clamp(0.1, 10.0),
                     "mc_absorption" => s.mc.absorption = (num()? as f32).max(1e-30),
                     "mc_scattering" => s.mc.scattering = (num()? as f32).max(0.0),
+                    "normals_on_zbuf" | "normals_on_z_buffer" => s.normals_on_zbuf = boolean()?,
                     "stereo" | "stereo_mode" => {
                         s.stereo_mode = match val.to_ascii_lowercase().as_str() {
                             "off" | "no" | "mono" | "0" => 0,

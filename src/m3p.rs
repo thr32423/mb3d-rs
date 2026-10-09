@@ -437,6 +437,7 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
             _ => 2,
         };
     }
+    s.normals_on_zbuf = mand_id >= 27 && r.u8(331) & 1 != 0;
     s.stereo_mode = match r.u8(126) {
         m @ (1 | 3 | 4) => m,
         _ => 0,
@@ -981,6 +982,7 @@ pub fn write(sc: &Scene) -> Vec<u8> {
     d[345] = if sc.slice_2d == 0 { 2 } else { sc.slice_2d };
     d[19] = sc.color_on_it;
     d[126] = sc.stereo_mode;
+    d[331] = sc.normals_on_zbuf as u8;
     {
         let m = &sc.mc;
         pf32(&mut d, 332, m.reflection_amount);

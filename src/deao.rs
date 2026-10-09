@@ -39,7 +39,7 @@ fn ray_dir(ya: f64, za: f64) -> SVec {
 }
 
 /// `MakeRotQuatFromSNormals` + `CreateSMatrixFromQuat`
-fn normal_matrix(n: SVec) -> [[f32; 3]; 3] {
+pub(crate) fn normal_matrix(n: SVec) -> [[f32; 3]; 3] {
     let a = (-n[2] as f64).clamp(-1.0, 1.0).acos() * 0.5;
     let (mut sa, ca) = a.sin_cos();
     let nn = ((n[1] * n[1] + n[0] * n[0]) as f64).sqrt();

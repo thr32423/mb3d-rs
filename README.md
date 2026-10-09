@@ -194,8 +194,71 @@ batch goes on (the exit code tells whether all succeeded). As with
 animations, outputs are locked while they are calculated: `--skip-existing`
 continues an interrupted batch and lets several processes share a list.
 `--format m3p` converts the files to MB3D parameter files instead.
-Over MB3D's 80 example parameter files, 78 render; the other two use
-features listed under "Known differences and gaps".
+Over MB3D's 80 example parameter files, 79 render; the other one uses a
+formula compiled from Pascal source (see "Known differences and gaps").
+
+## Voxel export
+
+```sh
+./target/release/mb3d voxel scene.m3p -o voxels --slices 256
+./target/release/mb3d voxel scene.m3p --slices 400 --scale 1,1,0.5 --axes --iterations
+./target/release/mb3d voxel scene.m3p --preview vox.png        # quick look first
+./target/release/mb3d voxel project.m3v                        # MB3D voxel projects
+./target/release/mb3d voxel scene.m3p --save-m3v project.m3v   # ... and back to MB3D
+```
+
+Like MB3D's voxel export, the object is cut into a stack of 1 bit PNG slices
+(white = object) for voxel editors and 3D printing. The stack is a box of
+2.2 / zoom scene units around the scene's middle, oriented like the view
+(`--axes`: like the formula's axes), with `--slices` images of as many
+pixels. A voxel is solid where the distance estimate is below the threshold
+(by default from the DE stop) or, with `--iterations`, where the iteration
+count reaches the maximum. In-and-outside rendering limits and MB3D's `.m3v`
+projects (versions 1–4, read and written) are supported.
+
+## Mesh export
+
+```sh
+./target/release/mb3d mesh scene.m3p -o bulb.stl
+./target/release/mb3d mesh scene.m3p -o bulb.obj --resolution 300 --sharpness 2 --colors --smooth 5
+./target/release/mb3d mesh scene.m3p -o part.ply --bounds 0,50,0,100,0,100 --close
+```
+
+A port of MB3D's BulbTracer2 mesh export: the distance estimate is sampled on
+an N × N × N grid in a cube around the scene's middle (scale 0.5 = twice the
+visible 2.2 / zoom), marching cubes with BulbTracer2's tables (including the
+ambiguous cases) builds the surface where the DE is 1 / sharpness grid steps,
+equal vertices are merged and the mesh is centred and scaled to size 1. OBJ
+and PLY are written like MB3D's writers (with normals and optional vertex
+colours from the scene's palette); binary STL, closing at the bounds and
+Taubin smoothing are additions. Two planes of samples are calculated at a
+time on all cores, so memory stays small at high resolutions.
+
+## MutaGen
+
+```sh
+./target/release/mb3d mutagen scene.m3p -o muta --formulas path/to/mb3d/M3Formulas
+./target/release/mb3d mutagen muta/1.2.1.m3p -o muta2 --params-strength 0.5 --seed 7
+```
+
+MB3D's MutaGen makes a family of 15 random variations: the parent's mutation
+1, its children 1.1 and 1.2, four grandchildren and eight great-grandchildren.
+Each mutation adds, replaces or removes a formula of the hybrid (chosen from
+formulas of the same kind: the DE option decides between 3D, 4D, dIFS and
+ADE formulas), changes formula options, julia mode and constant, or iteration
+counts, with the weights and strengths of MB3D's MutaGen window. With probing
+(the default) each child is the best of up to 9 candidates rendered at
+40 × 32: candidates that differ too little from their parent are dropped and
+the one with the most structure (edge coverage) is kept. The output folder
+gets `<label>.m3p`, a preview per member, `sheet.png` (the family in MB3D's
+tree layout) and `members.txt`; the next generation starts from a chosen
+member.
+
+In the editor, the **MutaGen** tab shows the tree as it grows; a click
+selects a mutation, a double-click (or "Open in editor") loads it, "Breed
+from this" makes the next generation from it, and the arrows go back and
+forth between generations. The **Export** tab writes voxel slices (with a
+preview of the stack) and builds meshes for download.
 
 ## What is ported
 
@@ -236,6 +299,11 @@ and kept in the original evaluation order.
 | `frames.rs` | Animation.pas, Mand.pas (`DoSaveAniImage`, `AniFileAlreadyExists`, `OccupyDFile`) | frame files, claiming/locking, image scale, BMP output, keyframe previews (`RenderPrevBMP`) |
 | `batch.rs` | BatchForm.pas | batch lists |
 | `gui/anim.rs` | Animation.pas, AniPreviewWindow.pas | the editor's animation maker and flipbook preview |
+| `voxel.rs` | VoxelExport.pas | voxel slice stacks (`TVoxelExportCalcThread`, object test, in-and-outside limits), `.m3v` projects incl. older versions, stack preview |
+| `mesh.rs`, `mclut.rs` | BulbTracer2.pas, ObjectScanner2.pas, VertexList.pas, MeshWriter.pas | the DE grid (`TObjectScanner2`), marching cubes with BulbTracer2's tables, vertex merging, centring, OBJ and PLY writers; STL and Taubin smoothing (new) |
+| `formulas.rs` (Aexion C) | formulas.pas | the internal formula Aexion C (`HybridAexionC`, translated from x87 assembler) with all its modes |
+| `mutagen.rs` | mutagen/MutaGen.pas, MutaGenGUI.pas, PreviewRenderer.pas, FormulaNames.pas | mutation operators, probing (Sobel and difference coverage), the 15-member tree and its layout, formula categories |
+| `gui/tools.rs` | MutaGenGUI.pas, VoxelExport.pas, BulbTracer2UI.pas | the editor's MutaGen and Export tabs |
 
 Tests check that the translated assembler matches the reference spherical
 triplex formulas for all integer powers, that renders are deterministic and
@@ -243,7 +311,11 @@ independent of the thread count, that every preset renders, and that the DEs
 are sane. Animation tests check the frame schedule, the interpolation (first
 and last frames equal their keyframes, logarithmic zoom, slerped rotations
 and light directions, fading lights, angles the short way), the file
-formats and the output claiming.
+formats and the output claiming. Phase 8 tests cut voxel slices through the
+bulb, round-trip `.m3v` files, check the marching-cubes tables, that an
+analytic sphere becomes a closed, round mesh with outward normals, that a
+bulb mesh is found, that Aexion C matches MB3D's Pascal reference, and that
+mutations, the coverage measures and a whole generation work.
 
 ## Custom formulas (`.m3f`)
 
@@ -406,11 +478,16 @@ tile files that MB3D writes for big renders are rendered as that tile.
 
 ## Known differences and gaps
 
-* **Not yet ported:** interpolation hybrids, stereo, 2D slices, the internal
-  formula Aexion C and formulas compiled from Pascal source (`[SOURCE]`). The
-  loader reports which of these a parameter file uses. The browser editor
-  covers the main window, navigator, editors and the animation maker; MB3D's
-  voxel export, Monte Carlo rendering and mutagen are not ported.
+* **Not yet ported:** interpolation hybrids, stereo, 2D slices and formulas
+  compiled from Pascal source (`[SOURCE]`). The loader reports which of these
+  a parameter file uses. The browser editor covers the main window,
+  navigator, editors, the animation maker, MutaGen and the exports; MB3D's
+  Monte Carlo rendering is not ported.
+* **Exports and MutaGen:** the mesh export reads but does not reproduce
+  BulbTracer2's floating-point order exactly, so meshes match MB3D's in shape,
+  not vertex for vertex. MutaGen uses its own random generator, so
+  a seed gives other mutations than in MB3D; mutating map or light settings
+  (not in MB3D's MutaGen either) is not done.
 * **Animation:** stereo animations, map sequences (per-frame maps,
   `MapSequences.pas`), JPEG output and `.m3a` files before version 5 are not
   supported. Without a loop, MB3D's render loop also counts the sub-frames of
@@ -441,7 +518,7 @@ tile files that MB3D writes for big renders are rendered as that tile.
 5. ✅ Formulas translated to Rust (3–8× faster), dIFS formulas, DE combinations, image maps and map formulas, tiled rendering
 6. ✅ Editor in the browser (`mb3d gui`): progressive preview, navigator, formula, camera, render, colour and light editors, file handling, final rendering
 7. ✅ Animation (keyframes, MB3D's interpolation incl. light values, `.m3a` and `.m3k` files, frame rendering shared by several processes, animation maker in the editor) and batch rendering
-8. Voxel and mesh export, mutagen
+8. ✅ Voxel export (`.m3v` projects), mesh export (BulbTracer2: OBJ, PLY, STL), the internal formula Aexion C, MutaGen; MutaGen and Export tabs in the editor
 
 ## License
 

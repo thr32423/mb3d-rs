@@ -16,6 +16,7 @@ USAGE:
     mb3d batch FILES... | --list LISTFILE [OPTIONS]                render many files
     mb3d voxel FILE [OPTIONS]                                      voxel slices (PNG stack)
     mb3d mesh FILE -o mesh.obj|.ply|.stl [OPTIONS]                 triangle mesh
+    mb3d mutagen FILE [-o DIR] [OPTIONS]                           random variations
     (mb3d animate --help, mb3d batch --help, ...)
 
 SCENE_FILE is an INI-style scene description (see examples/*.m3s), a
@@ -71,6 +72,7 @@ fn run() -> Result<(), String> {
         Some("batch") => return batch(&all[1..]),
         Some("voxel") | Some("voxels") => return voxel_cmd(&all[1..]),
         Some("mesh") => return mesh_cmd(&all[1..]),
+        Some("mutagen") => return mutagen_cmd(&all[1..]),
         _ => {}
     }
     let mut args = std::env::args().skip(1);
@@ -1213,6 +1215,126 @@ fn mesh_cmd(argv: &[String]) -> Result<(), String> {
             if open == 0 { ", closed".to_string() } else { format!(", {open} of {e} edges open") },
             fmt_dur(t0.elapsed().as_secs_f64())
         );
+    }
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// mb3d mutagen
+
+const MUTAGEN_USAGE: &str = "\
+mb3d mutagen - random variations of a parameter set (MB3D's MutaGen)
+
+USAGE:
+    mb3d mutagen FILE [-o DIR] [OPTIONS]
+
+Makes one generation: FILE is the parent (1), it gets two children (1.1, 1.2),
+four grandchildren and eight great-grandchildren, each a mutation of its
+parent (formulas added, replaced or removed, formula options, julia mode,
+iteration counts). Each child is the best of up to 9 candidates that were
+tried as tiny images. DIR gets <label>.m3p and <label>.png for every member,
+sheet.png with the whole family and members.txt. Pick a member and run
+mb3d mutagen on its .m3p for the next generation.
+
+OPTIONS:
+    -o, --output <DIR>       Output folder (default: mutagen)
+        --size <W>           Preview width (default 160)
+        --seed <N>           Random seed (default: from the clock)
+        --formula-weight <F> Chance to change the formulas (default 0.75)
+        --params-weight <F>  Chance to change formula options (default 1.0)
+        --params-strength <F> How much (default 1.0)
+        --julia-weight <F>   Chance to change julia mode (default 0.5)
+        --julia-strength <F>
+        --its-weight <F>     Chance to change iteration counts (default 0.5)
+        --its-strength <F>
+        --no-probing         Take the first mutation, no probe images
+    -s, --set <KEY=VALUE>    Change a scene key of FILE first (may be repeated)
+    -t, --threads <N>        Number of threads
+    -q, --quiet              No progress output
+        --formulas <DIR>     Directory with .m3f formula files (the formulas
+                             that mutations can add come from here)
+        --maps <DIR>         Directory with maps
+";
+
+fn mutagen_cmd(argv: &[String]) -> Result<(), String> {
+    use mb3d::mutagen::{MutationConfig, Rng};
+    let mut cfg = MutationConfig::default();
+    let (mut file, mut out): (Option<String>, String) = (None, "mutagen".into());
+    let mut overrides: Vec<String> = Vec::new();
+    let (mut size, mut threads, mut quiet) = (160usize, 0usize, false);
+    let mut seed: Option<u64> = None;
+    let mut args = argv.iter();
+    while let Some(a) = args.next() {
+        let mut val = || args.next().cloned().ok_or_else(|| format!("{a} needs a value"));
+        let f = |v: String| v.trim().parse::<f64>().map_err(|_| format!("bad value for {a}"));
+        match a.as_str() {
+            "-h" | "--help" => {
+                print!("{MUTAGEN_USAGE}");
+                return Ok(());
+            }
+            "-o" | "--output" => out = val()?,
+            "--size" => size = f(val()?)?.clamp(16.0, 1024.0) as usize,
+            "--seed" => seed = Some(val()?.trim().parse().map_err(|_| "bad --seed value".to_string())?),
+            "--formula-weight" => cfg.formula_weight = f(val()?)?,
+            "--params-weight" => cfg.params_weight = f(val()?)?,
+            "--params-strength" => cfg.params_strength = f(val()?)?,
+            "--julia-weight" => cfg.julia_weight = f(val()?)?,
+            "--julia-strength" => cfg.julia_strength = f(val()?)?,
+            "--its-weight" => cfg.iterations_weight = f(val()?)?,
+            "--its-strength" => cfg.iterations_strength = f(val()?)?,
+            "--no-probing" => cfg.probing = false,
+            "-s" | "--set" => overrides.push(val()?),
+            "-t" | "--threads" => threads = val()?.parse().map_err(|_| "bad --threads value".to_string())?,
+            "-q" | "--quiet" => quiet = true,
+            "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
+            "--maps" => mb3d::maps::add_map_dir(val()?.into()),
+            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{MUTAGEN_USAGE}")),
+            s => file = Some(s.to_string()),
+        }
+    }
+    let file = file.ok_or_else(|| format!("no parameter file given\n\n{MUTAGEN_USAGE}"))?;
+    let scene = load_for_export(&file, &overrides, quiet)?;
+    let dir = std::path::PathBuf::from(&out);
+    std::fs::create_dir_all(&dir).map_err(|e| format!("{out}: {e}"))?;
+    let seed = seed.unwrap_or_else(|| {
+        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1)
+    });
+    let mut rng = Rng::new(seed);
+    if !quiet {
+        eprintln!("mutagen: {} formulas to choose from, seed {seed}", mb3d::mutagen::formula_names().len());
+    }
+    let t0 = Instant::now();
+    let ph = (size as f64 * scene.height as f64 / scene.width.max(1) as f64).round().max(2.0) as usize;
+    let mut previews: Vec<Vec<u8>> = Vec::new();
+    let mut lines: Vec<String> = Vec::new();
+    let mut err: Option<String> = None;
+    let mut on_member = |i: usize, m: &mb3d::mutagen::Member| {
+        let label = mb3d::mutagen::TREE[i - 1].0;
+        let p = dir.join(format!("{label}.m3p"));
+        if let Err(e) = std::fs::write(&p, mb3d::m3p::write(&m.scene)) {
+            err = Some(format!("{}: {e}", p.display()));
+        }
+        let img = mb3d::mutagen::preview(&m.scene, size, ph, false, threads)
+            .map(|(rgb, w, h)| if (w, h) == (size, ph) { rgb } else { vec![0; size * ph * 3] })
+            .unwrap_or_else(|_| vec![0; size * ph * 3]);
+        let _ = mb3d::png::write_rgb(&dir.join(format!("{label}.png")).to_string_lossy(), size, ph, &img);
+        previews.push(img);
+        let cap = mb3d::mutagen::caption(&m.scene);
+        lines.push(format!("{label:8} {cap}"));
+        if !quiet {
+            eprintln!("  {i:2}/15  {label:8} {cap}");
+        }
+    };
+    mb3d::mutagen::generation(&cfg, &scene, &mut rng, threads, &mut on_member, &|| false)?;
+    if let Some(e) = err {
+        return Err(e);
+    }
+    let (sheet, sw, sh) = mb3d::mutagen::contact_sheet(&previews, size, ph);
+    mb3d::png::write_rgb(&dir.join("sheet.png").to_string_lossy(), sw, sh, &sheet).map_err(|e| format!("sheet.png: {e}"))?;
+    std::fs::write(dir.join("members.txt"), format!("# mutagen of {file}, seed {seed}\n{}\n", lines.join("\n")))
+        .map_err(|e| format!("members.txt: {e}"))?;
+    if !quiet {
+        eprintln!("done in {}: {}/sheet.png, <label>.m3p for each member", fmt_dur(t0.elapsed().as_secs_f64()), out);
     }
     Ok(())
 }

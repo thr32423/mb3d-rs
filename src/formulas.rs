@@ -398,6 +398,18 @@ impl Formula {
         }
     }
 
+    /// MB3D's option types (`byOptionTypes`): 0 double, 2 integer, 10 no
+    /// variable (the integer power of the bulbs), ... (see `m3f`).
+    pub fn option_types(&self) -> Vec<u8> {
+        match self {
+            Formula::Custom(c) => c.def.options.iter().map(|o| o.ty).collect(),
+            Formula::IntPow { .. } => vec![10, 0],
+            Formula::FoldingIntPow { .. } => vec![10, 0, 0],
+            Formula::AexionC { .. } => vec![0, 0, 2, 2, 0, 0, 2, 2],
+            _ => vec![0; self.options().len()],
+        }
+    }
+
     /// `iDEoption` (`ParseCFfromOld`): 0 = 3D numerical gradient DE,
     /// 4 = 4D numerical DE, 11 = analytic DE (amazing box, derivative in w).
     pub fn de_option(&self) -> i32 {

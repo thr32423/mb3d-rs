@@ -44,6 +44,7 @@ pub mod m3p;
 pub mod maps;
 pub mod mclut;
 pub mod mesh;
+pub mod mutagen;
 pub mod math;
 pub mod png;
 pub mod render;

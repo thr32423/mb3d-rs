@@ -164,7 +164,7 @@ pub(super) fn anim_json(app: &App) -> String {
     let folder = crate::animfile::resolve_output(&a, &std::env::current_dir().unwrap_or_default());
     format!(
         "{{\"ver\":{},\"width\":{},\"height\":{},\"aa\":{},\"interp\":{},\"loop\":{},\"name\":{},\"output\":{},\"output_abs\":{},\
-         \"format\":{},\"start_index\":{},\"index_step\":{},\"overwrite\":{},\"depth\":{},\"default_frames\":{},\"frame_count\":{},\
+         \"format\":{},\"start_index\":{},\"index_step\":{},\"overwrite\":{},\"depth\":{},\"stereo\":{},\"default_frames\":{},\"frame_count\":{},\
          \"keys\":[{}],\
          \"flip\":{{\"gen\":{},\"total\":{},\"ready\":{},\"indices\":{},\"width\":{},\"running\":{},\"progress\":{},\"error\":{}}},\
          \"job\":{{\"running\":{},\"total\":{},\"done\":{},\"skipped\":{},\"current\":{},\"progress\":{},\"seconds\":{:.2},\"last\":{},\"error\":{},\"folder\":{}}}}}",
@@ -182,6 +182,7 @@ pub(super) fn anim_json(app: &App) -> String {
         a.index_step,
         a.overwrite,
         a.save_depth,
+        json_str(match a.stereo_bits & 0xC0 { 0x40 => "pair", 0xC0 | 0x80 => "very_left", _ => "off" }),
         st.default_frames.load(Ordering::Relaxed),
         a.frame_count(),
         keys.join(","),
@@ -358,6 +359,13 @@ pub(super) fn set_settings(app: &Arc<App>, q: &HashMap<String, String>) -> Resul
     }
     if let Some(v) = flag("depth") {
         a.save_depth = v;
+    }
+    if let Some(v) = q.get("stereo") {
+        a.stereo_bits = match v.as_str() {
+            "pair" => 0x40,
+            "very_left" => 0xC0,
+            _ => 0,
+        };
     }
     if let Some(v) = int("default_frames")? {
         st.default_frames.store(v.clamp(0, 100_000) as u32, Ordering::Relaxed);

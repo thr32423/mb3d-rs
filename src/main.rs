@@ -46,6 +46,9 @@ OPTIONS:
         --tile <C,R>         Only render tile C,R (1-based) of --tiles; with --save-m3p
                              this writes a MB3D tile parameter file
         --render             Also render when converting with --save-scene/--save-text/--save-m3p
+        --stereo-pair <LAYOUT>  Render the left and the right eye image (MB3D's stereo
+                             modes, see -s stereo_screen=width,distance,min) and combine
+                             them: parallel, cross or anaglyph
     -q, --quiet              No progress output
         --formulas <DIR>     Directory with .m3f formula files (also: MB3D_FORMULAS)
         --maps <DIR>         Directory with maps and background pictures (also: MB3D_MAPS;
@@ -87,6 +90,7 @@ fn run() -> Result<(), String> {
     let mut render_too = false;
     let mut scale: Option<f64> = None;
     let mut aa: usize = 1;
+    let mut stereo_pair: Option<mb3d::render::StereoLayout> = None;
     while let Some(a) = args.next() {
         let mut val = |name: &str| args.next().ok_or_else(|| format!("{name} needs a value"));
         match a.as_str() {
@@ -121,6 +125,7 @@ fn run() -> Result<(), String> {
             "--save-text" => save_text = Some(val(&a)?),
             "--save-m3p" => save_m3p = Some(val(&a)?),
             "--render" => render_too = true,
+            "--stereo-pair" => stereo_pair = Some(mb3d::render::StereoLayout::parse(&val(&a)?)?),
             "--tiles" => overrides.push(format!("tiles = {}", val(&a)?)),
             "--tile" => overrides.push(format!("tile = {}", val(&a)?)),
             "-q" | "--quiet" => quiet = true,
@@ -253,7 +258,28 @@ fn run() -> Result<(), String> {
             let _ = std::io::stderr().flush();
         }
     };
-    if let Some(tl) = scene.tiling {
+    if let Some(layout) = stereo_pair {
+        if scene.tiling.is_some() {
+            return Err("--stereo-pair does not work with tiles".into());
+        }
+        if auto_color {
+            let (_, g) = mb3d::render::calculate(&scene, &|_, _| {})?;
+            mb3d::render::auto_color_range(&mut scene, &g);
+        }
+        let mut eyes = Vec::new();
+        for (mode, name) in [(4u8, "left"), (3u8, "right")] {
+            let mut s = scene.clone();
+            s.stereo_mode = mode;
+            let r = mb3d::render(&s, &progress)?;
+            if !quiet {
+                eprintln!("\r  {name} eye: calc {:.2}s, paint {:.2}s", r.calc_seconds, r.paint_seconds);
+            }
+            eyes.push(if aa > 1 { mb3d::render::downsample(&r.rgb, r.width, r.height, aa) } else { (r.rgb, r.width, r.height) });
+        }
+        let (w, h) = (eyes[0].1, eyes[0].2);
+        let (rgb, ow, oh) = mb3d::render::compose_stereo(&eyes[0].0, &eyes[1].0, w, h, layout);
+        mb3d::png::write_rgb(&output, ow, oh, &rgb).map_err(|e| format!("{output}: {e}"))?;
+    } else if let Some(tl) = scene.tiling {
         // anti-aliasing of tile renders: --aa and the tile downscale
         let down = aa * tl.downscale.max(1) as usize;
         if tl.downscale > 1 {
@@ -447,6 +473,9 @@ OPTIONS:
                              render, and lets several processes share the work
         --overwrite          Render all frames again (default unless the animation says no)
         --depth              Also write depth images (ZBuf <name><index>.png)
+        --stereo <MODE>      pair: a right and a left eye image per frame
+                             (<name>Right000001, <name>Left000001), very_left: only
+                             the 'very left' images, off (as MB3D's animation maker)
     -s, --set <KEY=VALUE>    Change a scene key in every keyframe (may be repeated)
         --save <FILE>        Save the animation: .m3k (text) or .m3a (MB3D); with
                              keyframe files only the file is written unless --render
@@ -468,6 +497,7 @@ fn animate(argv: &[String]) -> Result<(), String> {
     let (mut ipol, mut looped): (Option<Interpolation>, Option<bool>) = (None, None);
     let (mut start_index, mut index_step): (Option<i64>, Option<i64>) = (None, None);
     let mut overwrite: Option<bool> = None;
+    let mut stereo: Option<u32> = None;
     let (mut depth, mut list, mut render_too, mut quiet) = (false, false, false, false);
     let mut save: Option<String> = None;
     let mut args = argv.iter();
@@ -487,6 +517,14 @@ fn animate(argv: &[String]) -> Result<(), String> {
             "-H" | "--height" => height = Some(num(a, args.next())?.clamp(1, 65535) as i32),
             "--aa" => aa = Some(num(a, args.next())?.clamp(1, 16) as u32),
             "--frames" => frames = Some(num(a, args.next())?.clamp(0, 1_000_000) as u32),
+            "--stereo" => {
+                stereo = Some(match args.next().ok_or("--stereo needs a value")?.to_ascii_lowercase().as_str() {
+                    "pair" | "on" | "yes" => 0x40,
+                    "very_left" | "very-left" => 0xC0,
+                    "off" | "no" => 0,
+                    v => return Err(format!("bad --stereo value '{v}' (pair, very_left, off)")),
+                })
+            }
             "--linear" => ipol = Some(Interpolation::Linear),
             "--bezier" => ipol = Some(Interpolation::Bezier),
             "--loop" => looped = Some(true),
@@ -605,6 +643,9 @@ fn animate(argv: &[String]) -> Result<(), String> {
     }
     if let Some(i) = ipol {
         anim.interpolation = i;
+    }
+    if let Some(b) = stereo {
+        anim.stereo_bits = b;
     }
     if let Some(l) = looped {
         anim.looped = l;

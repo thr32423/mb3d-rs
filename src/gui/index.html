@@ -294,6 +294,7 @@ const ENUMS = {
   ao: ["off", "ssao24", "ssao24t0", "ssao15", "ssao15t0", "deao"],
   inside: ["outside", "inside", "both"],
   slice_2d: ["off", "start", "mid", "end"],
+  stereo: ["off", "left", "right", "very_left"],
   de_combination: ["off", "min", "max", "max_inverted", "smooth_linear", "smooth", "mix"],
   dof: ["off", "sorted", "forward"],
   optic: ["0", "1", "2"],
@@ -302,11 +303,11 @@ const ENUMS = {
   diffuse_func: ["0", "1", "2", "3"],
   visible: ["0", "1", "2", "3", "4"],
 };
-const LABELS = { slice_2d: "2D calculation of the plane at", color_on_iteration: "colour on iteration (-1 off)", interpolation: "interpolation hybrid (weights of formula 1, 2)", optic: "optic (0 common, 1 planar, 2 panorama)", fov: "field of view (°)", de_stop: "DE stop (pixels)",
+const LABELS = { stereo: "stereo eye image", stereo_screen: "stereo screen width, distance, min. distance (m)", slice_2d: "2D calculation of the plane at", color_on_iteration: "colour on iteration (-1 off)", interpolation: "interpolation hybrid (weights of formula 1, 2)", optic: "optic (0 common, 1 planar, 2 panorama)", fov: "field of view (°)", de_stop: "DE stop (pixels)",
   raystep: "raystep multiplier", vgrads: "view matrix", mid: "middle", julia_c: "julia constant (x, y, z, w)" };
 
 const GROUPS = [
-  ["Camera", /^(width|height|zoom|mid|z_start|z_end|slice_2d|vgrads|rotation|fov|optic|cut_[xyz]|tiles|tile|tile_downscale)$/],
+  ["Camera", /^(width|height|zoom|mid|z_start|z_end|slice_2d|stereo|stereo_screen|vgrads|rotation|fov|optic|cut_[xyz]|tiles|tile|tile_downscale)$/],
   ["Formula iteration", /^(iterations|min_iterations|rstop|julia|julia_c|rotation_4d|repeat_from|inside|interpolation|de_combination|decomb_.*|color_option|color_mul|color_on_iteration|dfog_on_it)$/],
   ["Ray marching", /^(de_stop|raystep|raystep_limiter|smooth_normals|bin_search|first_step_random|step_sub_de_stop|vary_de_stop|normals_on_de|disable_analytic_de|threads)$/],
   ["Ambient occlusion and shadows", /^(ao|ao_.*|deao_.*|shadows|shadow_.*)$/],
@@ -329,7 +330,7 @@ const TABS = [
   ["Info", () => infoTab()],
 ];
 let tab = "Formulas";
-const KNOWN_KEYS = ["inside", "interpolation", "slice_2d", "color_on_iteration", "de_combination", "decomb_end1", "decomb_start2", "decomb_end2", "decomb_repeat2", "decomb_iterations2",
+const KNOWN_KEYS = ["inside", "interpolation", "slice_2d", "stereo", "stereo_screen", "color_on_iteration", "de_combination", "decomb_end1", "decomb_start2", "decomb_end2", "decomb_repeat2", "decomb_iterations2",
   "decomb_smooth", "decomb_mix_pow", "decomb_mix_color", "cut_x", "cut_y", "cut_z", "shadows", "shadow_soft", "shadow_soft_radius",
   "shadow_max_len", "shadow_set_cos", "ao_random", "deao_quality", "deao_dither", "deao_max_len", "dof_focus", "dof_focus2",
   "dof_aperture", "dof_max_radius", "dof_passes", "vol_light", "vol_light_map_size", "background_image", "background_rotation",
@@ -746,6 +747,8 @@ function animTab() {
     el("div", { class: "row" }, el("label", {}, "file index from / step"), el("div", { class: "multi" }, inp("aStart", a.start_index, "start_index"), inp("aStep", a.index_step, "index_step"))),
     el("div", { class: "row" }, el("label", { title: "Otherwise frames whose file exists are skipped (continue a render, or share it with other processes)" }, "overwrite existing"), chk("aOver", a.overwrite, "overwrite")),
     el("div", { class: "row" }, el("label", {}, "depth images too"), chk("aDepth", a.depth, "depth")),
+    el("div", { class: "row" }, el("label", { title: "Stereo: a right and a left eye image per frame (see the scene's stereo_screen), or only the 'very left' image" }, "stereo"),
+      sel("aStereo", a.stereo, "stereo", [["off", "off"], ["pair", "right + left eye"], ["very_left", "only 'very left' eye"]])),
     el("div", { class: "row" }, el("label", {}, "only file indices"), el("div", { class: "multi" }, from, "to", to)),
     el("div", { class: "hint mono" }, sample),
     el("div", { class: "multi" },

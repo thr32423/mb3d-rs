@@ -253,24 +253,37 @@ pub fn render_frame_to_file(
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
 ) -> Result<FrameResult, String> {
-    let path = a.frame_file(frame);
-    let c = match claim(&path, a.overwrite)? {
-        Ok(c) => c,
-        Err(why) => return Ok(FrameResult::Skipped { path, why }),
-    };
-    if a.format == OutputFormat::M3p {
-        let t0 = Instant::now();
-        c.finish(&frame_params(a, frame)?)?;
-        return Ok(FrameResult::Written { path, seconds: t0.elapsed().as_secs_f64() });
+    let mut result: Option<FrameResult> = None;
+    let mut seconds = 0.0;
+    for (mode, eye) in a.stereo_eyes() {
+        let path = a.frame_file_eye(frame, eye);
+        let c = match claim(&path, a.overwrite)? {
+            Ok(c) => c,
+            Err(why) => {
+                result.get_or_insert(FrameResult::Skipped { path, why });
+                continue;
+            }
+        };
+        if a.format == OutputFormat::M3p {
+            let t0 = Instant::now();
+            let mut raw = frame_params(a, frame)?;
+            raw[126] = mode;
+            c.finish(&raw)?;
+            seconds += t0.elapsed().as_secs_f64();
+        } else {
+            let mut s = frame_render_scene(a, frame, run)?;
+            s.stereo_mode = mode;
+            let img = render_scaled(&s, a.scale.max(1) as usize, a.save_depth, progress, cancel)?;
+            c.finish(&encode(a.format, &img)?)?;
+            if let Some(z) = &img.depth {
+                let p = a.depth_file_eye(frame, eye);
+                std::fs::write(&p, crate::png::encode_gray16(img.width, img.height, z)).map_err(|e| format!("{}: {e}", p.display()))?;
+            }
+            seconds += img.seconds;
+        }
+        result = Some(FrameResult::Written { path, seconds });
     }
-    let s = frame_render_scene(a, frame, run)?;
-    let img = render_scaled(&s, a.scale.max(1) as usize, a.save_depth, progress, cancel)?;
-    c.finish(&encode(a.format, &img)?)?;
-    if let Some(z) = &img.depth {
-        let p = a.depth_file(frame);
-        std::fs::write(&p, crate::png::encode_gray16(img.width, img.height, z)).map_err(|e| format!("{}: {e}", p.display()))?;
-    }
-    Ok(FrameResult::Written { path, seconds: img.seconds })
+    Ok(result.expect("at least one eye"))
 }
 
 /// Renders the small keyframe images of a `.m3a` file (`RenderPrevBMP`).

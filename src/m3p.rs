@@ -397,8 +397,13 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
             _ => 2,
         };
     }
-    if r.u8(126) != 0 {
-        w.push("stereo mode is not supported (rendered mono)".into());
+    s.stereo_mode = match r.u8(126) {
+        m @ (1 | 3 | 4) => m,
+        _ => 0,
+    };
+    let st = [r.f32(230) as f32, r.f32(234) as f32, r.f32(238) as f32];
+    if st.iter().all(|v| v.is_finite() && *v > 0.0) {
+        s.stereo_screen = st;
     }
     let tiling = if mand_id >= 35 { r.i32(428) as u32 } else { 0 };
     if tiling != 0 {
@@ -930,6 +935,10 @@ pub fn write(sc: &Scene) -> Vec<u8> {
     d[344] = (sc.slice_2d == 0) as u8;
     d[345] = if sc.slice_2d == 0 { 2 } else { sc.slice_2d };
     d[19] = sc.color_on_it;
+    d[126] = sc.stereo_mode;
+    pf32(&mut d, 230, sc.stereo_screen[0]);
+    pf32(&mut d, 234, sc.stereo_screen[1]);
+    pf32(&mut d, 238, sc.stereo_screen[2]);
     pf32(&mut d, 104, sc.decomb.map(|c| c.mix_pow).unwrap_or(2.0));
     pf32(&mut d, 378, sc.decomb.map(|c| c.smooth).unwrap_or(0.5));
     pi32(&mut d, 418, sc.decomb.map(|c| c.iterations2).unwrap_or(sc.iterations));

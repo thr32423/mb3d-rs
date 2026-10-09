@@ -234,3 +234,32 @@ fn analytic_4d_de_uses_the_4d_loop() {
     assert!(r.coverage() > 0.02, "coverage {}", r.coverage());
 }
 
+
+#[test]
+fn stereo_eyes_shift_the_camera() {
+    let s = small("Integer Power");
+    let l = s.clone().apply("stereo = left\nstereo_screen = 1, 2, 1.5").unwrap();
+    let r = s.clone().apply("stereo = right\nstereo_screen = 1, 2, 1.5").unwrap();
+    assert_eq!((l.stereo_mode, r.stereo_mode), (4, 3));
+    // CalcXoff: the view centre moves (off-axis projection)
+    assert!(l.stereo_xoff() < 0.5 && r.stereo_xoff() > 0.5);
+    assert_eq!(s.stereo_xoff(), 0.5);
+    // StereoChange: the eyes sit symmetrically around the middle
+    let (ml, mr) = (l.stereo_mid(), r.stereo_mid());
+    for k in 0..3 {
+        assert!((ml[k] + mr[k] - 2.0 * s.mid[k]).abs() < 1e-12);
+    }
+    assert!(ml != s.mid);
+    let il = mb3d::render(&l, &|_, _| {}).unwrap();
+    let ir = mb3d::render(&r, &|_, _| {}).unwrap();
+    assert!(il.coverage() > 0.01 && ir.coverage() > 0.01);
+    assert_ne!(il.rgb, ir.rgb);
+    for t in [&l, &r] {
+        let back = mb3d::m3p::parse(&mb3d::m3p::write(t)).unwrap().scene;
+        assert_eq!((back.stereo_mode, back.stereo_screen), (t.stereo_mode, t.stereo_screen));
+        let back = Scene::parse(&t.to_text()).unwrap();
+        assert_eq!((back.stereo_mode, back.stereo_screen), (t.stereo_mode, t.stereo_screen));
+    }
+    let (sbs, w, h) = mb3d::render::compose_stereo(&il.rgb, &ir.rgb, il.width, il.height, mb3d::render::StereoLayout::Parallel);
+    assert_eq!((w, h, sbs.len()), (il.width * 2, il.height, il.rgb.len() * 2));
+}

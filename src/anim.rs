@@ -116,7 +116,8 @@ pub struct Animation {
     pub overwrite: bool,
     /// Save a depth (z-buffer) image too (`CheckBox7`)
     pub save_depth: bool,
-    /// Stereo option bits of `.m3a` files (not supported, kept)
+    /// Stereo options of `.m3a` files: 0x40 stereo animation (a right and
+    /// a left eye image per frame), 0x80 only the "very left" image
     pub stereo_bits: u32,
 }
 
@@ -215,15 +216,37 @@ impl Animation {
 
     /// Output file of a frame: `<folder>/<name><index, 6 digits>.<ext>`.
     pub fn frame_file(&self, frame: usize) -> std::path::PathBuf {
+        self.frame_file_eye(frame, self.stereo_eyes()[0].1)
+    }
+
+    /// The images of one frame: (`bStereoMode`, name suffix).  A stereo
+    /// animation renders the right eye, then the left one
+    /// (`AniRightImage`); "very left" renders only that one.
+    pub fn stereo_eyes(&self) -> Vec<(u8, &'static str)> {
+        if self.stereo_bits & 0x40 == 0 {
+            vec![(0, "")]
+        } else if self.stereo_bits & 0x80 != 0 {
+            vec![(1, "Left")]
+        } else {
+            vec![(3, "Right"), (4, "Left")]
+        }
+    }
+
+    /// The file of one eye's image (`<name>Right<index>` etc.).
+    pub fn frame_file_eye(&self, frame: usize, eye: &str) -> std::path::PathBuf {
         let mut p = std::path::PathBuf::from(&self.output_folder);
-        p.push(format!("{}{:06}.{}", self.name, self.file_index(frame), self.format.extension()));
+        p.push(format!("{}{eye}{:06}.{}", self.name, self.file_index(frame), self.format.extension()));
         p
     }
 
     /// Depth image of a frame (`ZBuf <name><index>.png`).
     pub fn depth_file(&self, frame: usize) -> std::path::PathBuf {
+        self.depth_file_eye(frame, self.stereo_eyes()[0].1)
+    }
+
+    pub fn depth_file_eye(&self, frame: usize, eye: &str) -> std::path::PathBuf {
         let mut p = std::path::PathBuf::from(&self.output_folder);
-        p.push(format!("ZBuf {}{:06}.png", self.name, self.file_index(frame)));
+        p.push(format!("ZBuf {}{eye}{:06}.png", self.name, self.file_index(frame)));
         p
     }
 

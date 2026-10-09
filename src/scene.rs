@@ -51,6 +51,12 @@ pub struct Scene {
     /// 2D calculation of a plane (`bCalc3D` = 0, `bSliceCalc`):
     /// 1 at Z start, 2 at the middle, 3 at Z end; 0 = 3D
     pub slice_2d: u8,
+    /// Stereo image (`bStereoMode`): 0 mono, 1 "very left from midpos",
+    /// 3 right eye, 4 left eye
+    pub stereo_mode: u8,
+    /// `StereoScreenWidth`, `StereoScreenDistance`, `StereoMinDistance`
+    /// (real-world metres)
+    pub stereo_screen: [f32; 3],
     /// Bailout radius (`RStop`, not squared). `None` = use the formulas' default.
     pub rstop: Option<f64>,
     pub zoom: f64,
@@ -171,6 +177,8 @@ impl Default for Scene {
             min_iterations: 1,
             color_on_it: 0,
             slice_2d: 0,
+            stereo_mode: 0,
+            stereo_screen: [1.0, 2.0, 0.5],
             rstop: None,
             zoom: 1.0,
             mid: [0.0; 3],
@@ -241,6 +249,37 @@ impl Scene {
         2.1345 / (self.zoom * self.width as f64)
     }
 
+    /// `StereoChange`: the middle moved sideways for the eye of
+    /// `stereo_mode` (used for the calculation and the lights).
+    pub fn stereo_mid(&self) -> [f64; 3] {
+        let [sw, sd, md] = self.stereo_screen.map(|v| v as f64);
+        let eyedist = 0.065 * self.width as f64 * sd / f64::max(1e-100, md * sw);
+        let k = (sd - md) / sd;
+        let xadd = match self.stereo_mode {
+            1 => -eyedist * k,
+            3 => 0.5 * eyedist * k,
+            4 => -0.5 * eyedist * k,
+            _ => return self.mid,
+        };
+        let r = self.vgrads[0];
+        let l = (r[0] * r[0] + r[1] * r[1] + r[2] * r[2]).sqrt().max(1e-300);
+        let s = self.step_width() / l * xadd;
+        [self.mid[0] + r[0] * s, self.mid[1] + r[1] * s, self.mid[2] + r[2] * s]
+    }
+
+    /// `CalcXoff`: horizontal position of the view centre (0.5 = middle),
+    /// the off-axis projection of the stereo images.
+    pub fn stereo_xoff(&self) -> f32 {
+        let xoff = -0.065 / f64::max(1e-100, self.stereo_screen[0] as f64);
+        let r = match self.stereo_mode {
+            1 => 0.5 + xoff,
+            3 => 0.5 * (1.0 - xoff),
+            4 => 0.5 * (1.0 + xoff),
+            _ => 0.5,
+        };
+        r as f32
+    }
+
     /// The effective bailout radius.
     pub fn effective_rstop(&self) -> f64 {
         self.rstop.unwrap_or_else(|| {
@@ -303,6 +342,17 @@ impl Scene {
         let _ = writeln!(t, "iterations = {}\nmin_iterations = {}", self.iterations, self.min_iterations);
         if self.color_on_it != 0 {
             let _ = writeln!(t, "color_on_iteration = {}", self.color_on_it as i32 - 1);
+        }
+        if self.stereo_mode != 0 {
+            let _ = writeln!(t, "stereo = {}", match self.stereo_mode {
+                1 => "very_left",
+                3 => "right",
+                _ => "left",
+            });
+        }
+        if self.stereo_mode != 0 || self.stereo_screen != [1.0, 2.0, 0.5] {
+            let [a, b, c] = self.stereo_screen;
+            let _ = writeln!(t, "stereo_screen = {a}, {b}, {c}");
         }
         if self.slice_2d != 0 {
             let _ = writeln!(t, "slice_2d = {}", ["start", "mid", "end"][(self.slice_2d.clamp(1, 3) - 1) as usize]);
@@ -740,6 +790,22 @@ impl Scene {
                         } else {
                             (int()? + 1).clamp(0, 255) as u8
                         }
+                    }
+                    "stereo" | "stereo_mode" => {
+                        s.stereo_mode = match val.to_ascii_lowercase().as_str() {
+                            "off" | "no" | "mono" | "0" => 0,
+                            "very_left" | "very left" | "1" => 1,
+                            "right" | "3" => 3,
+                            "left" | "4" => 4,
+                            _ => return Err(err(format!("bad stereo '{val}' (off, left, right, very_left)"))),
+                        }
+                    }
+                    "stereo_screen" => {
+                        let p = vec_n(3)?;
+                        if p.iter().any(|v| *v <= 0.0) {
+                            return Err(err("stereo_screen: screen width, screen distance and minimum distance (metres) must be > 0".to_string()));
+                        }
+                        s.stereo_screen = [p[0] as f32, p[1] as f32, p[2] as f32];
                     }
                     "slice_2d" | "2d" => {
                         s.slice_2d = match val.to_ascii_lowercase().as_str() {

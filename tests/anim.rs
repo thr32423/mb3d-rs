@@ -103,3 +103,33 @@ fn light_direction_turns_on_the_sphere() {
     // the slerped direction is the middle angle (single precision differences)
     assert!(max_diff(&half.rgb, &mid.rgb) <= 3, "{}", max_diff(&half.rgb, &mid.rgb));
 }
+
+#[test]
+fn stereo_animation_writes_both_eyes() {
+    let dir = std::env::temp_dir().join(format!("mb3d_stereo_{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let mut s = small();
+    s.width = 40;
+    s.height = 30;
+    let mut anim = Animation {
+        keyframes: vec![Keyframe::new(s.clone(), 1), Keyframe::new(s, 1)],
+        width: 40,
+        height: 30,
+        output_folder: dir.to_string_lossy().into_owned(),
+        name: "st".into(),
+        stereo_bits: 0x40,
+        ..Default::default()
+    };
+    assert_eq!(anim.stereo_eyes(), vec![(3, "Right"), (4, "Left")]);
+    let run = mb3d::frames::FrameRun::default();
+    mb3d::frames::render_frame_to_file(&anim, 0, &run, &|_, _| {}, &|| false).unwrap();
+    let r = std::fs::read(dir.join("stRight000001.png")).unwrap();
+    let l = std::fs::read(dir.join("stLeft000001.png")).unwrap();
+    assert_ne!(r, l);
+    anim.stereo_bits = 0xC0;
+    assert_eq!(anim.frame_file(1).file_name().unwrap(), "stLeft000002.png");
+    anim.stereo_bits = 0;
+    assert_eq!(anim.frame_file(1).file_name().unwrap(), "st000002.png");
+    let _ = std::fs::remove_dir_all(&dir);
+}

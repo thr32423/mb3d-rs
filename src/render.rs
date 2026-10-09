@@ -71,7 +71,7 @@ fn calculate_inner(
         let lv = light_vals(sc, &l, &paint_camera(sc, &p));
         if let Some((ln, positional)) = lv.light_ln(vp.light) {
             let hs_len = sc.shadows.map(|h| h.max_len_mul).unwrap_or(1.0);
-            let map = crate::vollight::build(&p, sc.mid, ln, positional, l.lights[vp.light].amplitude, vp, hs_len, threads);
+            let map = crate::vollight::build(&p, sc.stereo_mid(), ln, positional, l.lights[vp.light].amplitude, vp, hs_len, threads);
             p.vol = Some(std::sync::Arc::new(map));
         }
     }
@@ -200,7 +200,7 @@ fn light_vals(sc: &Scene, l: &crate::lighting::Lighting, cam: &PaintCamera) -> L
     };
     lv.rotate_object_lights(l, &normalise_matrix_to(1.0, &sc.vgrads));
     let vz = normalise_matrix_to(1.0, &sc.vgrads)[2];
-    lv.place_lights(l, sc.mid, cam, z_range, vz);
+    lv.place_lights(l, sc.stereo_mid(), cam, z_range, vz);
     lv
 }
 
@@ -250,7 +250,7 @@ pub fn paint_camera(sc: &Scene, p: &CalcParams) -> PaintCamera {
         height: h,
         fov,
         aspect: if sc.optic == CameraOptic::Panorama { 2.0 } else { w as f32 / h as f32 },
-        x_off: 0.5,
+        x_off: sc.stereo_xoff(),
         planar: sc.optic as i32,
         pl_optic_z: (d.cos() * d / d.sin()) as f32,
         zcorr: p.zcorr,
@@ -529,4 +529,49 @@ pub fn render_tiled(
         paint_seconds: t1.elapsed().as_secs_f64(),
         params: Some(p),
     })
+}
+
+/// How [`compose_stereo`] puts a left and a right eye image together.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum StereoLayout {
+    /// left image left, right image right (parallel viewing)
+    Parallel,
+    /// right image left (cross-eyed viewing)
+    Cross,
+    /// red-cyan anaglyph (half colour: red from the left eye's luminance)
+    Anaglyph,
+}
+
+impl StereoLayout {
+    pub fn parse(s: &str) -> Result<StereoLayout, String> {
+        match s.to_ascii_lowercase().as_str() {
+            "parallel" | "side-by-side" | "sbs" => Ok(StereoLayout::Parallel),
+            "cross" | "cross-eyed" | "crosseyed" => Ok(StereoLayout::Cross),
+            "anaglyph" | "red-cyan" => Ok(StereoLayout::Anaglyph),
+            _ => Err(format!("bad stereo layout '{s}' (parallel, cross, anaglyph)")),
+        }
+    }
+}
+
+/// Combines the images of the left and right eye (MB3D renders them one at
+/// a time; this is an addition of the port).
+pub fn compose_stereo(left: &[u8], right: &[u8], w: usize, h: usize, layout: StereoLayout) -> (Vec<u8>, usize, usize) {
+    match layout {
+        StereoLayout::Anaglyph => {
+            let mut out = right.to_vec();
+            for (o, l) in out.chunks_mut(3).zip(left.chunks(3)) {
+                o[0] = (0.299 * l[0] as f32 + 0.587 * l[1] as f32 + 0.114 * l[2] as f32).round().min(255.0) as u8;
+            }
+            (out, w, h)
+        }
+        _ => {
+            let (a, b) = if layout == StereoLayout::Parallel { (left, right) } else { (right, left) };
+            let mut out = vec![0u8; w * 2 * h * 3];
+            for y in 0..h {
+                out[y * w * 6..y * w * 6 + w * 3].copy_from_slice(&a[y * w * 3..(y + 1) * w * 3]);
+                out[y * w * 6 + w * 3..(y + 1) * w * 6].copy_from_slice(&b[y * w * 3..(y + 1) * w * 3]);
+            }
+            (out, w * 2, h)
+        }
+    }
 }

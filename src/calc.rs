@@ -496,7 +496,7 @@ impl CalcParams {
         let de_stop = (sc.de_stop.max(0.001)) as f32;
         let x1c = (fov_y * 0.5).clamp(0.01, 1.5);
         let pl_optic_z = (x1c.cos() * x1c / x1c.sin()) as f32;
-        let fovx_off = (0.5 * width as f64) as f32;
+        let fovx_off = sc.stereo_xoff() * width as f32;
         let fovx_mul = if sc.optic == CameraOptic::Panorama {
             (2.0 * std::f64::consts::PI / width as f64) as f32
         } else {
@@ -546,8 +546,9 @@ impl CalcParams {
         };
         let vgrads = normalise_matrix_to(x2, &sc.vgrads);
         let mut ystart = [0.0; 3];
+        let mid = sc.stereo_mid();
         for k in 0..3 {
-            ystart[k] = sc.mid[k] + z1 * vgrads[2][k] - yh * vgrads[1][k] - xh * vgrads[0][k];
+            ystart[k] = mid[k] + z1 * vgrads[2][k] - yh * vgrads[1][k] - xh * vgrads[0][k];
         }
         let mut de_offset = (de_stop * 0.1).min(0.004);
         let d_de_scale = if is_custom_de {

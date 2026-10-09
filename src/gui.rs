@@ -23,13 +23,51 @@ mod tools;
 
 const INDEX_HTML: &str = include_str!("gui/index.html");
 
+/// "Big renders": size factor, scale the DE stop, tiles, tile downscale.
+#[derive(Clone, Copy, PartialEq)]
+struct Big {
+    factor: f64,
+    scale_de: bool,
+    cols: u32,
+    rows: u32,
+    downscale: u32,
+}
+
+impl Big {
+    fn from_form(f: &HashMap<String, String>) -> Option<Big> {
+        let tiles = f.get("tiles")?;
+        let (c, r) = tiles.split_once('x')?;
+        Some(Big {
+            factor: f.get("factor").and_then(|v| v.parse::<f64>().ok()).unwrap_or(1.0).clamp(0.01, 100.0),
+            scale_de: f.get("scale_de").map(String::as_str) != Some("false"),
+            cols: c.trim().parse::<u32>().ok()?.clamp(1, 127),
+            rows: r.trim().parse::<u32>().ok()?.clamp(1, 127),
+            downscale: f.get("downscale").and_then(|v| v.parse().ok()).unwrap_or(1).clamp(1, 3),
+        })
+    }
+
+    fn apply(&self, sc: &Scene, pos: Option<(u32, u32)>) -> Scene {
+        let mut s = sc.clone();
+        if (self.factor - 1.0).abs() > 1e-9 {
+            if self.scale_de {
+                s.scale_image(self.factor);
+            } else {
+                s.width = ((s.width as f64 * self.factor).round() as i32).max(16);
+                s.height = ((s.height as f64 * self.factor).round() as i32).max(16);
+            }
+        }
+        s.tiling = Some(crate::scene::Tiling { cols: self.cols, rows: self.rows, pos, downscale: self.downscale });
+        s
+    }
+}
+
 #[derive(Clone, Copy, PartialEq)]
 enum Job {
     /// progressive previews; `force` recalculates even when the kept
     /// G-buffer could be repainted
     Preview { gen: u64, view_w: u32, force: bool },
-    /// "Calculate 3D": the full image
-    Final { gen: u64, aa: u32 },
+    /// "Calculate 3D": the full image (or a big render in tiles)
+    Final { gen: u64, aa: u32, big: Option<Big> },
     /// MB3D's quick 2D calculation of the plane at z start / mid / end
     Slice { gen: u64, view_w: u32, at: u8 },
 }
@@ -318,7 +356,15 @@ fn worker(app: Arc<App>) {
                     }
                 }
             }
-            Job::Final { gen, aa } => {
+            Job::Final { gen, aa, big: Some(b) } => {
+                let mut s = b.apply(&final_scene(&sc, aa), None);
+                let stage = format!("big render {}x{} in {}x{} tiles", s.width, s.height, b.cols, b.rows);
+                if b.downscale > 1 {
+                    s.scale_image(b.downscale as f64);
+                }
+                render_pass(&app, gen, &s, &stage, b.downscale as usize, true, false);
+            }
+            Job::Final { gen, aa, big: None } => {
                 let s = final_scene(&sc, aa);
                 let stage = format!("calculated {}x{}{}", sc.width, sc.height, if aa > 1 { format!(", image scale 1:{aa}") } else { String::new() });
                 render_pass(&app, gen, &s, &stage, aa as usize, true, true);
@@ -436,7 +482,7 @@ fn render_pass(app: &App, gen: u64, sc: &Scene, stage: &str, aa: usize, final_im
             Ok(r) => {
                 *app.base.lock().unwrap() = None;
                 let info = format!("{{\"calc\":{:.3},\"w\":{},\"h\":{},\"full\":true}}", t0.elapsed().as_secs_f64(), r.width, r.height);
-                publish(app, r.rgb, r.width, r.height, 1, stage, true, info, t0);
+                publish(app, r.rgb, r.width, r.height, aa, stage, true, info, t0);
                 return true;
             }
             Err(e) => {
@@ -942,10 +988,10 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
             ok_json(&mut stream, state_json(app))
         }
         ("POST", "/api/render") => {
-            let aa = form().get("aa").and_then(|v| v.parse::<u32>().ok()).unwrap_or(1).clamp(1, 4);
-            let gen = app.gen.fetch_add(1, Ordering::SeqCst) + 1;
-            *app.job.lock().unwrap() = Some(Job::Final { gen, aa });
-            app.job_cv.notify_all();
+            let f = form();
+            let aa = f.get("aa").and_then(|v| v.parse::<u32>().ok()).unwrap_or(1).clamp(1, 4);
+            let gen = app.next_gen();
+            app.queue(Job::Final { gen, aa, big: Big::from_form(&f) });
             ok_json(&mut stream, status_json(app))
         }
         ("POST", "/api/cancel") => {
@@ -1030,6 +1076,21 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
                 Some(b) if b.aa == 1 => respond(&mut stream, "200 OK", "application/octet-stream", &crate::m3p::write_m3i(&b.scene, &b.post),
                     &format!("Content-Disposition: attachment; filename=\"{}.m3i\"\r\n", safe_name(&title))),
                 _ => respond(&mut stream, "404 Not Found", "text/plain", b"calculate the image first (Calculate 3D)", ""),
+            }
+        }
+        ("GET", "/api/tile.m3p") => {
+            let q = &req.query;
+            let res = Big::from_form(q).ok_or("tiles missing").and_then(|b| {
+                let col = q.get("col").and_then(|v| v.parse::<u32>().ok()).unwrap_or(1).clamp(1, b.cols);
+                let row = q.get("row").and_then(|v| v.parse::<u32>().ok()).unwrap_or(1).clamp(1, b.rows);
+                let sc = app.scene.lock().unwrap().scene.clone();
+                Ok((crate::m3p::write(&b.apply(&sc, Some((col - 1, row - 1)))), col, row))
+            });
+            let title = app.scene.lock().unwrap().title.clone();
+            match res {
+                Ok((d, c, r)) => respond(&mut stream, "200 OK", "application/octet-stream", &d,
+                    &format!("Content-Disposition: attachment; filename=\"{}_tile{c}_{r}.m3p\"\r\n", safe_name(&title))),
+                Err(e) => respond(&mut stream, "400 Bad Request", "text/plain", e.as_bytes(), ""),
             }
         }
         ("GET", "/api/dirs") => ok_json(&mut stream, dirs_json()),

@@ -3,202 +3,309 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>mb3d-rs</title>
+<title>Mandelbulb 3D</title>
 <style>
+/* Layout after MB3D's main window (Mand.dfm): tool bar on top (Panel2),
+   image (ScrollBox1), mouse-mode and rotation bar below (Panel3), and the
+   parameter column on the right (Panel1).  Formulas, Lighting, Post
+   processing, Navigator, Animation etc. are separate windows. */
 :root {
-  --bg: #16181d; --panel: #1f2229; --panel2: #262a33; --line: #343a46;
-  --text: #dfe3ea; --dim: #8b93a3; --accent: #e0a24a; --accent2: #5aa0e6; --err: #ef6b6b;
+  --bg: #15171c; --face: #23262d; --face2: #2b2f37; --face3: #333843; --line: #3d4350; --hi: #4a5161;
+  --text: #dfe3ea; --dim: #8e96a6; --accent: #e0a24a; --accent2: #5aa0e6; --err: #ef6b6b; --ok: #79c37a;
+  --input: #1b1d23; --shadow: 0 8px 28px rgba(0,0,0,.55);
+}
+:root.classic {
+  --bg: #808080; --face: #f0f0f0; --face2: #e3e3e3; --face3: #d6d6d6; --line: #a0a0a0; --hi: #7a7a7a;
+  --text: #111; --dim: #555; --accent: #0063b1; --accent2: #0063b1; --err: #c00; --ok: #2a7a2a;
+  --input: #fff; --shadow: 0 6px 20px rgba(0,0,0,.35);
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
-  font: 13px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
-button, select, input, textarea { font: inherit; color: var(--text); background: var(--panel2);
-  border: 1px solid var(--line); border-radius: 4px; }
-button { padding: 4px 9px; cursor: pointer; }
-button:hover { border-color: var(--accent); }
-button.primary { background: #7a5520; border-color: var(--accent); }
-input, select { padding: 3px 5px; }
-input[type=checkbox] { width: auto; }
-input[type=color] { padding: 0; width: 34px; height: 22px; }
-#app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
-header { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 6px 10px;
-  background: var(--panel); border-bottom: 1px solid var(--line); }
-header .logo { font-weight: 700; color: var(--accent); margin-right: 8px; letter-spacing: .5px; }
-header .sep { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
-#title { width: 180px; }
-#status { margin-left: auto; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 38vw; }
-#status.err { color: var(--err); }
-main { display: grid; grid-template-columns: 1fr 420px; min-height: 0; }
-#viewer { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-#imgwrap { flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
-  overflow: hidden; background: #0d0e11; min-height: 0; outline: none; }
-#img { width: 100%; height: 100%; object-fit: contain; cursor: crosshair; user-select: none;
-  -webkit-user-drag: none; image-rendering: auto; }
-#prog { position: absolute; left: 0; top: 0; height: 3px; background: var(--accent); width: 0; transition: width .15s; }
-#hud { position: absolute; left: 8px; bottom: 6px; color: var(--dim); font-size: 12px; pointer-events: none;
-  text-shadow: 0 1px 2px #000; }
-#navbar { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; padding: 6px 10px;
-  background: var(--panel); border-top: 1px solid var(--line); }
-#navbar .grp { display: flex; gap: 3px; align-items: center; }
-#navbar .grp > span { color: var(--dim); margin-right: 2px; }
-#navbar button { padding: 3px 7px; min-width: 28px; }
-#navbar input { width: 52px; }
-aside { display: flex; flex-direction: column; background: var(--panel); border-left: 1px solid var(--line); min-height: 0; }
-#tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
-#tabs button { border: 0; border-radius: 0; background: transparent; padding: 7px 7px; color: var(--dim); }
-#tabs button.on { color: var(--text); box-shadow: inset 0 -2px var(--accent); }
-#panel { flex: 1; overflow-y: auto; padding: 8px 10px 30px; }
-.card { background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 8px; margin-bottom: 8px; }
-.card h3 { margin: 0 0 6px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-.card h3 .sp { flex: 1; }
-.card h3 button { padding: 1px 6px; font-size: 12px; }
-.row { display: grid; grid-template-columns: 150px 1fr; gap: 6px; align-items: center; margin: 3px 0; }
-.row label { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.row input[type=text] { width: 100%; min-width: 0; }
-.row .multi input.num { width: 80px; }
-.row .multi input[type=text] { width: 90px; flex: 1; }
-#err { display: none; background: #4a1f22; color: #ffc9c9; border-bottom: 1px solid var(--err); padding: 6px 10px; }
-#err.on { display: flex; gap: 8px; align-items: flex-start; }
-#err span { flex: 1; white-space: pre-wrap; }
-#err button { padding: 0 6px; }
-.row > input[type=checkbox] { justify-self: start; }
-.row .multi { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-.pal { display: grid; grid-template-columns: 64px 36px 36px; gap: 3px 6px; align-items: center; }
-.pal input[type=text] { width: 64px; }
-.hint { color: var(--dim); font-size: 12px; margin: 4px 0 8px; }
-.notes div { color: var(--dim); margin: 2px 0; }
-textarea { width: 100%; padding: 6px; font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace; }
-#textarea { height: 60vh; }
-dialog { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; min-width: 380px; }
-dialog::backdrop { background: rgba(0,0,0,.55); }
-dialog h2 { margin: 0 0 10px; font-size: 15px; }
-dialog .actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 10px; }
-.addrow { display: flex; gap: 4px; margin-top: 6px; }
-.addrow input { flex: 1; min-width: 0; }
-#finalprog { height: 6px; background: var(--panel2); border-radius: 3px; overflow: hidden; margin: 8px 0; }
-#finalprog div { height: 100%; width: 0; background: var(--accent); }
-.kf { display: grid; grid-template-columns: 104px 1fr; gap: 4px 8px; align-items: center; padding: 6px; border: 1px solid var(--line);
-  border-radius: 5px; margin-bottom: 5px; background: var(--panel); }
+  font: 12px/1.3 system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif; overflow: hidden; }
+button, select, input, textarea { font: inherit; color: var(--text); }
+button { background: var(--face3); border: 1px solid var(--line); border-radius: 3px; padding: 2px 7px; cursor: pointer; min-height: 21px; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: default; }
+button.down, button.on { background: var(--accent); color: #111; border-color: var(--accent); }
+:root.classic button.down, :root.classic button.on { color: #fff; }
+button.big { font-weight: 600; }
+select, input[type=text], input[type=number], textarea { background: var(--input); border: 1px solid var(--line); border-radius: 2px; padding: 1px 4px; min-height: 20px; }
+input[type=text] { width: 100%; min-width: 0; }
+input[type=checkbox], input[type=radio] { margin: 0 4px 0 0; vertical-align: -2px; accent-color: var(--accent); }
+input[type=color] { width: 36px; height: 20px; padding: 0; border: 1px solid var(--line); background: none; }
+input[type=range] { accent-color: var(--accent); }
+label { cursor: default; }
+.dim { color: var(--dim); }
+.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; word-break: break-all; }
+kbd { background: var(--face3); border: 1px solid var(--line); border-radius: 3px; padding: 0 3px; font-size: 10px; }
+
+#app { display: grid; grid-template-columns: 1fr 268px; grid-template-rows: auto 1fr auto; height: 100%; }
+/* ---- top bar (Panel2) */
+#top { grid-column: 1; grid-row: 1; display: flex; gap: 6px; align-items: stretch; padding: 3px 4px; background: var(--face);
+  border-bottom: 1px solid var(--line); overflow-x: auto; overflow-y: hidden; }
+#tools { display: grid; grid-template-columns: repeat(3, 62px); grid-template-rows: 30px 30px; gap: 3px; flex: none; }
+#tools button { padding: 0 2px; font-size: 11px; }
+.pc { display: flex; flex-direction: column; flex: none; min-width: 300px; }
+.pc .tabs { display: flex; gap: 1px; }
+.pc .tabs button { border-radius: 3px 3px 0 0; border-bottom: 0; padding: 1px 8px; min-height: 18px; background: var(--face2); color: var(--dim); }
+.pc .tabs button.on { background: var(--face3); color: var(--text); border-color: var(--line); }
+.pc .page { flex: 1; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; padding: 4px; border: 1px solid var(--line); background: var(--face3); }
+.gb { border: 1px solid var(--line); border-radius: 3px; padding: 6px 5px 3px; margin-top: 7px; position: relative; flex: none; display: flex; gap: 4px; align-items: center; }
+.gb > .cap { position: absolute; top: -7px; left: 6px; background: var(--face); padding: 0 3px; color: var(--dim); font-size: 11px; }
+#imgBox { display: grid; grid-template-columns: auto 58px auto 58px auto; gap: 2px 4px; align-items: center; }
+#imgBox input[type=text] { width: 58px; }
+/* ---- image (ScrollBox1) */
+#view { grid-column: 1; grid-row: 2; position: relative; overflow: auto; background: #0b0c0f; outline: none; min-height: 0; }
+#view.fit { overflow: hidden; display: flex; align-items: center; justify-content: center; }
+#img { display: block; user-select: none; -webkit-user-drag: none; image-rendering: auto; }
+#view.fit #img { width: 100%; height: 100%; object-fit: contain; }
+#view:not(.fit) #img { margin: 0; }
+#view.m-zoom #img, #view.m-pick #img { cursor: crosshair; }
+#view.m-xy #img { cursor: move; }
+#view.m-z #img { cursor: ns-resize; }
+#view.m-walk #img { cursor: pointer; }
+#sel { position: absolute; border: 1px dashed #fff; mix-blend-mode: difference; pointer-events: none; display: none; }
+#toast { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); background: #4a1f22; color: #ffd5d5; border: 1px solid var(--err);
+  padding: 5px 10px; border-radius: 4px; display: none; max-width: 80%; white-space: pre-wrap; z-index: 5; cursor: pointer; }
+#hint { position: absolute; left: 8px; top: 6px; background: rgba(0,0,0,.6); color: #ffe2a8; padding: 3px 8px; border-radius: 3px; display: none; pointer-events: none; }
+/* ---- bottom bar (Panel3) */
+#bottom { grid-column: 1; grid-row: 3; display: flex; gap: 6px; align-items: center; padding: 3px 4px; background: var(--face); border-top: 1px solid var(--line);
+  flex-wrap: wrap; }
+#bottom .grp { display: flex; gap: 2px; align-items: center; }
+#rot { display: grid; grid-template-columns: 22px 22px 22px 22px; grid-template-rows: 15px 15px; gap: 1px; }
+#rot button { min-height: 0; padding: 0; font-size: 10px; line-height: 13px; }
+#bottom input.deg { width: 38px; }
+#progress { width: 130px; height: 14px; border: 1px solid var(--line); background: var(--input); position: relative; }
+#progress div { position: absolute; inset: 0; width: 0; background: var(--accent); transition: width .15s; }
+#stage { color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 80px; }
+#stage.err { color: var(--err); }
+/* ---- right column (Panel1) */
+#right { grid-column: 2; grid-row: 1 / 4; display: flex; flex-direction: column; background: var(--face); border-left: 1px solid var(--line); min-height: 0; overflow-y: auto; }
+.fold { width: 100%; border-radius: 0; border-left: 0; border-right: 0; text-align: left; font-weight: 600; background: var(--face3); }
+.fold::before { content: "▾ "; color: var(--dim); }
+.fold.closed::before { content: "▸ "; }
+.pnl { padding: 4px 6px; display: grid; grid-template-columns: 62px 1fr; gap: 3px 4px; align-items: center; }
+.pnl > .full { grid-column: 1 / 3; }
+.pnl > label, .pnl > .lab { color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pnl button.lab { color: var(--text); padding: 0 3px; }
+.row2 { display: flex; gap: 3px; align-items: center; }
+.row2 > * { flex: 1; }
+#calcPnl { padding: 4px 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+#calcPnl .calc3d { grid-row: span 2; font-size: 13px; font-weight: 700; }
+#calcPnl .q { grid-column: 1 / 3; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+#calcPnl .q button { padding: 0; font-size: 11px; }
+#rtabs { display: flex; flex-wrap: wrap; gap: 1px; padding: 4px 4px 0; }
+#rtabs button { border-radius: 3px 3px 0 0; padding: 1px 5px; min-height: 18px; font-size: 11px; background: var(--face2); color: var(--dim); border-bottom: 0; }
+#rtabs button.on { background: var(--face3); color: var(--text); }
+#rpage { margin: 0 4px; border: 1px solid var(--line); background: var(--face3); padding: 5px; min-height: 120px; }
+#rpage .pnl { padding: 0; grid-template-columns: 1fr 72px; }
+#rpage .pnl > input[type=text] { width: 72px; }
+#memo { margin: 6px 4px 2px; height: 96px; overflow-y: auto; background: var(--input); border: 1px solid var(--line); padding: 3px 4px; font-size: 11px; flex: none; }
+#memo div { margin: 1px 0; }
+#memo .e { color: var(--err); }
+#memo .n { color: var(--dim); }
+#status2 { padding: 2px 6px 6px; color: var(--dim); font-size: 11px; }
+/* ---- windows */
+.win { position: fixed; background: var(--face); border: 1px solid var(--hi); border-radius: 5px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; min-width: 220px; max-height: calc(100vh - 8px); z-index: 10; }
+.win .wt { display: flex; align-items: center; gap: 6px; padding: 3px 4px 3px 8px; background: var(--face3); border-bottom: 1px solid var(--line);
+  border-radius: 5px 5px 0 0; cursor: move; user-select: none; font-weight: 600; }
+.win.top .wt { background: color-mix(in srgb, var(--accent) 35%, var(--face3)); }
+.win .wt span { flex: 1; }
+.win .wt button { min-height: 18px; padding: 0 6px; }
+.win .wb { overflow-y: auto; padding: 6px; flex: 1; }
+.tabs2 { display: flex; flex-wrap: wrap; gap: 1px; }
+.tabs2 button { border-radius: 3px 3px 0 0; border-bottom: 0; padding: 1px 7px; background: var(--face2); color: var(--dim); }
+.tabs2 button.on { background: var(--face3); color: var(--text); }
+.page2 { border: 1px solid var(--line); background: var(--face3); padding: 6px; margin-bottom: 6px; }
+.grid { display: grid; grid-template-columns: 120px 1fr; gap: 3px 6px; align-items: center; }
+.grid > label, .grid > .lab { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grid > .full { grid-column: 1 / 3; }
+.grid input[type=text].n { width: 90px; }
+.tb { display: grid; grid-template-columns: 100px 1fr 54px; gap: 2px 6px; align-items: center; }
+.tb > label { color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb input[type=range] { width: 100%; }
+.tb input[type=text] { width: 54px; }
+.bar { height: 6px; background: var(--input); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; margin: 5px 0; }
+.bar div { height: 100%; width: 0; background: var(--accent); }
+.btns { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin: 4px 0; }
+.btns input[type=text] { width: 70px; }
+.sect { font-weight: 600; margin: 8px 0 4px; color: var(--accent); }
+.hint { color: var(--dim); font-size: 11px; margin: 3px 0 5px; }
+.flist { position: fixed; z-index: 1000; background: var(--face); border: 1px solid var(--hi); box-shadow: var(--shadow); max-height: 60vh; overflow-y: auto;
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(var(--rows, 30), auto); column-gap: 8px; padding: 3px; }
+.flist div { padding: 1px 6px; cursor: pointer; white-space: nowrap; }
+.flist div:hover { background: var(--accent); color: #111; }
+.palbar { height: 18px; border: 1px solid var(--line); border-radius: 2px; cursor: pointer; }
+.pal { display: grid; grid-template-columns: 58px 36px 36px 40px; gap: 2px 5px; align-items: center; }
+.pal input[type=text] { width: 58px; }
+.swatches { display: flex; gap: 3px; align-items: center; }
+.kf { display: grid; grid-template-columns: 96px 1fr; gap: 3px 8px; align-items: center; padding: 4px; border: 1px solid var(--line); border-radius: 4px; margin-bottom: 4px; background: var(--face3); }
 .kf.sel { border-color: var(--accent2); }
-.kf .th { width: 100px; height: 80px; background: #0d0e11; display: flex; align-items: center; justify-content: center; grid-row: span 2;
-  border-radius: 3px; overflow: hidden; cursor: pointer; }
-.kf .th img { max-width: 100px; max-height: 80px; }
+.kf .th { width: 92px; height: 70px; background: #0b0c0f; display: flex; align-items: center; justify-content: center; grid-row: span 2; overflow: hidden; cursor: pointer; }
+.kf .th img { max-width: 92px; max-height: 70px; }
 .kf .meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .kf .meta b { color: var(--accent); }
-.kf .meta input { width: 56px; }
-.kf .btns { display: flex; gap: 3px; flex-wrap: wrap; }
-.kf .btns button { padding: 2px 6px; font-size: 12px; }
-.kfgap { text-align: center; color: var(--dim); font-size: 11px; margin: -3px 0 2px; }
-#flipImg { display: block; max-width: 100%; margin: 6px auto; background: #0d0e11; min-height: 40px; }
-.bar { height: 5px; background: var(--panel); border-radius: 3px; overflow: hidden; margin: 6px 0; }
-.bar div { height: 100%; width: 0; background: var(--accent); }
-.flipctl { display: flex; gap: 6px; align-items: center; }
-.flipctl input[type=range] { flex: 1; }
-.mtree { position: relative; width: 100%; background: #0d0e11; border-radius: 4px; margin: 6px 0; }
+.kf .meta input { width: 50px; }
+.kf .btns button { padding: 0 5px; font-size: 11px; }
+#flipImg, #mcImg { display: block; max-width: 100%; margin: 6px auto; background: #0b0c0f; min-height: 30px; }
+#voxImg { display: block; width: min(220px, 100%); margin: 6px auto; background: #0b0c0f; min-height: 30px; image-rendering: pixelated; }
+.mtree { position: relative; width: 100%; background: #0b0c0f; border-radius: 4px; margin: 6px 0; }
 .mtree svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.mtree .mm { position: absolute; transform: translate(-50%, -50%); border: 1px solid var(--line); border-radius: 3px;
-  background: var(--panel); cursor: pointer; overflow: hidden; }
+.mtree .mm { position: absolute; transform: translate(-50%, -50%); border: 1px solid var(--line); border-radius: 3px; background: var(--face); cursor: pointer; overflow: hidden; }
 .mtree .mm img { display: block; width: 100%; }
 .mtree .mm span { position: absolute; left: 2px; top: 1px; font-size: 10px; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; }
 .mtree .mm.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .mtree .mm.wait { aspect-ratio: 5 / 4; display: flex; align-items: center; justify-content: center; color: var(--dim); font-size: 10px; }
-#mcImg { display: block; max-width: 100%; margin: 6px auto; background: #0d0e11; }
-#voxImg { display: block; width: min(240px, 100%); margin: 6px auto; background: #0d0e11; min-height: 40px; image-rendering: pixelated; }
-.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; word-break: break-all; }
-kbd { background: var(--panel2); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; font-size: 11px; }
-@media (max-width: 900px) { main { grid-template-columns: 1fr; grid-template-rows: 55vh auto; } aside { border-left: 0; } }
+textarea { width: 100%; font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; background: var(--input); }
+.ppbtn { width: 100%; text-align: left; border-radius: 0; margin-top: -1px; font-weight: 600; }
+.ppbtn::before { content: "▸ "; color: var(--dim); }
+.ppbtn.open::before { content: "▾ "; }
+.pppnl { border: 1px solid var(--line); border-top: 0; background: var(--face3); padding: 6px; }
+/* panels of the tool windows */
+.card { border: 1px solid var(--line); background: var(--face3); padding: 6px; margin-bottom: 6px; border-radius: 3px; }
+.card h3 { margin: 0 0 5px; font-size: 12px; display: flex; gap: 6px; align-items: center; }
+.card h3 .sp { flex: 1; }
+.row { display: grid; grid-template-columns: 140px 1fr; gap: 5px; align-items: center; margin: 2px 0; }
+.row > label { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.multi { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.multi input[type=text] { width: 70px; }
+.addrow { display: flex; gap: 4px; margin-top: 5px; align-items: center; }
+.flipctl { display: flex; gap: 6px; align-items: center; }
+.flipctl input[type=range] { flex: 1; }
+button.primary { background: var(--accent); color: #111; border-color: var(--accent); }
+dialog { background: var(--face); color: var(--text); border: 1px solid var(--hi); border-radius: 6px; min-width: 360px; box-shadow: var(--shadow); }
+dialog::backdrop { background: rgba(0,0,0,.5); }
+dialog h3 { margin: 0 0 8px; }
+@media (max-width: 860px) {
+  #app { grid-template-columns: 1fr; grid-template-rows: auto 55vh auto auto; overflow-y: auto; }
+  #right { grid-column: 1; grid-row: 4; overflow: visible; }
+  html, body { overflow: auto; }
+}
 </style>
 </head>
 <body>
 <div id="app">
-<header>
-  <span class="logo">mb3d-rs</span>
-  <select id="preset" title="New scene from a built-in formula"><option value="">New…</option></select>
-  <button id="bOpen" title="Open .m3p, .m3i, .m3s or text parameters">Open…</button>
-  <input type="file" id="file" accept=".m3p,.m3i,.m3s,.txt" hidden>
-  <button id="bPaste" title="Paste MB3D text parameters (Mandelbulb3Dv18{…}) or a .m3s scene">Paste…</button>
-  <select id="save"><option value="">Save…</option><option value="m3s">scene (.m3s)</option><option value="m3p">MB3D parameters (.m3p)</option><option value="txt">MB3D text parameters</option></select>
-  <span class="sep"></span>
-  <button id="bUndo" title="Undo (Ctrl+Z)">↶</button><button id="bRedo" title="Redo (Ctrl+Y)">↷</button>
-  <span class="sep"></span>
-  <label title="Width of the preview">view <select id="viewW"><option value="auto">fit</option><option>320</option><option>480</option><option>640</option><option>800</option><option>1024</option><option>1280</option></select></label>
-  <button id="bRefresh" title="Calculate the preview again">⟳</button>
-  <button id="bRender" class="primary">Render image…</button>
-  <input id="title" type="text" title="Title (file name for saving)">
-  <span id="status">starting…</span>
-</header>
-<main>
-  <section id="viewer">
-    <div id="imgwrap" tabindex="0">
-      <img id="img" alt="" draggable="false">
-      <div id="prog"></div>
-      <div id="hud"></div>
+  <div id="top">
+    <div id="tools">
+      <button data-win="anim" title="Open the animation maker">Animations</button>
+      <button data-win="btracer" title="Create meshes (BulbTracer2)">BTracer2</button>
+      <button id="bHMap" disabled title="MB3D's height map generator (script editor) is not ported">HMapGen</button>
+      <button data-win="navi" title="Open the Navigator">Navigator</button>
+      <button data-win="muta" title="Open the MutaGen">MutaGen</button>
+      <button data-win="zbuf" title="16 bit Z-buffer export">ZBuf16Bit</button>
     </div>
-    <div id="navbar">
-      <div class="grp"><span>move</span>
-        <button data-nav="move,2,1" title="Forward (W, wheel)">fwd</button><button data-nav="move,2,-1" title="Back (S, wheel)">back</button>
-        <button data-nav="move,0,-1" title="Left (A)">◀</button><button data-nav="move,0,1" title="Right (D)">▶</button>
-        <button data-nav="move,1,-1" title="Up (R)">▲</button><button data-nav="move,1,1" title="Down (F)">▼</button>
-        <input id="step" value="50" title="Step in % of the distance to the surface (Shift = ¼)">%</div>
-      <div class="grp"><span>turn</span>
-        <button data-nav="rotate,1,-1" title="Turn left (←)">⟲</button><button data-nav="rotate,1,1" title="Turn right (→)">⟳</button>
-        <button data-nav="rotate,0,1" title="Look up (↑)">⤒</button><button data-nav="rotate,0,-1" title="Look down (↓)">⤓</button>
-        <button data-nav="rotate,2,-1" title="Roll left (Q)">↺</button><button data-nav="rotate,2,1" title="Roll right (E)">↻</button>
-        <input id="angle" value="10" title="Angle in degrees">°</div>
-      <div class="grp"><span>zoom</span><button data-nav="zoom,0,1" title="Zoom in (+)">+</button><button data-nav="zoom,0,-1" title="Zoom out (−)">−</button></div>
-      <div class="grp"><span>click</span><select id="clickMode" title="What a click into the image does">
-        <option value="fly">flies towards the point</option><option value="look">turns to the point</option><option value="focus">sets the DOF focus</option></select></div>
+    <div class="pc" id="pc2">
+      <div class="tabs"></div>
+      <div class="page"></div>
     </div>
-  </section>
-  <aside>
-    <div id="err"><span></span><button title="Dismiss">✕</button></div>
-    <div id="tabs"></div>
-    <div id="panel"></div>
-  </aside>
-</main>
+    <div class="gb" title="Image downscaling for viewing and for saving as PNG or JPEG; at 1:2 and 1:3 saving anti-aliases">
+      <span class="cap">Viewing</span>
+      <select id="viewScale"><option value="0">fit</option><option value="1">1:1</option><option value="2">1:2 aa</option><option value="3">1:3 aa</option>
+        <option value="4">1:4</option><option value="5">1:5</option><option value="6">1:6</option><option value="8">1:8</option><option value="10">1:10</option></select>
+    </div>
+    <div class="gb"><span class="cap">Image</span>
+      <div id="imgBox">
+        <label>Width:</label><input type="text" id="iW">
+        <label>Aspect:</label>
+        <div class="row2"><button id="a43" title="Set the height for this aspect ratio">4:3</button><button id="a53">5:3</button></div>
+        <button id="aUser" title="User defined aspect ratio (click to define)">user</button>
+        <label>Height:</label><input type="text" id="iH">
+        <label title="Keep the aspect ratio when changing the width or height"><input type="checkbox" id="keepAsp" checked>keep</label>
+        <div class="row2" title="Scale the image size by 2, up or down"><button id="sDn">÷2</button><button id="sUp">×2</button></div>
+        <label title="Scale the DE stop and the DOF clipping radius with the size to keep the detail level and colours"><input type="checkbox" id="desC" checked>DEstop+C</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="view" class="fit m-walk" tabindex="0">
+    <img id="img" alt="" draggable="false">
+    <div id="sel"></div>
+    <div id="hint"></div>
+    <div id="toast"></div>
+  </div>
+
+  <div id="bottom">
+    <div class="grp" id="modes">
+      <button data-mode="walk" class="down" title="Navigator mode: click flies towards the point (or turns to it, see the Navigator), drag turns, wheel moves; keys W/S A/D R/F, arrows, Q/E">walk</button>
+      <button data-mode="zoom" title="2D zoom: left click zooms in, right click out, or mark a zoom-in area">2D zoom</button>
+      <button data-mode="xy" title="Shift the object in X,Y direction with the mouse">X,Y</button>
+      <button data-mode="z" title="Move the object in Z direction with the mouse (drag up/down)">Z</button>
+    </div>
+    <div class="grp" title="Rotate the object: left click around the viewer's axes at the middle, right click around the object's axes at 0">
+      <div id="rot">
+        <button data-rot="2,1" title="Z axis +">Z+</button><button data-rot="1,-1" title="Y axis −" style="grid-row:span 2">◀Y</button>
+        <button data-rot="0,1" title="X axis +">X▲</button><button data-rot="1,1" title="Y axis +" style="grid-row:span 2">Y▶</button>
+        <button data-rot="2,-1" title="Z axis −">Z−</button><button data-rot="0,-1" title="X axis −">X▼</button>
+      </div>
+      <input type="text" id="rotDeg" class="deg" value="5" title="Degree of rotation">°
+    </div>
+    <div id="progress"><div></div></div>
+    <span id="stage">starting…</span>
+    <div class="grp" id="frameGrp" hidden title="Frame of the map sequences"><span class="dim">Frame:</span><input type="text" id="frame" class="deg" value="1"></div>
+  </div>
+
+  <div id="right">
+    <button class="fold" data-fold="posPnl" title="Click to hide/show">Position</button>
+    <div class="pnl" id="posPnl"></div>
+    <button class="fold" data-fold="rotPnl" title="Click to hide/show">Rotation</button>
+    <div class="pnl" id="rotPnl"></div>
+    <div id="calcPnl">
+      <div class="row2"><button id="bUndo" title="Undo (Ctrl+Z); right click: redo (Ctrl+Y)">↶</button><button id="bRedo" title="Redo">↷</button>
+        <button id="bCalcMinus" title="Calculate a fast preview without the full settings">Calc-</button></div>
+      <button data-win="formulas" title="Formula window">Formulas</button>
+      <button id="bCalc3D" class="calc3d" title="Main rendering of the image (full size and settings)">Calculate 3D</button>
+      <button data-win="lighting" title="Light and colour window">Lighting</button>
+      <div></div>
+      <button data-win="postpro" title="Post processing window">Postprocess</button>
+      <div class="q" title="Quick quality settings (smooth normals, DE stop, raystep, binary search, size, viewing scale)">
+        <button data-q="0">preview</button><button data-q="1">video</button><button data-q="2">mid</button><button data-q="3">high</button></div>
+    </div>
+    <div id="rtabs"></div>
+    <div id="rpage"></div>
+    <div id="memo" title="Messages"></div>
+    <div id="status2"></div>
+  </div>
 </div>
+<div id="wins"></div>
+<input type="file" id="fileIn" hidden>
 
 <dialog id="dPaste">
-  <h2>Paste parameters</h2>
-  <div class="hint">MB3D text parameters (Mandelbulb3Dv18{…}) or the text of a .m3s scene.</div>
+  <h3>Parameters from the clipboard</h3>
+  <div class="hint">The browser did not allow reading the clipboard: paste MB3D text parameters (Mandelbulb3Dv18{…}) or a .m3s scene here.</div>
   <textarea id="pasteText" rows="12"></textarea>
-  <div class="actions"><button id="pasteCancel">Cancel</button><button id="pasteOk" class="primary">Load</button></div>
+  <div class="btns" style="justify-content:flex-end"><button id="pasteCancel">Cancel</button><button id="pasteOk" class="on">Load</button></div>
 </dialog>
-
-<dialog id="dRender">
-  <h2>Render image</h2>
-  <div class="row"><label>size</label><div class="multi"><input id="rW" class="num" type="text"> × <input id="rH" class="num" type="text"></div></div>
-  <div class="row"><label>anti-aliasing</label><select id="rAA"><option value="1">off</option><option value="2" selected>2×2</option><option value="3">3×3</option><option value="4">4×4</option></select></div>
-  <div class="row"><label>tiles</label><input id="rTiles" type="text" placeholder="e.g. 4x4 for big images"></div>
-  <div id="finalprog"><div></div></div>
-  <div id="rInfo" class="hint">The image is calculated with the full settings of the scene.</div>
-  <div class="actions"><a id="rDownload" href="/api/final.png" download hidden><button class="primary">Download PNG</button></a>
-    <button id="rCancel">Stop</button><button id="rClose">Close</button><button id="rStart" class="primary">Start</button></div>
-</dialog>
-
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
 const el = (tag, attrs = {}, ...kids) => {
   const e = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) {
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === undefined || v === null || v === false) continue;
     if (k === "class") e.className = v;
+    else if (k === "style") e.style.cssText = v;
     else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
-    else if (v !== undefined && v !== null) e.setAttribute(k, v);
+    else if (v === true) e.setAttribute(k, "");
+    else e.setAttribute(k, v);
   }
-  for (const k of kids) e.append(k);
+  for (const k of kids) if (k !== null && k !== undefined && k !== false) e.append(k);
   return e;
+};
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("mb3d." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("mb3d." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
 };
 
 // ------------------------------------------------------------ scene model
 // The scene is .m3s text: global "key = value" lines, then [formula] and
-// [light] sections.  The editors work on this list form and send the whole
-// text back; the server answers with the normalised text.
+// [light] sections.  Every control edits this list and sends the whole text
+// back; the server answers with the normalised text.
 let model = { global: [], sections: [] };
-let sceneText = "";
-let formulaNames = [];
+let sceneText = "", euler = null, notes = [];
+let formulaNames = [], formulaDE = new Map();
 let undoStack = [], redoStack = [];
-let notes = [];
 
 function parseM3s(text) {
   const m = { global: [], sections: [] };
@@ -217,348 +324,1211 @@ function parseM3s(text) {
   }
   return m;
 }
-function lineText(l) { return `${l.k} = ${l.v}` + (l.c ? ` ; ${l.c}` : ""); }
+const lineText = l => `${l.k} = ${l.v}` + (l.c ? ` ; ${l.c}` : "");
 function toText(m) {
   let t = "# mb3d scene\n" + m.global.map(lineText).join("\n") + "\n";
   for (const s of m.sections) t += `\n[${s.type}]\n` + s.lines.map(lineText).join("\n") + "\n";
   return t;
 }
 
+// defaults of keys the scene text leaves out
+const DEF = {
+  cut_x: "off", cut_y: "off", cut_z: "off", inside: "outside", interpolation: "off", de_combination: "off",
+  decomb_end1: "1", decomb_start2: "2", decomb_end2: "6", decomb_repeat2: "2", decomb_iterations2: "60", decomb_smooth: "0.5", decomb_mix_pow: "1",
+  slice_2d: "off", stereo: "off", stereo_screen: "1, 2, 1.5", color_on_iteration: "-1", shadows: "off", shadow_soft: "false",
+  shadow_soft_radius: "1", shadow_max_len: "1", shadow_set_cos: "true", ao_random: "0", deao_quality: "1", deao_dither: "0", deao_max_len: "1",
+  dof: "off", dof_focus: "0", dof_focus2: "0", dof_aperture: "0.02", dof_max_radius: "25", dof_passes: "1", vol_light: "off", vol_light_map_size: "0",
+  normals_on_zbuf: "false", internal_gamma2: "false", color_interpolation: "true", ambient_relative_to_object: "false", dynfog_options: "0",
+  light_mode: "0", diffuse_map: "0", diffuse_map_mode: "iterations_otrap", diffuse_map_offset: "128, 128", diffuse_map_rotation: "128",
+  diffuse_map_scale: "30", diffuse_map_brightness_only: "false", background_image: "", background_rotation: "128, 128, 128",
+  background_direct: "false", background_brightness: "40", background_add_light: "false", background_ambient: "false", rstop: "16",
+  mc_depth: "3", mc_reflections: "false", mc_reflection_depth: "1", mc_reflection_amount: "0.5", mc_transparency: "false", mc_only_difs: "false",
+  mc_diffuse_reflects: "0", mc_soft_shadow_radius: "1", mc_exposure: "128", mc_saturation: "32", mc_options: "2", mc_refraction_index: "1.5",
+  mc_absorption: "0.2", mc_scattering: "1", repeat_from: "0", tiles: "", tile_downscale: "1",
+};
+function gv(k, d) { const l = model.global.find(x => x.k === k); return l ? l.v : (k in DEF ? DEF[k] : (d ?? "")); }
+function gnum(k, d = 0) { const v = parseFloat(gv(k)); return isFinite(v) ? v : d; }
+function gvec(k, n) { const p = gv(k).split(",").map(s => s.trim()); while (p.length < n) p.push("0"); return p; }
+function gbool(k) { return gv(k) === "true"; }
+function putG(o) {
+  for (const [k, v] of Object.entries(o)) {
+    const i = model.global.findIndex(x => x.k === k);
+    if (v === null || v === undefined) { if (i >= 0) model.global.splice(i, 1); }
+    else if (i >= 0) model.global[i].v = String(v);
+    else model.global.push({ k, v: String(v), c: "" });
+  }
+}
+function setG(o) { putG(o); return commit(); }
+const formulaSecs = () => model.sections.filter(s => s.type === "formula");
+const lightSecs = () => model.sections.filter(s => s.type === "light");
+const sv = (sec, k, d = "") => { const l = sec && sec.lines.find(x => x.k === k); return l ? l.v : d; };
+function putS(sec, o) {
+  for (const [k, v] of Object.entries(o)) {
+    const i = sec.lines.findIndex(x => x.k === k);
+    if (v === null || v === undefined) { if (i >= 0) sec.lines.splice(i, 1); }
+    else if (i >= 0) sec.lines[i].v = String(v);
+    else sec.lines.push({ k, v: String(v), c: "" });
+  }
+}
+function lightSec(slot) { return lightSecs().find(s => +sv(s, "slot", "0") === slot); }
+
 // ------------------------------------------------------------ server calls
 async function api(path, opts = {}) {
   const r = await fetch(path, opts);
-  const j = await r.json().catch(() => ({ error: "bad response" }));
+  const j = await r.json().catch(() => ({ error: r.ok ? "bad response" : r.statusText }));
   if (!r.ok || j.error) throw new Error(j.error || r.statusText);
   return j;
 }
 const post = (path, body) => api(path, { method: "POST", body });
 const form = o => new URLSearchParams(o).toString();
 
-function setStatus(t, err) { const s = $("status"); s.textContent = t; s.classList.toggle("err", !!err); }
-function showError(msg) { $("err").querySelector("span").textContent = msg; $("err").classList.add("on"); }
-function clearError() { $("err").classList.remove("on"); }
+function msg(t, cls) {
+  const m = $("memo");
+  m.append(el("div", { class: cls || "" }, t));
+  while (m.childNodes.length > 200) m.firstChild.remove();
+  m.scrollTop = m.scrollHeight;
+}
+let toastTimer = null;
+function showError(e) {
+  const t = String(e && e.message || e);
+  msg(t, "e");
+  const ts = $("toast"); ts.textContent = t; ts.style.display = "block";
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => ts.style.display = "none", 6000);
+}
+$("toast").onclick = () => $("toast").style.display = "none";
 
 function applyState(st, fromUndo) {
   if (!fromUndo && sceneText && st.text !== sceneText) { undoStack.push(sceneText); if (undoStack.length > 200) undoStack.shift(); redoStack = []; }
   sceneText = st.text;
-  clearError();
   model = parseM3s(st.text);
-  if (st.title !== undefined && document.activeElement !== $("title")) $("title").value = st.title;
+  euler = st.euler;
+  if (st.title !== undefined) { title = st.title; document.title = `Mandelbulb 3D — ${title}`; }
   if (st.notes) notes = st.notes;
-  renderPanel();
+  refreshAll();
   pollSoon();
-  if (sentView) sendView(false);
+  sendView(false);
 }
+let title = "";
 
 async function commit(m = model) {
-  const text = toText(m);
-  try { applyState(await post("/api/scene", text)); }
-  catch (e) { showError(e.message); model = parseM3s(sceneText); renderPanel(); }
+  try { applyState(await post("/api/scene", toText(m))); }
+  catch (e) { showError(e); model = parseM3s(sceneText); refreshAll(); }
 }
 async function sendText(text, fromUndo) {
-  try { applyState(await post("/api/scene", text), fromUndo); } catch (e) { showError(e.message); }
+  try { applyState(await post("/api/scene", text), fromUndo); } catch (e) { showError(e); }
 }
-
-// navigation requests run one after another
 let navChain = Promise.resolve();
 function nav(params) {
   navChain = navChain.then(async () => {
-    try { applyState(await post("/api/nav", form(params))); }
-    catch (e) { showError(e.message); }
+    try { applyState(await post("/api/nav", form(params))); } catch (e) { showError(e); }
   });
+  return navChain;
 }
+function undo() { if (!undoStack.length) return; redoStack.push(sceneText); sendText(undoStack.pop(), true); }
+function redo() { if (!redoStack.length) return; undoStack.push(sceneText); sendText(redoStack.pop(), true); }
 
 // ------------------------------------------------------------ status polling
-let lastImg = -1, lastFinal = -1, pollTimer = null, rendering = false;
+let lastImg = -1, lastFinal = -1, pollTimer = null, rendering = false, lastInfo = null, lastStage = "";
+const finalWaiters = [];
 async function poll() {
   clearTimeout(pollTimer);
   try {
     const s = await api("/api/status");
     rendering = s.rendering;
-    if (s.img_ver !== lastImg && s.img_ver > 0) { lastImg = s.img_ver; $("img").src = "/api/image?v=" + s.img_ver; }
-    $("prog").style.width = s.rendering ? s.progress + "%" : "0";
-    $("finalprog").firstElementChild.style.width = s.rendering ? s.progress + "%" : (s.final_ver > 0 ? "100%" : "0");
-    if (s.error) setStatus(s.error, true);
-    else setStatus((s.rendering ? `${s.stage} · ${s.progress.toFixed(0)} %` : s.stage) || "");
-    $("hud").textContent = s.w ? `${s.w} × ${s.h}` : "";
+    if (s.img_ver !== lastImg && s.img_ver > 0) { lastImg = s.img_ver; $("img").src = "/api/image?v=" + s.img_ver; imgFull = s.full; }
+    $("progress").firstElementChild.style.width = s.rendering ? s.progress + "%" : "0";
+    const st = $("stage");
+    st.textContent = s.error || ((s.rendering ? `${s.stage} · ${s.progress.toFixed(0)} %` : s.stage) || "");
+    st.classList.toggle("err", !!s.error);
+    if (s.error && s.error !== lastStage) { msg(s.error, "e"); }
+    if (!s.rendering && s.stage !== lastStage && /— [\d.]+ s$/.test(s.stage) && /^calculated|^repainted/.test(s.stage)) msg(s.stage, "n");
+    lastStage = s.error || s.stage;
+    if (JSON.stringify(s.info) !== JSON.stringify(lastInfo)) { lastInfo = s.info; if (rtab === "Infos") renderRight(); }
+    $("status2").textContent = s.w ? `${s.w} × ${s.h}${s.full ? " · calculated image" : " · preview"}` : "";
     if (s.final_ver !== lastFinal) {
-      if (lastFinal >= 0 && s.final_ver > 0) { $("rDownload").hidden = false; $("rInfo").textContent = "Done: " + s.stage; }
-      lastFinal = s.final_ver;
+      const first = lastFinal < 0; lastFinal = s.final_ver;
+      if (!first) while (finalWaiters.length) finalWaiters.shift()(true);
     }
-  } catch (e) { setStatus("server not reachable", true); }
+    if (!s.rendering && s.error) while (finalWaiters.length) finalWaiters.shift()(false);
+  } catch (e) { $("stage").textContent = "server not reachable"; $("stage").classList.add("err"); }
   pollTimer = setTimeout(poll, rendering ? 150 : 700);
 }
 function pollSoon() { clearTimeout(pollTimer); pollTimer = setTimeout(poll, 60); }
+let imgFull = false;
+const waitFinal = () => new Promise(res => finalWaiters.push(res));
 
-// ------------------------------------------------------------ editor widgets
-const ENUMS = {
-  ao: ["off", "ssao24", "ssao24t0", "ssao15", "ssao15t0", "deao"],
-  inside: ["outside", "inside", "both"],
-  slice_2d: ["off", "start", "mid", "end"],
-  stereo: ["off", "left", "right", "very_left"],
-  de_combination: ["off", "min", "max", "max_inverted", "smooth_linear", "smooth", "mix"],
-  dof: ["off", "sorted", "forward"],
-  optic: ["0", "1", "2"],
-  diffuse_map_mode: ["iterations_otrap", "normals", "wrap_sine", "wrap"],
-  depth_func: ["0", "1", "2", "3"],
-  diffuse_func: ["0", "1", "2", "3"],
-  visible: ["0", "1", "2", "3", "4"],
-};
-const LABELS = { stereo: "stereo eye image", stereo_screen: "stereo screen width, distance, min. distance (m)", slice_2d: "2D calculation of the plane at", color_on_iteration: "colour on iteration (-1 off)", interpolation: "interpolation hybrid (weights of formula 1, 2)", optic: "optic (0 common, 1 planar, 2 panorama)", fov: "field of view (°)", de_stop: "DE stop (pixels)",
-  raystep: "raystep multiplier", vgrads: "view matrix", mid: "middle", julia_c: "julia constant (x, y, z, w)" };
-
-const GROUPS = [
-  ["Camera", /^(width|height|zoom|mid|z_start|z_end|slice_2d|stereo|stereo_screen|vgrads|rotation|fov|optic|cut_[xyz]|tiles|tile|tile_downscale)$/],
-  ["Formula iteration", /^(iterations|min_iterations|rstop|julia|julia_c|rotation_4d|repeat_from|inside|interpolation|de_combination|decomb_.*|color_option|color_mul|color_on_iteration|dfog_on_it)$/],
-  ["Ray marching", /^(de_stop|raystep|raystep_limiter|smooth_normals|bin_search|first_step_random|step_sub_de_stop|vary_de_stop|normals_on_de|normals_on_zbuf|disable_analytic_de|threads)$/],
-  ["Ambient occlusion and shadows", /^(ao|ao_.*|deao_.*|shadows|shadow_.*)$/],
-  ["Depth of field and volumetric light", /^(dof|dof_.*|vol_light|vol_light_.*)$/],
-  ["Colours", /^(color_start|color_end|color_cycling|color_var_z|color_on_otrap|color_interpolation|palette_full|palette|interior_.*|fine_color_adjust|diffuse_map.*)$/],
-  ["Light and fog", /^(ambient.*|depth_.*|dynfog.*|dyn_fog|fog_offset|far_fog|diffuse|specular|indirect_light|gamma|roughness|diffuse_shadowing|internal_gamma2|light_mode|lights)$/],
-  ["Background", /^background.*$/],
-  ["Reflections and transparency", /^mc_(reflections|reflection_depth|reflection_amount|transparency|only_difs|refraction_index|absorption|scattering)$/],
-  ["Monte Carlo", /^mc_.*$/],
-];
-const TABS = [
-  ["Formulas", () => formulasTab()],
-  ["Camera", () => globalTab(["Camera", "Formula iteration"])],
-  ["Render", () => globalTab(["Ray marching", "Ambient occlusion and shadows", "Reflections and transparency", "Depth of field and volumetric light"])],
-  ["Colours", () => globalTab(["Colours", "Background"])],
-  ["Lights", () => lightsTab()],
-  ["Animation", () => animTab()],
-  ["Monte Carlo", () => mcTab()],
-  ["MutaGen", () => mutaTab()],
-  ["Export", () => exportTab()],
-  ["All", () => globalTab(null)],
-  ["Text", () => textTab()],
-  ["Info", () => infoTab()],
-];
-let tab = "Formulas";
-const KNOWN_KEYS = ["inside", "interpolation", "slice_2d", "stereo", "stereo_screen", "color_on_iteration", "de_combination", "decomb_end1", "decomb_start2", "decomb_end2", "decomb_repeat2", "decomb_iterations2",
-  "decomb_smooth", "decomb_mix_pow", "decomb_mix_color", "cut_x", "cut_y", "cut_z", "shadows", "shadow_soft", "shadow_soft_radius",
-  "shadow_max_len", "shadow_set_cos", "ao_random", "deao_quality", "deao_dither", "deao_max_len", "dof_focus", "dof_focus2",
-  "dof_aperture", "dof_max_radius", "dof_passes", "vol_light", "vol_light_map_size", "background_image", "background_rotation",
-  "background_direct", "background_brightness", "background_add_light", "background_ambient", "diffuse_map", "diffuse_map_mode",
-  "diffuse_map_offset", "diffuse_map_rotation", "diffuse_map_scale", "diffuse_map_brightness_only", "internal_gamma2",
-  "color_interpolation", "ambient_relative_to_object", "dynfog_options", "light_mode", "fine_color_adjust", "rstop", "tiles", "tile",
-  "rotation", "lights", "normals_on_zbuf", "mc_reflections", "mc_reflection_depth", "mc_reflection_amount", "mc_transparency",
-  "mc_only_difs", "mc_refraction_index", "mc_absorption", "mc_scattering"];
-
-function groupOf(k) { for (const [g, re] of GROUPS) if (re.test(k)) return g; return "Other"; }
-
+// ------------------------------------------------------------ widgets
 function nudge(input, dir, big) {
   const v = input.value.trim();
   if (!/^-?\d*\.?\d+(e-?\d+)?$/i.test(v)) return false;
-  const n = parseFloat(v);
-  const isInt = /^-?\d+$/.test(v);
-  let d = isInt ? (big ? 10 : 1) : Math.max(Math.abs(n) * (big ? 0.1 : 0.01), 1e-6);
-  let r = n + dir * d;
+  const n = parseFloat(v), isInt = /^-?\d+$/.test(v);
+  const d = isInt ? (big ? 10 : 1) : Math.max(Math.abs(n) * (big ? 0.1 : 0.01), 1e-6);
+  const r = n + dir * d;
   input.value = isInt ? String(Math.round(r)) : String(+r.toPrecision(10));
   return true;
 }
-
-// one value editor; onset(newValue) commits
-function valueWidget(key, value, onset, id) {
-  const v = value;
-  if (ENUMS[key] || (key === "shadows" && false)) {
-    const sel = el("select", { id, onchange: () => onset(sel.value) });
-    const opts = ENUMS[key].includes(v) ? ENUMS[key] : [v, ...ENUMS[key]];
-    for (const o of opts) sel.append(el("option", { value: o }, o));
-    sel.value = v;
-    return sel;
-  }
-  if (v === "true" || v === "false") {
-    const cb = el("input", { type: "checkbox", id, onchange: () => onset(cb.checked ? "true" : "false") });
-    cb.checked = v === "true";
-    return cb;
-  }
-  if (/^#[0-9a-f]{6}$/i.test(v)) {
-    const wrap = el("div", { class: "multi" });
-    const ci = el("input", { type: "color", id, value: v.toLowerCase() });
-    const ti = el("input", { type: "text", value: v, size: 8 });
-    ci.addEventListener("change", () => onset(ci.value.toUpperCase()));
-    ti.addEventListener("change", () => onset(ti.value));
-    wrap.append(ci, ti);
-    return wrap;
-  }
-  if (key === "palette_full") return paletteWidget(v, onset);
-  if (key === "interior_colors") return interiorWidget(v, onset);
-  const inp = el("input", { type: "text", id, value: v });
-  inp.addEventListener("change", () => onset(inp.value));
-  inp.addEventListener("keydown", e => {
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      if (nudge(inp, e.key === "ArrowUp" ? 1 : -1, e.shiftKey)) { e.preventDefault(); onset(inp.value); }
-    }
+// a text field that commits on change; ↑/↓ change numbers by 1 % (Shift 10 %)
+function field(id, value, onset, attrs = {}) {
+  const e = el("input", { type: "text", id, value, ...attrs });
+  e.addEventListener("change", () => onset(e.value.trim()));
+  e.addEventListener("keydown", ev => {
+    if ((ev.key === "ArrowUp" || ev.key === "ArrowDown") && nudge(e, ev.key === "ArrowUp" ? 1 : -1, ev.shiftKey)) { ev.preventDefault(); onset(e.value); }
+    if (ev.key === "Enter") e.blur();
   });
-  return inp;
+  return e;
+}
+const fG = (id, k, attrs) => field(id, gv(k), v => setG({ [k]: v === "" ? null : v }), attrs);
+// one component of a comma list key (mid, julia_c, ...)
+function fVec(id, k, i, n, attrs) {
+  return field(id, gvec(k, n)[i], v => { const p = gvec(k, n); p[i] = v || "0"; setG({ [k]: p.join(", ") }); }, attrs);
+}
+function check(id, checked, onset, label, title) {
+  const c = el("input", { type: "checkbox", id });
+  c.checked = !!checked;
+  c.addEventListener("change", () => onset(c.checked));
+  return label === undefined ? c : el("label", { title: title || "" }, c, label);
+}
+const cG = (id, k, label, title) => check(id, gbool(k), v => setG({ [k]: v }), label, title);
+function select(id, value, opts, onset, attrs = {}) {
+  const s = el("select", { id, ...attrs }, ...opts.map(o => Array.isArray(o) ? el("option", { value: o[0] }, o[1]) : el("option", { value: o }, o)));
+  if (![...s.options].some(o => o.value === String(value))) s.prepend(el("option", { value }, value));
+  s.value = String(value);
+  s.addEventListener("change", () => onset(s.value));
+  return s;
+}
+function radios(name, value, opts, onset) {
+  return el("div", { class: "radios" }, ...opts.map(([v, lab]) => {
+    const r = el("input", { type: "radio", name, value: v });
+    r.checked = String(value) === String(v);
+    r.addEventListener("change", () => r.checked && onset(v));
+    return el("label", { style: "display:block" }, r, lab);
+  }));
+}
+// MB3D's track bars: a slider with the value next to it
+function trackbar(id, label, value, min, max, onset, opts = {}) {
+  const r = el("input", { type: "range", id, min, max, step: opts.step || 1, value });
+  const t = el("input", { type: "text", value: opts.fmt ? opts.fmt(value) : value, title: opts.title || "" });
+  r.addEventListener("input", () => { t.value = opts.fmt ? opts.fmt(r.value) : r.value; });
+  r.addEventListener("change", () => onset(r.value));
+  r.addEventListener("dblclick", () => { if (opts.def !== undefined) onset(opts.def); });
+  t.addEventListener("change", () => onset(opts.parse ? opts.parse(t.value) : t.value));
+  return [el("label", { for: id, title: opts.title || "" }, label), r, t];
+}
+const tbG = (id, label, k, min, max, opts) => trackbar(id, label, gnum(k), min, max, v => setG({ [k]: v }), opts);
+function colorIn(id, value, onset, title) {
+  const c = el("input", { type: "color", id, value: (value || "#000000").toLowerCase(), title: title || "" });
+  c.addEventListener("change", () => onset(c.value.toUpperCase()));
+  return c;
+}
+const colG = (id, k, title) => colorIn(id, gv(k), v => setG({ [k]: v }), title);
+const lab = (t, title) => el("label", { title: title || "" }, t);
+const btn = (t, onclick, attrs = {}) => el("button", { onclick, ...attrs }, t);
+function tabsRow(names, cur, onpick, cls = "tabs2") {
+  return el("div", { class: cls }, ...names.map(n => {
+    const [key, text] = Array.isArray(n) ? n : [n, n];
+    return el("button", { class: key === cur ? "on" : "", onclick: () => onpick(key) }, text);
+  }));
 }
 
-function paletteWidget(v, onset) {
-  const items = v.split(",").map(s => s.trim().split(":"));
-  const box = el("div", { class: "pal" });
-  box.append(el("span", { class: "hint" }, "position"), el("span", { class: "hint" }, "diffuse"), el("span", { class: "hint" }, "spec."));
-  const emit = () => onset(items.map(i => i.join(":")).join(", "));
-  items.forEach((it, i) => {
-    const p = el("input", { type: "text", value: it[0] });
-    p.onchange = () => { it[0] = p.value; emit(); };
-    const d = el("input", { type: "color", value: it[1].toLowerCase() });
-    d.onchange = () => { it[1] = d.value.toUpperCase(); emit(); };
-    const s = el("input", { type: "color", value: it[2].toLowerCase() });
-    s.onchange = () => { it[2] = s.value.toUpperCase(); emit(); };
-    box.append(p, d, s);
-  });
-  return box;
-}
-function interiorWidget(v, onset) {
-  const items = v.split(",").map(s => s.trim().split(":"));
-  const box = el("div", { class: "pal" });
-  box.append(el("span", { class: "hint" }, "position"), el("span", { class: "hint" }, "colour"), el("span", { class: "hint" }, "spec."));
-  const emit = () => onset(items.map(i => i.join(":")).join(", "));
-  items.forEach(it => {
-    const p = el("input", { type: "text", value: it[0] });
-    p.onchange = () => { it[0] = p.value; emit(); };
-    const d = el("input", { type: "color", value: it[1].toLowerCase() });
-    d.onchange = () => { it[1] = d.value.toUpperCase(); emit(); };
-    const s = el("input", { type: "text", value: it[2] ?? "160", size: 3 });
-    s.onchange = () => { it[2] = s.value; emit(); };
-    box.append(p, d, s);
-  });
-  return box;
+// re-render a container and keep the focused control and the scroll position
+function rerender(box, build) {
+  const a = document.activeElement;
+  const id = a && box.contains(a) ? a.id : null;
+  const sel = id && a.selectionStart !== undefined ? [a.selectionStart, a.selectionEnd] : null;
+  const sc = box.scrollTop;
+  box.textContent = "";
+  build(box);
+  box.scrollTop = sc;
+  if (id && $(id) && box.contains($(id))) { const e = $(id); e.focus(); if (sel && e.setSelectionRange) try { e.setSelectionRange(...sel); } catch (x) { /* not a text field */ } }
 }
 
-function rowFor(line, onset, id, onremove) {
-  const name = line.k.startsWith("option") && line.c ? line.c : line.k;
-  const lab = el("label", { for: id, title: line.k + (line.c ? " ; " + line.c : "") }, LABELS[line.k] || name);
-  if (onremove) lab.addEventListener("dblclick", onremove);
-  return el("div", { class: "row" }, lab, valueWidget(line.k, line.v, onset, id));
+// ------------------------------------------------------------ picking points in the image
+// MB3D: "click image" buttons (get midpoint, julia/cutting values, light
+// position, DOF focus): the next click into the image picks a point.
+let pickCb = null;
+function pickFromImage(text, cb) {
+  pickCb = cb;
+  $("hint").textContent = text + " — click into the image (Esc cancels)";
+  $("hint").style.display = "block";
+  $("view").classList.add("m-pick");
 }
+function endPick() { pickCb = null; $("hint").style.display = "none"; $("view").classList.remove("m-pick"); }
+async function pickAt(u, v) { return api("/api/pick?" + form({ u, v })); }
 
-function addRow(target, placeholder) {
-  const k = el("input", { type: "text", placeholder: placeholder || "key", list: "knownKeys" });
-  const v = el("input", { type: "text", placeholder: "value" });
-  const b = el("button", { onclick: () => {
-    if (!k.value.trim()) return;
-    target.push({ k: k.value.trim(), v: v.value.trim(), c: "" });
-    commit();
-  } }, "add");
-  return el("div", { class: "addrow" }, k, v, b);
+// ------------------------------------------------------------ windows
+// MB3D's separate windows (Formulas, Lighting, Post processing, Navigator,
+// Animation maker, ...) as movable panels; positions are remembered.
+const WINDOWS = {};
+const openWins = new Set();
+let zTop = 20;
+function defWin(id, title, width, build, hooks = {}) { WINDOWS[id] = { title, width, build, ...hooks }; }
+function raiseWin(w) {
+  w.style.zIndex = ++zTop;
+  for (const x of document.querySelectorAll(".win")) x.classList.toggle("top", x === w);
 }
-
-function globalTab(groups) {
-  const p = $("panel");
-  const byGroup = new Map();
-  model.global.forEach((l, i) => {
-    const g = groupOf(l.k);
-    if (groups && !groups.includes(g)) return;
-    if (!byGroup.has(g)) byGroup.set(g, []);
-    byGroup.get(g).push([l, i]);
-  });
-  const order = groups || [...GROUPS.map(g => g[0]), "Other"];
-  for (const g of order) {
-    const list = byGroup.get(g) || [];
-    const card = el("div", { class: "card" }, el("h3", {}, g));
-    for (const [l, i] of list) {
-      card.append(rowFor(l, v => { l.v = v; commit(); }, "g" + l.k, () => {
-        if (confirm(`Remove "${l.k}" (back to the default)?`)) { model.global.splice(i, 1); commit(); }
-      }));
-    }
-    p.append(card);
-  }
-  const extra = el("div", { class: "card" }, el("h3", {}, "Add a setting"),
-    el("div", { class: "hint" }, "Any scene key (see the README), e.g. inside = both, cut_y = -0.2, shadows = 1,2, dof = sorted. Double-click a label to remove a setting."),
-    addRow(model.global));
-  p.append(extra);
-}
-
-function formulasTab() {
-  const p = $("panel");
-  const secs = model.sections.filter(s => s.type === "formula");
-  p.append(el("div", { class: "hint" }, "Up to 6 formulas form an alternating hybrid (or two parts with a DE combination, or an interpolation of formulas 1 and 2: see Camera ▸ Formula iteration). ↑/↓ in a number field changes it by 1 % (Shift: 10 %)."));
-  secs.forEach((s, fi) => {
-    const nameL = s.lines.find(l => l.k === "name") || { v: "" };
-    const card = el("div", { class: "card" });
-    const up = el("button", { title: "Move up", onclick: () => { moveSection(s, -1); } }, "↑");
-    const dn = el("button", { title: "Move down", onclick: () => { moveSection(s, 1); } }, "↓");
-    const rm = el("button", { title: "Remove", onclick: () => { model.sections.splice(model.sections.indexOf(s), 1); commit(); } }, "✕");
-    card.append(el("h3", {}, `Formula ${fi + 1}`, el("span", { class: "sp" }), up, dn, rm));
-    const ni = el("input", { type: "text", value: nameL.v, list: "formulaList", id: "fname" + fi });
-    ni.addEventListener("change", () => {
-      // a new formula: keep name and iterations, the server fills in its default options
-      s.lines = s.lines.filter(l => l.k === "iterations");
-      s.lines.unshift({ k: "name", v: ni.value, c: "" });
-      commit();
+function openWin(id) {
+  const def = WINDOWS[id];
+  if (!def) return;
+  let w = $("w_" + id);
+  if (!w) {
+    const n = Object.keys(WINDOWS).indexOf(id);
+    const pos = store.get("win." + id, { x: 60 + (n % 8) * 34, y: 80 + (n % 8) * 26 });
+    w = el("div", { class: "win", id: "w_" + id },
+      el("div", { class: "wt" }, el("span", {}, def.title), el("button", { title: "Close", onclick: () => closeWin(id) }, "✕")),
+      el("div", { class: "wb" }));
+    w.style.width = def.width + "px";
+    w.style.left = Math.max(0, Math.min(innerWidth - 120, pos.x)) + "px";
+    w.style.top = Math.max(0, Math.min(innerHeight - 60, pos.y)) + "px";
+    w.addEventListener("mousedown", () => raiseWin(w), true);
+    const bar = w.querySelector(".wt");
+    bar.addEventListener("mousedown", e => {
+      if (e.target.tagName === "BUTTON") return;
+      const sx = e.clientX - w.offsetLeft, sy = e.clientY - w.offsetTop;
+      const mv = ev => { w.style.left = Math.max(-w.offsetWidth + 80, ev.clientX - sx) + "px"; w.style.top = Math.max(0, ev.clientY - sy) + "px"; };
+      const up = () => { removeEventListener("mousemove", mv); removeEventListener("mouseup", up); store.set("win." + id, { x: w.offsetLeft, y: w.offsetTop }); };
+      addEventListener("mousemove", mv); addEventListener("mouseup", up);
+      e.preventDefault();
     });
-    card.append(el("div", { class: "row" }, el("label", {}, "formula"), ni));
-    s.lines.forEach((l, li) => {
-      if (l.k === "name") return;
-      card.append(rowFor(l, v => { l.v = v; commit(); }, `f${fi}_${li}`));
-    });
-    p.append(card);
-  });
-  if (secs.length < 6) {
-    const ni = el("input", { type: "text", list: "formulaList", placeholder: "formula name" });
-    p.append(el("div", { class: "card" }, el("h3", {}, "Add a formula"),
-      el("div", { class: "addrow" }, ni, el("button", { onclick: () => {
-        if (!ni.value.trim()) return;
-        model.sections.push({ type: "formula", lines: [{ k: "name", v: ni.value.trim(), c: "" }, { k: "iterations", v: "1", c: "" }] });
-        commit();
-      } }, "add"))));
+    $("wins").append(w);
   }
+  w.hidden = false;
+  openWins.add(id);
+  raiseWin(w);
+  renderWin(id);
+  if (def.onopen) def.onopen();
+  store.set("open", [...openWins]);
 }
-function moveSection(s, d) {
-  const same = model.sections.filter(x => x.type === s.type);
-  const i = same.indexOf(s), j = i + d;
-  if (j < 0 || j >= same.length) return;
-  const a = model.sections.indexOf(same[i]), b = model.sections.indexOf(same[j]);
+function closeWin(id) {
+  const w = $("w_" + id);
+  if (w) w.hidden = true;
+  openWins.delete(id);
+  if (WINDOWS[id].onclose) WINDOWS[id].onclose();
+  store.set("open", [...openWins]);
+}
+const isOpen = id => openWins.has(id);
+function renderWin(id) {
+  const w = $("w_" + id);
+  if (w && !w.hidden) rerender(w.querySelector(".wb"), WINDOWS[id].build);
+}
+function refreshAll() {
+  renderTop();
+  renderRight();
+  for (const id of openWins) if (!WINDOWS[id].selfRefresh) renderWin(id);
+  for (const id of openWins) if (WINDOWS[id].sceneChanged) WINDOWS[id].sceneChanged();
+}
+for (const b of document.querySelectorAll("[data-win]")) b.addEventListener("click", () => isOpen(b.dataset.win) && !$("w_" + b.dataset.win).classList.contains("top") ? raiseWin($("w_" + b.dataset.win)) : (isOpen(b.dataset.win) ? closeWin(b.dataset.win) : openWin(b.dataset.win)));
+
+// ------------------------------------------------------------ top bar: Open / Save / Save pic / Tools / Prefs
+let pc2 = store.get("pc2", "Open");
+function openFile(accept) {
+  const f = $("fileIn");
+  f.accept = accept;
+  f.value = "";
+  f.onchange = async () => {
+    const file = f.files[0];
+    if (!file) return;
+    try {
+      undoStack = []; redoStack = [];
+      applyState(await post("/api/open?name=" + encodeURIComponent(file.name), await file.arrayBuffer()), true);
+      msg(`Parameters loaded from ${file.name}, press "Calculate 3D" to render.`);
+      for (const n of notes) msg(n, "n");
+    } catch (e) { showError(e); }
+  };
+  f.click();
+}
+async function fromClipboard() {
+  let t = "";
+  try { t = await navigator.clipboard.readText(); } catch (e) { t = ""; }
+  if (t && /Mandelbulb3D|\[formula\]|^\s*width\s*=/m.test(t)) return loadText(t);
+  $("pasteText").value = t;
+  $("dPaste").showModal();
+}
+async function loadText(t) {
+  try { applyState(await post("/api/open?name=clipboard.txt", t)); msg("Parameters loaded from the clipboard."); for (const n of notes) msg(n, "n"); return true; }
+  catch (e) { showError(e); return false; }
+}
+$("pasteCancel").onclick = () => $("dPaste").close();
+$("pasteOk").onclick = async () => { if (await loadText($("pasteText").value)) $("dPaste").close(); };
+async function toClipboard() {
+  try {
+    const r = await fetch("/api/save?fmt=txt");
+    const t = await r.text();
+    await navigator.clipboard.writeText(t);
+    msg("Parameters copied to the clipboard (MB3D text parameters).");
+  } catch (e) { showError("clipboard not available: " + e.message); }
+}
+const viewN = () => Math.max(1, +$("viewScale").value || 1);
+async function savePic(kind) {
+  if (lastFinal <= 0 && kind !== "zbuf") return showError('Calculate the image first ("Calculate 3D").');
+  if (kind === "png") { location.href = "/api/pic?scale=" + viewN(); return; }
+  if (kind === "zbuf") { location.href = "/api/zbuf.png"; return; }
+  try {
+    const blob = await (await fetch("/api/pic?scale=" + viewN())).blob();
+    const bmp = await createImageBitmap(blob);
+    const c = el("canvas"); c.width = bmp.width; c.height = bmp.height;
+    c.getContext("2d").drawImage(bmp, 0, 0);
+    const q = Math.min(100, Math.max(10, +$("jpgQ").value || 95)) / 100;
+    c.toBlob(b => { const a = el("a", { href: URL.createObjectURL(b), download: (title || "mb3d") + ".jpg" }); a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }, "image/jpeg", q);
+  } catch (e) { showError(e); }
+}
+function renderTop() {
+  const box = $("pc2");
+  const tabs = box.querySelector(".tabs"), page = box.querySelector(".page");
+  tabs.replaceWith(tabsRow(["Open", "Save", "Save pic", "Tools", "Prefs"], pc2, n => { pc2 = n; store.set("pc2", n); renderTop(); }, "tabs"));
+  const pg = el("div", { class: "page" });
+  if (pc2 === "Open") {
+    const preset = select("preset", "", [["", "New…"], ...formulaNames.slice(0, 8).map(n => [n, n])], async n => {
+      if (!n) return;
+      try { applyState(await post("/api/preset", form({ name: n }))); msg(`New parameters: ${n}`); } catch (e) { showError(e); }
+    }, { title: "New parameters from a built-in formula" });
+    pg.append(btn("Open m3i", () => openFile(".m3i"), { title: "Open a MB3D image file (parameters)" }),
+      btn("Open m3p", () => openFile(".m3p,.m3s,.txt"), { title: "Open a MB3D parameter file (.m3p), a scene (.m3s) or text parameters" }),
+      btn("From Clipboard", fromClipboard, { title: "Paste MB3D text parameters" }), preset);
+  } else if (pc2 === "Save") {
+    pg.append(btn("m3i", () => location.href = "/api/m3i", { title: "Image file with the calculated G-buffer (opens in MB3D without recalculating)" }),
+      btn("m3p", () => location.href = "/api/save?fmt=m3p", { title: "MB3D parameter file" }),
+      btn("m3s", () => location.href = "/api/save?fmt=m3s", { title: "Scene text file of this port" }),
+      btn("To Clipboard", toClipboard, { title: "Copy the parameters as MB3D text" }),
+      el("label", { class: "dim" }, "Title:"), field("titleIn", title, v => { post("/api/title", v); title = v; document.title = `Mandelbulb 3D — ${v}`; }, { style: "width:120px", title: "Name for saving" }));
+  } else if (pc2 === "Save pic") {
+    pg.append(btn("PNG", () => savePic("png"), { title: "Save the calculated image, reduced by the viewing scale (1:2, 1:3 anti-aliased)" }),
+      btn("JPEG", () => savePic("jpg")), btn("ZBUF", () => savePic("zbuf"), { title: "16 bit PNG of the z-buffer" }),
+      el("label", { class: "dim" }, "jpg q.:"), el("input", { type: "text", id: "jpgQ", value: store.get("jpgQ", 95), style: "width:36px", onchange: e => store.set("jpgQ", e.target.value) }));
+  } else if (pc2 === "Tools") {
+    pg.append(btn("m3p->m3i", () => openWin("batch"), { title: "Batch processing: calculate many parameter files" }),
+      btn("Voxelstack", () => openWin("voxel"), { title: "Voxel export (PNG slices)" }),
+      btn("Big render", () => openWin("tiling"), { title: "Big renders in tiles" }),
+      btn("M.C.", () => openWin("mc"), { title: "Monte Carlo rendering" }),
+      btn("Text", () => openWin("text"), { title: "All parameters as text (.m3s)" }));
+  } else {
+    pg.append(btn("Ini Dirs", () => openWin("dirs"), { title: "Formula and map folders" }),
+      btn("Map Sequences", () => openWin("mapseq"), { title: "Animated maps: image sequences for the map numbers" }),
+      btn("Themes", () => { const c = document.documentElement.classList.toggle("classic"); store.set("classic", c); }, { title: "Switch between the dark and the classic light theme" }));
+  }
+  page.replaceWith(pg);
+  // the image group
+  for (const [id, k] of [["iW", "width"], ["iH", "height"]]) if (document.activeElement !== $(id)) $(id).value = gv(k);
+}
+$("iW").onchange = () => setSize(+$("iW").value, null);
+$("iH").onchange = () => setSize(null, +$("iH").value);
+function setSize(w, h) {
+  const ow = gnum("width", 640), oh = gnum("height", 480);
+  if (w && !h) h = $("keepAsp").checked ? Math.round(w * oh / ow) : oh;
+  if (h && !w) w = $("keepAsp").checked ? Math.round(h * ow / oh) : ow;
+  if (!(w >= 16 && h >= 16)) return refreshAll();
+  setG({ width: Math.round(w), height: Math.round(h), tile: null, tiles: null });
+}
+const aspect = r => setSize(gnum("width"), Math.round(gnum("width") / r));
+$("a43").onclick = () => aspect(4 / 3);
+$("a53").onclick = () => aspect(5 / 3);
+$("aUser").onclick = () => {
+  const r = prompt("Aspect ratio (width : height), e.g. 16:9 or 1.5", store.get("userAsp", "16:9"));
+  if (!r) return;
+  store.set("userAsp", r);
+  const m = r.split(/[:/x]/).map(Number);
+  const v = m.length > 1 ? m[0] / m[1] : m[0];
+  if (v > 0) aspect(v);
+};
+$("sUp").onclick = () => nav({ op: "scale", f: 2, destop: $("desC").checked ? 1 : 0 });
+$("sDn").onclick = () => nav({ op: "scale", f: 0.5, destop: $("desC").checked ? 1 : 0 });
+$("keepAsp").checked = store.get("keepAsp", true);
+$("keepAsp").onchange = () => store.set("keepAsp", $("keepAsp").checked);
+$("desC").checked = store.get("desC", true);
+$("desC").onchange = () => store.set("desC", $("desC").checked);
+
+// ------------------------------------------------------------ viewing scale and the preview size
+$("viewScale").value = String(store.get("viewScale", 0));
+function applyViewing() {
+  const n = +$("viewScale").value;
+  const v = $("view"), img = $("img");
+  v.classList.toggle("fit", n === 0);
+  if (n === 0) { img.style.width = img.style.height = ""; }
+  else { img.style.width = Math.round(gnum("width") / n) + "px"; img.style.height = Math.round(gnum("height") / n) + "px"; }
+}
+$("viewScale").onchange = () => { store.set("viewScale", +$("viewScale").value); applyViewing(); sendView(true); };
+function viewWidth() {
+  const n = +$("viewScale").value;
+  const W = gnum("width", 640), H = gnum("height", 480);
+  const v = $("view");
+  const w = n === 0 ? Math.min(v.clientWidth, v.clientHeight * W / H) : W / n;
+  return Math.max(64, Math.min(1600, W, Math.round(w)));
+}
+let sentView = 0;
+async function sendView(force) {
+  applyViewing();
+  const w = viewWidth();
+  if (!force && Math.abs(w - sentView) < 24) return;
+  sentView = w;
+  try { await post("/api/view", form({ w })); pollSoon(); } catch (e) { showError(e); }
+}
+let resizeTimer = null;
+addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => sendView(false), 400); });
+
+// ------------------------------------------------------------ image: mouse modes
+let mode = "walk";
+for (const b of document.querySelectorAll("[data-mode]")) b.addEventListener("click", () => {
+  mode = b.dataset.mode;
+  for (const x of document.querySelectorAll("[data-mode]")) x.classList.toggle("down", x === b);
+  $("view").className = $("view").className.replace(/\bm-\w+/g, "").trim() + " m-" + mode;
+});
+const img = $("img"), view = $("view");
+function imgRect() {
+  const b = img.getBoundingClientRect();
+  const nw = img.naturalWidth || 1, nh = img.naturalHeight || 1;
+  const s = Math.min(b.width / nw, b.height / nh);
+  return { left: b.left + (b.width - nw * s) / 2, top: b.top + (b.height - nh * s) / 2, width: nw * s, height: nh * s };
+}
+const uvOf = (e, r) => ({ u: (e.clientX - r.left) / r.width, v: (e.clientY - r.top) / r.height });
+let drag = null;
+img.addEventListener("contextmenu", e => e.preventDefault());
+img.addEventListener("mousedown", e => {
+  view.focus();
+  e.preventDefault();
+  const r = imgRect();
+  drag = { x: e.clientX, y: e.clientY, r, button: e.button, maxw: 0 };
+});
+addEventListener("mousemove", e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  const vb = view.getBoundingClientRect();
+  if (mode === "zoom" && !pickCb && drag.button === 0) {
+    const w = Math.abs(dx), h = w * drag.r.height / drag.r.width;
+    drag.maxw = Math.max(drag.maxw, w);
+    const s = $("sel");
+    s.style.display = w > 3 ? "block" : "none";
+    s.style.left = (Math.min(drag.x, e.clientX) - vb.left + view.scrollLeft) + "px";
+    s.style.top = ((dy > 0 ? drag.y : drag.y - h) - vb.top + view.scrollTop) + "px";
+    s.style.width = w + "px"; s.style.height = h + "px";
+    drag.sel = { cx: Math.min(drag.x, e.clientX) + w / 2, cy: (dy > 0 ? drag.y + h / 2 : drag.y - h / 2), w };
+  } else if (mode === "xy" && !pickCb) {
+    img.style.transform = `translate(${dx}px, ${dy}px)`;
+  } else if (mode === "z" && !pickCb) {
+    $("hint").style.display = "block"; $("hint").textContent = `Z: ${-dy}`;
+  }
+});
+addEventListener("mouseup", async e => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  const dx = e.clientX - d.x, dy = e.clientY - d.y, r = d.r;
+  const W = gnum("width"), H = gnum("height");
+  const k = W / r.width; // screen px -> image px
+  $("sel").style.display = "none";
+  img.style.transform = "";
+  if (pickCb) {
+    const { u, v } = uvOf(e, r);
+    const cb = pickCb; endPick();
+    if (u < 0 || u > 1 || v < 0 || v > 1) return;
+    try { await cb(u, v); } catch (x) { showError(x); }
+    return;
+  }
+  if (mode === "zoom") {
+    if (d.sel && d.sel.w >= 8) {
+      nav({ op: "pan", dx: (d.sel.cx - r.left) * k - W / 2, dy: (d.sel.cy - r.top) * k - H / 2, dz: r.width / d.sel.w });
+    } else if (d.maxw < 8) {
+      const { u, v } = uvOf(e, r);
+      nav({ op: "pan", dx: (u - 0.5) * W, dy: (v - 0.5) * H, dz: d.button === 2 ? 1 / 1.4 : 1.4 });
+    }
+  } else if (mode === "xy") {
+    if (Math.hypot(dx, dy) > 2 && d.button === 0) nav({ op: "pan", dx: -dx * k, dy: -dy * k });
+  } else if (mode === "z") {
+    $("hint").style.display = "none";
+    if (Math.abs(dy) > 1) nav({ op: "pan", zt: -dy * k });
+  } else {
+    // walk (navigator)
+    if (Math.hypot(dx, dy) > 4) {
+      const kk = gnum("fov", 30) / r.height;
+      if (Math.abs(dx) > 2) nav({ op: "rotate", axis: 1, deg: -dx * kk });
+      if (Math.abs(dy) > 2) nav({ op: "rotate", axis: 0, deg: dy * kk });
+    } else {
+      const { u, v } = uvOf(e, r);
+      if (u < 0 || u > 1 || v < 0 || v > 1) return;
+      const m = e.shiftKey ? "look" : naviCfg.click;
+      nav({ op: m, u, v, amount: stepFrac(e.altKey) });
+    }
+  }
+});
+let wheelAcc = 0, wheelTimer = null;
+view.addEventListener("wheel", e => {
+  if (mode !== "walk" || +$("viewScale").value !== 0 && !e.ctrlKey && view.scrollHeight > view.clientHeight + 2) return;
+  e.preventDefault();
+  wheelAcc += e.deltaY < 0 ? 1 : -1;
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(() => { const n = wheelAcc; wheelAcc = 0; nav({ op: "move", axis: 2, amount: n * stepFrac(e.shiftKey) * 0.5 }); }, 120);
+}, { passive: false });
+
+// ------------------------------------------------------------ keyboard (navigator keys)
+const naviCfg = Object.assign({ step: 50, angle: 10, click: "fly", adj: 10 }, store.get("navi", {}));
+const saveNavi = () => store.set("navi", naviCfg);
+function stepFrac(fine) { return (+naviCfg.step || 50) / 100 * (fine ? 0.25 : 1); }
+function angleDeg(fine) { return (+naviCfg.angle || 10) * (fine ? 0.25 : 1); }
+function doNav(op, axis, sign, fine) {
+  if (op === "move") nav({ op, axis, amount: sign * stepFrac(fine) });
+  else if (op === "rotate") nav({ op, axis, deg: sign * angleDeg(fine) });
+  else if (op === "zoom") nav({ op, factor: sign > 0 ? (fine ? 1.1 : 1.5) : (fine ? 1 / 1.1 : 1 / 1.5) });
+}
+const KEYS = { w: ["move", 2, 1], s: ["move", 2, -1], a: ["move", 0, -1], d: ["move", 0, 1], r: ["move", 1, -1], f: ["move", 1, 1],
+  arrowleft: ["rotate", 1, -1], arrowright: ["rotate", 1, 1], arrowup: ["rotate", 0, 1], arrowdown: ["rotate", 0, -1],
+  q: ["rotate", 2, -1], e: ["rotate", 2, 1], "+": ["zoom", 0, 1], "=": ["zoom", 0, 1], "-": ["zoom", 0, -1] };
+document.addEventListener("keydown", e => {
+  const t = e.target, typing = ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName);
+  if (e.key === "Escape" && pickCb) { endPick(); return; }
+  if ((e.ctrlKey || e.metaKey) && !typing) {
+    if (e.key === "z") { e.preventDefault(); undo(); return; }
+    if (e.key === "y") { e.preventDefault(); redo(); return; }
+  }
+  if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (t !== view && !(isOpen("navi") && $("w_navi").contains(t))) return;
+  const k = KEYS[e.key.toLowerCase()];
+  if (k) { e.preventDefault(); doNav(k[0], k[1], k[2], e.shiftKey); }
+});
+
+// ------------------------------------------------------------ bottom bar: rotation buttons
+for (const b of document.querySelectorAll("[data-rot]")) {
+  const [axis, sign] = b.dataset.rot.split(",").map(Number);
+  b.addEventListener("contextmenu", e => e.preventDefault());
+  b.addEventListener("mouseup", e => nav({ op: "rotmid", axis, deg: sign * (parseFloat($("rotDeg").value) || 5), obj: e.button === 2 ? 1 : 0 }));
+}
+
+// ------------------------------------------------------------ right column
+const folds = store.get("folds", {});
+for (const b of document.querySelectorAll("[data-fold]")) {
+  const p = $(b.dataset.fold);
+  const set = () => { p.hidden = !!folds[b.dataset.fold]; b.classList.toggle("closed", p.hidden); };
+  set();
+  b.onclick = () => { folds[b.dataset.fold] = !folds[b.dataset.fold]; store.set("folds", folds); set(); };
+}
+$("bUndo").onclick = undo;
+$("bUndo").addEventListener("contextmenu", e => { e.preventDefault(); redo(); });
+$("bRedo").onclick = redo;
+$("bCalcMinus").onclick = async () => { await post("/api/refresh", ""); pollSoon(); };
+async function calc3D() {
+  await navChain;
+  try { await post("/api/render", form({ aa: 1 })); msg("Calculating the image…", "n"); pollSoon(); } catch (e) { showError(e); }
+}
+$("bCalc3D").onclick = calc3D;
+// MB3D's quick quality presets (AccPreset)
+const ACC = [[0, 1.0, 0.5, 6, 480, 1, 1], [1, 1.0, 0.4, 8, 640, 1, 0.75], [2, 1.2, 0.3, 10, 1600, 2, 0.5], [3, 1.2, 0.25, 12, 3072, 3, 0.3]];
+for (const b of document.querySelectorAll("[data-q]")) b.onclick = () => {
+  const [sn, de, rm, bs, iw, sc, rl] = ACC[+b.dataset.q];
+  const w = gnum("width", 640), h = gnum("height", 480);
+  $("viewScale").value = String(sc); store.set("viewScale", sc);
+  setG({ smooth_normals: sn, de_stop: de, raystep: rm, bin_search: bs, raystep_limiter: rl, width: iw, height: Math.round(h * iw / w), tiles: null, tile: null });
+};
+
+function renderRight() {
+  rerender($("posPnl"), p => {
+    p.append(lab("X mid:"), fVec("pX", "mid", 0, 3), lab("Y mid:"), fVec("pY", "mid", 1, 3));
+    const sl = (t, at, tip) => btn(t, async () => { await post("/api/slice", form({ at })); pollSoon(); }, { class: "lab", title: tip });
+    p.append(sl("Z mid", 2, "Quick 2D calculation of the plane at the middle"), fVec("pZ", "mid", 2, 3));
+    p.append(sl("Z start", 1, "Quick 2D calculation of the plane at z start (the camera)"), fG("pZs", "z_start"));
+    p.append(sl("Z end", 3, "Quick 2D calculation of the plane at z end"), fG("pZe", "z_end"));
+    p.append(el("div", { class: "full row2" },
+      btn("get midpoint", () => pickFromImage("Get midpoint", (u, v) => nav({ op: "midpoint", u, v })), { title: "Click on the object to make that point the middle" }),
+      btn("reset", () => nav({ op: "reset_pos" }), { title: "Reset position, zoom and rotation" })));
+    p.append(lab("Zoom:"), fG("pZoom", "zoom"));
+  });
+  rerender($("rotPnl"), p => {
+    const e = euler || [];
+    const f = (id, i) => el("input", { type: "text", id, value: e.length ? +(+e[i]).toFixed(6) : "?" });
+    p.append(el("div", { class: "full dim" }, "Euler angles:"), lab("X:"), f("eX", 0), lab("Y:"), f("eY", 1), lab("Z:"), f("eZ", 2),
+      el("div", { class: "full hint" }, "Apply your changed values, the fields only show the angles."),
+      el("div", { class: "full row2" }, btn("Apply to image", () => nav({ op: "euler", x: parseFloat($("eX").value) || 0, y: parseFloat($("eY").value) || 0, z: parseFloat($("eZ").value) || 0 })),
+        btn("Reset 0", () => nav({ op: "euler", x: 0, y: 0, z: 0 }))));
+  });
+  const box = $("rtabs");
+  box.textContent = "";
+  for (const n of Object.keys(RTABS)) box.append(el("button", { class: n === rtab ? "on" : "", onclick: () => { rtab = n; store.set("rtab", n); renderRight(); } }, n));
+  rerender($("rpage"), p => RTABS[rtab](p));
+}
+
+// the PageControl of the main window
+let rtab = store.get("rtab", "Calculation");
+const cutMem = store.get("cutMem", {});
+const RTABS = {
+  "Calculation": p => p.append(el("div", { class: "pnl" },
+    lab("Smooth normals:", "0..8: normals from the neighbours"), fG("cSN", "smooth_normals"),
+    lab("DE stop:", "Surface detail: distance estimate where the ray stops, in pixels"), fG("cDE", "de_stop"),
+    lab("Raystep multiplier:"), fG("cRM", "raystep"),
+    lab("Stepcount for binary search:"), fG("cBS", "bin_search"),
+    lab("Stepwidth limiter:"), fG("cRL", "raystep_limiter"),
+    el("div", { class: "full" }, cG("cVD", "vary_de_stop", "Vary DEstop on FOV")),
+    el("div", { class: "full" }, cG("cND", "normals_on_de", "Normals on DE")),
+    el("div", { class: "full" }, cG("cFR", "first_step_random", "First step random")),
+    el("div", { class: "full" }, el("label", { class: "dim", title: "Not ported" }, el("input", { type: "checkbox", disabled: true }), "Shortdistance check DE")),
+    el("div", { class: "full" }, cG("cSS", "step_sub_de_stop", "Raystep sub DEstop")))),
+  "Internal": p => p.append(el("div", { class: "pnl" },
+    lab("Threadcount in calculations:", "0 = all cores of the server"), fG("iThr", "threads"),
+    el("div", { class: "full hint" }, "0 uses all cores of the machine that runs mb3d gui."))),
+  "Infos": p => {
+    const i = lastInfo || {};
+    const t = v => v === undefined ? "–" : v < 1 ? (v * 1000).toFixed(0) + " ms" : v.toFixed(2) + " s";
+    p.append(el("div", { class: "pnl" },
+      lab("Image:"), el("span", {}, i.w ? `${i.w} × ${i.h}${i.full ? "" : " (preview)"}` : "–"),
+      lab("Avg. raysteps:"), el("span", {}, i.steps !== undefined ? i.steps : "–"),
+      lab("Object pixels:"), el("span", {}, i.hits !== undefined ? i.hits + " %" : "–"),
+      lab("Main calc time:"), el("span", {}, t(i.calc)),
+      lab("HS+AO time:", "Post calculations: normals on the z-buffer, hard shadows, ambient shadows"), el("span", {}, t(i.post)),
+      lab("Paint time:", "Painting incl. reflections and depth of field"), el("span", {}, t(i.paint)),
+      lab("Max. iterations:"), el("span", {}, gv("iterations"))));
+    if (notes.length) p.append(el("div", { class: "sect" }, "Notes from loading"), ...notes.map(n => el("div", { class: "hint" }, n)));
+  },
+  "Cutting": p => {
+    const row = (axis, i) => {
+      const k = "cut_" + axis, on = gv(k) !== "off";
+      const v = on ? gv(k) : (cutMem[k] ?? "0");
+      return [lab(axis.toUpperCase() + ":"), el("div", { class: "row2" },
+        field("ct" + axis, v, x => { cutMem[k] = x; store.set("cutMem", cutMem); if (on) setG({ [k]: x }); }),
+        check("cc" + axis, on, c => { cutMem[k] = $("ct" + axis).value; store.set("cutMem", cutMem); setG({ [k]: c ? $("ct" + axis).value || "0" : "off" }); }))];
+    };
+    p.append(el("div", { class: "pnl" }, ...row("z"), ...row("x"), ...row("y"),
+      el("div", { class: "full hint" }, "The side away from the camera is kept."),
+      el("div", { class: "full" }, btn("Insert mid values", () => { const m = gvec("mid", 3); setG({ cut_x: m[0], cut_y: m[1], cut_z: m[2] }); })),
+      el("div", { class: "full" }, btn("Get values from image", () => pickFromImage("Cutting position", async (u, v) => {
+        const r = await pickAt(u, v); if (!r.pos) throw new Error("background picked");
+        setG({ cut_x: r.pos[0], cut_y: r.pos[1], cut_z: r.pos[2] });
+      })))));
+  },
+  "Julia Off": p => p.append(el("div", { class: "pnl" },
+    el("div", { class: "full" }, cG("jOn", "julia", "Calculate Julia")),
+    lab("X:"), fVec("jX", "julia_c", 0, 4), lab("Y:"), fVec("jY", "julia_c", 1, 4), lab("Z:"), fVec("jZ", "julia_c", 2, 4), lab("W:"), fVec("jW", "julia_c", 3, 4),
+    el("div", { class: "full" }, btn("Insert mid values", () => { const m = gvec("mid", 3); setG({ julia_c: `${m[0]}, ${m[1]}, ${m[2]}, ${gvec("julia_c", 4)[3]}`, julia: true }); })),
+    el("div", { class: "full" }, btn("Get values from image", () => pickFromImage("Julia values", async (u, v) => {
+      const r = await pickAt(u, v); if (!r.pos) throw new Error("background picked");
+      setG({ julia_c: `${r.pos[0]}, ${r.pos[1]}, ${r.pos[2]}, 0`, julia: true });
+    }))))),
+  "Camera": p => p.append(el("div", { class: "pnl" },
+    lab("FOVy:", "Field of view in degrees"), fG("caF", "fov"),
+    el("div", { class: "full dim" }, "Camera lense:"),
+    el("div", { class: "full" }, radios("optic", gv("optic", "0"), [["0", "Common"], ["1", "Rectilinear"], ["2", "360 Panorama"]], v => setG({ optic: v }))))),
+  "Coloring": p => {
+    const vol = gv("vol_light") !== "off";
+    p.append(el("div", { class: "pnl" },
+      lab("Lli multiplier:", "Multiplier for the 'Last length increase' option"), fG("coM", "color_mul"),
+      lab("Color on Iterat.:", "Colouring after this number of iterations instead of at the bailout (-1 off)"), fG("coI", "color_on_iteration"),
+      el("div", { class: "full dim" }, "Mode for 2. color choice:"),
+      el("div", { class: "full" }, radios("copt", gv("color_option", "0"), [["0", "Orbit trap (mindist. to 0)"], ["1", "Last length increase"], ["2", "Rout angle of X, Y"],
+        ["3", "Rout angle of X, Z"], ["4", "Rout angle of Y, Z"], ["5", "Map on output vector"]], v => setG({ color_option: v }))),
+      btn(vol ? "Volume light nr:" : "Dyn. fog on It.:", () => setG(vol ? { vol_light: "off" } : { vol_light: 1 }), { class: "lab", title: "Switch between dynamic fog on iterations and volumetric light of a light" }),
+      vol ? fG("coV", "vol_light") : fG("coD", "dfog_on_it"),
+      vol ? lab("Map size:", "Size of the volumetric light map in 20 % steps") : null, vol ? fG("coVS", "vol_light_map_size") : null));
+  },
+  "Stereo": p => {
+    const eye = (m, t) => btn(t, async () => { await setG({ stereo: m }); calc3D(); });
+    p.append(el("div", { class: "pnl" },
+      lab("Image width:", "Width of the screen the image is shown on"), fVec("sW", "stereo_screen", 0, 3),
+      lab("Screen distance:"), fVec("sD", "stereo_screen", 1, 3),
+      lab("Minimal distance:", "Distance of the nearest object part"), fVec("sM", "stereo_screen", 2, 3),
+      el("div", { class: "full hint" }, "All realworld units in meter."),
+      lab("Eye:"), select("sEye", gv("stereo"), ["off", "left", "right", "very_left"], v => setG({ stereo: v })),
+      el("div", { class: "full" }, eye("very_left", "Calc very left from midpos")),
+      el("div", { class: "full" }, eye("left", "Calculate left eye image")),
+      el("div", { class: "full" }, eye("right", "Calculate right eye image"))));
+  },
+};
+
+// ============================================================ Formulas window (FormulaGUI)
+let fwSlot = 0;
+const FCATS = [["3D", "escapetime 3D formulas"], ["3Da", "escapetime 3D formulas with analytic (faster) DE"], ["4D", "escapetime 4D formulas"],
+  ["4Da", "escapetime 4D formulas with analytic DE"], ["Ads", "transformations only, use with escapetime formulas"], ["dIFS", "dIFS shapes"], ["dIFS t", "dIFS transformations"]];
+function fcat(de) {
+  if (de === 2 || de === 11) return "3Da";
+  if (de === 4) return "4D";
+  if (de === 5 || de === 6) return "4Da";
+  if (de === -1 || de === -2) return "Ads";
+  if (de === 20) return "dIFS";
+  if (de === 21 || de === 22) return "dIFS t";
+  return "3D";
+}
+let flistEl = null;
+function closeFlist() { if (flistEl) { flistEl.remove(); flistEl = null; } }
+addEventListener("mousedown", e => { if (flistEl && !flistEl.contains(e.target)) closeFlist(); }, true);
+function showFlist(anchor, names, onpick) {
+  closeFlist();
+  const b = anchor.getBoundingClientRect();
+  const rows = Math.max(8, Math.min(32, Math.ceil(names.length / Math.max(1, Math.floor((innerWidth - 40) / 150)))));
+  flistEl = el("div", { class: "flist" }, ...names.map(n => el("div", { onclick: () => { closeFlist(); onpick(n); } }, n)));
+  flistEl.style.setProperty("--rows", rows);
+  flistEl.style.left = Math.min(b.left, innerWidth - 200) + "px";
+  flistEl.style.top = (b.bottom + 2) + "px";
+  document.body.append(flistEl);
+  const r = flistEl.getBoundingClientRect();
+  if (r.right > innerWidth - 4) flistEl.style.left = Math.max(4, innerWidth - 4 - r.width) + "px";
+  if (r.bottom > innerHeight - 4) flistEl.style.top = Math.max(4, b.top - r.height - 2) + "px";
+}
+function setFormula(slot, name) {
+  const secs = formulaSecs();
+  if (!name) { if (secs[slot]) model.sections.splice(model.sections.indexOf(secs[slot]), 1); return commit(); }
+  if (secs[slot]) {
+    const its = sv(secs[slot], "iterations", "1");
+    secs[slot].lines = [{ k: "name", v: name, c: "" }, { k: "iterations", v: its, c: "" }];
+  } else {
+    // a new formula: the server fills in its default options
+    const after = secs.length ? model.sections.indexOf(secs[secs.length - 1]) + 1 : 0;
+    model.sections.splice(after, 0, { type: "formula", lines: [{ k: "name", v: name, c: "" }, { k: "iterations", v: "1", c: "" }] });
+    fwSlot = secs.length;
+  }
+  return commit();
+}
+function swapFormula(i, j) {
+  const secs = formulaSecs();
+  if (j < 0 || j >= secs.length) return;
+  const a = model.sections.indexOf(secs[i]), b = model.sections.indexOf(secs[j]);
   [model.sections[a], model.sections[b]] = [model.sections[b], model.sections[a]];
+  fwSlot = j;
   commit();
 }
-
-function lightsTab() {
-  const p = $("panel");
-  const secs = model.sections.filter(s => s.type === "light");
-  p.append(el("div", { class: "hint" }, "Global lights shine from a direction (x/y angle in °, relative to the view unless relative_to_object), positional lights from a position, light maps from an image. Add keys like position = x, y, z or visible = 1..4 below each light."));
-  secs.forEach((s, li) => {
-    const slot = (s.lines.find(l => l.k === "slot") || { v: String(li + 1) }).v;
-    const card = el("div", { class: "card" });
-    card.append(el("h3", {}, `Light ${slot}`, el("span", { class: "sp" }),
-      el("button", { title: "Remove", onclick: () => { model.sections.splice(model.sections.indexOf(s), 1); commit(); } }, "✕")));
+defWin("formulas", "Formulas", 480, p => {
+  const secs = formulaSecs();
+  if (fwSlot > secs.length) fwSlot = secs.length;
+  p.append(tabsRow([0, 1, 2, 3, 4, 5].map(i => [i, (i === 0 ? "Formula1" : "F" + (i + 1)) + (secs[i] && +sv(secs[i], "iterations", "0") > 0 ? " •" : "")]),
+    fwSlot, i => { if (i <= secs.length) { fwSlot = i; renderWin("formulas"); } }));
+  const s = secs[fwSlot];
+  const pg = el("div", { class: "page2" });
+  const byCat = new Map(FCATS.map(c => [c[0], []]));
+  for (const n of formulaNames) byCat.get(fcat(formulaDE.get(n) ?? 0)).push(n);
+  const nameIn = el("input", { type: "text", id: "fwName", value: s ? sv(s, "name") : "", list: "formulaList", placeholder: "formula name", style: "flex:1" });
+  nameIn.addEventListener("change", () => setFormula(fwSlot, nameIn.value.trim()));
+  pg.append(el("div", { class: "btns" }, ...FCATS.map(([c, t]) => {
+    const b = el("button", { title: t + ` (${byCat.get(c).length})` }, c);
+    b.onclick = () => showFlist(b, byCat.get(c), n => setFormula(fwSlot, n));
+    return b;
+  }), btn("JIT", () => openJit(s ? sv(s, "name") : ""), { title: "Create or edit a JIT-compiled formula" })));
+  pg.append(el("div", { class: "btns" }, nameIn,
+    btn("◀", () => swapFormula(fwSlot, fwSlot - 1), { title: "Exchange this formula with the previous one", disabled: !s || fwSlot === 0 }),
+    btn("▶", () => swapFormula(fwSlot, fwSlot + 1), { title: "Exchange this formula with the next one", disabled: !s || fwSlot >= secs.length - 1 }),
+    btn("✕", () => setFormula(fwSlot, ""), { title: "Remove this formula", disabled: !s })));
+  if (s) {
+    const g = el("div", { class: "grid" });
+    const ipol = gv("interpolation") !== "off";
+    g.append(lab(ipol && fwSlot < 2 ? "Weight (interpolation)" : "Iterationcount"),
+      field("fwIts", sv(s, "iterations", "1"), v => { putS(s, { iterations: v || "0" }); commit(); }, { class: "n" }));
     s.lines.forEach((l, i) => {
-      if (l.k === "slot") return;
-      card.append(rowFor(l, v => { l.v = v; commit(); }, `l${li}_${i}`, () => { s.lines.splice(i, 1); commit(); }));
+      if (l.k === "name" || l.k === "iterations") return;
+      const name = /^option\d+$/.test(l.k) && l.c ? l.c : l.k;
+      const f = field(`fwO${i}`, l.v, v => { l.v = v; commit(); }, { class: "n" });
+      if (/normal/i.test(name)) {
+        // "N": normalise the 3D vector of the next three options
+        g.append(lab(name, l.k), el("div", { class: "row2" }, f, btn("N", () => {
+          const vs = [0, 1, 2].map(j => s.lines[i + j]).filter(Boolean);
+          const len = Math.hypot(...vs.map(x => parseFloat(x.v) || 0)) || 1;
+          vs.forEach(x => { x.v = String((parseFloat(x.v) || 0) / len); });
+          commit();
+        }, { title: "Normalise the 3D vector length to 1", style: "flex:none" })));
+      } else g.append(lab(name, l.k), f);
     });
-    card.append(addRow(s.lines, "light key"));
-    p.append(card);
-  });
-  if (secs.length < 6) {
-    p.append(el("button", { onclick: () => {
-      const used = new Set(secs.map(s => +(s.lines.find(l => l.k === "slot") || { v: 0 }).v));
-      let n = 1; while (used.has(n)) n++;
-      model.global = model.global.filter(l => l.k !== "lights");
-      model.sections.push({ type: "light", lines: [{ k: "slot", v: String(n), c: "" }, { k: "color", v: "#FFFFFF", c: "" },
-        { k: "x_angle", v: "30", c: "" }, { k: "y_angle", v: "30", c: "" }, { k: "amplitude", v: "1", c: "" }] });
-      commit();
-    } }, "Add a light"));
+    g.append(el("div", { class: "full" }, check("fwRep", +gv("repeat_from", "0") === fwSlot, c => setG({ repeat_from: c ? fwSlot : 0 }), "Repeat from here",
+      "Where the iteration starts again after the last formula")));
+    pg.append(g);
+  } else pg.append(el("div", { class: "hint" }, "Empty slot: choose a formula from the lists or type its name."));
+  p.append(pg);
+
+  // hybrid type
+  const ht = gv("interpolation") !== "off" ? "Interpolate" : gv("de_combination") !== "off" ? "DEcombinate" : "Alternate";
+  p.append(tabsRow(["Alternate", "Interpolate", "DEcombinate"], ht, t => {
+    if (t === "Alternate") setG({ interpolation: "off", de_combination: "off" });
+    else if (t === "Interpolate") setG({ de_combination: null, interpolation: "1, 1" });
+    else setG({ interpolation: null, de_combination: "min" });
+  }));
+  const hp = el("div", { class: "page2 grid" });
+  if (ht === "Alternate") hp.append(el("div", { class: "full hint" }, "Formulas 1 to 6 alternated (each its iteration count)."));
+  if (ht === "Interpolate") hp.append(el("div", { class: "full hint" }, "Formula 1 interpolated in each iteration with formula 2."),
+    lab("Weight formula 1:"), fVec("fwW1", "interpolation", 0, 2, { class: "n" }), lab("Weight formula 2:"), fVec("fwW2", "interpolation", 1, 2, { class: "n" }));
+  if (ht === "DEcombinate") hp.append(
+    lab("2nd part starts at:", "Formula nr where the 2nd part of the hybrid starts"), select("fwS2", gv("decomb_start2"), ["2", "3", "4", "5", "6"], v => setG({ decomb_start2: v, decomb_end1: v - 1 })),
+    lab("DE comb.:"), select("fwDC", gv("de_combination"), [["min", "Min"], ["max", "Max"], ["max_inverted", "Inv max"], ["smooth_linear", "Min lin"], ["smooth", "Min nlin"], ["mix", "Mix"]], v => setG({ de_combination: v })),
+    lab("Ds:", "Smoothing of the DE combination"), fG("fwDs", "decomb_smooth", { class: "n" }),
+    lab("Fpow:", "Mix power"), fG("fwFp", "decomb_mix_pow", { class: "n" }),
+    lab("Maxits hybrid part2:"), fG("fwM2", "decomb_iterations2", { class: "n" }));
+  p.append(hp);
+  p.append(el("div", { class: "grid page2" },
+    lab("R bailout:"), fG("fwRb", "rstop", { class: "n" }),
+    lab("Max. iterations:"), fG("fwMax", "iterations", { class: "n" }),
+    lab("Min. iterations:"), fG("fwMin", "min_iterations", { class: "n" }),
+    el("div", { class: "full" }, cG("fwDA", "disable_analytic_de", "Disable analytical DE")),
+    lab("Render:", "Outside: default; inside: raymarching on the inside with max. its; in and outside: both"),
+    select("fwIn", gv("inside"), [["outside", "Outside render"], ["inside", "Inside render"], ["both", "In and outside"]], v => setG({ inside: v })),
+    el("div", { class: "full dim" }, "4D rotation of the whole bulb:"),
+    lab("XW / YW / ZW:"), el("div", { class: "row2" }, fVec("fwXW", "rotation_4d", 0, 3), fVec("fwYW", "rotation_4d", 1, 3), fVec("fwZW", "rotation_4d", 2, 3))));
+  p.append(el("div", { class: "btns" }, btn("Reset", async () => {
+    if (!confirm("Reset the formulas to the default Integer Power (P8) bulb?")) return;
+    model.sections = model.sections.filter(x => x.type !== "formula");
+    model.sections.unshift({ type: "formula", lines: [{ k: "name", v: "Integer Power", c: "" }, { k: "iterations", v: "1", c: "" }] });
+    putG({ interpolation: null, de_combination: null, repeat_from: 0 });
+    fwSlot = 0; commit();
+  }, { title: "Resets the formulas to the default P8 bulb" }), el("span", { class: "hint" }, `${formulaNames.length} formulas`)));
+});
+
+// ============================================================ Lighting window (LightAdjust)
+let lwSlot = 1, lwTab2 = store.get("lwTab2", "Object"), palEdit = null;
+const lightMem = {};
+function lightOn(slot, on) {
+  const s = lightSec(slot);
+  if (!on && s) { lightMem[slot] = JSON.parse(JSON.stringify(s)); model.sections.splice(model.sections.indexOf(s), 1); if (!lightSecs().length) putG({ lights: "none" }); }
+  if (on && !s) {
+    const n = lightMem[slot] || { type: "light", lines: [{ k: "slot", v: String(slot), c: "" }, { k: "color", v: "#FFFFFF", c: "" }, { k: "x_angle", v: "30", c: "" },
+      { k: "y_angle", v: "30", c: "" }, { k: "amplitude", v: "1", c: "" }, { k: "spec_power", v: "8", c: "" }, { k: "diffuse_func", v: "0", c: "" }] };
+    putS(n, { on: null });
+    const others = lightSecs().filter(x => +sv(x, "slot") < slot);
+    const at = others.length ? model.sections.indexOf(others[others.length - 1]) + 1 : model.sections.length;
+    model.sections.splice(at, 0, n);
+    putG({ lights: null });
   }
+  return commit();
 }
+function lightType(s) { return !s ? "Global light" : +sv(s, "map", "0") > 0 ? "Lightmap" : sv(s, "position") ? "Positional light" : "Global light"; }
+function setLightType(s, t) {
+  if (t === "Global light") putS(s, { position: null, map: null, map_rotation: null, x_angle: sv(s, "x_angle", "30"), y_angle: sv(s, "y_angle", "30") });
+  if (t === "Positional light") putS(s, { map: null, map_rotation: null, x_angle: null, y_angle: null, position: gv("mid") });
+  if (t === "Lightmap") putS(s, { position: null, x_angle: null, y_angle: null, map: 1, map_rotation: "128, 128, 128" });
+  commit();
+}
+// palette as CSS gradient (positions 0..32767)
+function palGradient(entries, pick) {
+  const e = entries.filter(x => x.length >= 2).map(x => [+x[0], pick(x)]).sort((a, b) => a[0] - b[0]);
+  if (!e.length) return "#000";
+  return `linear-gradient(90deg, ${e.map(([p, c]) => `${c} ${(p / 32767 * 100).toFixed(1)}%`).join(", ")})`;
+}
+const palItems = k => gv(k).split(",").map(s => s.trim().split(":")).filter(x => x.length >= 2);
+function palEditor(kind) {
+  if (kind === "interior") {
+    const items = palItems("interior_colors");
+    const emit = () => setG({ interior_colors: items.map(i => i.join(":")).join(", ") });
+    return el("div", { class: "pal" }, el("span", { class: "dim" }, "position"), el("span", { class: "dim" }, "colour"), el("span", { class: "dim" }, "spec."), el("span"),
+      ...items.flatMap((it, i) => [field(`ic${i}p`, it[0], v => { it[0] = v; emit(); }), colorIn(`ic${i}c`, it[1], v => { it[1] = v; emit(); }),
+        field(`ic${i}s`, it[2] ?? "160", v => { it[2] = v; emit(); }), el("span")]));
+  }
+  const items = palItems("palette_full");
+  const alpha = gv("palette_alpha", "").split(",").map(s => s.trim()).filter(Boolean);
+  const emit = () => setG({ palette_full: items.map(i => i.join(":")).join(", "), palette_alpha: alpha.length ? alpha.join(", ") : null });
+  return el("div", { class: "pal" }, el("span", { class: "dim" }, "position"), el("span", { class: "dim" }, "diffuse"), el("span", { class: "dim" }, "specular"),
+    el("span", { class: "dim", title: "Transparency (alpha of the specular colour) for reflections + transparency" }, "alpha"),
+    ...items.flatMap((it, i) => [field(`pc${i}p`, it[0], v => { it[0] = v; emit(); }), colorIn(`pc${i}d`, it[1], v => { it[1] = v; emit(); }),
+      colorIn(`pc${i}s`, it[2], v => { it[2] = v; emit(); }),
+      field(`pc${i}a`, alpha[i] ?? "", v => { while (alpha.length < items.length) alpha.push("255"); alpha[i] = v || "255"; emit(); }, { placeholder: "255" })]));
+}
+defWin("lighting", "Lighting", 430, p => {
+  // the light tabs 1..6
+  p.append(tabsRow([1, 2, 3, 4, 5, 6].map(i => [i, String(i) + (lightSec(i) ? " •" : "")]), lwSlot, i => { lwSlot = i; renderWin("lighting"); }));
+  const s = lightSec(lwSlot);
+  const lp = el("div", { class: "page2" });
+  const specs = ["2", "4", "8", "16", "32", "64", "128", "256"];
+  lp.append(el("div", { class: "btns" },
+    s ? colorIn("lwCol", sv(s, "color", "#FFFFFF"), v => { putS(s, { color: v }); commit(); }, "Light colour") : null,
+    lab("Diff:"), select("lwDf", s ? sv(s, "diffuse_func", "0") : "0", [["0", "Cos"], ["1", "Cos^2"], ["2", "Cos/2+"], ["3", "(Cos/2+)²"]], v => { putS(s, { diffuse_func: v }); commit(); },
+      { disabled: !s, title: "Diffuse function, Cos or Cos^2 for hard shadows" }),
+    lab("Spec:"), select("lwSp", s ? sv(s, "spec_power", "8") : "8", specs, v => { putS(s, { spec_power: v }); commit(); }, { disabled: !s, title: "Specular power" }),
+    check("lwOn", !!s, c => lightOn(lwSlot, c), "On"),
+    s ? check("lwHS", sv(s, "shadow", "true") !== "false", c => { putS(s, { shadow: c ? null : "false" }); commit(); }, "HS", "Use the hard shadow of this light, if calculated") : null));
+  if (s) {
+    lp.append(el("div", { class: "grid" }, lab("Intensity:", "Light amplitude, e.g. 1.4e-2"), field("lwAmp", sv(s, "amplitude", "1"), v => { putS(s, { amplitude: v }); commit(); }, { class: "n" })));
+    const lt = lightType(s);
+    lp.append(tabsRow(["Global light", "Positional light", "Lightmap"], lt, t => t !== lt && setLightType(s, t)));
+    const tp = el("div", { class: "page2" });
+    const vis = id => select(id, sv(s, "visible", "0"), ["0", "1", "2", "3", "4"], v => { putS(s, { visible: v === "0" ? null : v }); commit(); }, { title: "Visible light source and its shape" });
+    if (lt === "Global light") {
+      tp.append(el("div", { class: "tb" },
+        ...trackbar("lwY", "Light Yangle", Math.round(+sv(s, "y_angle", "0")), -180, 180, v => { putS(s, { y_angle: v }); commit(); }, { def: 0 }),
+        ...trackbar("lwX", "Light Xangle", Math.round(+sv(s, "x_angle", "0")), -180, 180, v => { putS(s, { x_angle: v }); commit(); }, { def: 0 })),
+        el("div", { class: "btns" }, lab("Visible:"), vis("lwVis"),
+          check("lwRel", sv(s, "relative_to_object") === "true", c => { putS(s, { relative_to_object: c }); commit(); }, "Rel. to object", "Fix the light to the scenery (animations)")));
+    } else if (lt === "Positional light") {
+      const pos = sv(s, "position", "0, 0, 0").split(",").map(x => x.trim());
+      const pf = i => field("lwP" + i, pos[i] ?? "0", v => { pos[i] = v || "0"; putS(s, { position: pos.join(", ") }); commit(); });
+      tp.append(el("div", { class: "grid" }, lab("Xpos"), pf(0), lab("Ypos"), pf(1), lab("Zpos"), pf(2)),
+        el("div", { class: "btns" }, btn("mid", () => pickFromImage("Light position", async (u, v) => {
+          const r = await pickAt(u, v); if (!r.pos) throw new Error("background picked");
+          putS(s, { position: r.pos.join(", ") }); commit();
+        }), { title: "Click on the object in the image to put the light there" }), lab("Visible:"), vis("lwVis2")));
+    } else {
+      const rot = sv(s, "map_rotation", "128, 128, 128").split(",").map(x => +x.trim());
+      tp.append(el("div", { class: "grid" }, lab("Map number:"), field("lwMap", sv(s, "map", "1"), v => { putS(s, { map: v }); commit(); }, { class: "n" })),
+        el("div", { class: "tb" }, ...["Xrot", "Yrot", "Zrot"].flatMap((n, i) => trackbar("lwMr" + i, n, rot[i] || 0, 0, 255, v => { rot[i] = v; putS(s, { map_rotation: rot.join(", ") }); commit(); }, { def: 128 }))),
+        check("lwMRel", sv(s, "relative_to_object") === "true", c => { putS(s, { relative_to_object: c }); commit(); }, "M.rel.obj.", "Map orientation relative to the object"));
+    }
+    lp.append(tp);
+    lp.append(el("div", { class: "btns" }, select("lwCopy", "", [["", "Copy this light to…"], ...[1, 2, 3, 4, 5, 6].filter(i => i !== lwSlot).map(i => [i, "Light " + i])], v => {
+      if (!v) return;
+      const t = lightSec(+v);
+      if (t) model.sections.splice(model.sections.indexOf(t), 1);
+      const c = JSON.parse(JSON.stringify(s)); putS(c, { slot: v });
+      model.sections.splice(model.sections.indexOf(s) + 1, 0, c);
+      commit();
+    })));
+  } else lp.append(el("div", { class: "hint" }, "This light is off."));
+  p.append(lp);
+  // gamma
+  p.append(el("div", { class: "tb" }, ...tbG("lwGam", "Gamma", "gamma", 0, 63, { def: 32, title: "0.5 .. 2, 32 = 1", fmt: v => (Math.pow(2, (v - 32) / 32)).toFixed(2), parse: v => Math.round(32 + 32 * Math.log2(+v || 1)) }),
+    el("span"), cG("lwI2", "internal_gamma2", "I2", "Internal gamma of 2 for the light calculations"), el("span")));
+  // PageControl2
+  p.append(tabsRow(["Object", "Ambient", "d.Fog", "Back pic"], lwTab2, t => { lwTab2 = t; store.set("lwTab2", t); renderWin("lighting"); }));
+  const pg = el("div", { class: "page2" });
+  if (lwTab2 === "Object") {
+    const pal = palItems("palette_full");
+    pg.append(el("div", { class: "tb" }, ...tbG("lwDif", "Diffuse", "diffuse", 0, 250, { def: 50 }), ...tbG("lwSpe", "Specular", "specular", 0, 350, { def: 50 })));
+    pg.append(el("div", { class: "grid" },
+      btn("Diff", () => { palEdit = palEdit === "pal" ? null : "pal"; renderWin("lighting"); }, { class: "lab", title: "Diffuse object colours, click to change them" }),
+      el("div", { class: "palbar", style: `background:${palGradient(pal, x => x[1])}`, onclick: () => { palEdit = palEdit === "pal" ? null : "pal"; renderWin("lighting"); } }),
+      btn("Spec", () => { palEdit = palEdit === "pal" ? null : "pal"; renderWin("lighting"); }, { class: "lab", title: "Specular object colours" }),
+      el("div", { class: "palbar", style: `background:${palGradient(pal, x => x[2] || "#000")}`, onclick: () => { palEdit = palEdit === "pal" ? null : "pal"; renderWin("lighting"); } })));
+    if (palEdit === "pal") pg.append(palEditor("pal"));
+    pg.append(el("div", { class: "tb" }, ...tbG("lwCs", "Color start", "color_start", -30, 90, { def: 68 }), ...tbG("lwCe", "Color end", "color_end", -30, 90, { def: 72 }),
+      ...tbG("lwCz", "Col. var. on Z", "color_var_z", -120, 360, { def: 0 })));
+    pg.append(el("div", { class: "btns" }, cG("lwCc", "color_cycling", "Col cycling"), cG("lwC2", "color_on_otrap", "2. choice", "Second colour choice (see the main window's Coloring tab)"),
+      check("lwNi", gv("color_interpolation") === "false", c => setG({ color_interpolation: c ? false : null }), "No ipol")));
+    const ic = palItems("interior_colors");
+    pg.append(el("div", { class: "grid" }, btn("Cuts", () => { palEdit = palEdit === "int" ? null : "int"; renderWin("lighting"); }, { class: "lab", title: "Object colours on cuts and 2D inside" }),
+      el("div", { class: "palbar", style: `background:${palGradient(ic, x => x[1])}`, onclick: () => { palEdit = palEdit === "int" ? null : "int"; renderWin("lighting"); } })));
+    if (palEdit === "int") pg.append(palEditor("interior"));
+    pg.append(el("div", { class: "tb" }, ...tbG("lwIs", "Cuts start", "interior_start", 0, 120), ...tbG("lwIe", "Cuts end", "interior_end", 0, 120)));
+    const dm = +gv("diffuse_map", "0") > 0;
+    pg.append(check("lwDm", dm, c => setG({ diffuse_map: c ? 1 : null }), "Use a map for the diffuse color"));
+    if (dm) {
+      const off = gvec("diffuse_map_offset", 2).map(Number);
+      pg.append(el("div", { class: "grid" }, lab("Map number:"), fG("lwDmN", "diffuse_map", { class: "n" })),
+        el("div", { class: "tb" },
+          ...trackbar("lwDmX", "Offset X", off[0], 0, 255, v => setG({ diffuse_map_offset: `${v}, ${off[1]}` }), { def: 128 }),
+          ...trackbar("lwDmY", "Offset Y", off[1], 0, 255, v => setG({ diffuse_map_offset: `${off[0]}, ${v}` }), { def: 128 }),
+          ...tbG("lwDmR", "Rotation", "diffuse_map_rotation", 0, 255, { def: 128 }), ...tbG("lwDmS", "Scale", "diffuse_map_scale", 0, 255, { def: 30 })),
+        el("div", { class: "grid" }, lab("Mode:"), select("lwDmM", gv("diffuse_map_mode"), [["iterations_otrap", "its.trap"], ["normals", "norms"], ["wrap_sine", "wrap1"], ["wrap", "wrap2"]], v => setG({ diffuse_map_mode: v }))),
+        cG("lwDmY2", "diffuse_map_brightness_only", "Combine map Y with diffuse colors"));
+    }
+  } else if (lwTab2 === "Ambient") {
+    const lm = +gv("light_mode", "0");
+    pg.append(el("div", { class: "grid" },
+      lab("Amb (top, bottom):", "Ambient colours"), el("div", { class: "swatches" }, colG("lwAt", "ambient_top", "Ambient top colour"), colG("lwAb", "ambient_bottom", "Ambient bottom colour")),
+      lab("Depth (top, bottom):", "Background / depth fog colours"), el("div", { class: "swatches" }, colG("lwDt", "depth_color", "Background top colour"), colG("lwDb", "depth_color2", "Background bottom colour")),
+      lab("Depth gradient:", "Depth gradient function, only if not 'Relative to object'"), select("lwDg", gv("depth_func", "0"), [["0", "vertical"], ["1", "function 2"], ["2", "function 3"]], v => setG({ depth_func: v }))));
+    pg.append(el("div", { class: "tb" },
+      ...tbG("lwAm", "Ambient", "ambient", 0, 270, { def: 90 }), ...tbG("lwDe", "Depth", "depth_fog", 0, 240, { def: 27 }),
+      ...tbG("lwAs", "Ambient shadow", "ambient_shadow", 0, 106, { def: 53 }), ...tbG("lwIl", "2nd reflection", "indirect_light", 0, 106, { def: 53 }),
+      ...tbG("lwRo", "Roughness", "roughness", 0, 255, { def: 0, title: "Only working if 'Smooth normals' was bigger than zero" }),
+      ...trackbar("lwDs", "Diffuse shadow", Math.round(gnum("diffuse_shadowing") * 256), 0, 255, v => setG({ diffuse_shadowing: +(v / 256).toFixed(4) }), { title: "Decrease also the direct light by the ambient occlusion" })));
+    pg.append(el("div", { class: "btns" }, cG("lwFf", "far_fog", "Far depth fog", "Decreases the fog in near parts"),
+      cG("lwRel2", "ambient_relative_to_object", "Relative to object"),
+      check("lwM2", (lm & 1) !== 0, c => setG({ light_mode: c ? (lm | 1) : (lm & ~1) || null }), "Mode 2", "Different calculation of light combining")));
+  } else if (lwTab2 === "d.Fog") {
+    const o = +gv("dynfog_options", "0");
+    pg.append(el("div", { class: "tb" }, ...tbG("lwFo", "Fog offset", "fog_offset", 0, 256, { def: 128 }), ...tbG("lwDy", "Dyn. fog", "dyn_fog", 0, 159, { def: 53, title: "53 = off" })),
+      el("div", { class: "grid" }, lab("Dyn.fog colours:"), el("div", { class: "swatches" }, colG("lwFc", "dynfog_color", "Dynamic fog colour"), colG("lwFc2", "dynfog_color2", "Dynamic fog intense colour"))),
+      el("div", { class: "btns" }, btn("set to 0", () => setG({ fog_offset: 0, dyn_fog: 53 }), { title: "Set the dynamic fog sliders to zero" }),
+        check("lwBl", (o & 1) !== 0, c => setG({ dynfog_options: (c ? o | 1 : o & ~1) || null }), "Blend dFog", "Blend the dynamic fog instead of adding the light"),
+        check("lwOa", (o & 2) !== 0, c => setG({ dynfog_options: (c ? o | 2 : o & ~2) || null }), "Only add light")));
+  } else {
+    const has = gv("background_image") !== "";
+    const rot = gvec("background_rotation", 3).map(Number);
+    pg.append(el("div", { class: "grid" }, lab("Background image:", "File name or map number in the maps folder"),
+      field("lwBg", gv("background_image"), v => setG(v ? { background_image: v } : { background_image: null, background_rotation: null, background_direct: null, background_brightness: null, background_add_light: null }))));
+    if (has) pg.append(el("div", { class: "tb" }, ...["Axis X", "Axis Y", "Axis Z"].flatMap((n, i) => trackbar("lwBr" + i, n, rot[i] || 0, 0, 255, v => { rot[i] = v; setG({ background_rotation: rot.join(", ") }); }, { def: 128 })),
+      ...tbG("lwBi", "Int.", "background_brightness", 0, 255, { def: 40, title: "Intensity of the image" })),
+      el("div", { class: "btns" }, check("lwBs", !gbool("background_direct"), c => setG({ background_direct: !c }), "As full background sphere"),
+        cG("lwBa", "background_add_light", "Add to background depth (not blend)"), cG("lwBam", "background_ambient", "Use a small image as ambient color")));
+  }
+  p.append(pg);
+});
 
-function textTab() {
-  const ta = el("textarea", { id: "textarea", spellcheck: "false" });
+// ============================================================ Post processing window (PostProcessForm)
+const ppOpen = store.get("ppOpen", { hs: true });
+defWin("postpro", "Post processing", 380, p => {
+  const sec = (key, title, build) => {
+    const b = el("button", { class: "ppbtn" + (ppOpen[key] ? " open" : ""), title: "Click to hide/show", onclick: () => { ppOpen[key] = !ppOpen[key]; store.set("ppOpen", ppOpen); renderWin("postpro"); } }, title);
+    p.append(b);
+    if (ppOpen[key]) { const d = el("div", { class: "pppnl" }); build(d); p.append(d); }
+  };
+  p.append(el("div", { class: "hint" }, imgFull ? "Changes are applied to the calculated image right away (the G-buffer is kept)." : "The settings apply to the previews and to \"Calculate 3D\"."));
+  sec("nz", "Normals on Z-buffer", d => d.append(cG("ppNz", "normals_on_zbuf", "Do this function automatically"),
+    el("div", { class: "hint" }, "Normals from the positions of the neighbour pixels; only if the normals on the surface look bad.")));
+  sec("hs", "Hard Shadows", d => {
+    const on = gv("shadows") !== "off" && gv("shadows") !== "none";
+    const set = new Set(gv("shadows") === "all" ? [1, 2, 3, 4, 5, 6] : on ? gv("shadows").split(",").map(x => +x.trim()) : []);
+    const emit = () => setG({ shadows: set.size ? [...set].sort().join(",") : "off" });
+    d.append(el("div", { class: "btns" }, ...[1, 2, 3, 4, 5, 6].map(i => check("ppL" + i, set.has(i), c => { c ? set.add(i) : set.delete(i); emit(); }, "Light " + i, lightSec(i) ? "" : "this light is off"))),
+      el("div", { class: "grid" },
+        el("div", { class: "full" }, cG("ppSoft", "shadow_soft", "Softer H.S.", "Better soft shadow, only with 1 light selected")),
+        lab("Radius:", "Bigger radius means softer shadows"), fG("ppRad", "shadow_soft_radius", { class: "n" }),
+        lab("Max. length calc.:", "Multiplier of the maximal shadow length"), fG("ppMl", "shadow_max_len", { class: "n" }),
+        el("div", { class: "full" }, cG("ppCos", "shadow_set_cos", "Set lightfunc to cosine"))));
+  });
+  sec("as", "Ambient Shadows", d => {
+    const ao = gv("ao", "ssao24");
+    const t = ao === "off" ? "off" : ao === "deao" ? "DEAO" : ao.startsWith("ssao15") ? "SSAO15" : +gv("ao_random") > 0 ? "SSAO24r" : "SSAO24";
+    const t0 = ao.endsWith("t0");
+    d.append(check("ppAo", ao !== "off", c => setG({ ao: c ? "ssao24" : "off" }), "Calculate A.S. automatically"));
+    if (ao === "off") return;
+    d.append(tabsRow(["SSAO15", "SSAO24", "SSAO24r", "DEAO"], t, n => {
+      if (n === "SSAO15") setG({ ao: t0 ? "ssao15t0" : "ssao15", ao_random: null });
+      if (n === "SSAO24") setG({ ao: t0 ? "ssao24t0" : "ssao24", ao_random: null });
+      if (n === "SSAO24r") setG({ ao: t0 ? "ssao24t0" : "ssao24", ao_random: Math.max(1, +gv("ao_random")) });
+      if (n === "DEAO") setG({ ao: "deao", ao_random: null });
+    }));
+    const g = el("div", { class: "grid page2" });
+    if (t === "DEAO") g.append(lab("Rays:"), select("ppDq", gv("deao_quality"), [["0", "3"], ["1", "7"], ["2", "17"], ["3", "33"]], v => setG({ deao_quality: v })),
+      lab("MaxL:", "Scales the maximum length of the ambient rays"), fG("ppDm", "deao_max_len", { class: "n" }),
+      lab("Dithering for scale:"), select("ppDd", gv("deao_dither"), [["0", "none"], ["1", "2x2 (1:2)"], ["2", "3x3 (1:3)"]], v => setG({ deao_dither: v })));
+    else {
+      g.append(lab("Z/R Threshold:", "Up to which angle the shadowing is calculated"), fG("ppTh", "ao_threshold", { class: "n" }),
+        el("div", { class: "full" }, check("ppT0", t0, c => setG({ ao: (t === "SSAO15" ? "ssao15" : "ssao24") + (c ? "t0" : "") }), "Threshold to 0")),
+        lab("Border size:", "Extends the calculation outside the image with mirrored parts"), fG("ppBo", "ao_border", { class: "n" }));
+      if (t === "SSAO24r") g.append(lab("Calculation count:", "Calculate n times to reduce the noise"), fG("ppRn", "ao_random", { class: "n" }));
+    }
+    d.append(g);
+  });
+  sec("rt", "Reflections + Transparency", d => d.append(el("div", { class: "grid" },
+    el("div", { class: "full" }, cG("ppR", "mc_reflections", "Calculate R. (+ T.) automatically")),
+    lab("Depth:"), fG("ppRd", "mc_reflection_depth", { class: "n" }),
+    lab("Amount:", "Total amount of reflectivity + transparency, times the specular colours"), fG("ppRa", "mc_reflection_amount", { class: "n" }),
+    el("div", { class: "full" }, cG("ppT", "mc_transparency", "Calculate transparency", "The specular amount is split into a ray going inside and the reflection")),
+    el("div", { class: "full" }, cG("ppTd", "mc_only_difs", "Only dIFS")),
+    lab("Absorption:"), fG("ppAb", "mc_absorption", { class: "n" }),
+    lab("Refractive index:", "air ~1, water ~1.33, glass ~1.5, diamond ~2.4"), fG("ppRi", "mc_refraction_index", { class: "n" }),
+    lab("Light scattering:"), fG("ppLs", "mc_scattering", { class: "n" }))));
+  sec("dof", "Depth of Field", d => {
+    const on = gv("dof") !== "off";
+    const get = k => pickFromImage("Sharp point", async (u, v) => { const r = await pickAt(u, v); if (!r.pos) throw new Error("background picked"); setG({ [k]: +r.z.toFixed(6), dof: gv("dof") === "off" ? "sorted" : gv("dof") }); });
+    d.append(check("ppDof", on, c => setG({ dof: c ? "sorted" : "off" }), "Calculate DoF automatically"),
+      el("div", { class: "grid" },
+        lab("Z1 sharp:", "Focus point: distance from the camera relative to the image width"), el("div", { class: "row2" }, fG("ppZ1", "dof_focus"), btn("Get Z1", () => get("dof_focus"), { style: "flex:none" })),
+        lab("Z2 sharp:", "Second focus point for a focus line"), el("div", { class: "row2" }, fG("ppZ2", "dof_focus2"), btn("Get Z2", () => get("dof_focus2"), { style: "flex:none" }),
+          btn("<-", () => setG({ dof_focus2: gv("dof_focus") }), { style: "flex:none", title: "Copy Z1 to Z2 (focus point)" })),
+        lab("ClippingR:", "The blur radius is limited to this"), fG("ppCr", "dof_max_radius", { class: "n" }),
+        lab("Aperture:"), fG("ppAp", "dof_aperture", { class: "n" }),
+        lab("Passes:"), select("ppPa", gv("dof_passes"), ["1", "2", "3"], v => setG({ dof_passes: v })),
+        lab("Calculation:"), select("ppCa", on ? gv("dof") : "sorted", [["sorted", "Sorted"], ["forward", "Forward"]], v => setG({ dof: v }))));
+  });
+  sec("rs", "Recalculate a Selection", d => recalcPanel(d));
+  sec("ds", "Double imagesize", d => doublePanel(d));
+});
+
+// ============================================================ Navigator window
+let naviPanel = store.get("naviPanel", "Misc"), naviF = 0;
+defWin("navi", "Navigator", 360, p => {
+  const b = (t, op, axis, sign, title) => el("button", { title, onclick: e => doNav(op, axis, sign, e.shiftKey) }, t);
+  p.append(el("div", { class: "hint" }, "Walk in the main image (mode \"walk\"): click flies towards a point, drag turns, wheel moves. Keys in the image: W/S A/D R/F, arrows, Q/E, +/−; Shift for finer steps."));
+  p.append(el("div", { class: "grid page2" },
+    lab("Walking"), el("div", { class: "btns" }, b("fwd (w)", "move", 2, 1), b("back (s)", "move", 2, -1)),
+    lab("Sliding"), el("div", { class: "btns" }, b("◀ (a)", "move", 0, -1), b("▶ (d)", "move", 0, 1), b("▲ (r)", "move", 1, -1), b("▼ (f)", "move", 1, 1)),
+    lab("Looking"), el("div", { class: "btns" }, b("←", "rotate", 1, -1), b("→", "rotate", 1, 1), b("↑", "rotate", 0, 1), b("↓", "rotate", 0, -1)),
+    lab("Rolling"), el("div", { class: "btns" }, b("↺ (q)", "rotate", 2, -1), b("↻ (e)", "rotate", 2, 1), b("zoom +", "zoom", 0, 1), b("zoom −", "zoom", 0, -1)),
+    lab("Step (% of DE):", "Moves are a percentage of the distance estimate at the camera"), field("nvStep", naviCfg.step, v => { naviCfg.step = v; saveNavi(); }, { class: "n" }),
+    lab("Angle (°):"), field("nvAng", naviCfg.angle, v => { naviCfg.angle = v; saveNavi(); }, { class: "n" }),
+    lab("Click in image:"), select("nvClick", naviCfg.click, [["fly", "flies towards the point"], ["look", "turns to the point"], ["focus", "sets the DOF focus"]], v => { naviCfg.click = v; saveNavi(); })));
+  // the parameter sliders (Panel3 buttons)
+  p.append(tabsRow(["Julia", "Formula values", "4d rotation", "Misc"], naviPanel, n => { naviPanel = n; store.set("naviPanel", n); renderWin("navi"); }));
+  const pg = el("div", { class: "page2" });
+  pg.append(el("div", { class: "btns" }, lab("Adjustments:"), select("nvAdj", String(naviCfg.adj), [["1", "fine (1 %)"], ["10", "medium (10 %)"], ["100", "coarse (100 %)"]], v => { naviCfg.adj = +v; saveNavi(); })));
+  // relative slider: dragging changes the value by up to ±adj %, released it snaps back
+  const rel = (id, label, get, set, unit = 1) => {
+    const r = el("input", { type: "range", id, min: -100, max: 100, value: 0 });
+    const base = get();
+    const t = el("span", { class: "mono" }, String(+base.toPrecision(8)));
+    const val = () => base + (+r.value / 100) * (naviCfg.adj / 100) * (unit === 1 ? (Math.abs(base) > 1e-3 ? Math.abs(base) : 1) : unit);
+    r.addEventListener("input", () => { t.textContent = String(+val().toPrecision(8)); });
+    r.addEventListener("change", () => set(+val().toPrecision(12)));
+    return [lab(label), r, t];
+  };
+  const tb = el("div", { class: "tb" });
+  if (naviPanel === "Julia") {
+    const jc = () => gvec("julia_c", 4).map(Number);
+    ["x", "y", "z"].forEach((n, i) => tb.append(...rel("nvJ" + i, n, () => jc()[i], v => { const c = jc(); c[i] = v; setG({ julia_c: c.join(", "), julia: true }); })));
+    pg.append(cG("nvJm", "julia", "Julia mode"), tb);
+  } else if (naviPanel === "Formula values") {
+    const secs = formulaSecs();
+    if (naviF >= secs.length) naviF = 0;
+    const s = secs[naviF];
+    pg.append(el("div", { class: "btns" }, lab("F.nr:"), select("nvF", String(naviF), secs.map((x, i) => [String(i), `${i + 1}: ${sv(x, "name")}`]), v => { naviF = +v; renderWin("navi"); })));
+    if (s) s.lines.forEach((l, i) => {
+      if (l.k === "name" || isNaN(parseFloat(l.v))) return;
+      tb.append(...rel("nvO" + i, /^option\d+$/.test(l.k) && l.c ? l.c : l.k, () => parseFloat(l.v), v => { l.v = String(/^-?\d+$/.test(l.v) && l.k === "iterations" ? Math.round(v) : v); commit(); }));
+    });
+    pg.append(tb);
+  } else if (naviPanel === "4d rotation") {
+    const r4 = () => gvec("rotation_4d", 3).map(Number);
+    ["xw", "yw", "zw"].forEach((n, i) => tb.append(...rel("nv4" + i, n, () => r4()[i], v => { const c = r4(); c[i] = v; setG({ rotation_4d: c.join(", ") }); }, 180)));
+    pg.append(tb);
+  } else {
+    const num = (k, unit) => rel("nvM" + k, k, () => gnum(k), v => setG({ [k]: k.includes("iter") || k === "dfog_on_it" ? Math.max(0, Math.round(v)) : v }), unit);
+    tb.append(...num("iterations", 20), ...num("rstop"), ...num("decomb_smooth"), ...num("de_stop"), ...num("dfog_on_it", 20));
+    pg.append(tb);
+  }
+  p.append(pg);
+});
+
+// ============================================================ smaller windows
+defWin("text", "Parameter text", 520, p => {
+  const ta = el("textarea", { id: "txtArea", rows: 28, spellcheck: "false" });
   ta.value = sceneText;
-  $("panel").append(el("div", { class: "hint" }, "The whole scene as .m3s text. Edit and apply."), ta,
-    el("div", { class: "actions" }, el("button", { class: "primary", onclick: () => sendText(ta.value) }, "Apply")));
-}
+  p.append(el("div", { class: "hint" }, "All parameters as .m3s text (the keys are listed in the README). Edit and apply."), ta,
+    el("div", { class: "btns" }, btn("Apply", () => sendText(ta.value), { class: "on" }), btn("Reload", () => renderWin("text"))));
+}, { selfRefresh: true });
 
-function infoTab() {
-  const p = $("panel");
-  p.append(el("div", { class: "card notes" }, el("h3", {}, "Notes from loading"),
-    ...(notes.length ? notes.map(n => el("div", {}, n)) : [el("div", {}, "none")])));
-  p.append(el("div", { class: "card" }, el("h3", {}, "Navigation"),
-    el("div", { class: "hint" }, "Click into the image to fly towards that point (or turn to it / set the DOF focus, see the click mode). Drag to turn the view, use the wheel to move forward and back."),
-    el("div", { class: "hint" }, "Keys (with the image focused): W/S forward/back, A/D left/right, R/F up/down, arrow keys turn, Q/E roll, +/− zoom, Shift for small steps. Ctrl+Z / Ctrl+Y undo and redo."),
-    el("div", { class: "hint" }, "Moves are measured in % of the distance estimate at the camera, like MB3D's navigator. Previews use the DE stop in preview pixels (fast and coarse); \"Render image\" uses the scene's full settings.")));
-}
+let dirsState = null;
+defWin("dirs", "Ini Dirs", 460, p => {
+  if (!dirsState) { p.append(el("div", { class: "hint" }, "loading…")); api("/api/dirs").then(d => { dirsState = d; renderWin("dirs"); }).catch(showError); return; }
+  const list = (t, a) => [el("div", { class: "sect" }, t), ...a.map(d => el("div", { class: "mono" }, d))];
+  const inp = el("input", { type: "text", id: "dirIn", placeholder: "folder on the server, e.g. /home/me/mb3d/M3Formulas" });
+  const add = kind => post("/api/dirs", form({ kind, dir: inp.value })).then(d => { dirsState = d; renderWin("dirs"); loadFormulas(); msg(`${kind} folder added: ${inp.value}`); }).catch(showError);
+  p.append(el("div", { class: "hint" }, "Folders searched by the server (first match wins). Also: mb3d gui --formulas DIR --maps DIR, or MB3D_FORMULAS / MB3D_MAPS."),
+    ...list("Formulas (.m3f)", dirsState.formulas), ...list("Maps", dirsState.maps),
+    el("div", { class: "sect" }, "Add a folder"), inp, el("div", { class: "btns" }, btn("Add formula folder", () => add("formulas")), btn("Add map folder", () => add("maps"))),
+    el("div", { class: "hint mono" }, "server working folder: " + dirsState.cwd));
+}, { onopen: () => { dirsState = null; renderWin("dirs"); } });
 
+defWin("zbuf", "ZBuf16Bit", 330, p => p.append(
+  el("div", { class: "hint" }, "Saves the z-buffer of the image on screen as a 16 bit grey PNG (near = bright, background = black), e.g. for depth effects in other programs."),
+  el("div", { class: "btns" }, btn("Save Z-buffer (16 bit PNG)", () => location.href = "/api/zbuf.png", { class: "on" })),
+  el("div", { class: "hint" }, "For the full resolution press \"Calculate 3D\" first. Animations can write depth images per frame too (Animation maker).")));
+
+// ---- Big renders (Tiling)
+const bigCfg = Object.assign({ factor: "2", tx: "2", ty: "2", ds: "1", scaleDe: true, col: "1", row: "1" }, store.get("big", {}));
+defWin("tiling", "Big renders", 380, p => {
+  const f = +bigCfg.factor || 1, W = Math.round(gnum("width") * f), H = Math.round(gnum("height") * f), ds = +bigCfg.ds || 1;
+  const inp = (k, title) => field("bg_" + k, bigCfg[k], v => { bigCfg[k] = v; store.set("big", bigCfg); renderWin("tiling"); }, { class: "n", title: title || "" });
+  const q = () => ({ factor: bigCfg.factor, scale_de: bigCfg.scaleDe, tiles: `${bigCfg.tx}x${bigCfg.ty}`, downscale: bigCfg.ds });
+  p.append(el("div", { class: "grid" },
+    lab("Original size:"), el("span", {}, `${gv("width")} × ${gv("height")}`),
+    lab("Size factor:"), inp("factor"),
+    el("div", { class: "full" }, check("bgDe", bigCfg.scaleDe, c => { bigCfg.scaleDe = c; store.set("big", bigCfg); }, "Scale DEstop to keep color & detail level")),
+    lab("Tile count, horizontal:"), inp("tx"), lab("vertical:"), inp("ty"),
+    lab("Tile downscale, anti aliasing:"), select("bgDs", bigCfg.ds, ["1", "2", "3"], v => { bigCfg.ds = v; store.set("big", bigCfg); renderWin("tiling"); }),
+    lab("Big size:"), el("span", {}, `${W} × ${H}` + (ds > 1 ? ` (calculated ${W * ds} × ${H * ds})` : "")),
+    lab("Tile size:"), el("span", {}, `${Math.ceil(W * ds / (+bigCfg.tx || 1))} × ${Math.ceil(H * ds / (+bigCfg.ty || 1))}`)));
+  p.append(el("div", { class: "btns" }, btn("Render all tiles", async () => {
+    try { await post("/api/render", form({ aa: 1, ...q() })); msg(`Big render ${W}x${H} started.`, "n"); pollSoon(); } catch (e) { showError(e); }
+  }, { class: "on", title: "One tile after another, stitched; then save it with Save pic" }), btn("Stop", () => post("/api/cancel", ""))));
+  p.append(el("div", { class: "sect" }, "Tile parameter files"), el("div", { class: "hint" }, "One MB3D tile file per machine or process (also: mb3d file.m3p --tiles 4x4 --tile 2,3)."),
+    el("div", { class: "btns" }, lab("Tile column"), inp("col"), lab("row"), inp("row"),
+      btn("Save tile .m3p", () => location.href = "/api/tile.m3p?" + form({ ...q(), col: bigCfg.col, row: bigCfg.row }))));
+});
+
+// ---- Batch processing (m3p -> m3i)
+let batch = { files: [], running: false, i: 0, log: [] };
+const batchCfg = Object.assign({ folder: "batch", m3i: true, scale: "1" }, store.get("batch", {}));
+defWin("batch", "Batch processing", 420, p => {
+  const fi = el("input", { type: "file", multiple: true, accept: ".m3p,.m3i,.m3s,.txt", hidden: true });
+  fi.onchange = () => { batch.files.push(...fi.files); renderWin("batch"); };
+  p.append(el("div", { class: "hint" }, "Calculates the parameter files one after another with \"Calculate 3D\" and stores PNG (and .m3i) files in a folder of the server. The editor shows each file while it is calculated."), fi,
+    el("div", { class: "btns" }, btn("Open files", () => fi.click()), btn("Clear", () => { batch.files = []; batch.log = []; renderWin("batch"); }, { disabled: batch.running })),
+    el("div", { class: "page2", style: "max-height:180px;overflow:auto" }, ...(batch.files.length ? batch.files.map((f, i) => el("div", { class: i < batch.i && batch.running ? "dim" : "" }, `${i + 1}. ${f.name}` + (batch.log[i] ? " — " + batch.log[i] : ""))) : [el("div", { class: "hint" }, "no files")])),
+    el("div", { class: "grid" }, lab("Folder:"), field("btF", batchCfg.folder, v => { batchCfg.folder = v; store.set("batch", batchCfg); }),
+      lab("Save scale 1:"), select("btS", batchCfg.scale, ["1", "2", "3"], v => { batchCfg.scale = v; store.set("batch", batchCfg); }),
+      el("div", { class: "full" }, check("btM", batchCfg.m3i, c => { batchCfg.m3i = c; store.set("batch", batchCfg); }, "Store M3I files too"))),
+    el("div", { class: "btns" }, btn("Start batch rendering", runBatch, { class: "on", disabled: batch.running || !batch.files.length }), btn("Stop", () => { batch.stop = true; post("/api/cancel", ""); }, { disabled: !batch.running })));
+});
+async function runBatch() {
+  batch.running = true; batch.stop = false; batch.log = [];
+  for (batch.i = 0; batch.i < batch.files.length && !batch.stop; batch.i++) {
+    const f = batch.files[batch.i];
+    renderWin("batch");
+    try {
+      applyState(await post("/api/open?name=" + encodeURIComponent(f.name), await f.arrayBuffer()), true);
+      const done = waitFinal();
+      await calc3D();
+      if (!await done) throw new Error("calculation failed");
+      const r = await post("/api/batch/store", form({ folder: batchCfg.folder, name: f.name.replace(/\.[^.]+$/, ""), scale: batchCfg.scale, m3i: batchCfg.m3i }));
+      batch.log[batch.i] = "ok"; msg("stored " + r.file, "n");
+    } catch (e) { batch.log[batch.i] = "error: " + e.message; showError(e); }
+  }
+  batch.running = false; renderWin("batch");
+}
 // ------------------------------------------------------------ animation
 // MB3D's animation maker: keyframes are taken from the editor; the server
 // interpolates the frames, renders a flipbook preview and the frame files.
@@ -569,17 +1539,17 @@ function setAnim(a) {
   const structural = !anim || a.ver !== animVer;
   anim = a; animVer = a.ver;
   if (a.flip.gen !== flip.gen) { flip.gen = a.flip.gen; flip.cache = new Map(); flip.pos = 0; }
-  if (tab === "Animation") {
-    const busy = document.activeElement && $("panel").contains(document.activeElement) && document.activeElement.tagName === "INPUT"
+  if (isOpen("anim")) {
+    const busy = document.activeElement && $("w_anim").contains(document.activeElement) && document.activeElement.tagName === "INPUT"
       && document.activeElement.type !== "range";
-    if (structural && !busy) renderPanel(); else animUpdate();
+    if (structural && !busy) renderWin("anim"); else animUpdate();
   }
   scheduleAnimPoll();
 }
 function scheduleAnimPoll() {
   clearTimeout(animPollTimer);
   const active = anim && (anim.flip.running || anim.job.running);
-  if (tab === "Animation" || active) animPollTimer = setTimeout(animLoad, active ? 400 : 1500);
+  if (isOpen("anim") || active) animPollTimer = setTimeout(animLoad, active ? 400 : 1500);
 }
 async function animKey(op, extra = {}) {
   try {
@@ -654,8 +1624,7 @@ function animUpdate() {
 }
 function fmtTime(s) { s = Math.round(s); return s >= 3600 ? `${Math.floor(s / 3600)} h ${Math.floor(s / 60) % 60} min` : s >= 60 ? `${Math.floor(s / 60)} min ${s % 60} s` : `${s} s`; }
 
-function animTab() {
-  const p = $("panel");
+function animTab(p) {
   if (!anim) { p.append(el("div", { class: "hint" }, "loading…")); animLoad(); return; }
   const a = anim;
   // keyframes
@@ -796,9 +1765,9 @@ function setMuta(m) {
   if (structural && muta && (m.current !== muta.current || m.count !== muta.count)) mutaSel = -1;
   const changed = m.ver !== mutaVer;
   muta = m; mutaVer = m.ver;
-  if (tab === "MutaGen" && changed) { if (structural) renderPanel(); else mutaUpdate(); }
+  if (isOpen("muta") && changed) { if (structural) renderWin("muta"); else mutaUpdate(); }
   clearTimeout(mutaPollTimer);
-  if (tab === "MutaGen" || m.running) mutaPollTimer = setTimeout(mutaLoad, m.running ? 300 : 1500);
+  if (isOpen("muta") || m.running) mutaPollTimer = setTimeout(mutaLoad, m.running ? 300 : 1500);
 }
 function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
 function sceneAspect() {
@@ -836,8 +1805,7 @@ function mutaUpdate() {
   if (cap) cap.textContent = mutaSel >= 0 && mutaSel < n ? `${muta.members[mutaSel].label}: ${muta.members[mutaSel].caption}` : "";
   for (let i = 0; i < 15; i++) { const b = $("mm" + i); if (b) b.classList.toggle("sel", i === mutaSel); }
 }
-function mutaTab() {
-  const p = $("panel");
+function mutaTab(p) {
   if (!muta) { p.append(el("div", { class: "hint" }, "loading…")); mutaLoad(); return; }
   const m = muta;
   const inp = (k, title) => {
@@ -908,7 +1876,7 @@ async function exportLoad() { try { setExport(await api("/api/export")); } catch
 function setExport(e) {
   const first = !exp;
   exp = e;
-  if (tab === "Export") { if (first || expWasRunning !== e.running) renderPanel(); else exportUpdate(); }
+  for (const id of ["voxel", "btracer"]) if (isOpen(id)) { if (first || expWasRunning !== e.running) renderWin(id); else exportUpdate(); }
   expWasRunning = e.running;
   clearTimeout(expPollTimer);
   if (e.running) expPollTimer = setTimeout(exportLoad, 300);
@@ -938,8 +1906,7 @@ function exportUpdate() {
   const fd = $("expFolder"); if (fd) fd.textContent = !exp.running && exp.folder ? "written to " + exp.folder : "";
   for (const id of ["expVox", "expMesh"]) { const x = $(id); if (x) x.disabled = exp.running; }
 }
-function exportTab() {
-  const p = $("panel");
+function exportTab(p, kind) {
   if (!exp) { p.append(el("div", { class: "hint" }, "loading…")); exportLoad(); return; }
   const inp = (k, title, ph) => {
     const e = el("input", { type: "text", id: "ex_" + k, value: expCfg[k], title: title || "", placeholder: ph || "" });
@@ -962,7 +1929,7 @@ function exportTab() {
   if (voxPrevUrl) voxImg.src = voxPrevUrl;
   const voxPrev = () => { voxPrevUrl = voxImg.src = "/api/export/voxpreview?" + form({ ...voxQuery(), t: Date.now() }); };
   voxImg.onerror = () => { voxImg.removeAttribute("src"); voxPrevUrl = ""; showError("voxel preview failed"); };
-  p.append(el("div", { class: "card" }, el("h3", {}, "Voxel slices"),
+  if (kind === "voxel") p.append(el("div", { class: "card" }, el("h3", {}, "Voxel slices"),
     el("div", { class: "hint" }, "A stack of black-and-white PNG slices through the object's bounding cube (as in MB3D's voxel export), for voxel editors and 3D printing. The cube is the area seen by the camera."),
     el("div", { class: "row" }, el("label", {}, "slices"), inp("slices", "Number of slices; the images are as large")),
     el("div", { class: "row" }, el("label", {}, "inside when"), sel("test", [["de", "distance estimate < DE stop"], ["iterations", "max. iterations reached"]])),
@@ -974,7 +1941,7 @@ function exportTab() {
       el("button", { onclick: voxPrev, title: "All slices stacked, seen from the front" }, "Preview"),
       el("button", { class: "primary", id: "expVox", onclick: () => exportStart("voxel") }, "Write slices")),
     voxImg));
-  p.append(el("div", { class: "card" }, el("h3", {}, "Mesh"),
+  if (kind === "mesh") p.append(el("div", { class: "card" }, el("h3", {}, "Mesh"),
     el("div", { class: "hint" }, "A triangle mesh by marching cubes over the distance estimate (MB3D's BulbTracer2): binary STL, OBJ or PLY. Vertex colours come from the scene's palette."),
     el("div", { class: "row" }, el("label", { title: "Grid cells per side of the cube; time and memory grow with its cube" }, "resolution"), inp("resolution")),
     el("div", { class: "row" }, el("label", { title: "0.5: the cube is twice the visible 2.2 / zoom; larger = smaller cube" }, "scale"), inp("scale")),
@@ -1019,10 +1986,10 @@ function setMc(m) {
   const first = !mcState;
   const changed = first || m.ver !== mcVer;
   mcState = m; mcVer = m.ver;
-  if (tab === "Monte Carlo") { if (first || mcWasRunning !== m.running) renderPanel(); else if (changed) mcUpdate(); else mcProgress(); }
+  if (isOpen("mc")) { if (first || mcWasRunning !== m.running) renderWin("mc"); else if (changed) mcUpdate(); else mcProgress(); }
   mcWasRunning = m.running;
   clearTimeout(mcPollTimer);
-  if (m.running || tab === "Monte Carlo") mcPollTimer = setTimeout(mcLoad, m.running ? 700 : 2500);
+  if (m.running || isOpen("mc")) mcPollTimer = setTimeout(mcLoad, m.running ? 700 : 2500);
 }
 function mcProgress() {
   const m = mcState; if (!m) return;
@@ -1043,8 +2010,7 @@ function mcUpdate() {
   for (const id of ["mcDl", "mcM3c"]) { const x = $(id); if (x) x.hidden = !(m.passes || m.rays > 0); }
   const c = $("mcCont"); if (c) c.disabled = m.running || !m.passes;
 }
-function mcTab() {
-  const p = $("panel");
+function mcTab(p) {
   if (!mcState) { p.append(el("div", { class: "hint" }, "loading…")); mcLoad(); return; }
   const m = mcState;
   const inp = (k, title, size) => {
@@ -1092,12 +2058,12 @@ function mcTab() {
     row("secant search", bit(2, "Finer surface search")),
     row("clip spec. + diffuse", bit(4, "Scale specular and diffuse colours down when they add up to more than 1")),
     row("gaussian anti-aliasing", bit(8)),
-    row("bokeh shape", bokeh, "Depth of field (Render tab) aperture shape")));
+    row("bokeh shape", bokeh, "Depth of field aperture shape (Post processing ▸ Depth of Field)")));
   p.append(el("div", { class: "card" }, el("h3", {}, "Image"),
     row("exposure", slider("mc_exposure", 255), "128 = 1"),
     row("colour saturation", slider("mc_saturation", 127), "32 = 1"),
     row("HDR soft clipping", bit(1)),
-    el("div", { class: "hint" }, "Exposure, saturation and soft clipping change the image without recalculating it; gamma is the one of the Colours tab.")));
+    el("div", { class: "hint" }, "Exposure, saturation and soft clipping change the image without recalculating it; gamma is the one of the Lighting window.")));
   const rays = el("input", { type: "text", id: "mcRays", value: mcUi.rays, size: 5 });
   rays.onchange = () => { mcUi.rays = rays.value; };
   const scale = el("select", { id: "mcScale" }, ...[["1", "full size"], ["0.5", "1/2"], ["0.25", "1/4"]].map(([v, l]) => el("option", { value: v }, l)));
@@ -1126,159 +2092,38 @@ function mcTab() {
   mcUpdate();
 }
 
-function renderPanel() {
-  const tabs = $("tabs");
-  tabs.textContent = "";
-  for (const [name] of TABS) tabs.append(el("button", { class: name === tab ? "on" : "", onclick: () => { tab = name; renderPanel(); if (name === "Animation") animLoad(); if (name === "MutaGen") mutaLoad(); if (name === "Monte Carlo") mcLoad(); if (name === "Export") exportLoad(); } }, name));
-  const p = $("panel");
-  const active = document.activeElement && document.activeElement.id;
-  const scroll = p.scrollTop;
-  p.textContent = "";
-  TABS.find(t => t[0] === tab)[1]();
-  p.scrollTop = scroll;
-  if (active && $(active) && p.contains($(active))) $(active).focus();
-}
+defWin("anim", "Animation maker", 440, p => animTab(p), { selfRefresh: true, onopen: () => animLoad() });
+defWin("muta", "MutaGen", 440, p => mutaTab(p), { selfRefresh: true, onopen: () => mutaLoad() });
+defWin("voxel", "Voxel export", 400, p => exportTab(p, "voxel"), { selfRefresh: true, onopen: () => exportLoad() });
+defWin("btracer", "Bulb Tracer2", 400, p => exportTab(p, "mesh"), { selfRefresh: true, onopen: () => exportLoad() });
+defWin("mc", "Monte carlo rendering", 440, p => mcTab(p), { selfRefresh: true, onopen: () => mcLoad(), sceneChanged: () => { if (mcState) renderWin("mc"); } });
 
-// ------------------------------------------------------------ image interaction
-const img = $("img"), wrap = $("imgwrap");
-let drag = null;
-function imgUV(e) {
-  // the picture inside the element (object-fit: contain)
-  const b = img.getBoundingClientRect();
-  const nw = img.naturalWidth || 1, nh = img.naturalHeight || 1;
-  const s = Math.min(b.width / nw, b.height / nh);
-  const r = { left: b.left + (b.width - nw * s) / 2, top: b.top + (b.height - nh * s) / 2, width: nw * s, height: nh * s };
-  return { u: (e.clientX - r.left) / r.width, v: (e.clientY - r.top) / r.height, r };
-}
-function fovDeg() { const f = model.global.find(l => l.k === "fov"); return f ? parseFloat(f.v) || 30 : 30; }
-img.addEventListener("mousedown", e => { if (e.button === 0) { drag = { x: e.clientX, y: e.clientY }; e.preventDefault(); wrap.focus(); } });
-window.addEventListener("mouseup", e => {
-  if (!drag) return;
-  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-  drag = null;
-  const { u, v, r } = imgUV(e);
-  if (Math.hypot(dx, dy) > 4) {
-    const k = fovDeg() / r.height;
-    if (Math.abs(dx) > 2) nav({ op: "rotate", axis: 1, deg: -dx * k });
-    if (Math.abs(dy) > 2) nav({ op: "rotate", axis: 0, deg: dy * k });
-  } else if (u >= 0 && u <= 1 && v >= 0 && v <= 1) {
-    const mode = e.shiftKey ? "look" : $("clickMode").value;
-    nav({ op: mode, u, v, amount: stepFrac(e.altKey) });
-  }
-});
-let wheelAcc = 0, wheelTimer = null;
-wrap.addEventListener("wheel", e => {
-  e.preventDefault();
-  wheelAcc += e.deltaY < 0 ? 1 : -1;
-  clearTimeout(wheelTimer);
-  wheelTimer = setTimeout(() => { const n = wheelAcc; wheelAcc = 0; nav({ op: "move", axis: 2, amount: n * stepFrac(e.shiftKey) * 0.5 }); }, 120);
-}, { passive: false });
-
-function stepFrac(fine) { return (parseFloat($("step").value) || 50) / 100 * (fine ? 0.25 : 1); }
-function angleDeg(fine) { return (parseFloat($("angle").value) || 10) * (fine ? 0.25 : 1); }
-function doNav(op, axis, sign, fine) {
-  if (op === "move") nav({ op, axis, amount: sign * stepFrac(fine) });
-  else if (op === "rotate") nav({ op, axis, deg: sign * angleDeg(fine) });
-  else if (op === "zoom") nav({ op, factor: sign > 0 ? (fine ? 1.1 : 1.5) : (fine ? 1 / 1.1 : 1 / 1.5) });
-}
-for (const b of document.querySelectorAll("[data-nav]")) {
-  const [op, axis, sign] = b.dataset.nav.split(",");
-  b.addEventListener("click", e => doNav(op, +axis, +sign, e.shiftKey));
-}
-const KEYS = { w: ["move", 2, 1], s: ["move", 2, -1], a: ["move", 0, -1], d: ["move", 0, 1], r: ["move", 1, -1], f: ["move", 1, 1],
-  arrowleft: ["rotate", 1, -1], arrowright: ["rotate", 1, 1], arrowup: ["rotate", 0, 1], arrowdown: ["rotate", 0, -1],
-  q: ["rotate", 2, -1], e: ["rotate", 2, 1], "+": ["zoom", 0, 1], "=": ["zoom", 0, 1], "-": ["zoom", 0, -1] };
-document.addEventListener("keydown", e => {
-  const t = e.target;
-  if ((e.ctrlKey || e.metaKey) && !["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName)) {
-    if (e.key === "z") { e.preventDefault(); undo(); return; }
-    if (e.key === "y") { e.preventDefault(); redo(); return; }
-  }
-  if (["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
-  const k = KEYS[e.key.toLowerCase()];
-  if (k) { e.preventDefault(); doNav(k[0], k[1], k[2], e.shiftKey); }
-});
-
-// ------------------------------------------------------------ toolbar
-function undo() { if (!undoStack.length) return; redoStack.push(sceneText); sendText(undoStack.pop(), true); }
-function redo() { if (!redoStack.length) return; undoStack.push(sceneText); sendText(redoStack.pop(), true); }
-$("bUndo").onclick = undo;
-$("bRedo").onclick = redo;
-$("bOpen").onclick = () => $("file").click();
-$("file").onchange = async () => {
-  const f = $("file").files[0];
-  if (!f) return;
-  try { undoStack = []; redoStack = []; applyState(await post("/api/open?name=" + encodeURIComponent(f.name), await f.arrayBuffer()), true); tab = notes.length ? "Info" : tab; renderPanel(); }
-  catch (e) { showError(e.message); }
-  $("file").value = "";
-};
-$("bPaste").onclick = () => { $("pasteText").value = ""; $("dPaste").showModal(); };
-$("pasteCancel").onclick = () => $("dPaste").close();
-$("pasteOk").onclick = async () => {
-  try { applyState(await post("/api/open?name=pasted.txt", $("pasteText").value)); $("dPaste").close(); if (notes.length) { tab = "Info"; renderPanel(); } }
-  catch (e) { alert(e.message); }
-};
-$("save").onchange = () => { const f = $("save").value; $("save").value = ""; if (f) location.href = "/api/save?fmt=" + f; };
-$("preset").onchange = async () => {
-  const n = $("preset").value; $("preset").value = "";
-  if (n) try { applyState(await post("/api/preset", form({ name: n }))); } catch (e) { setStatus(e.message, true); }
-};
-function viewWidth() {
-  const v = $("viewW").value;
-  if (v !== "auto") return +v;
-  const g = k => parseFloat((model.global.find(l => l.k === k) || { v: "4" }).v) || 4;
-  const aspect = g("width") / g("height");
-  return Math.max(64, Math.min(1600, Math.round(Math.min(wrap.clientWidth, wrap.clientHeight * aspect))));
-}
-let sentView = 0;
-async function sendView(force) {
-  const w = viewWidth();
-  if (!force && Math.abs(w - sentView) < 24) return;
-  sentView = w;
-  try { await post("/api/view", form({ w })); pollSoon(); } catch (e) { setStatus(e.message, true); }
-}
-$("viewW").onchange = () => sendView(true);
-let resizeTimer = null;
-window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => sendView(false), 400); });
-$("bRefresh").onclick = async () => { await post("/api/refresh", ""); pollSoon(); };
-$("title").onchange = () => post("/api/title", $("title").value);
-
-$("bRender").onclick = () => {
-  const g = k => (model.global.find(l => l.k === k) || { v: "" }).v;
-  $("rW").value = g("width"); $("rH").value = g("height"); $("rTiles").value = g("tiles");
-  $("rDownload").hidden = true; $("rInfo").textContent = "The image is calculated with the full settings of the scene.";
-  $("dRender").showModal();
-};
-$("rClose").onclick = () => $("dRender").close();
-$("rCancel").onclick = async () => { await post("/api/cancel", ""); $("rInfo").textContent = "Stopped."; pollSoon(); };
-$("rStart").onclick = async () => {
-  const set = (k, v) => { const l = model.global.find(x => x.k === k); if (v === "") { if (l) model.global.splice(model.global.indexOf(l), 1); } else if (l) l.v = v; else model.global.push({ k, v, c: "" }); };
-  set("width", $("rW").value.trim()); set("height", $("rH").value.trim());
-  model.global = model.global.filter(l => l.k !== "tile");
-  set("tiles", $("rTiles").value.trim());
-  await commit();
-  await post("/api/render", form({ aa: $("rAA").value }));
-  $("rDownload").hidden = true; $("rInfo").textContent = "Rendering…";
-  pollSoon();
-};
-
-$("err").querySelector("button").onclick = clearError;
+// ============================================================ placeholders (filled in below when ported)
+function recalcPanel(d) { d.append(el("div", { class: "hint" }, "not ported yet")); }
+function doublePanel(d) { d.append(el("div", { class: "hint" }, "not ported yet")); }
+function openJit(name) { showError("The JIT formula editor is not ported yet."); }
+defWin("mapseq", "Map Sequences", 360, p => p.append(el("div", { class: "hint" }, "not ported yet")));
 
 // ------------------------------------------------------------ start
+async function loadFormulas() {
+  const f = await api("/api/formulas");
+  formulaNames = [...f.builtin, ...f.custom];
+  formulaDE = new Map(formulaNames.map((n, i) => [n, f.de[i] ?? 0]));
+  let dl = $("formulaList");
+  if (!dl) { dl = el("datalist", { id: "formulaList" }); document.body.append(dl); }
+  dl.textContent = "";
+  for (const n of formulaNames) dl.append(el("option", { value: n }));
+  if (isOpen("formulas")) renderWin("formulas");
+}
 (async () => {
+  if (store.get("classic", false)) document.documentElement.classList.add("classic");
   try {
-    const f = await api("/api/formulas");
-    formulaNames = [...f.builtin, ...f.custom];
-    const dl = el("datalist", { id: "formulaList" });
-    for (const n of formulaNames) dl.append(el("option", { value: n }));
-    document.body.append(dl);
-    for (const n of f.builtin) $("preset").append(el("option", { value: n }, n));
-    const kk = el("datalist", { id: "knownKeys" });
-    for (const k of KNOWN_KEYS) kk.append(el("option", { value: k }));
-    document.body.append(kk);
+    await loadFormulas();
     applyState(await api("/api/state"), true);
+    for (const id of store.get("open", [])) if (WINDOWS[id]) openWin(id);
     await sendView(true);
-  } catch (e) { setStatus(e.message, true); }
+    msg("mb3d-rs editor. Open parameters (top left), edit them in the Formulas, Lighting and Post processing windows, and press \"Calculate 3D\".", "n");
+  } catch (e) { showError(e); }
   poll();
 })();
 </script>

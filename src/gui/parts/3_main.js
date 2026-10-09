@@ -54,9 +54,9 @@ function closeWin(id) {
 const isOpen = id => openWins.has(id);
 function popOut(id) {
   const def = WINDOWS[id];
-  const sz = store.get("pop." + id, { w: def.width + 24, h: Math.min(screen.availHeight - 80, 820) });
+  const sz = store.get("pop." + id, { w: Math.min(screen.availWidth - 40, def.width + 24), h: Math.min(screen.availHeight - 80, id === "navi" ? 760 : 820) });
   const w = window.open("/?win=" + id, "mb3d_" + id, `popup,width=${sz.w},height=${sz.h}`);
-  if (!w) return showError("The browser blocked the new window: allow pop-ups for this page.");
+  if (!w) { showError("The browser blocked the new window (allow pop-ups for this page); showing it inside the editor."); return openWin(id); }
   closeWin(id);
 }
 function renderWin(id) {
@@ -69,7 +69,9 @@ function refreshAll() {
   for (const id of openWins) if (!WINDOWS[id].selfRefresh) renderWin(id);
   for (const id of openWins) if (WINDOWS[id].sceneChanged) WINDOWS[id].sceneChanged();
 }
-for (const b of document.querySelectorAll("[data-win]")) b.addEventListener("click", () => isOpen(b.dataset.win) && !$("w_" + b.dataset.win).classList.contains("top") ? raiseWin($("w_" + b.dataset.win)) : (isOpen(b.dataset.win) ? closeWin(b.dataset.win) : openWin(b.dataset.win)));
+// the Navigator always opens in its own window, as in MB3D
+for (const b of document.querySelectorAll("[data-win='navi']")) b.dataset.win = "", b.addEventListener("click", () => popOut("navi"));
+for (const b of document.querySelectorAll("[data-win]:not([data-win=''])")) b.addEventListener("click", () => isOpen(b.dataset.win) && !$("w_" + b.dataset.win).classList.contains("top") ? raiseWin($("w_" + b.dataset.win)) : (isOpen(b.dataset.win) ? closeWin(b.dataset.win) : openWin(b.dataset.win)));
 
 // ------------------------------------------------------------ top bar: Open / Save / Save pic / Tools / Prefs
 let pc2 = store.get("pc2", "Open");
@@ -342,7 +344,17 @@ document.addEventListener("keydown", e => {
     if (e.key === "y") { e.preventDefault(); redo(); return; }
   }
   if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
-  if (t !== view && !(isOpen("navi") && $("w_navi").contains(t))) return;
+  if (isOpen("navi") && ($("w_navi").contains(t) || (SOLO === "navi" && t === document.body))) {
+    // the navigator's own keys (MB3D: w/s walk, a/d e/c slide, arrows look, u/o roll, f keyframe)
+    const NK = { w: ["move", 2, 1], s: ["move", 2, -1], a: ["move", 0, -1], d: ["move", 0, 1], e: ["move", 1, -1], c: ["move", 1, 1], q: ["move", 1, 1],
+      arrowleft: ["rotate", 1, -1], arrowright: ["rotate", 1, 1], arrowup: ["rotate", 0, 1], arrowdown: ["rotate", 0, -1],
+      u: ["rotate", 2, -1], o: ["rotate", 2, 1], "+": ["zoom", 0, 1], "=": ["zoom", 0, 1], "-": ["zoom", 0, -1] };
+    const kk = e.key.toLowerCase();
+    if (kk === "f") { e.preventDefault(); naviKeyframe(); return; }
+    if (NK[kk]) { e.preventDefault(); naviDo(NK[kk][0], NK[kk][1], NK[kk][2], e.shiftKey); }
+    return;
+  }
+  if (t !== view) return;
   const k = KEYS[e.key.toLowerCase()];
   if (k) { e.preventDefault(); doNav(k[0], k[1], k[2], e.shiftKey); }
 });

@@ -212,7 +212,9 @@ pub(super) fn key_op(app: &Arc<App>, q: &HashMap<String, String>) -> Result<(), 
     let st = &app.anim;
     let op = q.get("op").map(String::as_str).unwrap_or("");
     let idx = q.get("i").and_then(|v| v.parse::<usize>().ok());
-    let current = || app.scene.lock().unwrap().scene.clone();
+    // keyframes from the navigator ("Ani keyfr." / key f) use its view
+    let from_navi = q.get("from").map(String::as_str) == Some("navi");
+    let current = || if from_navi { super::navi::view_scene(app) } else { app.scene.lock().unwrap().scene.clone() };
     let mut a = st.anim.lock().unwrap();
     let mut ids = st.ids.lock().unwrap();
     let n = a.keyframes.len();

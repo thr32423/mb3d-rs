@@ -226,12 +226,12 @@ function select(id, value, opts, onset, attrs = {}) {
   s.addEventListener("change", () => onset(s.value));
   return s;
 }
-function radios(name, value, opts, onset) {
+function radios(name, value, opts, onset, inline) {
   return el("div", { class: "radios" }, ...opts.map(([v, lab]) => {
     const r = el("input", { type: "radio", name, value: v });
     r.checked = String(value) === String(v);
     r.addEventListener("change", () => r.checked && onset(v));
-    return el("label", { style: "display:block" }, r, lab);
+    return el("label", { style: inline ? "margin-right:8px" : "display:block" }, r, lab);
   }));
 }
 // MB3D's track bars: a slider with the value next to it

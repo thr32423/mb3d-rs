@@ -71,59 +71,142 @@ defWin("postpro", "Post processing", 380, p => {
   sec("ds", "Double imagesize", d => doublePanel(d));
 });
 
-// ============================================================ Navigator window
+// ============================================================ Navigator window (Navigator.pas)
+// Its own copy of the parameters and its own preview, like MB3D's navigator:
+// walking here leaves the editor alone until "View to main" or "Send values".
 let naviPanel = store.get("naviPanel", "Misc"), naviF = 0;
-defWin("navi", "Navigator", 360, p => {
-  const b = (t, op, axis, sign, title) => el("button", { title, onclick: e => doNav(op, axis, sign, e.shiftKey) }, t);
-  p.append(el("div", { class: "hint" }, "Walk in the main image (mode \"walk\"): click flies towards a point, drag turns, wheel moves. Keys in the image: W/S A/D R/F, arrows, Q/E, +/−; Shift for finer steps."));
-  p.append(el("div", { class: "grid page2" },
-    lab("Walking"), el("div", { class: "btns" }, b("fwd (w)", "move", 2, 1), b("back (s)", "move", 2, -1)),
-    lab("Sliding"), el("div", { class: "btns" }, b("◀ (a)", "move", 0, -1), b("▶ (d)", "move", 0, 1), b("▲ (r)", "move", 1, -1), b("▼ (f)", "move", 1, 1)),
-    lab("Looking"), el("div", { class: "btns" }, b("←", "rotate", 1, -1), b("→", "rotate", 1, 1), b("↑", "rotate", 0, 1), b("↓", "rotate", 0, -1)),
-    lab("Rolling"), el("div", { class: "btns" }, b("↺ (q)", "rotate", 2, -1), b("↻ (e)", "rotate", 2, 1), b("zoom +", "zoom", 0, 1), b("zoom −", "zoom", 0, -1)),
-    lab("Step (% of DE):", "Moves are a percentage of the distance estimate at the camera"), field("nvStep", naviCfg.step, v => { naviCfg.step = v; saveNavi(); }, { class: "n" }),
-    lab("Angle (°):"), field("nvAng", naviCfg.angle, v => { naviCfg.angle = v; saveNavi(); }, { class: "n" }),
-    lab("Click in image:"), select("nvClick", naviCfg.click, [["fly", "flies towards the point"], ["look", "turns to the point"], ["focus", "sets the DOF focus"]], v => { naviCfg.click = v; saveNavi(); })));
-  // the parameter sliders (Panel3 buttons)
-  p.append(tabsRow(["Julia", "Formula values", "4d rotation", "Misc"], naviPanel, n => { naviPanel = n; store.set("naviPanel", n); renderWin("navi"); }));
+let navi = { text: "", model: { global: [], sections: [] }, ver: -1, poll: null, chain: Promise.resolve(), status: null };
+const NAVI_SIZES = [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200];
+const ngv = (k, d) => { const l = navi.model.global.find(x => x.k === k); return l ? l.v : (k in DEF ? DEF[k] : (d ?? "")); };
+const ngvec = (k, n) => { const p = ngv(k).split(",").map(x => x.trim()); while (p.length < n) p.push("0"); return p; };
+function naviApply(st) {
+  if (!st) return;
+  const structural = st.text !== navi.text;
+  navi.text = st.text;
+  navi.model = parseM3s(st.text);
+  if (st.status) naviStatus(st.status);
+  if (structural && isOpen("navi")) renderWin("navi");
+}
+function naviCall(path, body) {
+  navi.chain = navi.chain.then(async () => {
+    try { const r = await post(path, body); if (path.endsWith("to_main")) applyState(r); else naviApply(r); }
+    catch (e) { showError(e); }
+  });
+  return navi.chain;
+}
+const naviSet = o => { for (const [k, v] of Object.entries(o)) { const i = navi.model.global.findIndex(x => x.k === k); if (i >= 0) navi.model.global[i].v = String(v); else navi.model.global.push({ k, v: String(v), c: "" }); }
+  return naviCall("/api/navi/scene", toText(navi.model)); };
+const naviNav = q => naviCall("/api/navi/nav", form(q));
+function naviDo(op, axis, sign, fine) {
+  const step = (+naviCfg.step || 20) / 100 * (fine ? 0.25 : 1), deg = (+naviCfg.angle || 5) * (fine ? 0.25 : 1);
+  if (op === "move") naviNav({ op, axis, amount: sign * step });
+  else if (op === "rotate") naviNav({ op, axis, deg: sign * deg });
+  else if (op === "zoom") naviNav({ op, factor: sign > 0 ? 1.25 : 0.8 });
+}
+function naviKeyframe() {
+  post("/api/anim/key", form({ op: "add", from: "navi" })).then(r => { if (typeof setAnim === "function") setAnim(r.anim); msg("Animation keyframe added from the navigator view.", "n"); }).catch(showError);
+}
+function naviStatus(s) {
+  navi.status = s;
+  const im = $("naviImg");
+  if (im && s.img_ver !== navi.ver && s.img_ver > 0) { navi.ver = s.img_ver; im.src = "/api/navi/image?v=" + s.img_ver; }
+  const st = $("naviStage"); if (st) { st.textContent = s.error || (s.rendering ? `${s.stage} · ${s.progress.toFixed(0)} %` : s.stage); st.style.color = s.error ? "var(--err)" : ""; }
+}
+async function naviPoll() {
+  clearTimeout(navi.poll);
+  if (!isOpen("navi")) return;
+  try { naviStatus(await api("/api/navi/status")); } catch (e) { /* server away */ }
+  navi.poll = setTimeout(naviPoll, navi.status && navi.status.rendering ? 120 : 600);
+}
+defWin("navi", "Navigator", 1010, p => {
+  const w = (navi.status && navi.status.width) || 640;
+  const asp = gnum("height", 480) / gnum("width", 640) || 0.75;
+  const img = el("img", { id: "naviImg", alt: "", draggable: "false", tabindex: "0", title: "Click: fly towards the point (Shift: turn to it), drag: look around, wheel: walk; keys W/S A/D E/C, arrows, U/O roll, F keyframe",
+    style: `width:${w}px;max-width:100%;aspect-ratio:${1 / asp};background:#0b0c0f;display:block;cursor:crosshair;outline:none` });
+  if (navi.ver > 0) img.src = "/api/navi/image?v=" + navi.ver;
+  let d = null;
+  img.addEventListener("mousedown", e => { e.preventDefault(); img.focus(); d = { x: e.clientX, y: e.clientY, r: img.getBoundingClientRect() }; });
+  img.addEventListener("mouseup", e => {
+    if (!d) return; const s = d; d = null;
+    const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    if (Math.hypot(dx, dy) > 4) {
+      const k = (parseFloat(ngv("fov")) || 30) / s.r.height;
+      if (Math.abs(dx) > 2) naviNav({ op: "rotate", axis: 1, deg: -dx * k });
+      if (Math.abs(dy) > 2) naviNav({ op: "rotate", axis: 0, deg: dy * k });
+    } else naviNav({ op: e.shiftKey ? "look" : "fly", u: (e.clientX - s.r.left) / s.r.width, v: (e.clientY - s.r.top) / s.r.height, amount: (+naviCfg.step || 20) / 100 * 2 });
+  });
+  img.addEventListener("wheel", e => { e.preventDefault(); naviDo("move", 2, e.deltaY < 0 ? 1 : -1, e.shiftKey); }, { passive: false });
+  const b = (t, op, axis, sign, title) => el("button", { title, onclick: e => naviDo(op, axis, sign, e.shiftKey) }, t);
+  const left = el("div", { style: "flex:none;max-width:100%" }, img,
+    el("div", { class: "hint", id: "naviStage", style: "margin:2px 0" }),
+    el("div", { class: "btns" },
+      el("span", { class: "dim" }, "Walking"), b("▲ w", "move", 2, 1, "Forward"), b("▼ s", "move", 2, -1, "Back"),
+      el("span", { class: "dim" }, "Sliding"), b("◀ a", "move", 0, -1), b("▶ d", "move", 0, 1), b("↑ e", "move", 1, -1, "Up"), b("↓ c", "move", 1, 1, "Down"),
+      el("span", { class: "dim" }, "Looking"), b("←", "rotate", 1, -1), b("→", "rotate", 1, 1), b("↑", "rotate", 0, 1), b("↓", "rotate", 0, -1),
+      el("span", { class: "dim" }, "Rolling"), b("↺ u", "rotate", 2, -1), b("↻ o", "rotate", 2, 1)),
+    el("div", { class: "btns" },
+      btn("Parameter", () => naviCall("/api/navi/from_main", form({ what: "all" })), { title: "Insert the complete parameters from the main window" }),
+      btn("View to main", () => naviCall("/api/navi/to_main", form({ what: "view" })), { class: "on", title: "Send this view with all julia and formula modifications to the main window" }),
+      btn("Light", () => naviCall("/api/navi/from_main", form({ what: "light" })), { title: "Take the light settings of the main window" }),
+      btn("Formula", () => naviCall("/api/navi/from_main", form({ what: "formula" })), { title: "Take the formula settings of the main window" }),
+      btn("Ani keyfr. (f)", naviKeyframe, { title: "Animation keyframe from this view" }),
+      check("nvHiq", navi.status && navi.status.hiq, c => naviCall("/api/navi/set", form({ hiq: c })), "HiQual", "Smaller raysteps against overstepping (slower)")),
+    el("div", { class: "grid", style: "grid-template-columns: 150px 90px 120px 1fr" },
+      lab("Sliding+Walking step:", "Percent of the local distance estimate"), field("nvStep", naviCfg.step, v => { naviCfg.step = v; saveNavi(); }, { class: "n" }),
+      lab("Looking+Rolling angle:", "Degrees"), field("nvAng", naviCfg.angle, v => { naviCfg.angle = v; saveNavi(); }, { class: "n" }),
+      lab("FOVy:"), field("nvFov", ngv("fov"), v => naviSet({ fov: v }), { class: "n" }),
+      lab("Camera:"), select("nvOpt", ngv("optic", "0"), [["0", "stan."], ["1", "rect."], ["2", "pano."]], v => naviSet({ optic: v })),
+      lab("Navigator Size:"), select("nvSize", String(Math.round(w / 6.4)), NAVI_SIZES.map(n => [String(n), n + "%"]), v => { naviCall("/api/navi/set", form({ width: Math.round(6.4 * v) })).then(() => renderWin("navi")); })));
+
+  // the adjustment panel (Panel3): relative sliders with reset / send
+  const right = el("div", { style: "flex:1;min-width:280px" });
+  right.append(tabsRow([["Julia", "Julia values (x,y,z)"], ["Formula values", "Formula values"], ["4d rotation", "4d rotation (xw,yw,zw)"], ["Misc", "Misc"]], naviPanel,
+    n => { naviPanel = n; store.set("naviPanel", n); renderWin("navi"); }));
   const pg = el("div", { class: "page2" });
-  pg.append(el("div", { class: "btns" }, lab("Adjustments:"), select("nvAdj", String(naviCfg.adj), [["1", "fine (1 %)"], ["10", "medium (10 %)"], ["100", "coarse (100 %)"]], v => { naviCfg.adj = +v; saveNavi(); })));
-  // relative slider: dragging changes the value by up to ±adj %, released it snaps back
-  const rel = (id, label, get, set, unit = 1) => {
-    const r = el("input", { type: "range", id, min: -100, max: 100, value: 0 });
-    const base = get();
-    const t = el("span", { class: "mono" }, String(+base.toPrecision(8)));
-    const val = () => base + (+r.value / 100) * (naviCfg.adj / 100) * (unit === 1 ? (Math.abs(base) > 1e-3 ? Math.abs(base) : 1) : unit);
+  pg.append(el("div", { class: "btns" }, lab("Adjustments:"), radios("nvAdj", String(naviCfg.adj), [["1", "min"], ["10", "fine"], ["50", "mid"], ["200", "big"]], v => { naviCfg.adj = +v; saveNavi(); }, true)));
+  const rel = (id, label, base, set, unit = 1) => {
+    const r = el("input", { type: "range", id, min: -60, max: 60, value: 0 });
+    const t = el("span", { class: "mono" }, String(+(+base).toPrecision(8)));
+    const val = () => base + (+r.value / 60) * (naviCfg.adj / 100) * (unit === 1 ? (Math.abs(base) > 1e-3 ? Math.abs(base) : 1) : unit);
     r.addEventListener("input", () => { t.textContent = String(+val().toPrecision(8)); });
     r.addEventListener("change", () => set(+val().toPrecision(12)));
     return [lab(label), r, t];
   };
   const tb = el("div", { class: "tb" });
+  const sendBtns = what => el("div", { class: "btns" },
+    btn("Reset values", () => naviCall("/api/navi/from_main", form({ what })), { title: "Input the original values from the main program parameters" }),
+    btn("Send values", () => naviCall("/api/navi/to_main", form({ what })), { title: "Put the adjusted values into the main program parameters" }));
   if (naviPanel === "Julia") {
-    const jc = () => gvec("julia_c", 4).map(Number);
-    ["x", "y", "z"].forEach((n, i) => tb.append(...rel("nvJ" + i, n, () => jc()[i], v => { const c = jc(); c[i] = v; setG({ julia_c: c.join(", "), julia: true }); })));
-    pg.append(cG("nvJm", "julia", "Julia mode"), tb);
+    const jc = ngvec("julia_c", 4).map(Number);
+    ["x", "y", "z"].forEach((n, i) => tb.append(...rel("nvJ" + i, n, jc[i], v => { jc[i] = v; naviSet({ julia_c: jc.join(", "), julia: true }); })));
+    const jm = el("input", { type: "checkbox", id: "nvJm" }); jm.checked = ngv("julia") === "true";
+    jm.onchange = () => naviSet({ julia: jm.checked });
+    pg.append(el("label", { title: "Turn on/off the julia mode" }, jm, "Julia mode"), tb, sendBtns("julia"));
   } else if (naviPanel === "Formula values") {
-    const secs = formulaSecs();
+    const secs = navi.model.sections.filter(s => s.type === "formula");
     if (naviF >= secs.length) naviF = 0;
     const s = secs[naviF];
     pg.append(el("div", { class: "btns" }, lab("F.nr:"), select("nvF", String(naviF), secs.map((x, i) => [String(i), `${i + 1}: ${sv(x, "name")}`]), v => { naviF = +v; renderWin("navi"); })));
     if (s) s.lines.forEach((l, i) => {
       if (l.k === "name" || isNaN(parseFloat(l.v))) return;
-      tb.append(...rel("nvO" + i, /^option\d+$/.test(l.k) && l.c ? l.c : l.k, () => parseFloat(l.v), v => { l.v = String(/^-?\d+$/.test(l.v) && l.k === "iterations" ? Math.round(v) : v); commit(); }));
+      tb.append(...rel("nvO" + i, /^option\d+$/.test(l.k) && l.c ? l.c : l.k, parseFloat(l.v), v => {
+        l.v = String(l.k === "iterations" ? Math.max(0, Math.round(v)) : v); naviCall("/api/navi/scene", toText(navi.model)); }));
     });
-    pg.append(tb);
+    pg.append(tb, el("div", { class: "btns" },
+      btn("Reset values", () => naviCall("/api/navi/from_main", form({ what: "formula" }))),
+      btn("Send all formula values", () => naviCall("/api/navi/to_main", form({ what: "formula" })), { title: "Send all adjusted formula values to the main program parameters" })));
   } else if (naviPanel === "4d rotation") {
-    const r4 = () => gvec("rotation_4d", 3).map(Number);
-    ["xw", "yw", "zw"].forEach((n, i) => tb.append(...rel("nv4" + i, n, () => r4()[i], v => { const c = r4(); c[i] = v; setG({ rotation_4d: c.join(", ") }); }, 180)));
-    pg.append(tb);
+    const r4 = ngvec("rotation_4d", 3).map(Number);
+    ["xw", "yw", "zw"].forEach((n, i) => tb.append(...rel("nv4" + i, n, r4[i], v => { r4[i] = v; naviSet({ rotation_4d: r4.join(", ") }); }, 180)));
+    pg.append(tb, sendBtns("rot4d"));
   } else {
-    const num = (k, unit) => rel("nvM" + k, k, () => gnum(k), v => setG({ [k]: k.includes("iter") || k === "dfog_on_it" ? Math.max(0, Math.round(v)) : v }), unit);
-    tb.append(...num("iterations", 20), ...num("rstop"), ...num("decomb_smooth"), ...num("de_stop"), ...num("dfog_on_it", 20));
-    pg.append(tb);
+    const num = (k, label, unit) => rel("nvM" + k, label, parseFloat(ngv(k)) || 0, v => naviSet({ [k]: k.includes("iter") || k === "dfog_on_it" ? Math.max(0, Math.round(v)) : v }), unit);
+    tb.append(...num("iterations", "Max iterations", 20), ...num("rstop", "R bailout"), ...num("decomb_smooth", "Smooth DEcomb"), ...num("de_stop", "DEstop"), ...num("dfog_on_it", "Dyn Fog on its", 20));
+    pg.append(tb, sendBtns("misc"));
   }
-  p.append(pg);
-});
+  right.append(pg);
+  p.append(el("div", { style: "display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start" }, left, right));
+}, { selfRefresh: true, onopen: async () => { try { naviApply(await api("/api/navi")); } catch (e) { showError(e); } naviPoll(); } });
 
 // ============================================================ smaller windows
 defWin("text", "Parameter text", 520, p => {

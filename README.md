@@ -91,7 +91,7 @@ single-page editor laid out like MB3D's main window (see
   Ambient, d.Fog and Back pic pages with palette editors), *Post processing*
   (normals on the z-buffer, hard and ambient shadows, reflections and
   transparency, depth of field, recalculate a selection, double image size),
-  *Navigator*, *Animation maker*, *MutaGen*, *Bulb Tracer2*, *Voxel export*,
+  *Navigator* (its own window with its own copy of the parameters and preview, as in MB3D: walk, look, roll, adjust julia, formula, 4D and misc values, then "View to main" or "Send values"; "Ani keyfr. (f)" adds an animation keyframe), *Animation maker*, *MutaGen*, *Bulb Tracer2*, *Voxel export*,
   *Monte Carlo*, *Big renders*, *Batch processing*, *Map Sequences*, *Ini
   Dirs*. Windows can be moved and stay open between sessions; the ⧉ button
   opens a window in its own browser window (e.g. on a second screen), which

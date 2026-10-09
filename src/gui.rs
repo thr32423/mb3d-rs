@@ -19,6 +19,7 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::time::Instant;
 
 mod anim;
+mod navi;
 mod tools;
 
 const INDEX_HTML: &str = include_str!("gui/index.html");
@@ -147,6 +148,8 @@ struct App {
     anim: anim::AnimState,
     /// MutaGen and the voxel / mesh export
     tools: tools::ToolsState,
+    /// the Navigator window (own scene and preview)
+    navi: navi::NaviState,
 }
 
 impl App {
@@ -214,6 +217,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
         view_w: AtomicU32::new(640),
         anim: anim::AnimState::new(),
         tools: tools::ToolsState::new(),
+        navi: navi::NaviState::new(),
     });
     let listener = TcpListener::bind((host.as_str(), port)).map_err(|e| format!("cannot listen on {host}:{port}: {e}"))?;
     eprintln!("mb3d gui: open http://{host}:{port}/ in your browser (Ctrl+C to stop)");
@@ -730,7 +734,11 @@ fn look_along(sc: &mut Scene, dir: Vec3) {
 
 /// Pixel under the normalised image coordinates of the last preview.
 fn pick_at(app: &App, u: f64, v: f64) -> Option<(Option<Vec3>, Vec3)> {
-    let pk = app.pick.lock().unwrap();
+    pick_in(&app.pick, u, v)
+}
+
+fn pick_in(pick: &Mutex<Option<Pick>>, u: f64, v: f64) -> Option<(Option<Vec3>, Vec3)> {
+    let pk = pick.lock().unwrap();
     let pk = pk.as_ref()?;
     let x = ((u * pk.w as f64) as i64).clamp(0, pk.w as i64 - 1) as i32;
     let y = ((v * pk.h as f64) as i64).clamp(0, pk.h as i64 - 1) as i32;
@@ -754,23 +762,32 @@ fn pick_json(app: &App, q: &HashMap<String, String>) -> Result<String, String> {
 }
 
 fn navigate(app: &App, q: &HashMap<String, String>) -> Result<(), String> {
+    let mut sc = app.scene.lock().unwrap().scene.clone();
+    nav_ops(&mut sc, q, &|u, v| pick_at(app, u, v))?;
+    app.set_scene(sc);
+    Ok(())
+}
+
+type PickFn<'a> = &'a dyn Fn(f64, f64) -> Option<(Option<Vec3>, Vec3)>;
+
+/// The navigation operations, on any scene (the editor's or the navigator's).
+fn nav_ops(sc: &mut Scene, q: &HashMap<String, String>, pick: PickFn) -> Result<(), String> {
     let num = |k: &str, d: f64| q.get(k).and_then(|v| v.parse::<f64>().ok()).unwrap_or(d);
     let op = q.get("op").map(String::as_str).unwrap_or("");
-    let mut sc = app.scene.lock().unwrap().scene.clone();
     let step_de = || camera_de(&sc).unwrap_or(sc.step_width() * sc.width as f64 * 0.05);
     match op {
         "move" => {
             let axis = (num("axis", 2.0) as usize).min(2);
             let d = num("amount", 0.5) * step_de();
             let dir = normalize(sc.vgrads[axis]);
-            move_by(&mut sc, dir.map(|v| v * d));
+            move_by(sc, dir.map(|v| v * d));
         }
         "rotate" => {
             let deg = num("deg", 5.0);
             match num("axis", 1.0) as i32 {
-                0 => rotate_rows(&mut sc, 1, 2, deg), // pitch
-                1 => rotate_rows(&mut sc, 0, 2, -deg), // yaw (positive = turn right)
-                _ => rotate_rows(&mut sc, 0, 1, deg), // roll
+                0 => rotate_rows(sc, 1, 2, deg), // pitch
+                1 => rotate_rows(sc, 0, 2, -deg), // yaw (positive = turn right)
+                _ => rotate_rows(sc, 0, 1, deg), // roll
             }
         }
         "zoom" => sc.zoom = (sc.zoom * num("factor", 1.25)).clamp(1e-12, 1e12),
@@ -827,7 +844,7 @@ fn navigate(app: &App, q: &HashMap<String, String>) -> Result<(), String> {
             sc.tiling = None;
         }
         "midpoint" => {
-            let (pos, _) = pick_at(app, num("u", 0.5), num("v", 0.5)).ok_or("no image to pick from yet")?;
+            let (pos, _) = pick(num("u", 0.5), num("v", 0.5)).ok_or("no image to pick from yet")?;
             let p = pos.ok_or("background picked")?;
             let (zs, ze) = (sc.mid[2] - sc.z_start, sc.z_end - sc.mid[2]);
             sc.mid = p;
@@ -844,9 +861,9 @@ fn navigate(app: &App, q: &HashMap<String, String>) -> Result<(), String> {
             sc.vgrads = crate::math::build_rot_matrix(0.0001, -0.0001, 0.0);
         }
         "fly" | "look" => {
-            let (pos, dir) = pick_at(app, num("u", 0.5), num("v", 0.5)).ok_or("no preview to pick from yet")?;
+            let (pos, dir) = pick(num("u", 0.5), num("v", 0.5)).ok_or("no preview to pick from yet")?;
             if op == "look" {
-                look_along(&mut sc, dir);
+                look_along(sc, dir);
             } else {
                 let cam = camera_pos(&sc);
                 let f = num("amount", 0.5);
@@ -854,25 +871,24 @@ fn navigate(app: &App, q: &HashMap<String, String>) -> Result<(), String> {
                     Some(p) => [(p[0] - cam[0]) * f, (p[1] - cam[1]) * f, (p[2] - cam[2]) * f],
                     None => dir.map(|c| c * step_de() * f),
                 };
-                move_by(&mut sc, v);
+                move_by(sc, v);
             }
         }
         "focus" => {
             // depth of field focus on the picked point (fraction of the image width)
-            let (pos, _) = pick_at(app, num("u", 0.5), num("v", 0.5)).ok_or("no preview yet")?;
+            let (pos, _) = pick(num("u", 0.5), num("v", 0.5)).ok_or("no preview yet")?;
             let p = pos.ok_or("background picked")?;
             let cam = camera_pos(&sc);
             let vz = normalize(sc.vgrads[2]);
             let z = (p[0] - cam[0]) * vz[0] + (p[1] - cam[1]) * vz[1] + (p[2] - cam[2]) * vz[2];
             let f = z / (sc.step_width() * sc.width as f64);
-            sc = sc.apply(&format!("dof_focus = {f}"))?;
+            *sc = sc.clone().apply(&format!("dof_focus = {f}"))?;
             if sc.dof.is_none() {
-                sc = sc.apply("dof = sorted")?;
+                *sc = sc.clone().apply("dof = sorted")?;
             }
         }
         _ => return Err(format!("unknown navigation '{op}'")),
     }
-    app.set_scene(sc);
     Ok(())
 }
 
@@ -1207,6 +1223,33 @@ fn handle(app: &Arc<App>, mut stream: TcpStream) -> std::io::Result<()> {
                     }
                 }
             }
+        }
+        // ---- Navigator
+        ("GET", "/api/navi") => ok_json(&mut stream, navi::state_json(app)),
+        ("GET", "/api/navi/status") => ok_json(&mut stream, navi::status_json(app)),
+        ("GET", "/api/navi/image") => {
+            let png = navi::image(app);
+            respond(&mut stream, "200 OK", "image/png", &png, "")
+        }
+        ("POST", "/api/navi/nav") => match navi::navigate(app, &form()) {
+            Ok(()) => ok_json(&mut stream, navi::state_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/navi/scene") => match navi::set_text(app, &String::from_utf8_lossy(&req.body)) {
+            Ok(()) => ok_json(&mut stream, navi::state_json(app)),
+            Err(e) => err_json(&mut stream, e),
+        },
+        ("POST", "/api/navi/set") => {
+            navi::settings(app, &form());
+            ok_json(&mut stream, navi::state_json(app))
+        }
+        ("POST", "/api/navi/from_main") => {
+            navi::from_main(app, form().get("what").map(String::as_str).unwrap_or("all"));
+            ok_json(&mut stream, navi::state_json(app))
+        }
+        ("POST", "/api/navi/to_main") => {
+            navi::to_main(app, form().get("what").map(String::as_str).unwrap_or("view"));
+            ok_json(&mut stream, state_json(app))
         }
         // ---- map sequences
         ("GET", "/api/mapseq") => ok_json(&mut stream, mapseq_json()),

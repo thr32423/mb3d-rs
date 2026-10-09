@@ -105,6 +105,10 @@ The page follows MB3D's main window:
   drag turns, the wheel moves; keys W/S, A/D, R/F, arrows, Q/E), *2D zoom*,
   *X,Y* and *Z* — and the rotation buttons (right click: around the
   object's own axes).
+* **Navigator** (top left) opens its own window with its own copy of the
+  parameters, like MB3D's: walk with W/S, A/D, E/C, arrows, U/O or the mouse,
+  adjust values on the right, then *View to main* sends the view to the
+  editor; *Parameter* takes the editor's parameters again.
 * **Right:** position and rotation, *Calculate 3D*, the quality presets, the
   windows *Formulas*, *Lighting* and *Postprocess*, and the pages
   Calculation, Internal, Infos, Cutting, Julia, Camera, Coloring and

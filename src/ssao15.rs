@@ -50,15 +50,41 @@ pub fn fast_int_arctan2(y: i32, x: i32) -> usize {
     (r & 31) as usize
 }
 
-struct Levels {
-    count: usize,
-    corr_mul: f32,
-    zsub: i64,
-    lev: Vec<Vec<u16>>,
+pub(crate) struct Levels {
+    pub(crate) count: usize,
+    pub(crate) corr_mul: f32,
+    pub(crate) zsub: i64,
+    pub(crate) lev: Vec<Vec<u16>>,
+}
+
+impl Levels {
+    /// The scaled depth of a pixel as the sampling compares it (32768 for
+    /// the background).
+    pub(crate) fn zp_of(&self, s: &SiLight) -> i32 {
+        if s.zpos() < 32768 {
+            (((s.zpos_fine >> 8) as i64 - self.zsub) as f64 * self.corr_mul as f64).round_ties_even() as i32
+        } else {
+            32768
+        }
+    }
+}
+
+/// The constants of the sampling: `(szrt, smul, st2)`.
+pub(crate) fn sampling_constants(lv: &Levels, zc_mul: f64, zcorr: f64, p: &SsaoParams) -> (f32, f32, f32) {
+    let n = lv.count as f32;
+    let thr = p.threshold.max(0.01);
+    let zscale = (((256.0 / zc_mul + 1.0).powi(2) - 1.0) / zcorr) as f32;
+    let st2 = zscale / (lv.corr_mul * 256.0);
+    let pi = std::f32::consts::PI;
+    if p.t0 {
+        ((thr * 2.0 / st2).max(0.01), 1.35 * 32767.0 / (pi * 32.0 * (thr * 0.8 * n.sqrt().sqrt()).atan().powf(0.9)), st2)
+    } else {
+        (thr / st2, 1.35 * 32767.0 / (pi * 32.0 * (thr * n.sqrt().sqrt()).atan().powf(0.8)), st2)
+    }
 }
 
 /// `BuildATlevels`
-fn build_levels(gbuf: &[SiLight], w: usize, h: usize) -> Levels {
+pub(crate) fn build_levels(gbuf: &[SiLight], w: usize, h: usize) -> Levels {
     let mut count = 1usize;
     let mut x = w / 16;
     loop {
@@ -206,25 +232,10 @@ pub fn ssao15(gbuf: &mut [SiLight], w: usize, h: usize, zc_mul: f64, zcorr: f64,
     }
     let lv = build_levels(gbuf, w, h);
     let n = lv.count as f32;
-    let thr = p.threshold.max(0.01);
-    let zscale = (((256.0 / zc_mul + 1.0).powi(2) - 1.0) / zcorr) as f32;
-    let st2 = zscale / (lv.corr_mul * 256.0);
-    let pi = std::f32::consts::PI;
-    let (szrt, smul) = if p.t0 {
-        ((thr * 2.0 / st2).max(0.01), 1.35 * 32767.0 / (pi * 32.0 * (thr * 0.8 * n.sqrt().sqrt()).atan().powf(0.9)))
-    } else {
-        (thr / st2, 1.35 * 32767.0 / (pi * 32.0 * (thr * n.sqrt().sqrt()).atan().powf(0.8)))
-    };
-    let zp_of = |s: &SiLight| -> i32 {
-        if s.zpos() < 32768 {
-            (((s.zpos_fine >> 8) as i64 - lv.zsub) as f64 * lv.corr_mul as f64).round_ties_even() as i32
-        } else {
-            32768
-        }
-    };
+    let (szrt, smul, st2) = sampling_constants(&lv, zc_mul, zcorr, p);
     let threads = threads.clamp(1, h);
     let lv = &lv;
-    let zps: Vec<i32> = gbuf.iter().map(zp_of).collect();
+    let zps: Vec<i32> = gbuf.iter().map(|s| lv.zp_of(s)).collect();
     let zps = &zps;
     std::thread::scope(|sc| {
         let mut per: Vec<Vec<(usize, &mut [SiLight])>> = (0..threads).map(|_| Vec::new()).collect();

@@ -365,10 +365,9 @@ to switch:
 
 * in the program, a blinking LED right of the window title shows where the
   last calculation ran: **green** all on the graphics card, **orange**
-  mixed (ray marching, hard shadows and DE ambient occlusion on the
-  graphics card, the rest of the post calculations on the CPU: screen
-  space ambient occlusion, normals on the z-buffer), **red** on the CPU
-  (also Monte Carlo renders), grey before the first calculation;
+  mixed (ray marching, shadows and ambient occlusion on the graphics
+  card, normals on the z-buffer on the CPU), **red** on the CPU (also
+  Monte Carlo renders), grey before the first calculation;
 * `mb3d` uses it too (it prints `calculated on: ...`); `--cpu` calculates
   on the CPU only;
 * the environment variable `MB3D_GPU=0` switches it off for both.
@@ -379,8 +378,13 @@ It needs the cargo feature `gpu` (part of the default build; a build with
 The shader (`src/gpu_march.wgsl`) is a port of the CPU's per-pixel loop
 and fills the same G-buffer, then runs the hard (or soft) shadows and the
 DE ambient occlusion on it (the same shader, started on the surface of
-each pixel); screen space ambient occlusion, reflections and the painting
-stay on the CPU. It calculates in single precision. The
+each pixel). The screen space ambient occlusion (both the 24 bit and the
+older 15 bit kind) has shaders of its own (`src/gpu_ssao.wgsl`,
+`src/gpu_ssao15.wgsl`) that only need the depth buffer, so it runs on the
+card after a CPU calculation too; with regular sampling it gives the
+CPU's values exactly, with random sampling the random numbers differ.
+Reflections and the painting stay on the CPU. The marcher calculates in
+single precision. The
 formulas reach it through the lifter: the x86 code of an `.m3f` formula is
 analysed (`src/lift.rs`: every memory access resolved to the iteration
 record, the formula's constants or the stack) and translated to WGSL

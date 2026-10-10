@@ -73,7 +73,7 @@ fn next_level(pia: &mut [u32], w: usize, h: usize, step: usize) {
 }
 
 /// Number of levels (`aATlevelCount`).
-fn level_count(w: usize, h: usize) -> usize {
+pub(crate) fn level_count(w: usize, h: usize) -> usize {
     let ymin = (((w * w + h * h) as f64).sqrt() * 0.5).round_ties_even() as i64;
     let mut y = 1;
     let mut x: i64 = 5;

@@ -355,20 +355,27 @@ struct Gpu {
 
 /// The pipeline of the shader `code` (compiled once, then cached).
 fn pipeline(g: &Gpu, code: &str) -> Result<std::sync::Arc<wgpu::ComputePipeline>, String> {
+    pipeline_entry(g, code, "main", None)
+}
+
+/// The pipeline of the entry point `entry` of the shader `code`; `layout`
+/// when several pipelines share one bind group (the automatic layout of a
+/// pipeline is exclusive to it).
+fn pipeline_entry(g: &Gpu, code: &str, entry: &str, layout: Option<&wgpu::PipelineLayout>) -> Result<std::sync::Arc<wgpu::ComputePipeline>, String> {
     use std::hash::{Hash, Hasher};
     let mut h = std::collections::hash_map::DefaultHasher::new();
-    code.hash(&mut h);
+    (code, entry).hash(&mut h);
     let key = h.finish();
     if let Some(pl) = g.pipelines.lock().map_err(|e| e.to_string())?.get(&key) {
         return Ok(pl.clone());
     }
     let scope = g.device.push_error_scope(wgpu::ErrorFilter::Validation);
-    let module = g.device.create_shader_module(wgpu::ShaderModuleDescriptor { label: Some("march"), source: wgpu::ShaderSource::Wgsl(code.into()) });
+    let module = g.device.create_shader_module(wgpu::ShaderModuleDescriptor { label: Some(entry), source: wgpu::ShaderSource::Wgsl(code.into()) });
     let pl = g.device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
-        label: Some("march"),
-        layout: None,
+        label: Some(entry),
+        layout,
         module: &module,
-        entry_point: Some("main"),
+        entry_point: Some(entry),
         compilation_options: Default::default(),
         cache: None,
     });
@@ -716,25 +723,210 @@ fn run(
     Ok(gbuf)
 }
 
-/// Runs `wgsl` (entry point `main`) once with the storage buffers
-/// `inputs` (bindings 0.., read only) and an output buffer of `out_len`
-/// words (the next binding); `groups` workgroups.  For tests of generated
-/// shader code.
-pub fn run_compute(wgsl: &str, inputs: &[&[u32]], out_len: usize, groups: u32) -> Result<Vec<u32>, String> {
-    let g = gpu()?;
-    let scope = g.device.push_error_scope(wgpu::ErrorFilter::Validation);
-    let module = g.device.create_shader_module(wgpu::ShaderModuleDescriptor { label: Some("test"), source: wgpu::ShaderSource::Wgsl(wgsl.into()) });
-    let pipeline = g.device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
-        label: Some("test"),
-        layout: None,
-        module: &module,
-        entry_point: Some("main"),
-        compilation_options: Default::default(),
-        cache: None,
-    });
-    if let Some(e) = pollster::block_on(scope.pop()) {
-        return Err(e.to_string());
+/// Screen space ambient occlusion (`ssao::ssao24`) on the graphics card:
+/// the same levels, directions and angle sums as the CPU (with random
+/// sampling the random numbers differ).  Sets `amb_shadow` of the object
+/// pixels; `Err` leaves the G-buffer untouched (the caller uses the CPU).
+pub fn ssao24(gbuf: &mut [SiLight], w: usize, h: usize, zc_mul: f64, zcorr: f64, p: &crate::ssao::SsaoParams) -> Result<(), String> {
+    if w == 0 || h == 0 {
+        return Ok(());
     }
+    let g = gpu()?;
+    let code = include_str!("gpu_ssao.wgsl");
+    let entries: Vec<wgpu::BindGroupLayoutEntry> = (0..6)
+        .map(|b| wgpu::BindGroupLayoutEntry {
+            binding: b,
+            visibility: wgpu::ShaderStages::COMPUTE,
+            ty: wgpu::BindingType::Buffer { ty: wgpu::BufferBindingType::Storage { read_only: b < 2 }, has_dynamic_offset: false, min_binding_size: None },
+            count: None,
+        })
+        .collect();
+    let bgl = g.device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor { label: Some("ssao"), entries: &entries });
+    let layout = g.device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor { label: Some("ssao"), bind_group_layouts: &[Some(&bgl)], immediate_size: 0 });
+    let (pl_h, pl_v, pl_s) = (
+        pipeline_entry(g, code, "blur_h", Some(&layout))?,
+        pipeline_entry(g, code, "blur_v", Some(&layout))?,
+        pipeline_entry(g, code, "sample", Some(&layout))?,
+    );
+    let levels = crate::ssao::level_count(w, h);
+    let z_scale = ((256.0 / zc_mul + 1.0).powi(2) - 1.0) / zcorr;
+    let thr = p.threshold.max(0.01);
+    let wlo = (w as f32 * p.border_mirror).round_ties_even() as i32;
+    let whi = w as i32 - 1 - wlo;
+    let hlo = (h as f32 * p.border_mirror).round_ties_even() as i32;
+    let hhi = h as i32 - 1 - hlo;
+    let passes = if p.random > 0 { p.random as usize } else { 1 };
+    let first: Vec<u32> = gbuf.iter().map(|s| if s.zpos() < 32768 { (s.zpos_fine & 0xFFFF_FF00) >> 1 } else { 0 }).collect();
+    let z0: Vec<u32> = gbuf.iter().zip(&first).map(|(s, z)| z | (s.zpos() < 32768) as u32).collect();
+    // the angles of a block of rows: 64 bytes per pixel, at most 64 MB
+    let max_rows = (64 * 1024 * 1024 / (w * 64)).clamp(1, h);
+    let blocks = (h - 1) / max_rows + 1;
+    let rows = h.div_ceil(blocks);
+    let storage = wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST;
+    let make = |label: &'static str, size: usize, usage: wgpu::BufferUsages| {
+        g.device.create_buffer(&wgpu::BufferDescriptor { label: Some(label), size: (size.max(1) * 4) as u64, usage, mapped_at_creation: false })
+    };
+    let par = make("ssao params", 32, storage);
+    let bz0 = make("ssao z0", w * h, storage);
+    let pa = make("ssao level a", w * h, storage);
+    let pb = make("ssao level b", w * h, storage);
+    let ang = make("ssao angles", w * rows * 16, storage);
+    let acc = make("ssao sum", w * h, storage | wgpu::BufferUsages::COPY_SRC);
+    let read = make("ssao read", w * h, wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST);
+    g.queue.write_buffer(&bz0, 0, &bytes(&z0));
+    g.queue.write_buffer(&acc, 0, &vec![0u8; w * h * 4]);
+    let bind = g.device.create_bind_group(&wgpu::BindGroupDescriptor {
+        label: None,
+        layout: &bgl,
+        entries: &[
+            wgpu::BindGroupEntry { binding: 0, resource: par.as_entire_binding() },
+            wgpu::BindGroupEntry { binding: 1, resource: bz0.as_entire_binding() },
+            wgpu::BindGroupEntry { binding: 2, resource: pa.as_entire_binding() },
+            wgpu::BindGroupEntry { binding: 3, resource: pb.as_entire_binding() },
+            wgpu::BindGroupEntry { binding: 4, resource: ang.as_entire_binding() },
+            wgpu::BindGroupEntry { binding: 5, resource: acc.as_entire_binding() },
+        ],
+    });
+    let (gx, gy) = (w.div_ceil(8) as u32, h.div_ceil(8) as u32);
+    for pass in 0..passes {
+        let mut y0 = 0;
+        while y0 < h {
+            let y1 = (y0 + rows).min(h);
+            g.queue.write_buffer(&pa, 0, &bytes(&first));
+            for level in 1..=levels {
+                // the constants of the level (ssao::ssao24)
+                let mut sit = (z_scale / 22000.0 * 4096.0) as f32;
+                let mut szrt = thr * if p.t0 { 1.0 } else { 0.7 } * 4096.0 / sit * ((levels as f32 / level as f32).sqrt().sqrt());
+                if p.t0 {
+                    szrt *= szrt;
+                }
+                let rnd = p.random > 0;
+                let at = if rnd {
+                    (thr * if p.t0 { 0.64 } else { 0.65 } * (levels as f32).sqrt().sqrt()).atan()
+                } else {
+                    (thr * 0.6 * (levels as f32).sqrt().sqrt()).atan()
+                };
+                let smul = 1.5 * 32767.0 / (std::f32::consts::PI * 32.0 * if p.t0 { at } else { at.powf(0.9) }) / passes as f32;
+                let imin = 16383 / passes as i32;
+                let iand = (1i64 << (level - 1)) - 1;
+                let ssub = iand as f32 * 0.5;
+                let istep = 1i64 << (level - 1);
+                let smin_rad = if istep < 2 { 1.0f32 } else { 3.25 * istep as f32 };
+                let step_count = if istep < 2 { 5 } else { 3 };
+                sit *= szrt;
+                let mut v: Vec<u32> = Vec::with_capacity(32);
+                let i = |v: &mut Vec<u32>, x: i32| v.push(x as u32);
+                let f = |v: &mut Vec<u32>, x: f32| v.push(x.to_bits());
+                i(&mut v, w as i32);
+                i(&mut v, h as i32);
+                i(&mut v, y0 as i32);
+                i(&mut v, (y1 - y0) as i32);
+                i(&mut v, (level == levels) as i32);
+                f(&mut v, sit);
+                f(&mut v, szrt);
+                f(&mut v, smul);
+                i(&mut v, imin);
+                i(&mut v, iand as i32);
+                f(&mut v, ssub);
+                i(&mut v, istep as i32);
+                f(&mut v, smin_rad);
+                i(&mut v, step_count);
+                for k in 0..5 {
+                    f(&mut v, 1.0 / (smin_rad + (k as i64 * istep) as f32 + 0.1));
+                }
+                i(&mut v, rnd as i32);
+                i(&mut v, p.t0 as i32);
+                i(&mut v, wlo);
+                i(&mut v, whi);
+                i(&mut v, hlo);
+                i(&mut v, hhi);
+                i(&mut v, 2 * (w as i32 - 1));
+                i(&mut v, 2 * (h as i32 - 1));
+                i(&mut v, pass as i32);
+                // the blur that made this level (0: the first level) and
+                // the one that makes the next
+                i(&mut v, if level == 1 { 0 } else { 1 << (level - 1) });
+                v.resize(32, 0);
+                g.queue.write_buffer(&par, 0, &bytes(&v));
+                let mut enc = g.device.create_command_encoder(&Default::default());
+                {
+                    let mut ps = enc.begin_compute_pass(&Default::default());
+                    ps.set_pipeline(&pl_s);
+                    ps.set_bind_group(0, &bind, &[]);
+                    ps.dispatch_workgroups(gx, (y1 - y0).div_ceil(8) as u32, 1);
+                }
+                if level < levels {
+                    // NextATlevelHiQ(..., 1 shl level): the step is in the
+                    // parameters of the next level, so it is sent now
+                    let mut v2 = v.clone();
+                    v2[28] = 1 << level;
+                    g.queue.submit([enc.finish()]);
+                    g.queue.write_buffer(&par, 0, &bytes(&v2));
+                    enc = g.device.create_command_encoder(&Default::default());
+                    for pl in [&pl_h, &pl_v] {
+                        let mut ps = enc.begin_compute_pass(&Default::default());
+                        ps.set_pipeline(pl);
+                        ps.set_bind_group(0, &bind, &[]);
+                        ps.dispatch_workgroups(gx, gy, 1);
+                    }
+                }
+                g.queue.submit([enc.finish()]);
+            }
+            y0 = y1;
+        }
+    }
+    let mut enc = g.device.create_command_encoder(&Default::default());
+    enc.copy_buffer_to_buffer(&acc, 0, &read, 0, (w * h * 4) as u64);
+    g.queue.submit([enc.finish()]);
+    let slice = read.slice(..);
+    let (tx, rx) = std::sync::mpsc::channel();
+    slice.map_async(wgpu::MapMode::Read, move |r| {
+        let _ = tx.send(r);
+    });
+    g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
+    if let Some(e) = take_error() {
+        return Err(e);
+    }
+    rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    {
+        let data = slice.get_mapped_range().map_err(|e| e.to_string())?;
+        for (s, c) in gbuf.iter_mut().zip(data.chunks_exact(4)) {
+            if s.zpos() < 32768 {
+                s.amb_shadow = u32::from_le_bytes(c.try_into().unwrap()).min(16383) as u16;
+            }
+        }
+    }
+    read.unmap();
+    Ok(())
+}
+
+/// The older 15 bit screen space ambient occlusion (`ssao15::ssao15`) on
+/// the graphics card: the levels are built on the CPU, the sampling of
+/// every pixel runs in the shader.
+pub fn ssao15(gbuf: &mut [SiLight], w: usize, h: usize, zc_mul: f64, zcorr: f64, p: &crate::ssao::SsaoParams) -> Result<(), String> {
+    if w < 4 || h < 4 {
+        return Ok(());
+    }
+    let g = gpu()?;
+    let pl = pipeline_entry(g, include_str!("gpu_ssao15.wgsl"), "sample15", None)?;
+    let lv = crate::ssao15::build_levels(gbuf, w, h);
+    let (szrt, smul, st2) = crate::ssao15::sampling_constants(&lv, zc_mul, zcorr, p);
+    let levels: Vec<u32> = lv.lev.iter().flat_map(|l| l.iter().map(|&v| v as u32)).collect();
+    let zps: Vec<u32> = gbuf.iter().map(|s| lv.zp_of(s) as u32).collect();
+    let par = [w as u32, h as u32, lv.count as u32, szrt.to_bits(), st2.to_bits(), smul.to_bits(), p.t0 as u32, 0];
+    let out = run_pipeline(g, &pl, &[&par, &levels, &zps], w * h, (w.div_ceil(8) as u32, h.div_ceil(8) as u32))?;
+    for (s, v) in gbuf.iter_mut().zip(out) {
+        if s.zpos() < 32768 {
+            s.amb_shadow = v.min(16383) as u16;
+        }
+    }
+    Ok(())
+}
+
+/// Runs `pipeline` once with the storage buffers `inputs` (bindings 0..,
+/// read only) and an output buffer of `out_len` words (the next binding);
+/// `groups` workgroups in x and y.
+fn run_pipeline(g: &Gpu, pipeline: &wgpu::ComputePipeline, inputs: &[&[u32]], out_len: usize, groups: (u32, u32)) -> Result<Vec<u32>, String> {
     let mut bufs = Vec::new();
     for d in inputs {
         let words = if d.is_empty() { vec![0u32] } else { d.to_vec() };
@@ -756,9 +948,9 @@ pub fn run_compute(wgsl: &str, inputs: &[&[u32]], out_len: usize, groups: u32) -
     let mut enc = g.device.create_command_encoder(&Default::default());
     {
         let mut pass = enc.begin_compute_pass(&Default::default());
-        pass.set_pipeline(&pipeline);
+        pass.set_pipeline(pipeline);
         pass.set_bind_group(0, &bind, &[]);
-        pass.dispatch_workgroups(groups, 1, 1);
+        pass.dispatch_workgroups(groups.0, groups.1, 1);
     }
     enc.copy_buffer_to_buffer(&out, 0, &read, 0, size);
     g.queue.submit([enc.finish()]);
@@ -777,6 +969,28 @@ pub fn run_compute(wgsl: &str, inputs: &[&[u32]], out_len: usize, groups: u32) -
     drop(data);
     read.unmap();
     Ok(v)
+}
+
+/// Runs `wgsl` (entry point `main`) once with the storage buffers
+/// `inputs` (bindings 0.., read only) and an output buffer of `out_len`
+/// words (the next binding); `groups` workgroups.  For tests of generated
+/// shader code.
+pub fn run_compute(wgsl: &str, inputs: &[&[u32]], out_len: usize, groups: u32) -> Result<Vec<u32>, String> {
+    let g = gpu()?;
+    let scope = g.device.push_error_scope(wgpu::ErrorFilter::Validation);
+    let module = g.device.create_shader_module(wgpu::ShaderModuleDescriptor { label: Some("test"), source: wgpu::ShaderSource::Wgsl(wgsl.into()) });
+    let pipeline = g.device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+        label: Some("test"),
+        layout: None,
+        module: &module,
+        entry_point: Some("main"),
+        compilation_options: Default::default(),
+        cache: None,
+    });
+    if let Some(e) = pollster::block_on(scope.pop()) {
+        return Err(e.to_string());
+    }
+    run_pipeline(g, &pipeline, inputs, out_len, (groups, 1))
 }
 
 #[cfg(test)]

@@ -124,9 +124,7 @@ fn calculate_inner(
             }
         });
         if let Some(gbuf) = gpu {
-            if !job.is_empty() {
-                p.gpu_post = Some(job);
-            }
+            p.gpu_post = Some(job);
             return finish_calculation(sc, p, gbuf, post, threads, cancel);
         }
     }
@@ -264,6 +262,21 @@ pub fn post_process(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: u
 }
 
 fn ssao(gbuf: &mut [SiLight], w: usize, h: usize, p: &CalcParams, ao: &crate::ssao::SsaoParams, threads: usize) {
+    #[cfg(feature = "gpu")]
+    if crate::gpu::enabled() {
+        // only the depth buffer is needed: also after a CPU calculation
+        let r = if ao.bits15 { crate::gpu::ssao15(gbuf, w, h, p.zc_mul, p.zcorr, ao) } else { crate::gpu::ssao24(gbuf, w, h, p.zc_mul, p.zcorr, ao) };
+        match r {
+            Ok(()) => {
+                let s = crate::gpu::last_status();
+                if s.starts_with("GPU") && !s.contains("+SSAO") {
+                    crate::gpu::set_status(format!("{s} +SSAO"));
+                }
+                return;
+            }
+            Err(e) => eprintln!("SSAO on the GPU failed, calculated on the CPU: {e}"),
+        }
+    }
     if ao.bits15 {
         crate::ssao15::ssao15(gbuf, w, h, p.zc_mul, p.zcorr, ao, threads);
     } else {

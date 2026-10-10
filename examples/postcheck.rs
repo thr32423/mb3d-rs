@@ -18,6 +18,43 @@ fn main() {
         sc.scale_image(width / sc.width.max(1) as f64);
         let Ok(p) = mb3d::calc::CalcParams::new(&sc) else { continue };
         let job = mb3d::render::post_job(&sc, &p);
+        // screen space AO: the CPU's and the card's on the same G-buffer
+        if let Some(ao) = sc.ao.filter(|_| sc.deao.is_none()) {
+            let (pc, _) = mb3d::render::calculate_raw_cancellable(&sc, &|_, _| {}, &|| false).map(|(p, g)| (p, g.len())).unwrap();
+            let (_, g) = mb3d::render::calculate_raw_cancellable(&sc, &|_, _| {}, &|| false).unwrap();
+            let [_, _, w, h] = pc.rect;
+            let (w, h) = (w as usize, h as usize);
+            let mut a = g.clone();
+            let t = Instant::now();
+            let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4);
+            if ao.bits15 {
+                mb3d::ssao15::ssao15(&mut a, w, h, pc.zc_mul, pc.zcorr, &ao, threads);
+            } else {
+                mb3d::ssao::ssao24(&mut a, w, h, pc.zc_mul, pc.zcorr, &ao, threads);
+            }
+            let cpu_s = t.elapsed().as_secs_f64();
+            let mut b = g.clone();
+            let t = Instant::now();
+            let r = if ao.bits15 { mb3d::gpu::ssao15(&mut b, w, h, pc.zc_mul, pc.zcorr, &ao) } else { mb3d::gpu::ssao24(&mut b, w, h, pc.zc_mul, pc.zcorr, &ao) };
+            match r {
+                Ok(()) => {
+                    let gpu_s = t.elapsed().as_secs_f64();
+                    let (mut n, mut d, mut bad) = (0usize, 0f64, 0usize);
+                    for (x, y) in a.iter().zip(&b) {
+                        if x.is_background() {
+                            continue;
+                        }
+                        n += 1;
+                        let dd = (x.amb_shadow as f64 - y.amb_shadow as f64).abs() / 16383.0;
+                        d += dd;
+                        bad += (dd > 0.05) as usize;
+                    }
+                    let n = n.max(1) as f64;
+                    println!("{name}: SSAO{} CPU {cpu_s:.2}s GPU {gpu_s:.2}s; mean diff {:.4}, > 0.05 in {:.2}% (random passes {})", if ao.bits15 { "15" } else { "24" }, d / n, 100.0 * bad as f64 / n, ao.random);
+                }
+                Err(e) => println!("{name}: SSAO on the GPU failed: {e}"),
+            }
+        }
         if job.is_empty() {
             println!("{name}: no shadows or DE ambient occlusion");
             continue;

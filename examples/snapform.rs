@@ -28,6 +28,10 @@ fn main() {
                 }
             }
             "print" => println!("{}.{} = {:?}", p[1], p[2], ui.caption(p[1], p[2])),
+            "status" => {
+                let sc = &app.scene;
+                println!("gpu status {:?}; normals on zbuf {}, shadows {}, ao {:?}, deao {:?}", mb3d::gpu::last_status(), sc.normals_on_zbuf, sc.shadows.is_some(), sc.ao, sc.deao);
+            }
             "led" => {
                 let f = ui.fm(mb3d::app::MAIN);
                 println!("led {:?} blinking {}", f.caption_led.map(|c| format!("{c:06x}")), f.led_blink);

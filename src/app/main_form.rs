@@ -302,7 +302,8 @@ pub fn show_led(ui: &mut Ui, led: Led, blinking: bool) {
     }
 }
 
-/// While a 3D calculation runs: where it runs, once the GPU has decided.
+/// Where the calculation runs, from the GPU status (which also says which
+/// post calculations the card ran): `None` while the GPU has not decided.
 fn running_led(app: &Mb3d) -> Option<Led> {
     #[cfg(feature = "gpu")]
     {
@@ -310,28 +311,19 @@ fn running_led(app: &Mb3d) -> Option<Led> {
         if s.is_empty() {
             return None;
         }
-        // the status says which post calculations the card ran
+        if !s.starts_with("GPU") {
+            return Some(Led::Cpu);
+        }
         let sc = &app.scene;
         let shadows = sc.shadows.is_some() && !s.contains("+shadows");
-        let ao = sc.ao.is_some() && !s.contains("+AO");
-        Some(calc_led(sc.normals_on_zbuf || shadows || ao))
+        let ao = sc.ao.is_some() && !(s.contains("+AO") || s.contains("+SSAO"));
+        Some(if sc.normals_on_zbuf || shadows || ao { Led::Mixed } else { Led::Gpu })
     }
     #[cfg(not(feature = "gpu"))]
     {
         let _ = app;
         Some(Led::Cpu)
     }
-}
-
-/// After a 3D calculation: the GPU status and whether CPU post processing
-/// (shadows, ambient occlusion, reflections) ran.
-fn calc_led(post_on_cpu: bool) -> Led {
-    #[cfg(feature = "gpu")]
-    if crate::gpu::last_status().starts_with("GPU") {
-        return if post_on_cpu { Led::Mixed } else { Led::Gpu };
-    }
-    let _ = post_on_cpu;
-    Led::Cpu
 }
 
 // ---------------------------------------------------------------------------
@@ -653,7 +645,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
                 ui.set_caption(F, "Label32", "-");
                 ui.set_caption(F, "Label40", "?");
                 ui.set_caption(F, "Label52", &time_str((stats.calc_s * 10.0) as i64));
-                app.main.led = calc_led(stats.post_s > 0.0);
+                app.main.led = running_led(app).unwrap_or(Led::Cpu);
                 show_led(ui, app.main.led, false);
                 if stats.post_s > 0.0 {
                     let l = if app.scene.shadows.is_some() { "Label8" } else { "Label48" };

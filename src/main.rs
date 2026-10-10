@@ -11,7 +11,7 @@ mb3d - Mandelbulb3D renderer (Rust port)
 
 USAGE:
     mb3d [OPTIONS] [SCENE_FILE]
-    mb3d gui [--port 8080] [--formulas DIR] [--maps DIR] [FILE]    editor in the browser
+    mb3d gui [--formulas DIR] [--maps DIR] [FILE]                  the Mandelbulb3D windows
     mb3d animate ANIMATION | KEYFRAME_FILES... [OPTIONS]           render an animation
     mb3d batch FILES... | --list LISTFILE [OPTIONS]                render many files
     mb3d voxel FILE [OPTIONS]                                      voxel slices (PNG stack)
@@ -68,10 +68,21 @@ fn main() -> ExitCode {
     }
 }
 
+/// `mb3d gui`: the desktop application (as the Mandelbulb3D program).
+#[cfg(feature = "gui")]
+fn gui(args: &[String]) -> Result<(), String> {
+    mb3d::app::run(args)
+}
+
+#[cfg(not(feature = "gui"))]
+fn gui(_args: &[String]) -> Result<(), String> {
+    Err("this program was built without the desktop application (cargo feature \"gui\")".into())
+}
+
 fn run() -> Result<(), String> {
     let all: Vec<String> = std::env::args().skip(1).collect();
     match all.first().map(String::as_str) {
-        Some("gui") => return mb3d::gui::run(&all[1..]),
+        Some("gui") => return gui(&all[1..]),
         Some("animate") | Some("anim") => return animate(&all[1..]),
         Some("batch") => return batch(&all[1..]),
         Some("voxel") | Some("voxels") => return voxel_cmd(&all[1..]),
@@ -673,10 +684,6 @@ fn animate(argv: &[String]) -> Result<(), String> {
     if let Some(f) = format {
         anim.format = OutputFormat::parse(&f)?;
     }
-    if anim.format == OutputFormat::Jpg {
-        note("JPEG output is not supported, writing PNG");
-        anim.format = OutputFormat::Png;
-    }
     if anim.keyframes.len() < 2 && !list && save.is_none() {
         return Err("an animation needs at least 2 keyframes".into());
     }
@@ -857,9 +864,6 @@ fn batch(argv: &[String]) -> Result<(), String> {
             s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{BATCH_USAGE}")),
             s => inputs.push(s.to_string()),
         }
-    }
-    if opts.format == mb3d::anim::OutputFormat::Jpg {
-        return Err("JPEG output is not supported, use png or bmp".into());
     }
     let mut items = mb3d::batch::expand_inputs(&inputs)?;
     for l in &lists {

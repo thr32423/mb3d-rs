@@ -54,7 +54,7 @@ pub fn calculate_cancellable(
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
 ) -> Result<(CalcParams, Vec<SiLight>), String> {
-    calculate_inner(sc, progress, cancel, 2)
+    calculate_inner(sc, progress, cancel, 2, None)
 }
 
 /// Like [`calculate_cancellable`] but without the post calculations (hard
@@ -67,7 +67,22 @@ pub fn calculate_raw_cancellable(
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
 ) -> Result<(CalcParams, Vec<SiLight>), String> {
-    calculate_inner(sc, progress, cancel, 0)
+    calculate_inner(sc, progress, cancel, 0, None)
+}
+
+/// A finished row of the calculation: its index in the calculated
+/// rectangle and its pixels.
+pub type RowSink<'a> = &'a (dyn Fn(usize, &[SiLight]) + Sync);
+
+/// Like [`calculate_raw_cancellable`], handing every finished row to `rows`
+/// (MB3D shows the image while it is calculated).
+pub fn calculate_raw_rows(
+    sc: &Scene,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+    rows: RowSink,
+) -> Result<(CalcParams, Vec<SiLight>), String> {
+    calculate_inner(sc, progress, cancel, 0, Some(rows))
 }
 
 fn calculate_inner(
@@ -75,6 +90,7 @@ fn calculate_inner(
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
     post: u8,
+    sink: Option<RowSink>,
 ) -> Result<(CalcParams, Vec<SiLight>), String> {
     let mut p = CalcParams::new(sc)?;
     let threads = thread_count(sc).min(p.rect[3] as usize).max(1);
@@ -114,6 +130,9 @@ fn calculate_inner(
                     } else {
                         (x0..x0 + w).map(|x| m.march_pixel(x as i32, yy as i32)).collect()
                     };
+                    if let Some(f) = sink {
+                        f(y, &row);
+                    }
                     out.push((y, row));
                     let d = done.fetch_add(1, Ordering::Relaxed) + 1;
                     progress(d, h);
@@ -522,7 +541,7 @@ pub fn render_tiled(
             }
             let mut ts = sc.clone();
             ts.calc_rect = Some(t);
-            let (_, gbuf) = calculate_inner(&ts, progress, &|| false, 1)?;
+            let (_, gbuf) = calculate_inner(&ts, progress, &|| false, 1, None)?;
             let tw = t[2] as usize;
             for y in 0..t[3] as usize {
                 let d = (t[1] as usize + y) * wu + t[0] as usize;

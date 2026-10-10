@@ -17,12 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, exe: mb3d }
-          - { os: windows-latest, target: x86_64-pc-windows-msvc, exe: mb3d.exe }
-          - { os: macos-latest, target: aarch64-apple-darwin, exe: mb3d }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, ext: "" }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc, ext: ".exe" }
+          - { os: macos-latest, target: aarch64-apple-darwin, ext: "" }
           # Intel Macs: cross-compiled on the Apple silicon runner (the
           # Intel macOS runners are retired)
-          - { os: macos-latest, target: x86_64-apple-darwin, exe: mb3d }
+          - { os: macos-latest, target: x86_64-apple-darwin, ext: "" }
     steps:
       - uses: actions/checkout@v7
       # the original Mandelbulb3D folder (formulas, maps, parameters, sources)
@@ -55,11 +55,14 @@ jobs:
           mv "$name/MB3D-sources/README.md" "$name/README-MB3D.md"
           for d in History Meshes BigRenders; do mkdir -p "$name/$d"; done
           echo "Parameters of every image calculated with \"Calculate 3D\" (one folder per day), as in MB3D." > "$name/History/README.txt"
-          echo "Meshes exported with BTracer2 (mb3d gui) are also saved here." > "$name/Meshes/README.txt"
+          echo "Meshes exported with BTracer2 are saved here, as in MB3D." > "$name/Meshes/README.txt"
           echo "Folder for big renders (tiles), as in MB3D." > "$name/BigRenders/README.txt"
           mv MB3D-SOURCE.txt "$name"/
-          cp target/${{ matrix.target }}/release/${{ matrix.exe }} README.md GETTING_STARTED.md LICENSE "$name"/
-          if [ "${{ runner.os }}" = "Windows" ]; then cp run_gui.cmd "$name"/; else cp run_gui.sh "$name"/; fi
+          # Mandelbulb3D: the windows of MB3D; mb3d: the command line renderer
+          for exe in Mandelbulb3D mb3d; do
+            cp "target/${{ matrix.target }}/release/$exe${{ matrix.ext }}" "$name"/
+          done
+          cp README.md GETTING_STARTED.md LICENSE "$name"/
           mkdir -p "$name/examples"
           cp examples/*.m3s "$name/examples"/
           if [ "${{ runner.os }}" = "Windows" ]; then 7z a "$name.zip" "$name" > /dev/null; else tar czf "$name.tar.gz" "$name"; fi

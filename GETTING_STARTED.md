@@ -1,9 +1,9 @@
 # Getting started with mb3d-rs
 
 mb3d-rs is a Rust port of [Mandelbulb3D](https://github.com/thargor6/mb3d)
-(MB3D). It is a single program, `mb3d`, with a command line renderer and an
-editor that runs in the browser (`mb3d gui`). It needs no installation and
-no other libraries.
+(MB3D). It has two programs: **Mandelbulb3D**, the desktop program with
+MB3D's windows, and **mb3d**, the command line renderer. They need no
+installation.
 
 ## 1. Get the program
 
@@ -22,11 +22,11 @@ Or build it yourself with [Rust](https://rustup.rs) (stable):
 ```sh
 git clone <this repository> mb3d-rs
 cd mb3d-rs
-cargo build --release          # the program is target/release/mb3d
+cargo build --release          # target/release/Mandelbulb3D and target/release/mb3d
 ```
 
-On macOS, a downloaded binary may need `xattr -d com.apple.quarantine mb3d`
-before the first start.
+On macOS, a downloaded binary may need
+`xattr -d com.apple.quarantine Mandelbulb3D mb3d` before the first start.
 
 ## 2. Get MB3D's formulas and maps
 
@@ -35,7 +35,8 @@ the whole original Mandelbulb3D repository (from
 [thargor6/mb3d](https://github.com/thargor6/mb3d), see `MB3D-SOURCE.txt`):
 
 ```
-mb3d(.exe)            this program
+Mandelbulb3D(.exe)    the program with MB3D's windows
+mb3d(.exe)            the command line renderer
 M3Formulas/           MB3D's formula files
 M3Maps/               maps for light maps, colour maps and backgrounds
 M3Parameter/          80 example parameter files
@@ -66,6 +67,7 @@ The easiest setup puts the folders next to the program:
 
 ```
 mb3d-rs/
+  Mandelbulb3D(.exe)
   mb3d(.exe)
   M3Formulas/
   M3Maps/
@@ -79,50 +81,43 @@ mb3d-rs/
 | formulas | `--formulas DIR` (may be repeated), `$MB3D_FORMULAS` (a path list), `./M3Formulas`, `M3Formulas` next to the program |
 | maps | `--maps DIR`, `$MB3D_MAPS`, `./M3Maps`, `M3Maps` next to the program, `M3Maps` next to every formula folder |
 
-In the editor, *Prefs ▸ Ini Dirs* shows the folders in use and adds more.
+In Mandelbulb3D, *Prefs ▸ Ini dirs* sets the folders, as in MB3D; they are
+kept in `Mandelbulb3D.ini` next to the program.
 
-## 3. The editor
+## 3. The Mandelbulb3D program
+
+Start `Mandelbulb3D` (double-click it, or from a terminal, optionally with
+a parameter file):
 
 ```sh
-mb3d gui                                   # then open http://127.0.0.1:8080/
-mb3d gui "M3Parameter/6 AM - Torii temple.m3p"
-mb3d gui --port 9000 --host 0.0.0.0        # reachable from other machines
+./Mandelbulb3D
+./Mandelbulb3D "M3Parameter/6 AM - Torii temple.m3p"
+mb3d gui "M3Parameter/6 AM - Torii temple.m3p"     # the same
 ```
 
-`run_gui.sh` (Linux, macOS) and `run_gui.cmd` (Windows, double-click it) in
-the release folder start the editor and open the page in the default
-browser; arguments are passed on to `mb3d gui`.
+The windows are MB3D's own (made from its form files), so MB3D's
+tutorials apply. A short tour:
 
-The page follows MB3D's main window:
+* **Main window:** the buttons at the top open parameters (`.m3p`,
+  `.m3i`, text from the clipboard), save them and save pictures, and open
+  the other windows: *Formulas*, *Lighting*, *Postprocess*, *Navigator*,
+  *Animation*, *BTracer2*, *MutaGen*, *ZBuf16Bit*, *HMapGen* and the tools
+  (batch, voxel export, big renders, Monte Carlo). On the right are the
+  position, rotation, image size, the quality presets and *Calculate 3D*;
+  below the image the mouse modes (2D zoom, X/Y, Z, get position) and the
+  rotation buttons.
+* **Navigator:** its own window and preview; walk with the keys (W/S,
+  A/D, E/C, arrows) or the mouse (hold the right button to look around),
+  then *View to main*.
+* **Lighting:** changes repaint the calculated image right away; the
+  presets and the palette are at the top.
+* **Prefs ▸ Visual themes** switches between MB3D's Glossy look and the
+  Windows look.
 
-* **Top left:** *Animations*, *BTracer2* (meshes), *Navigator*, *MutaGen*,
-  *ZBuf16Bit*; the pages *Open* (m3i, m3p, from the clipboard, new
-  presets), *Save* (m3i, m3p, m3s, to the clipboard), *Save pic* (PNG,
-  JPEG, Z-buffer), *Tools* (batch processing, voxel export, big renders,
-  Monte Carlo, the parameter text) and *Prefs* (folders, map sequences,
-  light/dark theme). Then the viewing scale and the image size.
-* **Below the image:** the mouse modes — *walk* (click flies towards a point,
-  drag turns, the wheel moves; keys W/S, A/D, R/F, arrows, Q/E), *2D zoom*,
-  *X,Y* and *Z* — and the rotation buttons (right click: around the
-  object's own axes).
-* **Navigator** (top left) opens its own window with its own copy of the
-  parameters, like MB3D's: walk with W/S, A/D, E/C, arrows, U/O or the mouse,
-  adjust values on the right, then *View to main* sends the view to the
-  editor; *Parameter* takes the editor's parameters again.
-* **Right:** position and rotation, *Calculate 3D*, the quality presets, the
-  windows *Formulas*, *Lighting* and *Postprocess*, and the pages
-  Calculation, Internal, Infos, Cutting, Julia, Camera, Coloring and
-  Stereo, with the messages below.
-
-The ⧉ button in a window's title bar opens it in its own browser window, so
-you can arrange the windows next to the editor or on another screen (allow
-pop-ups for the page if the browser asks); all windows stay in sync.
-
-Every change shows a quick preview. *Calculate 3D* calculates the image at
-full size; after that, changes in the Lighting window only repaint it and
-changes of shadows or ambient occlusion only redo those, as in MB3D. *Save
-pic ▸ PNG* saves it, reduced by the viewing scale (1:2 and 1:3 are
-anti-aliased).
+Every change marks the image as old; *Calculate 3D* calculates it at full
+size. After that, changes in the Lighting window only repaint it and changes
+of shadows or ambient occlusion only redo those, as in MB3D. *Save pic*
+saves it reduced by the viewing scale (1:2 and 1:3 are anti-aliased).
 
 ## 4. The command line
 

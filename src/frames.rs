@@ -176,7 +176,7 @@ pub fn encode(format: OutputFormat, img: &FrameImage) -> Result<Vec<u8>, String>
     match format {
         OutputFormat::Png => Ok(crate::png::encode_rgb(img.width, img.height, &img.rgb)),
         OutputFormat::Bmp => Ok(encode_bmp(img.width, img.height, &img.rgb)),
-        OutputFormat::Jpg => Err("JPEG output is not supported, use png or bmp".into()),
+        OutputFormat::Jpg => Ok(crate::jpeg::encode(img.width, img.height, &img.rgb, 95)),
         OutputFormat::M3p => Err("parameter output has no image".into()),
     }
 }

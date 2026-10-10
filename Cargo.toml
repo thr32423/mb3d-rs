@@ -1,11 +1,26 @@
 [package]
 name = "mb3d"
-version = "0.1.9"
+version = "0.2.0"
 edition = "2021"
-description = "Rust port of Mandelbulb3D (MB3D) - core renderer"
+description = "Rust port of Mandelbulb3D (MB3D) - renderer and desktop application"
 license = "LGPL-2.1-or-later"
 
+[features]
+# the desktop application (Mandelbulb3D window and forms); without it only
+# the command line renderer is built, which has no dependencies
+default = ["gui"]
+gui = ["dep:winit", "dep:softbuffer", "dep:fontdue", "dep:arboard"]
+
 [dependencies]
+winit = { version = "0.30", optional = true }
+softbuffer = { version = "0.4", optional = true }
+fontdue = { version = "0.9", optional = true }
+arboard = { version = "3", optional = true, default-features = false, features = ["wayland-data-control"] }
+
+[[bin]]
+name = "Mandelbulb3D"
+path = "src/bin/Mandelbulb3D.rs"
+required-features = ["gui"]
 
 [profile.release]
 opt-level = 3

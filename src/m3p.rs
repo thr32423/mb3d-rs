@@ -269,6 +269,38 @@ pub fn raw_from_m3i(data: &[u8]) -> Result<Vec<u8>, String> {
     Ok(raw)
 }
 
+/// The G-buffer of an `.m3i` file (for images without tiling); None when
+/// the file holds no complete image.
+pub fn gbuffer_from_m3i(data: &[u8]) -> Option<(usize, usize, Vec<crate::gbuffer::SiLight>)> {
+    if data.len() < HEADER_SIZE {
+        return None;
+    }
+    let r = Rd(data);
+    let (w, h) = (r.i32(4), r.i32(8));
+    if r.i32(0) < 20 || w < 1 || h < 1 || (r.i32(0) >= 35 && r.i32(428) != 0) {
+        return None;
+    }
+    let (w, h) = (w as usize, h as usize);
+    let end = HEADER_SIZE + w * h * 18;
+    if data.len() < end {
+        return None;
+    }
+    let g = (0..w * h)
+        .map(|i| {
+            let o = HEADER_SIZE + i * 18;
+            crate::gbuffer::SiLight {
+                normal: [r.i16(o), r.i16(o + 2), r.i16(o + 4)],
+                zpos_fine: r.u32(o + 6),
+                shadow: r.u16(o + 10),
+                amb_shadow: r.u16(o + 12),
+                si_gradient: r.u16(o + 14),
+                otrap: r.u16(o + 16),
+            }
+        })
+        .collect();
+    Some((w, h, g))
+}
+
 /// The hybrid options of files before MandId 42 (`LoadParameter`): the
 /// repeat slot was stored in `bVolLightNr`, and DE combinations of type 2 and
 /// 6 kept the formulas in another order.
@@ -853,23 +885,47 @@ fn parse_light(r: &Rd, w: &mut Vec<String>) -> Lighting {
     l
 }
 
+/// The lighting of a light record (`TLightingParas9`, .m3l files and the
+/// header from byte 432).
+pub fn light_from_record(rec: &[u8]) -> Option<Lighting> {
+    if rec.len() < 408 {
+        return None;
+    }
+    let mut h = vec![0u8; HEADER_SIZE];
+    h[432..840].copy_from_slice(&rec[..408]);
+    let mut w = Vec::new();
+    Some(parse_light(&Rd(&h), &mut w))
+}
+
+pub fn to_short_float_pub(v: f32) -> u16 {
+    to_short_float(v)
+}
+
+/// A value rounded to MB3D's `ShortFloat` (as the light intensity is stored).
+pub fn short_float_round(v: f32) -> f32 {
+    short_float(to_short_float(v))
+}
+
 /// `SingleToShortFloat`: the closest m * 10^(e - 1) with byte m and e.
 pub(crate) fn to_short_float(v: f32) -> u16 {
-    if v == 0.0 || !v.is_finite() {
+    // MB3D's SingleToShortFloat (Math3D.pas)
+    if v.abs() < 1e-45 || !v.is_finite() {
         return 0;
     }
-    let mut best = (f32::MAX, 0u16);
-    for e in -25i32..=25 {
-        let m = (v / 10f32.powi(e - 1)).round();
-        if m.abs() > 127.0 || m == 0.0 {
-            continue;
-        }
-        let err = (m * 10f32.powi(e - 1) - v).abs();
-        if err < best.0 {
-            best = (err, (m as i8 as u8 as u16) | ((e as i8 as u8 as u16) << 8));
-        }
+    if v.abs() > 1e38 {
+        return 99 | (38u16 << 8);
     }
-    best.1
+    let (mut s, mut e) = (v, 0i32);
+    while s.abs() >= 9.95 {
+        s *= 0.1;
+        e += 1;
+    }
+    while s.abs() <= 0.995 {
+        s *= 10.0;
+        e -= 1;
+    }
+    let m = (s * 10.0).round() as i32;
+    (m as i8 as u8 as u16) | ((e as i8 as u8 as u16) << 8)
 }
 
 /// Writes a scene as a MB3D parameter file (`.m3p`, MandId 44): the

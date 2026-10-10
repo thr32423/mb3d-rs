@@ -26,6 +26,8 @@
 //! | `frames`    | Animation.pas (`Timer2Timer`), Mand.pas (`DoSaveAniImage`): frame rendering, output files |
 
 pub mod anim;
+#[cfg(feature = "gui")]
+pub mod app;
 pub mod appdirs;
 pub mod animfile;
 pub mod batch;
@@ -36,10 +38,10 @@ pub mod dof;
 pub mod formulas;
 pub mod frames;
 pub mod gbuffer;
-pub mod gui;
 pub mod image;
 pub mod iteration;
 pub mod jit;
+pub mod jpeg;
 pub mod lighting;
 pub mod m3f;
 pub mod m3p;
@@ -58,6 +60,8 @@ pub mod ssao15;
 pub mod vollight;
 pub mod voxel;
 pub mod x86;
+#[cfg(feature = "gui")]
+pub mod vcl;
 
 pub use formulas::Formula;
 pub use render::{render, RenderResult};

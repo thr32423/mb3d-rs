@@ -14,8 +14,13 @@ Animations are made from keyframes with MB3D's interpolation (and MB3D's
 `.m3a` animation files can be opened and saved), and lists of parameter
 files are rendered in batches.
 
-The crate has **no external dependencies** (std only, including its own PNG
-encoder) and builds with any recent stable Rust:
+**Mandelbulb3D**, the desktop program, has MB3D's windows: the main window,
+Formulas, Lighting, Post processing, Navigator, Animation and all tool
+windows, built from MB3D's own form files (see below).
+
+The renderer has **no external dependencies** (std only, including its own
+PNG and JPEG encoders); the windows use four crates (winit, softbuffer,
+fontdue, arboard). Everything builds with any recent stable Rust:
 
 ```sh
 cargo build --release
@@ -54,57 +59,62 @@ like rendering at full size and downsampling. Without `--aa`, detail finer
 than a pixel shows up as noise, which is why MB3D authors often render at
 4000–6000 pixels and downsample.
 
-## Editor in the browser
+## The Mandelbulb3D program
 
 ```sh
-./target/release/mb3d gui --formulas path/to/mb3d/M3Formulas --maps path/to/mb3d/M3Maps [file.m3p]
-# then open http://127.0.0.1:8080/  (--port N, --host 0.0.0.0 to allow other machines)
+cargo build --release
+./target/release/Mandelbulb3D [--formulas DIR] [--maps DIR] [file.m3p|.m3i|.txt]
+# the same from the command line program:
+./target/release/mb3d gui [file.m3p]
 ```
 
-`mb3d gui` is a small built-in web server (std only, no dependencies) with a
-single-page editor laid out like MB3D's main window (see
-[GETTING_STARTED.md](GETTING_STARTED.md) for a tour):
+`Mandelbulb3D` opens MB3D's windows as desktop windows (winit: Linux with
+X11 or Wayland, Windows, macOS). The windows are made from MB3D's
+original form files (`src/app/forms/*.dfm`, read at start): every control
+has the position, size, caption, hint and default value it has in MB3D, and
+the event handlers are ported from the Delphi units (`Mand.pas`,
+`FormulaGUI.pas`, `LightAdjust.pas`, ...). A small toolkit (`src/vcl`) draws
+the controls itself in MB3D's two looks: *Glossy* (MB3D's default dark
+theme) and *Windows* (Prefs ▸ Visual themes). Text is drawn with the
+bundled Liberation fonts; on Windows Tahoma is used if present.
 
-* **Top bar:** *Animations*, *BTracer2*, *Navigator*, *MutaGen*,
-  *ZBuf16Bit*; the pages *Open* (m3i, m3p/m3s, from the clipboard, new
-  presets), *Save* (m3i with the calculated G-buffer, m3p, m3s, to the
-  clipboard), *Save pic* (PNG and JPEG reduced by the viewing scale, 16 bit
-  Z-buffer), *Tools* (batch processing, voxel stack, big renders, Monte
-  Carlo, parameter text) and *Prefs* (formula and map folders, map
-  sequences, light/dark theme); viewing scale (fit, 1:1 … 1:10) and image
-  size (aspect buttons, ×2 / ÷2 with "DEstop+C").
-* **Below the image:** MB3D's mouse modes *2D zoom* (click, right click,
-  mark an area), *X,Y* and *Z* move, plus *walk* (navigator: click flies
-  towards a point, drag turns, wheel moves; W/S A/D R/F, arrows, Q/E), the
-  rotation buttons (right click: around the object's axes at 0) and the
-  frame number for map sequences.
-* **Right column:** Position (with the quick 2D slices at z start / mid /
-  end, *get midpoint*, *reset*), Rotation (Euler angles), undo/redo,
-  *Calc-*, *Calculate 3D*, the quality presets preview/video/mid/high, and
-  the pages Calculation, Internal, Infos, Cutting, Julia Off, Camera,
-  Coloring and Stereo; messages below.
-* **Windows:** *Formulas* (six slots, MB3D's formula lists 3D, 3Da, 4D, 4Da,
-  Ads, dIFS, exchange, hybrid type alternate / interpolate / DE combination,
-  bailout, iterations, inside rendering, 4D rotation), *JIT formula editor*
-  (options, constants, Pascal code; compile and save as `.m3f`),
-  *Lighting* (lights 1–6 global/positional/light map, gamma, the Object,
-  Ambient, d.Fog and Back pic pages with palette editors), *Post processing*
-  (normals on the z-buffer, hard and ambient shadows, reflections and
-  transparency, depth of field, recalculate a selection, double image size),
-  *Navigator* (its own window with its own copy of the parameters and preview, as in MB3D: walk, look, roll, adjust julia, formula, 4D and misc values, then "View to main" or "Send values"; "Ani keyfr. (f)" adds an animation keyframe), *Animation maker*, *MutaGen*, *Bulb Tracer2*, *Voxel export*,
-  *Monte Carlo*, *Big renders*, *Batch processing*, *Map Sequences*, *Ini
-  Dirs*. Windows can be moved and stay open between sessions; the ⧉ button
-  opens a window in its own browser window (e.g. on a second screen), which
-  stays in sync with the editor.
+* **Main window:** open and save `.m3p` / `.m3i` / text parameters (and
+  from or to the clipboard), save pictures (PNG, JPEG, BMP, 16 bit
+  Z-buffer), the mouse modes (2D zoom, X/Y and Z moves, get position), the
+  rotation buttons, image size and aspect, viewing scale, the quality
+  presets, undo, *Calculate 3D* with the progressive image and the
+  statistics, all pages (Calculation, Internal, Infos, Cutting, Julia Off,
+  Camera, Coloring, Stereo) and the buttons to the other windows.
+* **Formulas:** the six formula slots, MB3D's formula lists, options,
+  hybrid types (alternate, interpolate, DE combination), favourites, `.m3f`
+  loading and the **JIT formula editor** (options, constants, named params,
+  Pascal code; compile and save as `.m3f`).
+* **Lighting:** lights 1–6 (global, positional, light map), presets
+  (built-in and custom), the palette and swatches, the Object, Ambient,
+  d.Fog and Back pic pages, `.m3l` files; changes repaint the kept image
+  without a new calculation. The palette editor (ColorForm) edits the
+  colour positions.
+* **Post processing:** normals on the z-buffer, hard and ambient shadows,
+  reflections and transparency, depth of field, recalculate a selection,
+  double image size (G-buffer interpolation as in MB3D).
+* **Navigator:** its own window with its own parameters and preview: walk,
+  look (mouse look), roll, the adjust sliders, light presets, "View to
+  main" and "Send values".
+* **Animation maker** with keyframe thumbnails, preview flipbook and frame
+  rendering; **Batch processing** (`.m3p` lists to `.m3i` and PNG);
+  **Big renders** (tiles, `.big` projects compatible with MB3D); **Monte
+  Carlo** rendering (`.m3c`, batch panel); **Voxel export** (`.m3v`, with
+  MB3D's stacked preview); **Bulb Tracer 2** (meshes as OBJ / PLY, preview,
+  `.btrace2` settings) with the **mesh preview** window; the **HeightMap
+  generator** (OBJ mesh to 8 bit PNG / 16 bit PGM height maps); **MutaGen**;
+  **ZBuf16Bit**; **Map sequences**; **Ini dirs**; **Visual themes**.
 
-Every change starts a progressive preview (⅛ … full view width; previews keep
-the DE stop in preview pixels, like MB3D's navigator). *Calculate 3D*
-calculates the full image; as in MB3D its G-buffer is kept, so changes in the
-Lighting window only repaint it and changes of the post processing redo only
-those steps on the kept buffer, without a new ray march.
-
-The page and the renderer talk over a few JSON/PNG endpoints (`src/gui.rs`),
-so the server can also run on a bigger machine than the browser.
+The windows that draw with OpenGL in MB3D (mesh preview, HeightMap
+generator) draw with a small z-buffer rasteriser using the same projection
+and mouse navigation. Settings are kept in `Mandelbulb3D.ini` next to the
+program, with MB3D's keys and folders (`M3Parameter`, `M3Formulas`,
+`M3Maps`, `BigRenders`, ...), so a release folder looks like an MB3D
+installation.
 
 ## Animation
 
@@ -190,14 +200,11 @@ params = Mandelbulb3Dv18{
 }
 ```
 
-In the editor (`mb3d gui`), the **Animation** tab is the animation maker:
-navigate, add the view as a keyframe (or insert it after one, replace one,
-reorder, delete, set frame counts), click a keyframe image to load it back.
-**Preview frames** renders all or every n-th frame small (fast mode without
-shadows, volumetric light and DEAO, like MB3D's) into a flipbook with a
-player; any frame can be opened in the editor, e.g. to turn it into a new
-keyframe. **Render frames** writes the frames into the output folder in the
-background. Animations are opened and saved as `.m3k` or `.m3a`.
+In the Mandelbulb3D program, the **Animation** window is MB3D's animation
+maker: add the main window's parameters as a keyframe (or insert, replace,
+delete, set frame counts), click a keyframe to load it back, preview the
+frames small in the flipbook window and render them into the output folder
+in the background. Animations are opened and saved as `.m3a` or `.m3k`.
 
 ## Batch rendering
 
@@ -275,11 +282,10 @@ gets `<label>.m3p`, a preview per member, `sheet.png` (the family in MB3D's
 tree layout) and `members.txt`; the next generation starts from a chosen
 member.
 
-In the editor, the **MutaGen** tab shows the tree as it grows; a click
-selects a mutation, a double-click (or "Open in editor") loads it, "Breed
-from this" makes the next generation from it, and the arrows go back and
-forth between generations. The **Export** tab writes voxel slices (with a
-preview of the stack) and builds meshes for download.
+In the Mandelbulb3D program, the **MutaGen** window shows the tree as it
+grows; a double-click on a member breeds the next generation from it, its
+popup menu sends it to the main window or copies it to the clipboard, and
+the arrows go back and forth between generations.
 
 ## Monte Carlo rendering
 
@@ -314,9 +320,10 @@ HDR soft clipping (`mc_soft_clip`) and the gamma slider only change the
 painting. MB3D's own `.m3c` files can be continued and the port's opened
 in MB3D.
 
-In the editor, the **Monte Carlo** tab has these settings, renders the
-editor's scene in the background (Continue adds rays to the image) and
-saves PNG or `.m3c`.
+In the Mandelbulb3D program, the **Monte Carlo** window imports the main
+window's parameters, renders in the background pass after pass (Start /
+Stop adds rays to the image), saves the picture or `.m3c` and has MB3D's
+batch panel.
 
 ## What is ported
 
@@ -345,7 +352,9 @@ and kept in the original evaluation order.
 | `dof.rs` | DOF.pas | depth of field, sorted and forward variants, 1–4 passes |
 | `m3p.rs` (text) | FileHandling.pas, DivUtils.pas | text parameters (`GetHeaderFromText`, `MakeTextparas`), `.m3i` parameter loading |
 | `gbuffer.rs` | TypeDefinitions.pas | `TsiLight5` |
-| `gui.rs`, `gui/index.html` | Navigator.pas, Mand.pas (main window) | browser editor: HTTP server, progressive preview worker, navigation (`SpeedButton1Click`: DE-scaled moves, rotations around the camera), picking from the G-buffer |
+| `app/*.rs`, `app/forms/*.dfm` | Mand.pas, FormulaGUI.pas, LightAdjust.pas, PostProcessForm.pas, Navigator.pas, Animation.pas, BatchForm.pas, Tiling.pas, MonteCarloForm.pas, VoxelExport.pas, BulbTracer2UI.pas, MutaGenGUI.pas, HeightMapGenUI.pas, MeshPreviewUI.pas, JITFormulaEditGUI.pas, ... | the Mandelbulb3D program: MB3D's forms and their event handlers |
+| `vcl/*.rs` | Delphi VCL | the toolkit: `.dfm` reader, the controls (Glossy and Windows looks), layout (align, anchors), input, dialogs, windows |
+| `jpeg.rs` | (new) | baseline JPEG encoder |
 | `scene.rs` | TMandHeader10 + GUI defaults | scene parameters, defaults, the `.m3s` text format |
 | `m3p.rs` | FileHandling.pas (`LoadParameter`, `UpdateLightParasAbove3`), DivUtils.pas (tiling), TypeDefinitions.pas | binary `.m3p` files (MandId ≥ 20): `TMandHeader10`, `TLightingParas9`, `THeaderCustomAddon`; reading with the upgrades of older versions, and writing (MandId 44) |
 | `m3f.rs` | CustomFormulas.pas (`LoadCustomFormula`, `FillCustomVBufWithVars`) | `.m3f` custom formula files, all 23 option types, constants |
@@ -356,12 +365,10 @@ and kept in the original evaluation order.
 | `animfile.rs` | Animation.pas (`LoadAni`, `SpeedButton9Click`) | `.m3a` animation files incl. preview images; the `.m3k` text format |
 | `frames.rs` | Animation.pas, Mand.pas (`DoSaveAniImage`, `AniFileAlreadyExists`, `OccupyDFile`) | frame files, claiming/locking, image scale, BMP output, keyframe previews (`RenderPrevBMP`) |
 | `batch.rs` | BatchForm.pas | batch lists |
-| `gui/anim.rs` | Animation.pas, AniPreviewWindow.pas | the editor's animation maker and flipbook preview |
 | `voxel.rs` | VoxelExport.pas | voxel slice stacks (`TVoxelExportCalcThread`, object test, in-and-outside limits), `.m3v` projects incl. older versions, stack preview |
 | `mesh.rs`, `mclut.rs` | BulbTracer2.pas, ObjectScanner2.pas, VertexList.pas, MeshWriter.pas | the DE grid (`TObjectScanner2`), marching cubes with BulbTracer2's tables, vertex merging, centring, OBJ and PLY writers; STL and Taubin smoothing (new) |
 | `formulas.rs` (Aexion C) | formulas.pas | the internal formula Aexion C (`HybridAexionC`, translated from x87 assembler) with all its modes |
 | `mutagen.rs` | mutagen/MutaGen.pas, MutaGenGUI.pas, PreviewRenderer.pas, FormulaNames.pas | mutation operators, probing (Sobel and difference coverage), the 15-member tree and its layout, formula categories |
-| `gui/tools.rs` | MutaGenGUI.pas, VoxelExport.pas, BulbTracer2UI.pas, MonteCarloForm.pas | the editor's Monte Carlo, MutaGen and Export tabs |
 | `jit.rs` | paxCompiler (JIT formulas), formulas/JIT*.m3f | a compiler for the Delphi subset of `[SOURCE]` formulas: preprocessor (options and constants), Delphi typing, `Math`/`System` functions, compiled to closures over the iteration state |
 | `iteration.rs` (interpolation) | formulas.pas | `doInterpolHybridPas`, `doInterpolHybridPasDE` and the 4D variants; `doHybrid4DDEPas` |
 | `calc.rs` (2D, colour on iteration) | CalcThread2D.pas, Calc.pas | `T2DcalcThread` (plane at Z start, middle or end), `doColorOnIt` |
@@ -576,33 +583,32 @@ tile files that MB3D writes for big renders are rendered as that tile.
 * **Coverage:** all of MB3D's rendering modes are ported (with phase 9:
   JIT formulas, interpolation hybrids, 2D slices, stereo, the reflection
   and z-buffer normal post processing and the Monte Carlo renderer), and all
-  80 example parameter files render. The browser editor follows MB3D's main
-  window and its tool windows. Not ported: the height map generator
-  (HMapGen, a script editor), the "shortdistance check DE" option, light and
-  colour presets of the Lighting window, MB3D's random light strokes and the
-  ambient light pass of the post processing window. *Double imagesize*
-  recalculates the image at twice the size instead of MB3D's interpolation
-  of the G-buffer.
+  80 example parameter files render. The Mandelbulb3D program has MB3D's
+  windows. Not ported: the script editor (not reachable from MB3D's main
+  window either), the "shortdistance check DE" option, MB3D's random light
+  strokes and the ambient light pass of the post processing window. The
+  BulbTracer2 cache format (`.btr2cache`) is not written, and its OpenGL
+  auto preview of the mesh is not available (the voxel preview is).
 * **Monte Carlo:** the random numbers are seeded per row and pass, so an
   image is the same with any number of threads but not MB3D's; neighbour
   pixels steer the ray counts from their state at the start of a pass (MB3D
-  reads them while other threads change them). The z-buffer output of MB3D's
-  MC batch is not written. MB3D's development record format (`MCoptions`
-  bit 8) is not read.
+  reads them while other threads change them). The z-buffer that the Monte
+  Carlo window saves with "With ZBuffer" comes from a normal calculation of
+  the same parameters. MB3D's development record format (`MCoptions` bit 8)
+  is not read.
 * **Exports and MutaGen:** the mesh export reads but does not reproduce
   BulbTracer2's floating-point order exactly, so meshes match MB3D's in shape,
   not vertex for vertex. MutaGen uses its own random generator, so
   a seed gives other mutations than in MB3D; mutating map or light settings
   (not in MB3D's MutaGen either) is not done.
-* **Animation:** JPEG output and `.m3a` files before version 5 are not
-  supported. Map sequences (`Mandelbulb3DMSeq.ini` in the working folder or
+* **Animation:** `.m3a` files before version 5 are not supported. Map sequences (`Mandelbulb3DMSeq.ini` in the working folder or
   `$MB3D_MAP_SEQUENCES`) follow the file index of animation frames. Without a loop, MB3D's render loop also counts the sub-frames of
   the last keyframe (repeating it); the port renders the last keyframe once,
   as MB3D's own frame count (`TotalBMPsToRender`) and time estimate do.
   MB3D's per-frame `.m3p` files carry the keyframe's light settings
   unchanged; the port writes the interpolated sliders instead. `mb3d
-  batch` writes images (or `.m3p`); the editor's batch processing also
-  writes `.m3i` files with the G-buffer.
+  batch` writes images (or `.m3p`); the Batch processing window writes
+  `.m3i` files with the G-buffer, as MB3D.
 * **Speed:** custom formulas run as translated native code (including their
   SSE2 and x87 math), but still read and write their values through the
   emulated 32-bit memory, so they are slower than MB3D's hand-written
@@ -627,7 +633,8 @@ tile files that MB3D writes for big renders are rendered as that tile.
 7. ✅ Animation (keyframes, MB3D's interpolation incl. light values, `.m3a` and `.m3k` files, frame rendering shared by several processes, animation maker in the editor) and batch rendering
 8. ✅ Voxel export (`.m3v` projects), mesh export (BulbTracer2: OBJ, PLY, STL), the internal formula Aexion C, MutaGen; MutaGen and Export tabs in the editor
 9. ✅ The remaining gaps: JIT formulas (`[SOURCE]` Pascal), interpolation hybrids, 2D slices, colour on iteration, stereo images and animations, reflections and transparency in normal renders, normals on the z-buffer, the Monte Carlo renderer (CLI and editor tab, `.m3c` files)
-10. ✅ Editor in MB3D's layout (main window, Formulas, Lighting, Post processing and tool windows), repainting of the kept G-buffer, recalculate a selection, double image size, JIT formula editor, map sequences, `.m3i` writing, batch processing in the editor; SSE2/x87 formula code translated natively (2× on dIFS scenes); CI and release builds for Linux, Windows and macOS
+10. ✅ Browser editor in MB3D's layout (main window, Formulas, Lighting, Post processing and tool windows), repainting of the kept G-buffer, recalculate a selection, double image size, JIT formula editor, map sequences, `.m3i` writing, batch processing in the editor; SSE2/x87 formula code translated natively (2× on dIFS scenes); CI and release builds for Linux, Windows and macOS
+11. ✅ The Mandelbulb3D desktop program replaces the browser editor: MB3D's own form files and ported event handlers for all windows (incl. Big renders, Monte Carlo, Voxel export, Bulb Tracer 2 with mesh preview, HeightMap generator, MutaGen, JIT formula editor), G-buffer double image size, JPEG output
 
 ## License
 

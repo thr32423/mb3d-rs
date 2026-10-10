@@ -19,6 +19,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2.9.2
       - name: Build
         run: cargo build --release
+      - name: Build the renderer alone (no desktop application)
+        run: cargo build --release --no-default-features --bin mb3d
       - name: Test
         run: cargo test --release
 
@@ -49,11 +51,3 @@ jobs:
         run: |
           mkdir -p ../out
           ./target/release/mb3d batch ../mb3d/M3Parameter/*.m3p --scale 0.05 -o ../out --formulas ../mb3d/M3Formulas --maps ../mb3d/M3Maps
-      - name: The editor page is assembled from src/gui/parts
-        working-directory: mb3d-rs
-        run: ./build_gui.sh && git diff --exit-code src/gui/index.html
-      - name: The editor page's script has no syntax errors
-        working-directory: mb3d-rs
-        run: |
-          sed -n '/^<script>$/,/^<\/script>$/p' src/gui/index.html | sed '1d;$d' > /tmp/page.js
-          node --check /tmp/page.js

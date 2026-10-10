@@ -118,6 +118,16 @@ impl Sampler {
         Ok(Sampler { p, lv, m, origin })
     }
 
+    /// A marcher for [`Sampler::de`].
+    pub fn marcher(&self) -> Marcher<'_> {
+        Marcher::new(&self.p, 1)
+    }
+
+    /// The distance estimate at a grid point (in grid steps of the trace).
+    pub fn de(&self, m: &mut Marcher, x: f64, y: f64, z: f64) -> f64 {
+        m.de_at_point(self.pos(x, y, z), false)
+    }
+
     /// Scene position of a grid point.
     pub fn pos(&self, x: f64, y: f64, z: f64) -> Vec3 {
         let mut q = self.origin;

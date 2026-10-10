@@ -29,6 +29,10 @@ fn main() {
             }
             return;
         }
+        if args[i] == "--gpu-report" {
+            gpu_report(&args[i + 1]);
+            return;
+        }
         if args[i] == "--lift-report" {
             lift_report(&args[i + 1], args.get(i + 2).is_some_and(|a| a == "-v"));
             return;
@@ -165,4 +169,50 @@ fn lift_report(dir: &str, verbose: bool) {
         print!(" {o}{}:{n}", if w { "w" } else { "" });
     }
     println!();
+}
+
+/// `--gpu-report DIR`: how the lifted formulas map to 32-bit GPU values.
+fn gpu_report(dir: &str) {
+    let mut files: Vec<_> = std::fs::read_dir(dir)
+        .expect("formula dir")
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .filter(|p| p.extension().is_some_and(|e| e.eq_ignore_ascii_case("m3f")))
+        .collect();
+    files.sort();
+    let (mut clean, mut mixed_only, mut sse, mut not_lifted) = (0, 0, 0, 0);
+    let mut patterns: BTreeMap<String, usize> = BTreeMap::new();
+    for f in &files {
+        let Ok(def) = M3f::load(f) else { continue };
+        let name = def.name.clone();
+        let difs = def.de_option >= 20;
+        let cf = CustomFormula::new(Arc::new(def));
+        let m = build_machine(&[Some(&cf)]);
+        let Some(p) = m.prog(code_addr(0)) else { continue };
+        match p.gpu_typing(difs) {
+            None => not_lifted += 1,
+            Some((true, _)) => {
+                sse += 1;
+                println!("SSE   {name}");
+            }
+            Some((false, mixed)) if mixed.is_empty() => {
+                clean += 1;
+                println!("PLAIN {name}");
+            }
+            Some((false, mixed)) => {
+                mixed_only += 1;
+                println!("MIXED {name}: {}", mixed.join("; "));
+                for m in &mixed {
+                    let pat = m.split_once(": ").map(|x| x.1.to_string()).unwrap_or_default();
+                    *patterns.entry(pat).or_default() += 1;
+                }
+            }
+        }
+    }
+    println!("\nnot lifted {not_lifted}, with SSE {sse}, plain {clean}, with mixed cells {mixed_only}");
+    let mut v: Vec<_> = patterns.into_iter().collect();
+    v.sort_by(|a, b| b.1.cmp(&a.1));
+    println!("mixed cell patterns (kind@offset x bytes):");
+    for (p, n) in v.iter().take(20) {
+        println!("  {n:4}  {p}");
+    }
 }

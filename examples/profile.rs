@@ -86,7 +86,7 @@ fn main() {
             let _ = mb3d::render::paint(&sc, &p, &g);
             extra_s = (t.elapsed().as_secs_f64() - paint_s).max(0.0);
         }
-        let gpu = mb3d::gpu::unsupported(&p).unwrap_or("yes");
+        let gpu = mb3d::gpu::unsupported(&p).unwrap_or_else(|| "yes".into());
         println!(
             "{name}\t{}x{}\t{}\t{main_s:.2}\t{shadow_s:.2}\t{ao}\t{ao_s:.2}\t{paint_s:.2}\t{extra}\t{extra_s:.2}\t{gpu}",
             sc.width,

@@ -1,13 +1,19 @@
 // The ray marcher of calc.rs (`Marcher::march_pixel`, MB3D's
 // TMandCalcThread.Execute) for the graphics card, in single precision.
-// Prototype: one 'Integer Power' formula (the Mandelbulbs), numerical DE,
-// no cutting planes, inside rendering or volumetric light (gpu.rs checks).
+// The alternating 3D hybrid of 'Integer Power' and .m3f formulas (lifted
+// to WGSL, x86/lift_wgsl.rs; gpu.rs inserts them at the FORMULAS marker
+// marker), numerical or analytic DE; no cutting planes, inside rendering
+// or volumetric light (gpu.rs checks).
 // The structure follows calc.rs closely so the two can be compared line by
 // line; the iteration state is kept in private variables like the CPU's
 // `Marcher::it`.
 
 @group(0) @binding(0) var<storage, read> P: array<u32>;
 @group(0) @binding(1) var<storage, read_write> OUT: array<u32>;
+// the constants of the .m3f formulas (all slots) and the CPU's image of
+// the iteration record (u32 words from J4)
+@group(0) @binding(2) var<storage, read> cst: array<u32>;
+@group(0) @binding(3) var<storage, read> rtpl: array<u32>;
 
 // parameter indices (gpu.rs writes them in this order)
 const RECT_X0: u32 = 0u;
@@ -55,6 +61,16 @@ const COLOR_OPTION: u32 = 53u;
 const MCT_COLOR_MUL: u32 = 54u;
 const LN_RSTOP: u32 = 55u;
 const FHLN0: u32 = 56u;
+const IS_CUSTOM_DE: u32 = 57u;
+const DE_OPTION: u32 = 58u;
+const END_TO: u32 = 59u;
+const REPEAT_FROM: u32 = 60u;
+const J4: u32 = 61u;
+// 6 slots of 8 words: iterations, uncounted, constants base, fHln,
+// Integer Power power, z multiplier, kind (0 none, 1 Integer Power, 2 .m3f,
+// 3 Amazing Box: see amazing_box)
+const SLOTS: u32 = 64u;
+fn slot(n: u32, k: u32) -> u32 { return P[SLOTS + n * 8u + k]; }
 
 const PI: f32 = 3.14159265358979;
 
@@ -73,6 +89,14 @@ var<private> max_it: i32;
 var<private> rstop: f32;
 var<private> calc_sit: bool;
 var<private> smooth_it: f32;
+// the rest of the iteration record the formulas see (Iteration)
+var<private> w: f32;
+var<private> j: vec3<f32>;
+var<private> j4: f32;
+var<private> vary_scale: f32;
+var<private> first_it: i32;
+var<private> deriv: vec3<f32>;
+var<private> dfree: vec2<f32>;
 // marcher state
 var<private> ms_de_stop: f32;
 var<private> mzz: f32;
@@ -106,12 +130,10 @@ fn setc() {
 }
 
 // fHIntFunctions[power] (formulas.rs int_pow)
-fn int_pow(p: vec3<f32>, j: vec3<f32>) -> vec3<f32> {
+fn int_pow(p: vec3<f32>, j: vec3<f32>, power: i32, zmul: f32) -> vec3<f32> {
     let x = p.x;
     let y = p.y;
     let z = p.z;
-    let zmul = pf(Z_MUL);
-    let power = pi(POWER);
     let EPS = 1e-30;
     var o: vec3<f32>;
     if (power <= 2) {
@@ -188,12 +210,41 @@ fn int_pow(p: vec3<f32>, j: vec3<f32>) -> vec3<f32> {
     return o;
 }
 
-// CalcSmoothIterations
-fn calc_smooth_iterations() {
+// HybridCube / HybridCubeDE (formulas.rs amazing_box); slot words: 4 scale,
+// 5 min R, 7 fold, 2 analytic DE (the running derivative in w)
+fn box_fold(x: f32, fold: f32) -> f32 {
+    return abs(x + fold) - (abs(x - fold) + x);
+}
+
+fn amazing_box(n: u32) {
+    let scale = bitcast<f32>(slot(n, 4u));
+    let min_r = bitcast<f32>(slot(n, 5u));
+    let fold = bitcast<f32>(slot(n, 7u));
+    let x = box_fold(v.x, fold);
+    let y = box_fold(v.y, fold);
+    let z = box_fold(v.z, fold);
+    let r = z * z + y * y + x * x;
+    let sqr_min_r = min_r * min_r;
+    var mul: f32;
+    if (r < sqr_min_r) {
+        mul = scale / sqr_min_r;
+    } else if (1.0 < r) {
+        mul = scale;
+    } else {
+        mul = scale / r;
+    }
+    if (slot(n, 2u) != 0u) {
+        w *= mul;
+    }
+    v = vec3<f32>(x * mul + j.x, y * mul + j.y, z * mul + j.z);
+}
+
+// CalcSmoothIterations (fHln of the last formula n)
+fn calc_smooth_iterations(n: u32) {
     if (rout <= 1.0) {
         smooth_it = f32(it_result);
     } else if (rold < 1.0) {
-        let d = log(0.5 * log(rout)) * pf(FHLN0);
+        let d = log(0.5 * log(rout)) * bitcast<f32>(slot(n, 3u));
         smooth_it = f32(it_result) + pf(LN_RSTOP) - d;
     } else {
         let d = log(0.5 * log(rout));
@@ -202,19 +253,61 @@ fn calc_smooth_iterations() {
     }
 }
 
-// doHybridPas with one formula (Iteration::hybrid_3d)
-fn mand_function() {
-    var j = c;
+//@FORMULAS@
+
+// doHybridPas / doHybridPasDE (Iteration::run, hybrid_3d, hybrid_3d_de):
+// the alternating hybrid; `de`: with the analytic DE (returned)
+fn hybrid(de: bool) -> f32 {
     if (pi(DO_JULIA) != 0) {
         j = pv(JU);
+    } else {
+        j = c;
     }
     v = c;
+    w = 0.0;
     rout = dot(c, c);
     otrap = rout;
+    let deo = pi(DE_OPTION);
+    if (de) {
+        if ((deo & 0x38) == 16) {
+            w = rout;
+        } else if ((deo & 0x38) == 32) {
+            deriv = vec3<f32>(1.0, 0.0, 0.0);
+        } else {
+            w = 1.0;
+        }
+    }
+    var n = 0u;
+    var btmp = max(pi(SLOTS), 0);
     it_result = 0;
+    first_it = 0;
+    var uncounted_guard = 0u;
     loop {
         rold = rout;
-        v = int_pow(v, j);
+        var guard = 0;
+        while (btmp <= 0) {
+            n += 1u;
+            if (n > P[END_TO]) {
+                n = P[REPEAT_FROM];
+            }
+            btmp = max(bitcast<i32>(slot(n, 0u)), 0);
+            guard += 1;
+            if (guard > 64) {
+                break;
+            }
+        }
+        if (btmp <= 0) {
+            break;
+        }
+        call_slot(n);
+        btmp -= 1;
+        if (slot(n, 1u) != 0u) {
+            uncounted_guard += 1u;
+            if (uncounted_guard > 100000u) {
+                break;
+            }
+            continue;
+        }
         it_result += 1;
         rout = v.x * v.x + v.y * v.y + v.z * v.z;
         if (rout < otrap) {
@@ -224,37 +317,75 @@ fn mand_function() {
             break;
         }
     }
-    if (calc_sit) {
-        calc_smooth_iterations();
+    var result = 0.0;
+    if (de) {
+        if ((deo & 0x38) == 32) {
+            result = sqrt(rout) * 0.5 * log(rout) / deriv.x;
+        } else if ((deo & 7) == 4) {
+            result = abs(v.y) * log(abs(v.y)) / w;
+        } else {
+            result = sqrt(rout) / abs(w);
+        }
     }
+    if (calc_sit) {
+        calc_smooth_iterations(n);
+    }
+    return result;
 }
 
-// CalcDEnoADE (calc_de_part, numerical gradient)
-fn calc_de() -> f32 {
-    mand_function();
+// The one place that iterates the formulas (the driver inlines functions,
+// and the formula code must not be copied for every caller): the DE
+// (`on_de`: CalcDEanalytic, or CalcDEnoADE with its numerical gradient)
+// or the smoothed iteration count (mMandFunction with calc_sit).
+fn evaluate(on_de: bool) -> f32 {
+    let custom = on_de && pi(IS_CUSTOM_DE) != 0;
+    let numeric = on_de && !custom;
+    let bc = c;
+    var buf_rout = 0.0;
+    var buf_sit = calc_sit;
+    var buf_max_it = max_it;
+    var g = 0.0;
+    var hres = 0.0;
+    var zero = false;
+    var nk = 1u;
+    if (numeric) {
+        nk = 4u;
+    }
+    for (var k = 0u; k < nk; k++) {
+        if (k > 0u) {
+            var o = vec3<f32>(0.0);
+            o[k - 1u] = pf(DE_OFFSET);
+            c = bc + o;
+        }
+        hres = hybrid(custom);
+        if (numeric) {
+            if (k == 0u) {
+                if (rout <= 0.0) {
+                    zero = true;
+                    break;
+                }
+                buf_rout = rout;
+                buf_sit = calc_sit;
+                buf_max_it = max_it;
+                calc_sit = false;
+                max_it = it_result;
+                rstop = pf(RSTOP3D);
+            } else {
+                g += (buf_rout - rout) * (buf_rout - rout);
+            }
+        }
+    }
+    if (!on_de) {
+        return smooth_it;
+    }
     var result: f32;
-    if (rout <= 0.0) {
+    if (custom) {
+        result = hres * pf(D_DE_SCALE);
+    } else if (zero) {
         result = 0.0;
     } else {
-        let buf_sit = calc_sit;
-        let buf_max_it = max_it;
-        let buf_rout = rout;
-        calc_sit = false;
-        max_it = it_result;
-        rstop = pf(RSTOP3D);
-        let off = pf(DE_OFFSET);
-        let bc = c;
-        c = bc + vec3<f32>(off, 0.0, 0.0);
-        mand_function();
-        let g0 = (buf_rout - rout) * (buf_rout - rout);
-        c = bc + vec3<f32>(0.0, off, 0.0);
-        mand_function();
-        let g1 = (buf_rout - rout) * (buf_rout - rout);
-        c = bc + vec3<f32>(0.0, 0.0, off);
-        mand_function();
-        let g2 = (buf_rout - rout) * (buf_rout - rout);
         c = bc;
-        result = buf_rout * log(buf_rout) * pf(D_DE_SCALE) / (sqrt(g0 + g1 + g2) + pf(DE_OFFSET006));
+        result = buf_rout * log(buf_rout) * pf(D_DE_SCALE) / (sqrt(g) + pf(DE_OFFSET006));
         rout = buf_rout;
         it_result = max_it;
         max_it = buf_max_it;
@@ -280,92 +411,6 @@ fn rot_rev(a: vec3<f32>) -> vec3<f32> {
 
 fn update_de_stop() {
     ms_de_stop = pf(DE_STOP) * (1.0 + mzz * pf(DE_STOP_FACTOR));
-}
-
-// RMdoBinSearch
-fn bin_search(de0: f32, last_step_width: f32) -> f32 {
-    var de = de0;
-    var itmp = pi(DE_ADD_STEPS);
-    var dt1 = last_step_width * -0.5;
-    loop {
-        if (abs(de - ms_de_stop) <= 0.001) {
-            break;
-        }
-        mzz += dt1;
-        setc();
-        update_de_stop();
-        itmp -= 1;
-        if (itmp <= 0) {
-            break;
-        }
-        de = calc_de();
-        if (it_result >= max_its_result) {
-            dt1 = -abs(dt1);
-        } else if (de < ms_de_stop) {
-            dt1 = abs(dt1) * -0.55;
-        } else {
-            dt1 = abs(dt1) * 0.55;
-        }
-    }
-    return de;
-}
-
-// RMdoBinSearchIt
-fn bin_search_it() {
-    let yp = f32(max_it) - 0.99;
-    let saved_max = max_it;
-    max_it += 1;
-    var itmp = pi(DE_ADD_STEPS);
-    calc_sit = true;
-    var dt1 = 0.0;
-    var dmul = 1.0;
-    var first = true;
-    var last_si = 0.0;
-    var last_dif = 0.0;
-    loop {
-        mzz += dt1;
-        setc();
-        _ = calc_de();
-        if (!first && last_dif < abs(yp - smooth_it)) {
-            mzz -= dt1;
-            setc();
-            smooth_it = last_si;
-            if (dt1 > 0.0) {
-                dmul *= 0.5;
-            } else {
-                dmul *= 0.7;
-            }
-        }
-        last_dif = abs(yp - smooth_it);
-        last_si = smooth_it;
-        if (smooth_it > f32(max_it) - 0.1) {
-            dt1 = -3.0;
-        } else {
-            mzz -= 0.001;
-            setc();
-            _ = calc_de();
-            let r = last_si - smooth_it;
-            if (abs(r) < 1e-30) {
-                dt1 = select(0.0, 1.0, last_si < smooth_it) - 0.5;
-            } else if (r < 0.0) {
-                dt1 = (yp - smooth_it) / (r * 500.0);
-            } else {
-                dt1 = (yp - smooth_it) / (r * 1000.0);
-            }
-            if (dt1 > 4.0) {
-                dt1 = sqrt(dt1) * 2.0;
-            } else if (dt1 < -9.0) {
-                dt1 = sqrt(-dt1) * -3.0;
-            }
-            dt1 = dt1 * dmul + 0.0005;
-        }
-        first = false;
-        itmp -= 1;
-        if (itmp < 0) {
-            break;
-        }
-    }
-    max_it = saved_max;
 }
 
 // MakeWNormalsFromDVec
@@ -408,126 +453,6 @@ fn xy_vecs(n: vec3<f32>, vx: ptr<function, vec3<f32>>, vy: ptr<function, vec3<f3
     let x = vec3<f32>(1.0 - 2.0 * d1 * d1, 2.0 * dd * d1, 2.0 * d1 * cos_a);
     *vx = x;
     *vy = vec3<f32>(x.y, 1.0 - 2.0 * dd * dd, -2.0 * dd * cos_a);
-}
-
-// one sample of the normal calculation: the DE (on_de) or the smoothed
-// iteration count at c
-fn sample(on_de: bool) -> f32 {
-    if (on_de) {
-        return calc_de();
-    }
-    mand_function();
-    return smooth_it;
-}
-
-// RMCalculateNormals (on_de) / RMCalculateNormalsOnSmoothIt; returns NN
-fn calculate_normals(on_de: bool) -> f32 {
-    let sm = pi(SM_NORMALS);
-    var noffset = min(pf(DE_STOP), 1.0) * (1.0 + mzz * pf(DE_STOP_FACTOR)) * 0.15;
-    calc_sit = true;
-    let ct1 = c;
-    var dnn = sample(on_de);
-    var nn = smooth_it;
-    if (on_de) {
-        calc_sit = false;
-    }
-    // the DE falls towards the surface, the iteration count rises
-    let sgn = select(-1.0, 1.0, on_de);
-    var n = vec3<f32>(0.0);
-    if (sm == 8) {
-        let ssn = noffset * 1.3333;
-        for (var a = -2; a <= 2; a++) {
-            for (var b = -2; b <= 2; b++) {
-                for (var cc = -2; cc <= 2; cc++) {
-                    if ((a | b | cc) == 0) {
-                        continue;
-                    }
-                    c = ct1 + vg(2u) * (f32(a) * ssn) + vg(1u) * (f32(b) * ssn) + vg(0u) * (f32(cc) * ssn);
-                    let d = sample(on_de) * sgn;
-                    if (a != 0) { n.z += d / f32(a); }
-                    if (b != 0) { n.y += d / f32(b); }
-                    if (cc != 0) { n.x += d / f32(cc); }
-                }
-            }
-        }
-        n *= 0.0075;
-    } else {
-        for (var k = 0u; k < 3u; k++) {
-            let axis = (k + 2u) % 3u; // z, x, y as on the CPU
-            c = ct1 + vg(axis) * noffset;
-            let a = sample(on_de);
-            c = ct1 - vg(axis) * noffset;
-            let b = sample(on_de);
-            n[axis] = select(b - a, a - b, on_de) * 0.5;
-        }
-    }
-    if (sm > 0) {
-        noffset *= 2.0;
-        if (on_de) {
-            if (sm < 8) {
-                c = ct1 - vg(0u) * noffset;
-                dnn += calc_de();
-                c = ct1 + vg(0u) * noffset;
-                dnn += calc_de();
-                c = ct1 - vg(1u) * noffset;
-                dnn += calc_de();
-                c = ct1 + vg(1u) * noffset;
-                dnn = (dnn + calc_de()) * 0.2;
-            }
-        } else {
-            var acc = nn;
-            c = ct1 - vg(0u) * noffset;
-            mand_function();
-            acc += smooth_it;
-            c = ct1 + vg(0u) * noffset;
-            mand_function();
-            acc += smooth_it;
-            c = ct1 - vg(1u) * noffset;
-            mand_function();
-            acc += smooth_it;
-            c = ct1 + vg(1u) * noffset;
-            mand_function();
-            acc += smooth_it;
-            nn = acc * 0.2;
-            dnn = nn;
-        }
-        let ssn = noffset * 3.0 / (f32(sm) + 0.5);
-        let dm = f32(sm) * 2.0;
-        var vx: vec3<f32>;
-        var vy: vec3<f32>;
-        xy_vecs(n, &vx, &vy);
-        vx = rot_rev(vx);
-        vy = rot_rev(vy);
-        var s1 = vec2<f32>(0.0);
-        var ds = vec2<f32>(0.0);
-        for (var axis = 0; axis < 2; axis++) {
-            let dir = select(vy, vx, axis == 0);
-            for (var k = -sm; k <= sm; k++) {
-                if (k != 0) {
-                    c = ct1 + dir * (f32(k) * ssn);
-                    var d: f32;
-                    if (on_de) {
-                        d = (calc_de() - dnn) / f32(k);
-                    } else {
-                        mand_function();
-                        d = (dnn - smooth_it) / f32(k);
-                    }
-                    s1[axis] += d;
-                    ds[axis] += d * d;
-                }
-            }
-        }
-        let dsg = ds.x * dm - s1.x * s1.x + ds.y * dm - s1.y * s1.y;
-        let dt2 = noffset * 0.5 / (dm * ssn);
-        s_roughness = calc_roughness(n, dt2, dsg);
-        if (sm < 8) {
-            n.x += s1.x * dt2;
-            n.y += s1.y * dt2;
-        }
-    }
-    c = ct1;
-    store_normal(n);
-    return nn;
 }
 
 // RMdoColor
@@ -575,6 +500,31 @@ fn calc_zpos_and_rough() {
     si_zpos = r;
 }
 
+// states of march_pixel; a state may request an evaluation (`need`, at
+// `c`, DE or iteration count by `want_de`), whose result the next state gets
+const P_START: u32 = 0u;     // result: the DE at the start
+const P_LOOP: u32 = 1u;      // the top of the march loop
+const P_HALF: u32 = 2u;      // result: the DE after the half step back
+const P_DECIDE: u32 = 3u;    // step or surface
+const P_STEP: u32 = 4u;      // result: the DE after a step
+const P_BS: u32 = 5u;        // RMdoBinSearch: the loop
+const P_BS_R: u32 = 6u;      // result of a binary search step
+const P_BSI: u32 = 7u;       // RMdoBinSearchIt: the loop
+const P_BSI_1: u32 = 8u;     // result: the first DE of a step
+const P_BSI_2: u32 = 9u;     // result: the DE 0.001 back
+const P_BSI_END: u32 = 10u;
+const P_N_INIT: u32 = 11u;   // normals: the centre sample
+const P_N_0: u32 = 12u;      // result: the centre sample
+const P_N8: u32 = 13u;       // 5x5x5 samples
+const P_N8_R: u32 = 14u;
+const P_NA: u32 = 15u;       // the 6 axis samples
+const P_NA_R: u32 = 16u;
+const P_NSM: u32 = 17u;      // smoothing: the 4 samples around
+const P_NSM_R: u32 = 18u;
+const P_SW: u32 = 19u;       // smoothing: the sweeps
+const P_SW_R: u32 = 20u;
+const P_NEND: u32 = 21u;
+
 fn march_pixel(x: i32, y: i32) {
     si_normal = vec3<i32>(0);
     si_zpos = 32768u << 16u;
@@ -611,97 +561,444 @@ fn march_pixel(x: i32, y: i32) {
     setc();
     ms_de_stop = pf(DE_STOP);
     var first_step = pi(FIRST_STEP_RANDOM) != 0;
-
-    var dtmp = calc_de();
-    if (it_result >= max_its_result || dtmp < ms_de_stop) {
-        // inside the set at the start plane
-        si_zpos = 0x7FFF0000u;
-        si_normal = vec3<i32>(0, 0, -32767);
-        do_color();
-        if (pi(COLOR_OPTION) > 4) {
-            si_grad |= 32768u;
-        } else {
-            let t = clamp(rout / pf(D_RSTOP), 0.0, 1.0);
-            si_grad = 32768u + u32(round(32767.0 * t));
-        }
-        return;
-    }
-    var rsf_mul = 1.0;
-    var last_step = dtmp * pf(Z_STEP_DIV);
-    var last_de: f32;
     let dfog_on_it = pi(DFOG_ON_IT);
-    for (var guard = 0; guard < 1000000; guard++) {
-        if (it_result >= max_its_result) {
-            let dt1 = -0.5 * last_step;
-            mzz += dt1;
-            setc();
-            update_de_stop();
-            dtmp = calc_de();
-            last_step = -dt1;
+    let on_de = pi(NORMALS_ON_DE) != 0;
+    let sm = pi(SM_NORMALS);
+
+    // the state
+    var pc = P_START;
+    var need = true;
+    var want_de = true;
+    var r = 0.0;
+    var done = false;
+    // march
+    var dtmp = 0.0;
+    var rsf_mul = 1.0;
+    var last_step = 0.0;
+    var last_de = 0.0;
+    var dt1 = 0.0;
+    var de_limited = false;
+    var itmp = 0;
+    // RMdoBinSearchIt
+    var yp = 0.0;
+    var saved_max = 0;
+    var dmul = 1.0;
+    var first = true;
+    var last_si = 0.0;
+    var last_dif = 0.0;
+    // normals
+    var noffset = 0.0;
+    var ct1 = vec3<f32>(0.0);
+    var dnn = 0.0;
+    var nn = 0.0;
+    var n = vec3<f32>(0.0);
+    var cnt = 0;
+    var na = 0.0;
+    var acc = 0.0;
+    var ssn = 0.0;
+    var dm = 0.0;
+    var vx = vec3<f32>(0.0);
+    var vy = vec3<f32>(0.0);
+    var s1 = vec2<f32>(0.0);
+    var ds = vec2<f32>(0.0);
+    var axis = 0;
+    var kk = 0;
+
+    for (var guard = 0; guard < 2000000; guard++) {
+        if (need) {
+            r = evaluate(want_de);
+            need = false;
         }
-        if (it_result < pi(MIN_IT) || (it_result < max_its_result && dtmp >= ms_de_stop)) {
-            // next step
-            last_de = dtmp;
-            var d = max(0.11, (dtmp - pf(MS_DE_SUB) * ms_de_stop) * pf(Z_STEP_DIV) * rsf_mul);
-            let s1 = max(ms_de_stop, 0.4) * pf(MH04ZSD);
-            let count = dfog_on_it == 0 || it_result == dfog_on_it;
-            if (s1 < d) {
-                if (count) {
-                    step_count += s1 / d;
+        switch (pc) {
+            case P_START: {
+                dtmp = r;
+                if (it_result >= max_its_result || dtmp < ms_de_stop) {
+                    // inside the set at the start plane
+                    si_zpos = 0x7FFF0000u;
+                    si_normal = vec3<i32>(0, 0, -32767);
+                    do_color();
+                    if (pi(COLOR_OPTION) > 4) {
+                        si_grad |= 32768u;
+                    } else {
+                        let t = clamp(rout / pf(D_RSTOP), 0.0, 1.0);
+                        si_grad = 32768u + u32(round(32767.0 * t));
+                    }
+                    return;
                 }
-                d = s1;
-            } else if (count) {
-                step_count += 1.0;
+                rsf_mul = 1.0;
+                last_step = dtmp * pf(Z_STEP_DIV);
+                pc = P_LOOP;
             }
-            if (first_step) {
-                first_step = false;
-                seed = seed * 214013 + 2531011;
-                d *= f32(u32(seed) & 0x7FFFFFFFu) * (1.0 / 2147483647.0);
-            }
-            mzz += d;
-            if (mzz > pf(ZEND)) {
-                break;
-            }
-            last_step = d;
-            setc();
-            update_de_stop();
-            dtmp = calc_de();
-            if (dtmp > last_de + last_step) {
-                dtmp = last_de + last_step;
-            }
-            rsf_mul = 1.0;
-            if (last_de > dtmp + 1e-30) {
-                let t = last_step / (last_de - dtmp);
-                if (t < 1.0) {
-                    rsf_mul = max(0.5, t);
-                }
-            }
-        } else {
-            // surface found
-            let de_limited = it_result < max_its_result || dtmp < ms_de_stop;
-            if (pi(DE_ADD_STEPS) != 0) {
-                if (de_limited) {
-                    dtmp = bin_search(dtmp, last_step);
+            case P_LOOP: {
+                if (it_result >= max_its_result) {
+                    dt1 = -0.5 * last_step;
+                    mzz += dt1;
+                    setc();
+                    update_de_stop();
+                    need = true;
+                    want_de = true;
+                    pc = P_HALF;
                 } else {
-                    bin_search_it();
+                    pc = P_DECIDE;
                 }
             }
-            let nn = calculate_normals(pi(NORMALS_ON_DE) != 0);
-            var g: f32;
-            if (de_limited) {
-                g = 32767.0 - (nn + pf(D_COL_PLUS) + pf(COL_VAR_DE_STOP_MUL)
-                    * log(max(pf(DE_STOP), ms_de_stop) * pf(STEP_WIDTH))) * pf(MCTS_M);
-            } else {
-                g = 32767.0 - nn * pf(MCTS_M);
+            case P_HALF: {
+                dtmp = r;
+                last_step = -dt1;
+                pc = P_DECIDE;
             }
-            si_grad = clip15(g);
-            do_color();
-            calc_zpos_and_rough();
+            case P_DECIDE: {
+                if (it_result < pi(MIN_IT) || (it_result < max_its_result && dtmp >= ms_de_stop)) {
+                    // next step
+                    last_de = dtmp;
+                    var d = max(0.11, (dtmp - pf(MS_DE_SUB) * ms_de_stop) * pf(Z_STEP_DIV) * rsf_mul);
+                    let st1 = max(ms_de_stop, 0.4) * pf(MH04ZSD);
+                    let count = dfog_on_it == 0 || it_result == dfog_on_it;
+                    if (st1 < d) {
+                        if (count) {
+                            step_count += st1 / d;
+                        }
+                        d = st1;
+                    } else if (count) {
+                        step_count += 1.0;
+                    }
+                    if (first_step) {
+                        first_step = false;
+                        seed = seed * 214013 + 2531011;
+                        d *= f32(u32(seed) & 0x7FFFFFFFu) * (1.0 / 2147483647.0);
+                    }
+                    mzz += d;
+                    if (mzz > pf(ZEND)) {
+                        // background (`break` here would only leave the switch)
+                        done = true;
+                    } else {
+                        last_step = d;
+                        setc();
+                        update_de_stop();
+                        need = true;
+                        want_de = true;
+                        pc = P_STEP;
+                    }
+                } else {
+                    // surface found
+                    de_limited = it_result < max_its_result || dtmp < ms_de_stop;
+                    if (pi(DE_ADD_STEPS) != 0) {
+                        itmp = pi(DE_ADD_STEPS);
+                        if (de_limited) {
+                            dt1 = last_step * -0.5;
+                            pc = P_BS;
+                        } else {
+                            yp = f32(max_it) - 0.99;
+                            saved_max = max_it;
+                            max_it += 1;
+                            calc_sit = true;
+                            dt1 = 0.0;
+                            dmul = 1.0;
+                            first = true;
+                            last_si = 0.0;
+                            last_dif = 0.0;
+                            pc = P_BSI;
+                        }
+                    } else {
+                        pc = P_N_INIT;
+                    }
+                }
+            }
+            case P_STEP: {
+                dtmp = r;
+                if (dtmp > last_de + last_step) {
+                    dtmp = last_de + last_step;
+                }
+                rsf_mul = 1.0;
+                if (last_de > dtmp + 1e-30) {
+                    let t = last_step / (last_de - dtmp);
+                    if (t < 1.0) {
+                        rsf_mul = max(0.5, t);
+                    }
+                }
+                pc = P_LOOP;
+            }
+            // RMdoBinSearch
+            case P_BS: {
+                if (abs(dtmp - ms_de_stop) <= 0.001) {
+                    pc = P_N_INIT;
+                } else {
+                    mzz += dt1;
+                    setc();
+                    update_de_stop();
+                    itmp -= 1;
+                    if (itmp <= 0) {
+                        pc = P_N_INIT;
+                    } else {
+                        need = true;
+                        want_de = true;
+                        pc = P_BS_R;
+                    }
+                }
+            }
+            case P_BS_R: {
+                dtmp = r;
+                if (it_result >= max_its_result) {
+                    dt1 = -abs(dt1);
+                } else if (dtmp < ms_de_stop) {
+                    dt1 = abs(dt1) * -0.55;
+                } else {
+                    dt1 = abs(dt1) * 0.55;
+                }
+                pc = P_BS;
+            }
+            // RMdoBinSearchIt
+            case P_BSI: {
+                mzz += dt1;
+                setc();
+                need = true;
+                want_de = true;
+                pc = P_BSI_1;
+            }
+            case P_BSI_1: {
+                if (!first && last_dif < abs(yp - smooth_it)) {
+                    mzz -= dt1;
+                    setc();
+                    smooth_it = last_si;
+                    if (dt1 > 0.0) {
+                        dmul *= 0.5;
+                    } else {
+                        dmul *= 0.7;
+                    }
+                }
+                last_dif = abs(yp - smooth_it);
+                last_si = smooth_it;
+                if (smooth_it > f32(max_it) - 0.1) {
+                    dt1 = -3.0;
+                    pc = P_BSI_END;
+                } else {
+                    mzz -= 0.001;
+                    setc();
+                    need = true;
+                    want_de = true;
+                    pc = P_BSI_2;
+                }
+            }
+            case P_BSI_2: {
+                let rr = last_si - smooth_it;
+                if (abs(rr) < 1e-30) {
+                    dt1 = select(0.0, 1.0, last_si < smooth_it) - 0.5;
+                } else if (rr < 0.0) {
+                    dt1 = (yp - smooth_it) / (rr * 500.0);
+                } else {
+                    dt1 = (yp - smooth_it) / (rr * 1000.0);
+                }
+                if (dt1 > 4.0) {
+                    dt1 = sqrt(dt1) * 2.0;
+                } else if (dt1 < -9.0) {
+                    dt1 = sqrt(-dt1) * -3.0;
+                }
+                dt1 = dt1 * dmul + 0.0005;
+                pc = P_BSI_END;
+            }
+            case P_BSI_END: {
+                first = false;
+                itmp -= 1;
+                if (itmp < 0) {
+                    max_it = saved_max;
+                    pc = P_N_INIT;
+                } else {
+                    pc = P_BSI;
+                }
+            }
+            // RMCalculateNormals (on_de) / RMCalculateNormalsOnSmoothIt
+            case P_N_INIT: {
+                noffset = min(pf(DE_STOP), 1.0) * (1.0 + mzz * pf(DE_STOP_FACTOR)) * 0.15;
+                calc_sit = true;
+                ct1 = c;
+                need = true;
+                want_de = on_de;
+                pc = P_N_0;
+            }
+            case P_N_0: {
+                dnn = r;
+                nn = smooth_it;
+                if (on_de) {
+                    calc_sit = false;
+                }
+                n = vec3<f32>(0.0);
+                cnt = 0;
+                if (sm == 8) {
+                    pc = P_N8;
+                } else {
+                    pc = P_NA;
+                }
+            }
+            case P_N8: {
+                // the next of the 124 points of the 5x5x5 cube (not the centre)
+                if (cnt >= 125) {
+                    n *= 0.0075;
+                    pc = P_NSM;
+                } else {
+                    let a = cnt / 25 - 2;
+                    let b = (cnt / 5) % 5 - 2;
+                    let cc = cnt % 5 - 2;
+                    if ((a | b | cc) == 0) {
+                        cnt += 1;
+                    } else {
+                        let sn = noffset * 1.3333;
+                        c = ct1 + vg(2u) * (f32(a) * sn) + vg(1u) * (f32(b) * sn) + vg(0u) * (f32(cc) * sn);
+                        need = true;
+                        want_de = on_de;
+                        pc = P_N8_R;
+                    }
+                }
+            }
+            case P_N8_R: {
+                let a = cnt / 25 - 2;
+                let b = (cnt / 5) % 5 - 2;
+                let cc = cnt % 5 - 2;
+                let d = r * select(-1.0, 1.0, on_de);
+                if (a != 0) { n.z += d / f32(a); }
+                if (b != 0) { n.y += d / f32(b); }
+                if (cc != 0) { n.x += d / f32(cc); }
+                cnt += 1;
+                pc = P_N8;
+            }
+            case P_NA: {
+                // z, x, y as on the CPU; + then - the offset
+                if (cnt >= 6) {
+                    pc = P_NSM;
+                } else {
+                    let ax = (u32(cnt / 2) + 2u) % 3u;
+                    if (cnt % 2 == 0) {
+                        c = ct1 + vg(ax) * noffset;
+                    } else {
+                        c = ct1 - vg(ax) * noffset;
+                    }
+                    need = true;
+                    want_de = on_de;
+                    pc = P_NA_R;
+                }
+            }
+            case P_NA_R: {
+                let ax = (u32(cnt / 2) + 2u) % 3u;
+                if (cnt % 2 == 0) {
+                    na = r;
+                } else {
+                    n[ax] = select(r - na, na - r, on_de) * 0.5;
+                }
+                cnt += 1;
+                pc = P_NA;
+            }
+            case P_NSM: {
+                if (sm <= 0) {
+                    pc = P_NEND;
+                } else {
+                    if (cnt < 1000) {
+                        // first visit: start the 4 samples around
+                        noffset *= 2.0;
+                        cnt = 1000;
+                        acc = nn;
+                    }
+                    let i = cnt - 1000;
+                    if ((on_de && sm >= 8) || i >= 4) {
+                        if (on_de) {
+                            if (sm < 8) {
+                                dnn = dnn * 0.2;
+                            }
+                        } else {
+                            nn = acc * 0.2;
+                            dnn = nn;
+                        }
+                        ssn = noffset * 3.0 / (f32(sm) + 0.5);
+                        dm = f32(sm) * 2.0;
+                        xy_vecs(n, &vx, &vy);
+                        vx = rot_rev(vx);
+                        vy = rot_rev(vy);
+                        s1 = vec2<f32>(0.0);
+                        ds = vec2<f32>(0.0);
+                        axis = 0;
+                        kk = -sm;
+                        pc = P_SW;
+                    } else {
+                        let ax = u32(i / 2);
+                        if (i % 2 == 0) {
+                            c = ct1 - vg(ax) * noffset;
+                        } else {
+                            c = ct1 + vg(ax) * noffset;
+                        }
+                        need = true;
+                        want_de = on_de;
+                        pc = P_NSM_R;
+                    }
+                }
+            }
+            case P_NSM_R: {
+                if (on_de) {
+                    dnn += r;
+                } else {
+                    acc += r;
+                }
+                cnt += 1;
+                pc = P_NSM;
+            }
+            case P_SW: {
+                if (axis >= 2) {
+                    let dsg = ds.x * dm - s1.x * s1.x + ds.y * dm - s1.y * s1.y;
+                    let dt2 = noffset * 0.5 / (dm * ssn);
+                    s_roughness = calc_roughness(n, dt2, dsg);
+                    if (sm < 8) {
+                        n.x += s1.x * dt2;
+                        n.y += s1.y * dt2;
+                    }
+                    pc = P_NEND;
+                } else if (kk > sm) {
+                    axis += 1;
+                    kk = -sm;
+                } else if (kk == 0) {
+                    kk += 1;
+                } else {
+                    let dir = select(vy, vx, axis == 0);
+                    c = ct1 + dir * (f32(kk) * ssn);
+                    need = true;
+                    want_de = on_de;
+                    pc = P_SW_R;
+                }
+            }
+            case P_SW_R: {
+                var d: f32;
+                if (on_de) {
+                    d = (r - dnn) / f32(kk);
+                } else {
+                    d = (dnn - r) / f32(kk);
+                }
+                s1[axis] += d;
+                ds[axis] += d * d;
+                kk += 1;
+                pc = P_SW;
+            }
+            case P_NEND: {
+                c = ct1;
+                store_normal(n);
+                var g: f32;
+                if (de_limited) {
+                    g = 32767.0 - (nn + pf(D_COL_PLUS) + pf(COL_VAR_DE_STOP_MUL)
+                        * log(max(pf(DE_STOP), ms_de_stop) * pf(STEP_WIDTH))) * pf(MCTS_M);
+                } else {
+                    g = 32767.0 - nn * pf(MCTS_M);
+                }
+                si_grad = clip15(g);
+                do_color();
+                calc_zpos_and_rough();
+                done = true;
+            }
+            default: {
+                done = true;
+            }
+        }
+        if (done) {
             break;
         }
     }
     si_shadow = u32(round(clamp(step_count, 0.0, 1023.0)));
 }
+
 
 @compute @workgroup_size(8, 8)
 fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
@@ -720,6 +1017,13 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
     for (var k = 0; k < lx; k++) {
         seed = seed * 214013 + 2531011;
     }
+    _ = cst[0];
+    _ = rtpl[0];
+    init_record();
+    j4 = pf(J4);
+    vary_scale = 1.0;
+    deriv = vec3<f32>(1.0, 0.0, 0.0);
+    dfree = vec2<f32>(0.0, 0.0);
     march_pixel(x, y);
     let o = u32(ly * w + lx) * 4u;
     OUT[o] = (u32(si_normal.x) & 0xFFFFu) | (u32(si_normal.y) << 16u);

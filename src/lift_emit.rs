@@ -42,15 +42,31 @@ fn mask(n: u32) -> String {
 
 /// The cells and the code that uses them.
 #[derive(Default)]
-struct Cells {
+pub(super) struct Cells {
     used: BTreeSet<(char, u32)>,
     written: BTreeSet<(char, u32)>,
+    /// the kind of the access being generated: 'd' double, 's' single,
+    /// 'i' integer, 'x' SSE (for the GPU typing)
+    kind: char,
+    /// every access: (cell, byte offset in the cell, bytes, kind)
+    pub(super) log: Vec<((char, u32), u32, u32, char)>,
+    /// the op of each access in `log`
+    pub(super) log_ops: Vec<usize>,
+    /// the op being generated
+    cur_op: usize,
 }
 
 impl Cells {
+    /// The cells the formula writes.
+    pub(super) fn written_cells(&self) -> impl Iterator<Item = (char, u32)> + '_ {
+        self.written.iter().copied()
+    }
+
     /// Expression (u64) of `n` bytes at `off` in region `p`.
     fn rd(&mut self, (p, off): (char, u32), n: u32) -> String {
         let (c, sh) = (off / 8, off % 8);
+        self.log.push(((p, c), sh, n, self.kind));
+        self.log_ops.push(self.cur_op);
         self.used.insert((p, c));
         if sh + n <= 8 {
             if sh == 0 && n == 8 {
@@ -67,6 +83,8 @@ impl Cells {
     /// Statement writing the low `n` bytes of the u64 expression `v`.
     fn wr(&mut self, (p, off): (char, u32), n: u32, v: &str) -> String {
         let (c, sh) = (off / 8, off % 8);
+        self.log.push(((p, c), sh, n, self.kind));
+        self.log_ops.push(self.cur_op);
         self.used.insert((p, c));
         self.written.insert((p, c));
         if sh + n <= 8 {
@@ -95,6 +113,11 @@ impl Cells {
 
 /// x87 memory load of `kind` as an f64 expression; None for 80 bit.
 fn fload_expr(c: &mut Cells, r: (char, u32), kind: FKind) -> Option<String> {
+    c.kind = match kind {
+        FKind::F64 => 'd',
+        FKind::F32 => 's',
+        _ => 'i',
+    };
     Some(match kind {
         FKind::F32 => format!("(f32::from_bits({} as u32) as f64)", c.rd(r, 4)),
         FKind::F64 => format!("f64::from_bits({})", c.rd(r, 8)),
@@ -108,6 +131,11 @@ fn fload_expr(c: &mut Cells, r: (char, u32), kind: FKind) -> Option<String> {
 /// x87 memory store of the f64 expression `v` (the conversions of
 /// `Machine::fstore`); None for 64 / 80 bit integers.
 fn fstore_stmt(c: &mut Cells, r: (char, u32), kind: FKind, v: &str) -> Option<String> {
+    c.kind = match kind {
+        FKind::F64 => 'd',
+        FKind::F32 => 's',
+        _ => 'i',
+    };
     Some(match kind {
         FKind::F32 => c.wr(r, 4, &format!("(({v}) as f32).to_bits() as u64")),
         FKind::F64 => c.wr(r, 8, &format!("({v}).to_bits()")),
@@ -163,6 +191,11 @@ impl Prog {
     /// Rust code of the formula with its memory as local variables, or
     /// None when it cannot be lifted (see the module documentation).
     pub fn emit_lifted(&self, name: &str, difs: bool) -> Option<String> {
+        self.emit_lifted_cells(name, difs).map(|x| x.0)
+    }
+
+    /// `emit_lifted` with the cells and their access log.
+    pub(super) fn emit_lifted_cells(&self, name: &str, difs: bool) -> Option<(String, Cells)> {
         let an = self.analyse(difs);
         if !an.report.problems.is_empty() {
             return None;
@@ -265,7 +298,38 @@ impl Prog {
         let _ = writeln!(o, "    }}");
         let _ = writeln!(o, "    res");
         let _ = writeln!(o, "}}");
-        Some(o)
+        Some((o, cells))
+    }
+
+    /// How the cells of the lifted formula map to 32-bit GPU values: None
+    /// if the formula cannot be lifted; else (uses SSE, the cells used both
+    /// as a whole double and in parts or as integers / singles).
+    pub fn gpu_typing(&self, difs: bool) -> Option<(bool, Vec<String>)> {
+        let (_, cells) = self.emit_lifted_cells("x", difs)?;
+        let sse = cells.log.iter().any(|e| e.3 == 'x');
+        let mut by_cell: std::collections::BTreeMap<(char, u32), Vec<(u32, u32, char)>> = Default::default();
+        for (cell, off, n, k) in &cells.log {
+            by_cell.entry(*cell).or_default().push((*off, *n, *k));
+        }
+        let mut mixed = Vec::new();
+        for (cell, acc) in by_cell {
+            let whole_double = acc.iter().any(|a| a.2 == 'd' && a.0 == 0 && a.1 == 8);
+            let other = acc.iter().any(|a| !(a.2 == 'd' && a.0 == 0 && a.1 == 8));
+            if whole_double && other {
+                if std::env::var_os("GPU_REPORT_OPS").is_some() {
+                    for (i, e) in cells.log.iter().enumerate() {
+                        if e.0 == cell && !(e.3 == 'd' && e.1 == 0 && e.2 == 8) {
+                            eprintln!("    {}{}: op {} {:?}", cell.0, cell.1, cells.log_ops[i], self.ops[cells.log_ops[i]]);
+                        }
+                    }
+                }
+                let mut kinds: Vec<String> = acc.iter().filter(|a| !(a.2 == 'd' && a.0 == 0 && a.1 == 8)).map(|a| format!("{}@{}x{}", a.2, a.0, a.1)).collect();
+                kinds.sort();
+                kinds.dedup();
+                mixed.push(format!("{}{}: {}", cell.0, cell.1, kinds.join(",")));
+            }
+        }
+        Some((sse, mixed))
     }
 
     /// One op in call string `cs`: the code and whether it ends the block;
@@ -282,6 +346,12 @@ impl Prog {
     ) -> Option<(String, bool)> {
         let loc = |mm: &Mem| region(an.loc(k, cs, mm));
         let fx = |i: &u8| format!("f[{}]", i & 7);
+        c.cur_op = k;
+        c.kind = match &self.ops[k] {
+            Op::FLd64 { .. } | Op::FSt64 { .. } | Op::FArithM64 { .. } => 'd',
+            Op::Gen(ins, _, _) if matches!(ins.as_ref(), Ins::Sse { .. } | Ins::SseStore { .. }) => 'x',
+            _ => 'i',
+        };
         let line = match &self.ops[k] {
             Op::MovRM { r, mem } => format!("rg[{r}] = {} as u32;", c.rd(loc(mem)?, 4)),
             Op::MovMR { mem, r } => c.wr(loc(mem)?, 4, &format!("rg[{r}] as u64")),

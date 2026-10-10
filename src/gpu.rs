@@ -4,9 +4,10 @@
 //! wgpu compute shader (`gpu_march.wgsl`: Vulkan, Metal or DirectX 12) and
 //! fills the same G-buffer as the CPU; the post calculations (shadows,
 //! ambient occlusion) and the painting stay on the CPU.  The shader
-//! calculates in single precision and supports one 'Integer Power' formula
-//! (the Mandelbulbs) with the numerical DE; [`unsupported`] says why a scene
-//! is calculated on the CPU instead.
+//! calculates in single precision: the alternating 3D hybrid of 'Integer
+//! Power' and the .m3f formulas the lifter translates to WGSL
+//! (`x86::lift_wgsl`), with the numerical or the analytic DE (options 0,
+//! 2, 11); [`unsupported`] says why a scene is calculated on the CPU.
 
 use crate::calc::CalcParams;
 use crate::formulas::Formula;
@@ -63,36 +64,270 @@ fn set_status(s: String) {
 }
 
 /// Why the scene cannot be calculated by the shader, `None` if it can.
-pub fn unsupported(p: &CalcParams) -> Option<&'static str> {
+pub fn unsupported(p: &CalcParams) -> Option<String> {
+    let r = |s: &str| Some(s.to_string());
     if p.slice_2d != 0 {
-        return Some("2D calculation");
+        return r("2D calculation (not on the GPU yet)");
     }
-    if p.slots.len() != 1 || p.end_to != 0 || p.decomb.is_some() {
-        return Some("more than one formula");
+    if p.decomb.is_some() {
+        return r("DE combination (not on the GPU yet)");
     }
-    let s = &p.slots[0];
-    if !matches!(s.formula, Formula::IntPow { .. }) || s.iterations <= 0 || s.uncounted {
-        return Some("only the Integer Power formula is ported");
+    if p.mode != HybridMode::Alt3D {
+        return r("4D or interpolation hybrid (not on the GPU yet)");
     }
-    if p.mode != HybridMode::Alt3D || p.is_custom_de || p.difs || p.machine.is_some() {
-        return Some("formula mode");
+    if p.difs {
+        return r("dIFS formulas (not on the GPU yet)");
+    }
+    if p.is_custom_de && ![2, 11].contains(&p.de_option) {
+        return r("this analytic DE option (not on the GPU yet)");
     }
     if p.cut_options != 0 {
-        return Some("cutting planes");
+        return r("cutting planes (not on the GPU yet)");
     }
     if p.inside_rendering || p.in_and_outside {
-        return Some("inside rendering");
+        return r("inside rendering (not on the GPU yet)");
     }
     if p.color_on_it != 0 {
-        return Some("colour on iteration");
+        return r("colour on iteration (not on the GPU yet)");
     }
     if p.vol.is_some() {
-        return Some("volumetric light");
+        return r("volumetric light (not on the GPU yet)");
     }
     if precision(p) < MIN_PRECISION {
-        return Some("the zoom needs double precision");
+        return r("the zoom needs double precision");
     }
-    None
+    scene_shader(p).err()
+}
+
+/// The parts of the shader and its buffers for one scene.
+struct SceneShader {
+    /// the complete WGSL
+    code: String,
+    /// the constants of all .m3f slots (u32)
+    cst: Vec<u32>,
+    /// the record image: for cell c the f32 (whole doubles) at 2c, or the
+    /// two u32 halves at 2c, 2c + 1
+    rtpl: Vec<u32>,
+    /// per slot: iterations, uncounted, constants base, fHln bits, power,
+    /// z multiplier bits, kind, 0
+    slots: [[u32; 8]; 6],
+}
+
+/// Record cells (offset / 8 from J4) with integers the loop copies to the
+/// record before a .m3f call (`Iteration::run_custom`): they must be halves.
+const LOOP_HALVES: [u32; 4] = [13, 15, 16, 33];
+
+fn scene_shader(p: &CalcParams) -> Result<SceneShader, String> {
+    use crate::x86::lift_wgsl::{record_globals, CellTy, WgslFormula, PRELUDE};
+    use std::fmt::Write;
+    let mut slots = [[0u32; 8]; 6];
+    let mut wfs: Vec<(usize, WgslFormula)> = Vec::new();
+    let mut cst: Vec<u32> = Vec::new();
+    if p.slots.len() > 6 {
+        return Err("more than 6 formulas".into());
+    }
+    for (n, sl) in p.slots.iter().enumerate() {
+        let row = &mut slots[n];
+        row[0] = sl.iterations as u32;
+        row[1] = sl.uncounted as u32;
+        row[3] = p.fhln[n].to_bits();
+        if sl.iterations == 0 {
+            continue;
+        }
+        match &sl.formula {
+            Formula::IntPow { power, z_mul } => {
+                row[4] = *power as u32;
+                row[5] = (*z_mul as f32).to_bits();
+                row[6] = 1;
+            }
+            Formula::AmazingBox { scale, min_r, fold } => {
+                row[2] = sl.ade as u32;
+                row[4] = (*scale as f32).to_bits();
+                row[5] = (*min_r as f32).to_bits();
+                row[6] = 3;
+                row[7] = (*fold as f32).to_bits();
+            }
+            Formula::Custom(c) if c.def.jit.is_none() => {
+                let m = p.machine.as_ref().ok_or("no formula machine")?;
+                let prog = m.prog(crate::custom::code_addr(n)).ok_or_else(|| format!("{}: not compiled", c.name()))?;
+                let wf = prog.emit_wgsl(&format!("fm{n}"), false).ok_or_else(|| format!("{} is not on the GPU yet", c.name()))?;
+                if wf.writes_vars {
+                    return Err(format!("{} keeps state in its variables", c.name()));
+                }
+                let vb = (crate::custom::var_buf_addr(n) - crate::x86::BASE) as usize;
+                row[2] = cst.len() as u32;
+                cst.extend(wf.constants_from(&m.mem[vb..vb + 0x400]));
+                row[6] = 2;
+                wfs.push((n, wf));
+            }
+            f => return Err(format!("the built-in formula {} is not on the GPU yet", f.name())),
+        }
+    }
+    // one cell type per record cell for the whole shader: the bits form
+    // (halves) wins; formulas that typed a cell differently are made again
+    let mut unified: std::collections::BTreeMap<u32, CellTy> = Default::default();
+    for (_, w) in &wfs {
+        for (c, t) in &w.record {
+            let e = unified.entry(*c).or_insert(*t);
+            if *t == CellTy::Halves {
+                *e = CellTy::Halves;
+            }
+        }
+    }
+    for (n, w) in wfs.iter_mut() {
+        if w.record.iter().any(|(c, t)| unified[c] != *t) {
+            let prog = p.machine.as_ref().and_then(|m| m.prog(crate::custom::code_addr(*n))).ok_or("not compiled")?;
+            *w = prog.emit_wgsl_with(&format!("fm{n}"), false, &unified).ok_or("formula typing")?;
+        }
+    }
+    let refs: Vec<&WgslFormula> = wfs.iter().map(|(_, w)| w).collect();
+    let globals = record_globals(&refs).ok_or("formulas use a record field in different ways")?;
+    // the cell types of the shader
+    let mut ty: std::collections::BTreeMap<u32, CellTy> = Default::default();
+    for w in &refs {
+        for (c, t) in &w.record {
+            ty.insert(*c, *t);
+        }
+    }
+    for (c, t) in &ty {
+        if LOOP_HALVES.contains(c) && *t != CellTy::Halves {
+            return Err("a formula uses an integer of the record as a double".into());
+        }
+    }
+    // the record image from the CPU's prepared iteration (static parts)
+    let it = p.new_iteration();
+    let mut rtpl = vec![0u32; 128];
+    if let Some(m) = it.emu.as_deref() {
+        let b = (crate::custom::IT_BASE - crate::x86::BASE) as usize;
+        for (c, t) in &ty {
+            let o = b + 8 * *c as usize;
+            let lo = u32::from_le_bytes(m.mem[o..o + 4].try_into().unwrap());
+            let hi = u32::from_le_bytes(m.mem[o + 4..o + 8].try_into().unwrap());
+            match t {
+                CellTy::Whole => rtpl[2 * *c as usize] = (f64::from_bits(lo as u64 | (hi as u64) << 32) as f32).to_bits(),
+                CellTy::Halves => {
+                    rtpl[2 * *c as usize] = lo;
+                    rtpl[2 * *c as usize + 1] = hi;
+                }
+            }
+        }
+    }
+    let mut g = String::new();
+    g.push_str(PRELUDE);
+    g.push_str(&globals);
+    // init_record, marshal_in, marshal_out
+    let has = |c: u32| ty.contains_key(&c);
+    let _ = writeln!(g, "fn init_record() {{");
+    for (c, t) in &ty {
+        match t {
+            CellTy::Whole => {
+                let _ = writeln!(g, "    r{c}f = bitcast<f32>(rtpl[{}u]);", 2 * c);
+            }
+            CellTy::Halves => {
+                let _ = writeln!(g, "    r{c}l = rtpl[{}u]; r{c}h = rtpl[{}u];", 2 * c, 2 * c + 1);
+            }
+        }
+    }
+    let _ = writeln!(g, "}}");
+    let ins: [(u32, &str); 20] = [
+        (3, "r3f = v.x;"), (4, "r4f = v.y;"), (5, "r5f = v.z;"), (6, "r6f = w;"),
+        (7, "r7f = c.x;"), (8, "r8f = c.y;"), (9, "r9f = c.z;"),
+        (10, "r10f = j.x;"), (11, "r11f = j.y;"), (12, "r12f = j.z;"), (0, "r0f = j4;"),
+        (1, "r1f = rold;"), (14, "r14f = rout;"), (31, "r31f = otrap;"), (32, "r32f = vary_scale;"),
+        (34, "r34f = dfree.x;"), (35, "r35f = dfree.y;"), (36, "r36f = deriv.x;"), (37, "r37f = deriv.y;"), (38, "r38f = deriv.z;"),
+    ];
+    // a double cell in the bits form gets / gives the bits of the value
+    let bits_in = |l: &str| -> String {
+        let (lhs, rhs) = l.trim_end_matches(';').split_once(" = ").unwrap();
+        let cell = &lhs[..lhs.len() - 1];
+        format!("{cell}l = f64_lo({rhs}); {cell}h = f64_hi({rhs});")
+    };
+    let bits_out = |l: &str| -> String {
+        let (lhs, rhs) = l.trim_end_matches(';').split_once(" = ").unwrap();
+        let cell = &rhs[..rhs.len() - 1];
+        format!("{lhs} = from_f64_bits({cell}h, {cell}l);")
+    };
+    let _ = writeln!(g, "fn marshal_in() {{");
+    for (c, l) in ins {
+        match ty.get(&c) {
+            Some(CellTy::Whole) => {
+                let _ = writeln!(g, "    {l}");
+            }
+            Some(CellTy::Halves) => {
+                let _ = writeln!(g, "    {}", bits_in(l));
+            }
+            None => {}
+        }
+    }
+    if has(15) {
+        let _ = writeln!(g, "    r15l = bitcast<u32>(it_result); r15h = bitcast<u32>(max_it);");
+    }
+    if has(16) {
+        let _ = writeln!(g, "    r16l = bitcast<u32>(rstop);");
+    }
+    if has(33) {
+        let _ = writeln!(g, "    r33l = bitcast<u32>(first_it);");
+    }
+    let _ = writeln!(g, "}}");
+    let outs: [(u32, &str); 16] = [
+        (3, "v.x = r3f;"), (4, "v.y = r4f;"), (5, "v.z = r5f;"), (6, "w = r6f;"),
+        (10, "j.x = r10f;"), (11, "j.y = r11f;"), (12, "j.z = r12f;"), (0, "j4 = r0f;"),
+        (14, "rout = r14f;"), (31, "otrap = r31f;"), (32, "vary_scale = r32f;"),
+        (34, "dfree.x = r34f;"), (35, "dfree.y = r35f;"), (36, "deriv.x = r36f;"), (37, "deriv.y = r37f;"), (38, "deriv.z = r38f;"),
+    ];
+    let _ = writeln!(g, "fn marshal_out() {{");
+    for (c, l) in outs {
+        match ty.get(&c) {
+            Some(CellTy::Whole) => {
+                let _ = writeln!(g, "    {l}");
+            }
+            Some(CellTy::Halves) => {
+                let _ = writeln!(g, "    {}", bits_out(l));
+            }
+            None => {}
+        }
+    }
+    if has(33) {
+        let _ = writeln!(g, "    first_it = bitcast<i32>(r33l);");
+    }
+    let _ = writeln!(g, "}}");
+    for (_, w) in &wfs {
+        g.push_str(&w.code);
+    }
+    // call_slot
+    let x = crate::custom::IT_C1 - 32;
+    let regs = format!(
+        "rg = array<u32, 8>({:#x}u, {:#x}u, {:#x}u, 0u, {:#x}u, 0u, 0u, 0u);",
+        x,
+        x + 16,
+        x + 8,
+        crate::custom::STACK_TOP - 12
+    );
+    let _ = writeln!(g, "fn call_slot(n: u32) {{");
+    let _ = writeln!(g, "    switch (n) {{");
+    for (n, row) in slots.iter().enumerate() {
+        match row[6] {
+            1 => {
+                let _ = writeln!(g, "        case {n}u: {{ v = int_pow(v, j, bitcast<i32>(slot({n}u, 4u)), bitcast<f32>(slot({n}u, 5u))); }}");
+            }
+            2 => {
+                let _ = writeln!(g, "        case {n}u: {{ marshal_in(); {regs} fsw = 0u; fm{n}(slot({n}u, 2u)); marshal_out(); }}");
+            }
+            3 => {
+                let _ = writeln!(g, "        case {n}u: {{ amazing_box({n}u); }}");
+            }
+            _ => {}
+        }
+    }
+    let _ = writeln!(g, "        default: {{}}");
+    let _ = writeln!(g, "    }}");
+    let _ = writeln!(g, "}}");
+    let code = include_str!("gpu_march.wgsl").replace("//@FORMULAS@", &g);
+    // MB3D_GPU_DUMP=file: write the scene shader (for debugging)
+    if let Some(f) = std::env::var_os("MB3D_GPU_DUMP") {
+        let _ = std::fs::write(f, &code);
+    }
+    Ok(SceneShader { code, cst, rtpl, slots })
 }
 
 /// The smallest [`precision`] for the GPU: below it the single precision
@@ -113,8 +348,36 @@ pub fn precision(p: &CalcParams) -> f64 {
 struct Gpu {
     device: wgpu::Device,
     queue: wgpu::Queue,
-    pipeline: wgpu::ComputePipeline,
+    /// compiled scene shaders by a hash of their code
+    pipelines: Mutex<std::collections::HashMap<u64, std::sync::Arc<wgpu::ComputePipeline>>>,
     name: String,
+}
+
+/// The pipeline of the shader `code` (compiled once, then cached).
+fn pipeline(g: &Gpu, code: &str) -> Result<std::sync::Arc<wgpu::ComputePipeline>, String> {
+    use std::hash::{Hash, Hasher};
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    code.hash(&mut h);
+    let key = h.finish();
+    if let Some(pl) = g.pipelines.lock().map_err(|e| e.to_string())?.get(&key) {
+        return Ok(pl.clone());
+    }
+    let scope = g.device.push_error_scope(wgpu::ErrorFilter::Validation);
+    let module = g.device.create_shader_module(wgpu::ShaderModuleDescriptor { label: Some("march"), source: wgpu::ShaderSource::Wgsl(code.into()) });
+    let pl = g.device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+        label: Some("march"),
+        layout: None,
+        module: &module,
+        entry_point: Some("main"),
+        compilation_options: Default::default(),
+        cache: None,
+    });
+    if let Some(e) = pollster::block_on(scope.pop()) {
+        return Err(format!("the shader does not compile: {e}"));
+    }
+    let pl = std::sync::Arc::new(pl);
+    g.pipelines.lock().map_err(|e| e.to_string())?.insert(key, pl.clone());
+    Ok(pl)
 }
 
 fn gpu() -> Result<&'static Gpu, String> {
@@ -147,27 +410,11 @@ async fn init() -> Result<Gpu, String> {
     // errors (a shader the driver cannot compile, a lost device) must not
     // end the program: they are kept and the calculation goes to the CPU
     device.on_uncaptured_error(std::sync::Arc::new(|e: wgpu::Error| set_error(e.to_string())));
-    let scope = device.push_error_scope(wgpu::ErrorFilter::Validation);
-    let module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-        label: Some("march"),
-        source: wgpu::ShaderSource::Wgsl(include_str!("gpu_march.wgsl").into()),
-    });
-    let pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
-        label: Some("march"),
-        layout: None,
-        module: &module,
-        entry_point: Some("main"),
-        compilation_options: Default::default(),
-        cache: None,
-    });
-    if let Some(e) = scope.pop().await {
-        return Err(format!("{}: the shader does not compile: {e}", info.name));
-    }
-    Ok(Gpu { device, queue, pipeline, name: format!("{} ({:?})", info.name, info.backend) })
+    Ok(Gpu { device, queue, pipelines: Mutex::new(Default::default()), name: format!("{} ({:?})", info.name, info.backend) })
 }
 
 /// The parameters in the order of the indices in `gpu_march.wgsl`.
-fn params(p: &CalcParams, row0: usize, rows: usize) -> Vec<u32> {
+fn params(p: &CalcParams, row0: usize, rows: usize, slots: &[[u32; 8]; 6]) -> Vec<u32> {
     let (power, z_mul) = match p.slots[0].formula {
         Formula::IntPow { power, z_mul } => (power, z_mul),
         _ => (8, -1.0),
@@ -233,7 +480,18 @@ fn params(p: &CalcParams, row0: usize, rows: usize) -> Vec<u32> {
     f(&mut v, p.mct_color_mul as f64);
     f(&mut v, p.ln_rstop as f64);
     f(&mut v, p.fhln[0] as f64);
-    debug_assert_eq!(v.len(), 57);
+    i(&mut v, p.is_custom_de as i32);
+    i(&mut v, p.de_option);
+    i(&mut v, p.end_to as i32);
+    i(&mut v, p.repeat_from as i32);
+    f(&mut v, p.ju[3]);
+    while v.len() < 64 {
+        v.push(0);
+    }
+    for row in slots {
+        v.extend_from_slice(row);
+    }
+    debug_assert_eq!(v.len(), 64 + 48);
     v
 }
 
@@ -251,7 +509,7 @@ pub fn march(
     mut sink: impl FnMut(usize, &[SiLight]),
 ) -> Option<Vec<SiLight>> {
     if let Some(r) = unsupported(p) {
-        set_status(format!("CPU: {r} (not on the GPU yet)"));
+        set_status(format!("CPU: {r}"));
         return None;
     }
     let g = match gpu() {
@@ -261,7 +519,14 @@ pub fn march(
             return None;
         }
     };
-    match run(g, p, progress, cancel, &mut sink) {
+    let sh = match scene_shader(p) {
+        Ok(s) => s,
+        Err(e) => {
+            set_status(format!("CPU: {e}"));
+            return None;
+        }
+    };
+    match run(g, p, &sh, progress, cancel, &mut sink) {
         Ok(v) => {
             set_status(format!("GPU {}", g.name));
             Some(v)
@@ -276,6 +541,7 @@ pub fn march(
 fn run(
     g: &Gpu,
     p: &CalcParams,
+    sh: &SceneShader,
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
     sink: &mut dyn FnMut(usize, &[SiLight]),
@@ -291,18 +557,34 @@ fn run(
         usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
         mapped_at_creation: false,
     });
+    let pipeline = pipeline(g, &sh.code)?;
     let par = g.device.create_buffer(&wgpu::BufferDescriptor {
         label: Some("params"),
-        size: 64 * 4,
+        size: 128 * 4,
         usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
         mapped_at_creation: false,
     });
+    let words = |label: &'static str, d: &[u32]| {
+        let d = if d.is_empty() { vec![0u32] } else { d.to_vec() };
+        let b = g.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some(label),
+            size: (d.len() * 4) as u64,
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        g.queue.write_buffer(&b, 0, &bytes(&d));
+        b
+    };
+    let cst = words("constants", &sh.cst);
+    let rtpl = words("record", &sh.rtpl);
     let bind = g.device.create_bind_group(&wgpu::BindGroupDescriptor {
         label: None,
-        layout: &g.pipeline.get_bind_group_layout(0),
+        layout: &pipeline.get_bind_group_layout(0),
         entries: &[
             wgpu::BindGroupEntry { binding: 0, resource: par.as_entire_binding() },
             wgpu::BindGroupEntry { binding: 1, resource: out.as_entire_binding() },
+            wgpu::BindGroupEntry { binding: 2, resource: cst.as_entire_binding() },
+            wgpu::BindGroupEntry { binding: 3, resource: rtpl.as_entire_binding() },
         ],
     });
     let mut gbuf = Vec::with_capacity(w * h);
@@ -312,11 +594,11 @@ fn run(
             return Err("cancelled".into());
         }
         let rows = band.min(h - row0);
-        g.queue.write_buffer(&par, 0, &bytes(&params(p, row0, rows)));
+        g.queue.write_buffer(&par, 0, &bytes(&params(p, row0, rows, &sh.slots)));
         let mut enc = g.device.create_command_encoder(&Default::default());
         {
             let mut pass = enc.begin_compute_pass(&Default::default());
-            pass.set_pipeline(&g.pipeline);
+            pass.set_pipeline(&pipeline);
             pass.set_bind_group(0, &bind, &[]);
             pass.dispatch_workgroups(w.div_ceil(8) as u32, rows.div_ceil(8) as u32, 1);
         }
@@ -357,6 +639,69 @@ fn run(
         progress(row0, h);
     }
     Ok(gbuf)
+}
+
+/// Runs `wgsl` (entry point `main`) once with the storage buffers
+/// `inputs` (bindings 0.., read only) and an output buffer of `out_len`
+/// words (the next binding); `groups` workgroups.  For tests of generated
+/// shader code.
+pub fn run_compute(wgsl: &str, inputs: &[&[u32]], out_len: usize, groups: u32) -> Result<Vec<u32>, String> {
+    let g = gpu()?;
+    let scope = g.device.push_error_scope(wgpu::ErrorFilter::Validation);
+    let module = g.device.create_shader_module(wgpu::ShaderModuleDescriptor { label: Some("test"), source: wgpu::ShaderSource::Wgsl(wgsl.into()) });
+    let pipeline = g.device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+        label: Some("test"),
+        layout: None,
+        module: &module,
+        entry_point: Some("main"),
+        compilation_options: Default::default(),
+        cache: None,
+    });
+    if let Some(e) = pollster::block_on(scope.pop()) {
+        return Err(e.to_string());
+    }
+    let mut bufs = Vec::new();
+    for d in inputs {
+        let words = if d.is_empty() { vec![0u32] } else { d.to_vec() };
+        let b = g.device.create_buffer(&wgpu::BufferDescriptor {
+            label: None,
+            size: (words.len() * 4) as u64,
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        g.queue.write_buffer(&b, 0, &bytes(&words));
+        bufs.push(b);
+    }
+    let size = (out_len.max(1) * 4) as u64;
+    let out = g.device.create_buffer(&wgpu::BufferDescriptor { label: None, size, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC, mapped_at_creation: false });
+    let read = g.device.create_buffer(&wgpu::BufferDescriptor { label: None, size, usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
+    let mut entries: Vec<wgpu::BindGroupEntry> = bufs.iter().enumerate().map(|(i, b)| wgpu::BindGroupEntry { binding: i as u32, resource: b.as_entire_binding() }).collect();
+    entries.push(wgpu::BindGroupEntry { binding: bufs.len() as u32, resource: out.as_entire_binding() });
+    let bind = g.device.create_bind_group(&wgpu::BindGroupDescriptor { label: None, layout: &pipeline.get_bind_group_layout(0), entries: &entries });
+    let mut enc = g.device.create_command_encoder(&Default::default());
+    {
+        let mut pass = enc.begin_compute_pass(&Default::default());
+        pass.set_pipeline(&pipeline);
+        pass.set_bind_group(0, &bind, &[]);
+        pass.dispatch_workgroups(groups, 1, 1);
+    }
+    enc.copy_buffer_to_buffer(&out, 0, &read, 0, size);
+    g.queue.submit([enc.finish()]);
+    let slice = read.slice(..);
+    let (tx, rx) = std::sync::mpsc::channel();
+    slice.map_async(wgpu::MapMode::Read, move |r| {
+        let _ = tx.send(r);
+    });
+    g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
+    rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    if let Some(e) = take_error() {
+        return Err(e);
+    }
+    let data = slice.get_mapped_range().map_err(|e| e.to_string())?;
+    let v = data.chunks_exact(4).map(|c| u32::from_le_bytes(c.try_into().unwrap())).collect();
+    drop(data);
+    read.unmap();
+    Ok(v)
 }
 
 #[cfg(test)]

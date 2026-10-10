@@ -2732,6 +2732,9 @@ pub mod lift;
 #[path = "lift_emit.rs"]
 mod lift_emit;
 
+#[path = "lift_wgsl.rs"]
+pub mod lift_wgsl;
+
 /// A compiled formula.
 pub struct Prog {
     ops: Vec<Op>,

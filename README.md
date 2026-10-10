@@ -375,24 +375,33 @@ It needs the cargo feature `gpu` (part of the default build; a build with
 `--no-default-features` is the CPU renderer without dependencies).
 
 The shader (`src/gpu_march.wgsl`) is a port of the CPU's per-pixel loop
-and fills the same G-buffer; shadows, ambient occlusion and the painting
-stay on the CPU. It calculates in single precision and supports one
-*Integer Power* formula (the Mandelbulbs, powers 2–8, also as Julia sets)
-with the numerical DE, smooth normals, binary search and the colour options.
-Everything else is calculated on the CPU as before: other formulas and
-hybrids, cutting planes, inside rendering, volumetric light, views zoomed
-so far that single precision would show as noise (about zoom 7 at 800
-pixels width), and the Monte Carlo renderer. Errors of the graphics card
-or its driver also send the calculation to the CPU, and software
-renderers (llvmpipe, WARP) are not used.
+and fills the same G-buffer; shadows, ambient occlusion, reflections and
+the painting stay on the CPU. It calculates in single precision. The
+formulas reach it through the lifter: the x86 code of an `.m3f` formula is
+analysed (`src/lift.rs`: every memory access resolved to the iteration
+record, the formula's constants or the stack) and translated to WGSL
+(`src/lift_wgsl.rs`); the built-in *Integer Power* and *Amazing Box* are
+written by hand. A scene runs on the GPU when it is an alternating 3D
+hybrid of such formulas with the numerical or an analytic DE (options 0, 2
+and 11). Everything else is calculated on the CPU as before: dIFS, DE
+combinations, 4D and interpolation hybrids, formulas with SSE code and the
+other built-in formulas, cutting planes, inside rendering, volumetric light,
+views zoomed so far that single precision would show as noise (about zoom 7
+at 800 pixels width), and the Monte Carlo renderer. `mb3d` prints which
+was used and why; errors of the graphics card or its driver also send the
+calculation to the CPU, and software renderers (llvmpipe, WARP) are not
+used.
 
-On a GeForce GTX 1650 (laptop) against a Ryzen 5 3550H (8 threads),
-`examples/mandelbulb.m3s` takes 0.62 s instead of 2.5 s at 800×600 and
-2.0 s instead of 9.4 s at 1600×1200. The first calculation after a start
-waits for the driver to compile the shader (several seconds the first time,
-drivers keep it in a cache). `cargo test` compares the GPU
-G-buffer with the CPU's (99.99% of the pixels agree on object or
-background, 1.4% of the normals differ by more than 25°).
+Of the 80 example parameter files of MB3D, 17 run on the GPU. On a GeForce
+GTX 1650 (laptop) against a Ryzen 5 3550H (8 threads), at 640 pixels:
+*TimeMachine* 1.5 s instead of 19.8 s, *Theli-At - Bone Menger* 1.4 s
+instead of 11.8 s, *Hal-Tenny-Resistance* 16.5 s instead of 99 s (scenes
+whose time goes into shadows or ambient occlusion gain little). Scenes with
+many iterations of strongly expanding formulas show single precision noise
+(*MengerTrees*). Developer checks: `cargo run --release --example
+gpuformulas -- M3Formulas` runs every translatable formula on the GPU
+against the interpreter (all 278 agree), `cargo test` compares the GPU
+G-buffer of a Mandelbulb with the CPU's.
 
 ## What is ported
 

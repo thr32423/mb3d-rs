@@ -18,6 +18,18 @@ use std::sync::{Mutex, OnceLock};
 
 static ENABLED: AtomicBool = AtomicBool::new(false);
 static LAST: Mutex<String> = Mutex::new(String::new());
+/// The last error wgpu reported outside an error scope.
+static ERROR: Mutex<Option<String>> = Mutex::new(None);
+
+fn set_error(e: String) {
+    if let Ok(mut l) = ERROR.lock() {
+        l.get_or_insert(e);
+    }
+}
+
+fn take_error() -> Option<String> {
+    ERROR.lock().ok().and_then(|mut l| l.take())
+}
 
 /// Pixels per GPU submission: keeps every submission short (drivers reset
 /// the card when one takes seconds) and gives progress steps.
@@ -114,6 +126,10 @@ async fn init() -> Result<Gpu, String> {
         .await
         .map_err(|e| format!("no graphics card found: {e}"))?;
     let info = adapter.get_info();
+    if info.device_type == wgpu::DeviceType::Cpu {
+        // llvmpipe, WARP: slower than the CPU renderer
+        return Err(format!("only a software renderer ({})", info.name));
+    }
     let (device, queue) = adapter
         .request_device(&wgpu::DeviceDescriptor {
             label: Some("mb3d"),
@@ -122,6 +138,10 @@ async fn init() -> Result<Gpu, String> {
         })
         .await
         .map_err(|e| format!("{}: {e}", info.name))?;
+    // errors (a shader the driver cannot compile, a lost device) must not
+    // end the program: they are kept and the calculation goes to the CPU
+    device.on_uncaptured_error(std::sync::Arc::new(|e: wgpu::Error| set_error(e.to_string())));
+    let scope = device.push_error_scope(wgpu::ErrorFilter::Validation);
     let module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
         label: Some("march"),
         source: wgpu::ShaderSource::Wgsl(include_str!("gpu_march.wgsl").into()),
@@ -134,6 +154,9 @@ async fn init() -> Result<Gpu, String> {
         compilation_options: Default::default(),
         cache: None,
     });
+    if let Some(e) = scope.pop().await {
+        return Err(format!("{}: the shader does not compile: {e}", info.name));
+    }
     Ok(Gpu { device, queue, pipeline, name: format!("{} ({:?})", info.name, info.backend) })
 }
 
@@ -300,6 +323,9 @@ fn run(
             let _ = tx.send(r);
         });
         g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
+        if let Some(e) = take_error() {
+            return Err(e);
+        }
         rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
         {
             let data = slice.get_mapped_range().map_err(|e| e.to_string())?;

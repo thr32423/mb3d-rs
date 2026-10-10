@@ -1,6 +1,6 @@
 [package]
 name = "mb3d"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 description = "Rust port of Mandelbulb3D (MB3D) - renderer and desktop application"
 license = "LGPL-2.1-or-later"
@@ -21,6 +21,11 @@ fontdue = { version = "0.9", optional = true }
 arboard = { version = "3", optional = true, default-features = false, features = ["wayland-data-control"] }
 wgpu = { version = "30.0.1", optional = true }
 pollster = { version = "1.0.1", optional = true }
+
+# Windows: Microsoft's current shader compiler (DXC) built in; the old FXC
+# that wgpu falls back to without it cannot compile the ray marcher
+[target.'cfg(windows)'.dependencies]
+wgpu = { version = "30.0.1", optional = true, features = ["static-dxc"] }
 
 [[bin]]
 name = "Mandelbulb3D"

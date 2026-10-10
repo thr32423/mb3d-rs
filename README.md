@@ -64,7 +64,8 @@ than a pixel shows up as noise, which is why MB3D authors often render at
 ```sh
 cargo build --release
 ./target/release/Mandelbulb3D [--formulas DIR] [--maps DIR] [file.m3p|.m3i|.txt]
-# the same from the command line program:
+# the same from the command line program (plain `mb3d` without arguments
+# opens the windows too):
 ./target/release/mb3d gui [file.m3p]
 ```
 
@@ -77,6 +78,16 @@ the event handlers are ported from the Delphi units (`Mand.pas`,
 the controls itself in MB3D's two looks: *Glossy* (MB3D's default dark
 theme) and *Windows* (Prefs ▸ Visual themes). Text is drawn with the
 bundled Liberation fonts; on Windows Tahoma is used if present.
+
+As in MB3D the Formulas, Lighting and Post processing windows stick to the
+right side of the main window and follow it when it moves; right-click
+their buttons for left side or not sticky, or drag one of them next to a
+side of the main window to snap it there. Wayland does not let a program
+place its windows, so on a Wayland desktop on Linux the program uses
+X11 (XWayland) when it is available; `MB3D_WAYLAND=1` makes it use Wayland
+anyway (the compositor then places the windows). A tiling compositor
+places tiled windows itself; make the windows float to have MB3D's layout
+(Hyprland: `windowrulev2 = float, class:^(mandelbulb3d)$`).
 
 * **Main window:** open and save `.m3p` / `.m3i` / text parameters (and
   from or to the clipboard), save pictures (PNG, JPEG, BMP, 16 bit

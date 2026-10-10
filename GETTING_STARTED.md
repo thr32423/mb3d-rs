@@ -91,6 +91,7 @@ a parameter file):
 
 ```sh
 ./Mandelbulb3D
+./mb3d                                             # the same
 ./Mandelbulb3D "M3Parameter/6 AM - Torii temple.m3p"
 mb3d gui "M3Parameter/6 AM - Torii temple.m3p"     # the same
 ```

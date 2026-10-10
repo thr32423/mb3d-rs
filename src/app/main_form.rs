@@ -268,7 +268,7 @@ pub fn place_sticky(app: &Mb3d, ui: &mut Ui) {
     let m = ui.f(F);
     let (ml, mt) = (m.left, m.top);
     let (mw, _) = m.outer_size(&ui.theme);
-    for (k, form) in ["FormulaGUIForm", "LightAdjustForm", "PostProForm"].iter().enumerate() {
+    for (k, form) in STICKY_FORMS.iter().enumerate() {
         if !ui.has_form(form) {
             continue;
         }
@@ -280,6 +280,49 @@ pub fn place_sticky(app: &Mb3d, ui: &mut Ui) {
         };
         ui.move_form(form, x, mt);
     }
+}
+
+const STICKY_FORMS: [&str; 3] = ["FormulaGUIForm", "LightAdjustForm", "PostProForm"];
+
+/// A window was moved (TMand3DForm.WndProc WM_Move): the sticky windows
+/// follow the main window. A formula, lighting or post processing window
+/// dragged within 17 pixels of a side of the main window (top edges
+/// aligned) snaps to that side and becomes sticky.
+pub fn wm_move(app: &mut Mb3d, ui: &mut Ui, form: &str) {
+    if form == F {
+        place_sticky(app, ui);
+        return;
+    }
+    let Some(k) = STICKY_FORMS.iter().position(|&n| n == form) else { return };
+    let m = ui.f(F);
+    let (ml, mt) = (m.left, m.top);
+    let (mw, _) = m.outer_size(&ui.theme);
+    let f = ui.f(form);
+    let (fw, _) = f.outer_size(&ui.theme);
+    if (f.top - mt).abs() >= 17 {
+        return;
+    }
+    let side = if (f.left - (ml + mw)).abs() < 17 {
+        1
+    } else if (f.left + fw - ml).abs() < 17 {
+        2
+    } else {
+        return;
+    };
+    let exact = if side == 1 { ml + mw } else { ml - fw };
+    if app.main.forms_sticky[k] != side {
+        app.main.forms_sticky[k] = side;
+        save_sticky(app);
+    }
+    if (f.left, f.top) != (exact, mt) {
+        ui.move_form(form, exact, mt);
+    }
+}
+
+fn save_sticky(app: &mut Mb3d) {
+    let s = app.main.forms_sticky;
+    let j = pti(app.ini.get("StickOption"));
+    app.ini.set("StickOption", &((j & 0xC) + s[1] + (s[0] << 4) + (s[2] << 6)).to_string());
 }
 
 // ---------------------------------------------------------------------------
@@ -977,8 +1020,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         }
         "Stickthiswindowtotherightside1Click" => {
             app.main.forms_sticky[app.main.stick_it] = ui.tag(F, &e.sender) as i32;
-            let s = app.main.forms_sticky;
-            app.ini.set("StickOption", &(s[1] + (s[0] << 4) + (s[2] << 6)).to_string());
+            save_sticky(app);
             place_sticky(app, ui);
         }
         "SpeedButton12Click" => ui.show("AnimationForm"),

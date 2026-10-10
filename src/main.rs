@@ -10,8 +10,9 @@ const USAGE: &str = "\
 mb3d - Mandelbulb3D renderer (Rust port)
 
 USAGE:
-    mb3d [OPTIONS] [SCENE_FILE]
-    mb3d gui [--formulas DIR] [--maps DIR] [FILE]                  the Mandelbulb3D windows
+    mb3d                                                           the Mandelbulb3D windows
+    mb3d gui [--formulas DIR] [--maps DIR] [FILE]                  the same, with options
+    mb3d [OPTIONS] [SCENE_FILE]                                    render one image
     mb3d animate ANIMATION | KEYFRAME_FILES... [OPTIONS]           render an animation
     mb3d batch FILES... | --list LISTFILE [OPTIONS]                render many files
     mb3d voxel FILE [OPTIONS]                                      voxel slices (PNG stack)
@@ -81,6 +82,11 @@ fn gui(_args: &[String]) -> Result<(), String> {
 
 fn run() -> Result<(), String> {
     let all: Vec<String> = std::env::args().skip(1).collect();
+    // started without arguments (double-click, plain `mb3d`): the windows
+    #[cfg(feature = "gui")]
+    if all.is_empty() {
+        return gui(&all);
+    }
     match all.first().map(String::as_str) {
         Some("gui") => return gui(&all[1..]),
         Some("animate") | Some("anim") => return animate(&all[1..]),

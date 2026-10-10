@@ -147,6 +147,10 @@ impl App for Mb3d {
                 return;
             }
         }
+        if let Ev::Move = e.ev {
+            main_form::wm_move(self, ui, &e.form);
+            return;
+        }
         match e.form.as_str() {
             MAIN => main_form::event(self, ui, e),
             "FormulaGUIForm" => formula_form::event(self, ui, e),

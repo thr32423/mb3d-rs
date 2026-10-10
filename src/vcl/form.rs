@@ -55,6 +55,8 @@ pub enum Ev {
     Close,
     CloseQuery,
     Resize,
+    /// the window was moved (handler "WMMove", like a WM_MOVE in WndProc)
+    Move,
     Activate,
     Deactivate,
     Select,

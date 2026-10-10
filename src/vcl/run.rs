@@ -32,6 +32,8 @@ struct Win {
     /// non-client part under the mouse (for the press)
     nc: Nc,
     cursor_icon: CursorIcon,
+    /// the title last set (X11 cannot read it back: `Window::title` is empty)
+    title: String,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -58,9 +60,31 @@ struct Runner<A: App> {
     buttons: u8,
 }
 
+/// The event loop. On Linux X11 is preferred, also on a Wayland desktop
+/// (through XWayland): MB3D places its windows next to each other (the
+/// sticky formula and lighting windows), and Wayland does not let a program
+/// position its windows. `MB3D_WAYLAND=1` uses Wayland anyway.
+fn event_loop() -> Result<EventLoop<UserEvent>, String> {
+    #[cfg(all(unix, not(target_os = "macos")))]
+    if std::env::var_os("MB3D_WAYLAND").is_none() && x11_reachable() {
+        use winit::platform::x11::EventLoopBuilderExtX11;
+        return EventLoop::<UserEvent>::with_user_event().with_x11().build().map_err(|e| format!("cannot open a window: {e}"));
+    }
+    EventLoop::<UserEvent>::with_user_event().build().map_err(|e| format!("cannot open a window: {e}"))
+}
+
+/// Whether the X server of `DISPLAY` (a local ":N") accepts connections
+/// (winit creates its event loop only once, there is no second attempt).
+#[cfg(all(unix, not(target_os = "macos")))]
+fn x11_reachable() -> bool {
+    let Ok(d) = std::env::var("DISPLAY") else { return false };
+    let Some(n) = d.strip_prefix(':').map(|r| r.split('.').next().unwrap_or("")) else { return false };
+    !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit()) && std::os::unix::net::UnixStream::connect(format!("/tmp/.X11-unix/X{n}")).is_ok()
+}
+
 /// Runs the program until the main form closes.
 pub fn run<A: App + 'static>(mut ui: Ui, app: A) -> Result<(), String> {
-    let el = EventLoop::<UserEvent>::with_user_event().build().map_err(|e| format!("cannot open a window: {e}"))?;
+    let el = event_loop()?;
     let proxy = el.create_proxy();
     let p2 = proxy.clone();
     ui.waker = Some(Waker(Arc::new(move || {
@@ -252,7 +276,7 @@ impl<A: App> Runner<A> {
                 }
                 (true, Some(wid)) => {
                     let f = &mut self.ui.forms[fi];
-                    let w = &self.wins[&wid];
+                    let w = self.wins.get_mut(&wid).unwrap();
                     if f.dirty {
                         f.layout();
                         w.window.request_redraw();
@@ -263,8 +287,10 @@ impl<A: App> Runner<A> {
                     if !f.maximized && ((cur.width - ow as f64).abs() > 1.0 || (cur.height - oh as f64).abs() > 1.0) {
                         let _ = w.window.request_inner_size(LogicalSize::new(ow as f64, oh as f64));
                     }
-                    if w.window.title() != f.caption() {
-                        w.window.set_title(f.caption());
+                    let title = f.caption();
+                    if w.title != title {
+                        w.window.set_title(&title);
+                        w.title = title.to_string();
                     }
                 }
                 _ => {}
@@ -363,7 +389,7 @@ impl<A: App> Runner<A> {
         };
         let id = window.id();
         window.request_redraw();
-        self.wins.insert(id, Win { window, surface, form: fi, cursor: (0.0, 0.0), nc: Nc::Client, cursor_icon: CursorIcon::Default });
+        self.wins.insert(id, Win { window, surface, form: fi, cursor: (0.0, 0.0), nc: Nc::Client, cursor_icon: CursorIcon::Default, title: self.ui.forms[fi].caption().to_string() });
         self.by_form.insert(fi, id);
         f_created(&mut self.ui, fi);
     }
@@ -471,6 +497,19 @@ impl<A: App> Runner<A> {
         if icon != w.cursor_icon {
             w.cursor_icon = icon;
             w.window.set_cursor(icon);
+        }
+    }
+
+    /// The window of form `fi` is at `l` now: tells the program ("WMMove").
+    fn moved(&mut self, fi: usize, l: LogicalPosition<f64>) {
+        let f = &mut self.ui.forms[fi];
+        let (x, y) = (l.x.round() as i32, l.y.round() as i32);
+        if (x, y) != (f.left, f.top) {
+            f.left = x;
+            f.top = y;
+            let name = f.name.clone();
+            self.ui.post(&name, &name, "WMMove", Ev::Move);
+            self.process();
         }
     }
 
@@ -778,6 +817,10 @@ impl<A: App> ApplicationHandler<UserEvent> for Runner<A> {
                 let window = self.wins[&id].window.clone();
                 let s = window.scale_factor();
                 let l: LogicalSize<f64> = size.to_logical(s);
+                // a move and a resize in one step (X11) brings no Moved event
+                if let Ok(p) = window.outer_position() {
+                    self.moved(fi, p.to_logical(s));
+                }
                 let f = &mut self.ui.forms[fi];
                 f.maximized = window.is_maximized();
                 let before = f.client_size();
@@ -796,11 +839,8 @@ impl<A: App> ApplicationHandler<UserEvent> for Runner<A> {
                 self.ui.forms[fi].dirty = true;
             }
             WindowEvent::Moved(p) => {
-                let w = &self.wins[&id];
-                let l: LogicalPosition<f64> = p.to_logical(w.window.scale_factor());
-                let f = &mut self.ui.forms[fi];
-                f.left = l.x as i32;
-                f.top = l.y as i32;
+                let l: LogicalPosition<f64> = p.to_logical(self.wins[&id].window.scale_factor());
+                self.moved(fi, l);
             }
             WindowEvent::Focused(on) => {
                 let f = &mut self.ui.forms[fi];

@@ -30,6 +30,23 @@ fn main() {
     }
     let only = std::env::var("APPTEST_ONLY").unwrap_or_default();
     let want = |n: &str| only.is_empty() || only.split(',').any(|s| s == n);
+    // Navigator
+    if want("navi") {
+        ui.show("FNavigator");
+        app.process(&mut ui);
+        for _ in 0..40 {
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            mb3d::vcl::App::idle(&mut app, &mut ui);
+            app.process(&mut ui);
+        }
+        ui.save_form_png("FNavigator", &out.join("FNavigator.png"), 1.0).unwrap();
+        // the adjustment panel
+        ui.click("FNavigator", "SpeedButton23");
+        app.process(&mut ui);
+        ui.save_form_png("FNavigator", &out.join("FNavigator_panel.png"), 1.0).unwrap();
+        ui.click("FNavigator", "SpeedButton23");
+        app.process(&mut ui);
+    }
     // Monte Carlo: import, one pass or two, stop
     if want("mc") {
     ui.show("MCForm");

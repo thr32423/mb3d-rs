@@ -10,8 +10,6 @@ const USAGE: &str = "\
 mb3d - Mandelbulb3D renderer (Rust port)
 
 USAGE:
-    mb3d                                                           the Mandelbulb3D windows
-    mb3d gui [--formulas DIR] [--maps DIR] [FILE]                  the same, with options
     mb3d [OPTIONS] [SCENE_FILE]                                    render one image
     mb3d animate ANIMATION | KEYFRAME_FILES... [OPTIONS]           render an animation
     mb3d batch FILES... | --list LISTFILE [OPTIONS]                render many files
@@ -72,17 +70,6 @@ fn main() -> ExitCode {
     }
 }
 
-/// `mb3d gui`: the desktop application (as the Mandelbulb3D program).
-#[cfg(feature = "gui")]
-fn gui(args: &[String]) -> Result<(), String> {
-    mb3d::app::run(args)
-}
-
-#[cfg(not(feature = "gui"))]
-fn gui(_args: &[String]) -> Result<(), String> {
-    Err("this program was built without the desktop application (cargo feature \"gui\")".into())
-}
-
 /// `--gpu` / `--cpu`: the main calculation on the graphics card or not.
 fn use_gpu(on: bool) {
     #[cfg(feature = "gpu")]
@@ -97,13 +84,7 @@ fn run() -> Result<(), String> {
     #[cfg(feature = "gpu")]
     mb3d::gpu::set_enabled(mb3d::gpu::default_on());
     let all: Vec<String> = std::env::args().skip(1).collect();
-    // started without arguments (double-click, plain `mb3d`): the windows
-    #[cfg(feature = "gui")]
-    if all.is_empty() {
-        return gui(&all);
-    }
     match all.first().map(String::as_str) {
-        Some("gui") => return gui(&all[1..]),
         Some("animate") | Some("anim") => return animate(&all[1..]),
         Some("batch") => return batch(&all[1..]),
         Some("voxel") | Some("voxels") => return voxel_cmd(&all[1..]),

@@ -858,8 +858,8 @@ pub(crate) fn scrollbox_bars(f: &Form, id: Id) -> (bool, bool) {
         if !k.visible || k.kind.non_visual() || k.align == Align::Client {
             continue;
         }
-        ex_r = ex_r.max(k.left + c.scroll_x + k.width);
-        ex_b = ex_b.max(k.top + c.scroll_y + k.height);
+        ex_r = ex_r.max(k.left + k.width);
+        ex_b = ex_b.max(k.top + k.height);
     }
     let mut vs = ex_b > ch;
     let mut hs = ex_r > cw;
@@ -881,8 +881,8 @@ pub(crate) fn scrollbox_extent(f: &Form, id: Id) -> (i32, i32) {
         if !k.visible || k.kind.non_visual() || k.align == Align::Client {
             continue;
         }
-        ex_r = ex_r.max(k.left + c.scroll_x + k.width);
-        ex_b = ex_b.max(k.top + c.scroll_y + k.height);
+        ex_r = ex_r.max(k.left + k.width);
+        ex_b = ex_b.max(k.top + k.height);
     }
     (ex_r, ex_b)
 }
@@ -941,5 +941,26 @@ pub(crate) fn display_rect(f: &Form, id: Id) -> Rect {
         Rect::new(0, bottom + 3, c.width, (c.height - bottom - 3).max(0))
     } else {
         Rect::new(4, bottom + 2, (c.width - 8).max(0), (c.height - bottom - 6).max(0))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The scroll range of a scroll box does not change while scrolling
+    /// (it grew with the position, so the thumb shrank and stopped).
+    #[test]
+    fn scroll_range_is_fixed() {
+        let text = "object F: TForm\n  ClientWidth = 300\n  ClientHeight = 200\n  object S: TScrollBox\n    Left = 0\n    Top = 0\n    Width = 300\n    Height = 200\n    object I: TImage\n      Left = 0\n      Top = 0\n      Width = 900\n      Height = 1000\n    end\n  end\nend\n";
+        let mut f = Form::from_dfm(text, &Theme::new(super::super::theme::Style::Glossy)).unwrap();
+        let s = f.id("S").unwrap();
+        let before = scrollbox_extent(&f, s);
+        assert_eq!(before, (900, 1000));
+        for y in [100, 500, 800] {
+            f.ctl[s].scroll_y = y;
+            f.ctl[s].scroll_x = y / 2;
+            assert_eq!(scrollbox_extent(&f, s), before);
+        }
     }
 }

@@ -89,9 +89,6 @@ than a pixel shows up as noise, which is why MB3D authors often render at
 ```sh
 cargo build --release
 ./target/release/Mandelbulb3D [--formulas DIR] [--maps DIR] [file.m3p|.m3i|.txt]
-# the same from the command line program (plain `mb3d` without arguments
-# opens the windows too):
-./target/release/mb3d gui [file.m3p]
 ```
 
 `Mandelbulb3D` opens MB3D's windows as desktop windows (winit: Linux with

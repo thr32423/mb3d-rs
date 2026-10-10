@@ -733,12 +733,12 @@ impl Form {
                     true
                 }
                 Kind::ScrollBox => {
-                    let (vs, _) = scrollbox_bars(self, id);
+                    let (vs, hs) = scrollbox_bars(self, id);
                     if vs {
                         let (_, ey) = scrollbox_extent(self, id);
                         let c = &mut self.ctl[id];
-                        let ch = c.height - if c.border { 4 } else { 0 };
-                        c.scroll_y = (c.scroll_y - steps * 40).clamp(0, (ey - ch + SB).max(0));
+                        let ch = c.height - if c.border { 4 } else { 0 } - if hs { SB } else { 0 };
+                        c.scroll_y = (c.scroll_y - steps * 40).clamp(0, (ey - ch).max(0));
                         true
                     } else {
                         false

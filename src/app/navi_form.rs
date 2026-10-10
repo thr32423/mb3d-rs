@@ -221,11 +221,11 @@ fn set_window_size(app: &mut Mb3d, ui: &mut Ui, panel2: bool) {
     let p2h = if panel2 { ui.c(F, "Panel2").height } else { 0 };
     let p1h = ui.c(F, "Panel1").height;
     let ch = (h + p1h + p2h).max(580);
-    let mut j = 646;
-    if ui.visible(F, "Panel3") {
-        j += ui.c(F, "Panel3").width;
-    }
-    let cw = j.max(w + ui.c(F, "Panel5").width);
+    // MB3D: Max(646 (+ Panel3), width + Panel5.Width) kept room for the
+    // adjustment panel also while it is hidden, which left a gap between
+    // the image and the panel; the panel is added only when it is shown
+    let pw = if ui.visible(F, "Panel3") { ui.c(F, "Panel3").width } else { 0 };
+    let cw = 646.max(w) + pw;
     ui.set_client_size(F, cw, ch);
     let p1top = ch - p2h - p1h;
     ui.cm(F, "Panel1").top = p1top;
@@ -1334,15 +1334,14 @@ fn zoom_step(app: &mut Mb3d, ui: &mut Ui, up: bool) {
 }
 
 fn toggle_adjust_panel(app: &mut Mb3d, ui: &mut Ui) {
-    let (cw, ch) = ui.f(F).client_size();
-    let pw = ui.c(F, "Panel3").width;
+    let panel2 = ui.visible(F, "Panel2");
     if ui.visible(F, "Panel3") {
         ui.set_visible(F, "Panel3", false);
-        ui.set_client_size(F, cw - pw, ch);
+        set_window_size(app, ui, panel2);
         app.ini.set("NaviPanelShow", "0");
     } else {
         ui.set_visible(F, "Panel3", true);
-        ui.set_client_size(F, cw + pw, ch);
+        set_window_size(app, ui, panel2);
         app.ini.set("NaviPanelShow", "1");
         if app.navi.adjust_first {
             app.navi.adjust_first = false;

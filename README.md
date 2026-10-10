@@ -44,7 +44,8 @@ page; [GETTING_STARTED.md](GETTING_STARTED.md) has the first steps.
 
 The renderer has **no external dependencies** (std only, including its own
 PNG and JPEG encoders); the windows use four crates (winit, softbuffer,
-fontdue, arboard). Everything builds with any recent stable Rust:
+fontdue, arboard) and the graphics card two (wgpu, pollster). Everything
+builds with any recent stable Rust:
 
 ```sh
 cargo build --release
@@ -360,34 +361,39 @@ window's parameters, renders in the background pass after pass (Start /
 Stop adds rays to the image), saves the picture or `.m3c` and has MB3D's
 batch panel.
 
-## Graphics card (prototype)
+## Graphics card
 
-The main calculation (the ray marching of every pixel) can run on the
-graphics card through [wgpu](https://wgpu.rs) (Vulkan, Metal, DirectX 12).
-It is a prototype behind the cargo feature `gpu`; the release downloads
-include it, switched off unless asked for:
+The main calculation (the ray marching of every pixel) runs on the
+graphics card through [wgpu](https://wgpu.rs) (Vulkan, Metal, DirectX 12)
+when the scene allows it, and on the CPU otherwise. It is on by default:
 
-```sh
-cargo build --release --features gpu
-./target/release/mb3d examples/mandelbulb.m3s --gpu -o bulb.png
-MB3D_GPU=1 ./target/release/Mandelbulb3D      # the program
-```
+* in the program: the **GPU** box in the top bar (right of the *Prefs*
+  tab) switches it on and off; it is saved with the other settings, and its
+  hint says where the last calculation ran;
+* `mb3d` uses it too (it prints `calculated on: ...`); `--cpu` calculates
+  on the CPU only;
+* the environment variable `MB3D_GPU=0` switches it off for both.
+
+It needs the cargo feature `gpu` (part of the default build; a build with
+`--no-default-features` is the CPU renderer without dependencies).
 
 The shader (`src/gpu_march.wgsl`) is a port of the CPU's per-pixel loop
 and fills the same G-buffer; shadows, ambient occlusion and the painting
 stay on the CPU. It calculates in single precision and supports one
 *Integer Power* formula (the Mandelbulbs, powers 2–8, also as Julia sets)
 with the numerical DE, smooth normals, binary search and the colour options.
-Everything else is calculated on the CPU as before, and `mb3d` says which
-was used (`calculated on: ...`): other formulas and hybrids, cutting
-planes, inside rendering, volumetric light, and views zoomed so far that
-single precision would show as noise (about zoom 7 at 800 pixels width).
+Everything else is calculated on the CPU as before: other formulas and
+hybrids, cutting planes, inside rendering, volumetric light, views zoomed
+so far that single precision would show as noise (about zoom 7 at 800
+pixels width), and the Monte Carlo renderer. Errors of the graphics card
+or its driver also send the calculation to the CPU, and software
+renderers (llvmpipe, WARP) are not used.
 
 On a GeForce GTX 1650 (laptop) against a Ryzen 5 3550H (8 threads),
 `examples/mandelbulb.m3s` takes 0.62 s instead of 2.5 s at 800×600 and
 2.0 s instead of 9.4 s at 1600×1200. The first calculation after a start
 waits for the driver to compile the shader (several seconds the first time,
-drivers keep it in a cache). `cargo test --features gpu` compares the GPU
+drivers keep it in a cache). `cargo test` compares the GPU
 G-buffer with the CPU's (99.99% of the pixels agree on object or
 background, 1.4% of the normals differ by more than 25°).
 

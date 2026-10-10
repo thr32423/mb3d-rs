@@ -2004,6 +2004,20 @@ pub fn pass(
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
 ) -> Result<(), String> {
+    pass_rows(sc, img, threads, progress, cancel, None)
+}
+
+/// [`pass`], handing every finished row (its number and records) to
+/// `rows`, so the image can be shown while the pass runs (MB3D draws the
+/// lines as they are calculated).
+pub fn pass_rows(
+    sc: &Scene,
+    img: &mut McImage,
+    threads: usize,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+    rows: Option<&(dyn Fn(usize, &[McRecord]) + Sync)>,
+) -> Result<(), String> {
     let t0 = std::time::Instant::now();
     let sc = mc_scene(sc);
     if img.width != sc.width as usize || img.height != sc.height as usize {
@@ -2117,6 +2131,9 @@ pub fn pass(
                     t.row_y = y as i32;
                     for (x, rec) in row.iter_mut().enumerate() {
                         t.pixel(x as i32 + 1, y as i32, rec, snap, skip_nonzero, avrg_vari, avrg_rcount, max_new);
+                    }
+                    if let Some(f) = rows {
+                        f(y, row);
                     }
                     let d = done.fetch_add(1, std::sync::atomic::Ordering::Relaxed) + 1;
                     progress(d, h);

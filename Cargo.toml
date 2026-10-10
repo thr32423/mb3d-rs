@@ -8,10 +8,10 @@ license = "LGPL-2.1-or-later"
 [features]
 # the desktop application (Mandelbulb3D window and forms); without it only
 # the command line renderer is built, which has no dependencies
-default = ["gui"]
+default = ["gui", "gpu"]
 gui = ["dep:winit", "dep:softbuffer", "dep:fontdue", "dep:arboard"]
-# ray marching on the graphics card (wgpu: Vulkan, Metal, DirectX 12);
-# prototype, see src/gpu.rs
+# ray marching on the graphics card (wgpu: Vulkan, Metal, DirectX 12),
+# see src/gpu.rs
 gpu = ["dep:wgpu", "dep:pollster"]
 
 [dependencies]

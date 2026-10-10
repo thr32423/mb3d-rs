@@ -24,6 +24,9 @@ struct Shared {
     /// the records after the last finished pass, with a version number
     img: Option<McImage>,
     ver: u64,
+    /// the image of the running pass, row by row, with a version number
+    live: Option<McImage>,
+    live_ver: u64,
     error: String,
     finished: bool,
 }
@@ -50,6 +53,8 @@ pub struct State {
     stop: Arc<AtomicBool>,
     progress: Arc<AtomicUsize>,
     seen_ver: u64,
+    seen_live: u64,
+    live_painted: Instant,
     pub running: bool,
     start: Instant,
     last_saved: Instant,
@@ -77,6 +82,8 @@ impl Default for State {
             stop: Arc::new(AtomicBool::new(false)),
             progress: Arc::new(AtomicUsize::new(0)),
             seen_ver: 0,
+            seen_live: 0,
+            live_painted: Instant::now(),
             running: false,
             start: Instant::now(),
             last_saved: Instant::now(),
@@ -319,6 +326,7 @@ fn start(app: &mut Mb3d, ui: &mut Ui) {
     app.mc.progress.store(0, Ordering::SeqCst);
     *app.mc.shared.lock().unwrap() = Shared::default();
     app.mc.seen_ver = 0;
+    app.mc.seen_live = 0;
     app.mc.running = true;
     app.mc.start = Instant::now();
     ui.set_caption(F, "Button2", "Stop rendering");
@@ -343,7 +351,20 @@ fn start(app: &mut Mb3d, ui: &mut Ui) {
         loop {
             let pr = |d: usize, _t: usize| progress.store(d, Ordering::Relaxed);
             let cancel = || stop.load(Ordering::Relaxed);
-            let r = crate::mc::pass(&p, &mut img, 0, &pr, &cancel);
+            shared.lock().unwrap().live = Some(img.clone());
+            let w = img.width;
+            let row = |y: usize, recs: &[crate::mc::McRecord]| {
+                let mut s = shared.lock().unwrap();
+                if let Some(l) = s.live.as_mut() {
+                    l.recs[y * w..y * w + recs.len()].copy_from_slice(recs);
+                    s.live_ver += 1;
+                }
+                drop(s);
+                if let Some(wk) = &waker {
+                    wk.wake();
+                }
+            };
+            let r = crate::mc::pass_rows(&p, &mut img, 0, &pr, &cancel, Some(&row));
             let mut s = shared.lock().unwrap();
             match r {
                 Ok(()) => {
@@ -408,11 +429,23 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     if ui.c(F, "ProgressBar1").position != pr {
         ui.cm(F, "ProgressBar1").position = pr;
     }
-    let (ver, finished, err, img) = {
+    let (ver, finished, err, img, live) = {
         let mut s = app.mc.shared.lock().unwrap();
         let img = if s.ver != app.mc.seen_ver { s.img.take() } else { None };
-        (s.ver, s.finished, std::mem::take(&mut s.error), img)
+        // the lines of the running pass, a few times a second
+        let live = if img.is_none() && s.live_ver != app.mc.seen_live && app.mc.live_painted.elapsed().as_millis() >= 250 {
+            app.mc.seen_live = s.live_ver;
+            s.live.clone()
+        } else {
+            None
+        };
+        (s.ver, s.finished, std::mem::take(&mut s.error), img, live)
     };
+    if let (Some(l), Some(p)) = (&live, &app.mc.paras) {
+        let rgb = crate::mc::paint(l, &p.mc, p.lighting.gamma);
+        set_image(ui, l.width, l.height, &rgb);
+        app.mc.live_painted = Instant::now();
+    }
     if let Some(img) = img {
         app.mc.seen_ver = ver;
         app.mc.img = Some(img);

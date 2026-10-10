@@ -131,6 +131,7 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
     ui.set_position(F, "UpDown3", cpus);
     set(ui, "Edit21", &cpus.to_string());
     ui.set_active_page(F, "PageControl2", "TabSheet7");
+    add_gpu_checkbox(app, ui);
     // SetM3Dini
     let j = pti(app.ini.get("StickOption"));
     app.main.forms_sticky = [(j >> 4) & 3, j & 3, (j >> 6) & 3];
@@ -260,6 +261,44 @@ fn save_acc_preset(app: &Mb3d, i: usize) {
         fts_single(p.ray_limiter)
     );
     let _ = std::fs::write(crate::appdirs::app_folder().join(PRESET_FILES[i]), t);
+}
+
+/// "GPU" (not in MB3D): calculate on the graphics card.  The box sits in
+/// the empty part of the tab row of the top bar, right of the "Prefs" tab;
+/// on by default, saved as `UseGPU` in the ini file.
+#[cfg(feature = "gpu")]
+fn add_gpu_checkbox(app: &mut Mb3d, ui: &mut Ui) {
+    use crate::vcl::control::Control;
+    let on = app.ini.get_extra("UseGPU").map(|v| v != "0").unwrap_or(true) && crate::gpu::default_on();
+    crate::gpu::set_enabled(on);
+    let f = ui.fm(F);
+    let Some(panel) = f.id("Panel2") else { return };
+    let mut c = Control::new("GpuCheckBox", "TCheckBox");
+    c.caption = "GPU".into();
+    c.left = 378;
+    c.top = 6;
+    c.width = 44;
+    c.height = 17;
+    c.checked = on;
+    c.state = on as u8;
+    c.show_hint = Some(true);
+    c.hint = "Calculate on the graphics card (Integer Power formulas;\nother scenes are calculated on the CPU)".into();
+    c.events.insert("OnClick".into(), "GpuCheckBoxClick".into());
+    f.add_control(panel, c);
+}
+
+#[cfg(not(feature = "gpu"))]
+fn add_gpu_checkbox(_app: &mut Mb3d, _ui: &mut Ui) {}
+
+/// After a calculation: the GPU box's hint says where it ran.
+fn show_gpu_status(_ui: &mut Ui) {
+    #[cfg(feature = "gpu")]
+    if let Some(c) = _ui.fm(F).id("GpuCheckBox") {
+        let s = crate::gpu::last_status();
+        if !s.is_empty() {
+            _ui.fm(F).ctl[c].hint = format!("Calculate on the graphics card\nLast calculation: {s}");
+        }
+    }
 }
 
 /// The sticky option of the formula, lighting and post processing windows:
@@ -632,6 +671,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
                 ui.set_caption(F, "Label32", "-");
                 ui.set_caption(F, "Label40", "?");
                 ui.set_caption(F, "Label52", &time_str((stats.calc_s * 10.0) as i64));
+                show_gpu_status(ui);
                 if stats.post_s > 0.0 {
                     let l = if app.scene.shadows.is_some() { "Label8" } else { "Label48" };
                     ui.set_caption(F, l, &time_str((stats.post_s * 10.0) as i64));
@@ -1022,6 +1062,12 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             app.main.forms_sticky[app.main.stick_it] = ui.tag(F, &e.sender) as i32;
             save_sticky(app);
             place_sticky(app, ui);
+        }
+        #[cfg(feature = "gpu")]
+        "GpuCheckBoxClick" => {
+            let on = ui.checked(F, "GpuCheckBox");
+            crate::gpu::set_enabled(on);
+            app.ini.set_extra("UseGPU", if on { "1" } else { "0" });
         }
         "SpeedButton12Click" => ui.show("AnimationForm"),
         "SpeedButton15Click" => ui.show("FNavigator"),

@@ -37,6 +37,13 @@ fn main() {
     app.process(&mut ui);
     ui.click("MCForm", "Button2");
     app.process(&mut ui);
+    // the lines appear while the first pass runs
+    for _ in 0..15 {
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        mb3d::vcl::App::idle(&mut app, &mut ui);
+        app.process(&mut ui);
+    }
+    ui.save_form_png("MCForm", &out.join("MCForm_first_pass.png"), 1.0).unwrap();
     for _ in 0..300 {
         std::thread::sleep(std::time::Duration::from_millis(100));
         mb3d::vcl::App::idle(&mut app, &mut ui);

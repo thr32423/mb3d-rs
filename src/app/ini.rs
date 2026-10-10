@@ -88,6 +88,23 @@ impl Ini {
         }
     }
 
+    /// A setting of this port that MB3D does not have (kept as an extra
+    /// line, which MB3D ignores).
+    pub fn get_extra(&self, item: &str) -> Option<&str> {
+        self.extra.iter().find_map(|l| {
+            let (k, v) = l.trim().split_once(char::is_whitespace)?;
+            (k == item).then(|| v.trim())
+        })
+    }
+
+    pub fn set_extra(&mut self, item: &str, v: &str) {
+        let line = format!("{item}  {v}");
+        match self.extra.iter_mut().find(|l| l.split_whitespace().next() == Some(item)) {
+            Some(l) => *l = line,
+            None => self.extra.push(line),
+        }
+    }
+
     pub fn dir(&self, i: usize) -> PathBuf {
         self.dirs[i].clone()
     }

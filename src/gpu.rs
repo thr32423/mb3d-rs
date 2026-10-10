@@ -35,14 +35,20 @@ fn take_error() -> Option<String> {
 /// the card when one takes seconds) and gives progress steps.
 const BAND_PIXELS: usize = 1 << 17;
 
-/// Calculate on the graphics card when the scene allows it (also on with
-/// the environment variable `MB3D_GPU=1`).
+/// Calculate on the graphics card when the scene allows it.  Off in the
+/// library; the programs switch it on (see [`default_on`]).
 pub fn set_enabled(on: bool) {
     ENABLED.store(on, Ordering::Relaxed);
 }
 
 pub fn enabled() -> bool {
-    ENABLED.load(Ordering::Relaxed) || std::env::var_os("MB3D_GPU").is_some_and(|v| v != "0")
+    ENABLED.load(Ordering::Relaxed)
+}
+
+/// The programs' default: on, unless the environment variable `MB3D_GPU`
+/// is 0.
+pub fn default_on() -> bool {
+    std::env::var_os("MB3D_GPU").is_none_or(|v| v != "0")
 }
 
 /// How the last calculation ran: "GPU (name)" or "CPU: reason".

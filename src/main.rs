@@ -39,8 +39,9 @@ OPTIONS:
     -t, --threads <N>        Number of threads (default: all cores)
         --auto-color         Fit the colour range to the rendered surface
         --stats              Print G-buffer statistics
-        --gpu                Ray march on the graphics card (prototype: Integer
-                             Power formulas; other scenes use the CPU)
+        --cpu                Calculate on the CPU only (by default the graphics
+                             card calculates the scenes it supports: Integer
+                             Power formulas; MB3D_GPU=0 also switches it off)
         --save-scene <FILE>  Write the final scene as .m3s text (e.g. to convert a .m3p)
         --save-text <FILE>   Write MB3D text parameters (Mandelbulb3Dv18{...})
         --save-m3p <FILE>    Write a MB3D parameter file (.m3p); parameter inputs are
@@ -82,15 +83,19 @@ fn gui(_args: &[String]) -> Result<(), String> {
     Err("this program was built without the desktop application (cargo feature \"gui\")".into())
 }
 
-/// `--gpu`: the main calculation on the graphics card.
-fn use_gpu() {
+/// `--gpu` / `--cpu`: the main calculation on the graphics card or not.
+fn use_gpu(on: bool) {
     #[cfg(feature = "gpu")]
-    mb3d::gpu::set_enabled(true);
+    mb3d::gpu::set_enabled(on);
     #[cfg(not(feature = "gpu"))]
-    eprintln!("  --gpu: this program was built without the GPU support (cargo feature \"gpu\"), using the CPU");
+    if on {
+        eprintln!("  --gpu: this program was built without the GPU support (cargo feature \"gpu\"), using the CPU");
+    }
 }
 
 fn run() -> Result<(), String> {
+    #[cfg(feature = "gpu")]
+    mb3d::gpu::set_enabled(mb3d::gpu::default_on());
     let all: Vec<String> = std::env::args().skip(1).collect();
     // started without arguments (double-click, plain `mb3d`): the windows
     #[cfg(feature = "gui")]
@@ -150,7 +155,8 @@ fn run() -> Result<(), String> {
             "--aa" => aa = val(&a)?.parse::<usize>().map_err(|_| "bad --aa value".to_string())?.clamp(1, 8),
             "--scale" => scale = Some(val(&a)?.parse::<f64>().map_err(|_| "bad --scale value".to_string())?),
             "--stats" => stats = true,
-            "--gpu" => use_gpu(),
+            "--gpu" => use_gpu(true),
+            "--cpu" => use_gpu(false),
             "--save-scene" => save_scene = Some(val(&a)?),
             "--save-text" => save_text = Some(val(&a)?),
             "--save-m3p" => save_m3p = Some(val(&a)?),

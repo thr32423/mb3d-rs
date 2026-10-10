@@ -899,7 +899,7 @@ dependencies = [
 
 [[package]]
 name = "mb3d"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "arboard",
  "fontdue",

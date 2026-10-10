@@ -29,7 +29,7 @@ impl Rng {
     }
 }
 
-fn setup(m: &mut Machine, rng: &mut Rng, de_option: i32, first_it: i32) {
+fn setup(m: &mut Machine, rng: &mut Rng, de_option: i32, first_it: i32, slot: usize) {
     let w = |m: &mut Machine, o: u32, v: f64| m.wrf64(IT_BASE + o, v).unwrap();
     let c = [rng.range(-1.2, 1.2), rng.range(-1.2, 1.2), rng.range(-1.2, 1.2)];
     let v = [rng.range(-1.5, 1.5), rng.range(-1.5, 1.5), rng.range(-1.5, 1.5), rng.range(-0.5, 0.5)];
@@ -44,13 +44,16 @@ fn setup(m: &mut Machine, rng: &mut Rng, de_option: i32, first_it: i32) {
     w(m, off::J4, 0.1);
     w(m, off::ROLD, 0.7);
     w(m, off::RSTOPD, 1024.0);
-    m.wr32(IT_BASE + off::PVAR, pconst_addr(0)).unwrap();
+    // dIFS formulas get PVar in edi: the record's field points elsewhere, so
+    // that code reading the wrong one shows
+    let pv_field = if de_option >= 20 && slot != 0 { pconst_addr(4) } else { pconst_addr(slot) };
+    m.wr32(IT_BASE + off::PVAR, pv_field).unwrap();
     w(m, off::ROUT, v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     m.wr32(IT_BASE + off::IT_RESULT, 3).unwrap();
     m.wr32(IT_BASE + off::MAX_IT, 60).unwrap();
     m.wrf32(IT_BASE + off::RSTOP, 1024.0 * 1024.0).unwrap();
     m.wr32(IT_BASE + off::N_HYBRID, 1).unwrap();
-    m.wr32(IT_BASE + off::FHPVAR, pconst_addr(0)).unwrap();
+    m.wr32(IT_BASE + off::FHPVAR, pconst_addr(slot)).unwrap();
     m.wr32(IT_BASE + off::DE_OPTION, de_option as u32).unwrap();
     w(m, off::OTRAP, 0.5);
     w(m, off::VARY_SCALE, 1.0);
@@ -142,11 +145,16 @@ fn main() {
         };
         let difs = def.de_option >= 20;
         let cf = CustomFormula::new(def.clone());
-        let base = build_machine(&[Some(&cf)]);
-        if base.prog(code_addr(0)).is_some_and(|p| p.is_native()) {
+        // --translated: in slot 2 (slot dependent addresses must not be baked
+        // into the translated code); the oracle runs slot 0
+        let slot = if translated { 2 } else { 0 };
+        let mut slots: Vec<Option<&CustomFormula>> = vec![None; slot];
+        slots.push(Some(&cf));
+        let base = build_machine(&slots);
+        if base.prog(code_addr(slot)).is_some_and(|p| p.is_native()) {
             native += 1;
         }
-        if base.is_compiled(code_addr(0)) {
+        if base.is_compiled(code_addr(slot)) {
             compiled += 1;
         } else if verbose {
             println!("      {}: not compilable, interpreted", def.name);
@@ -156,10 +164,10 @@ fn main() {
         let mut fail_kind = 0;
         for t in 0..trials {
             let mut m = base.clone();
-            setup(&mut m, &mut rng, def.de_option, if t == 0 { 0 } else { t as i32 });
+            setup(&mut m, &mut rng, def.de_option, if t == 0 { 0 } else { t as i32 }, slot);
             if difs {
                 // doHybridIFS3D convention (see the oracle header)
-                for (o, v) in [(12u32, 1u32), (28, 1), (32, IT_BASE + 144), (36, pconst_addr(0)), (40, 0)] {
+                for (o, v) in [(12u32, 1u32), (28, 1), (32, IT_BASE + 144), (36, pconst_addr(slot)), (40, 0)] {
                     m.wr32(BASE + o, v).unwrap();
                 }
                 m.wrf64(IT_BASE + off::ROLD, 0.01).unwrap();
@@ -168,9 +176,9 @@ fn main() {
             let start = m.mem.clone();
             let mut em = m.clone();
             let r = if difs {
-                em.call_difs(code_addr(0), IT_BASE + 144, pconst_addr(0), 0, 1, STACK_TOP, MAX_STEPS)
+                em.call_difs(code_addr(slot), IT_BASE + 144, pconst_addr(slot), slot as u32, 1, STACK_TOP, MAX_STEPS)
             } else {
-                em.call_formula(code_addr(0), IT_C1, STACK_TOP, MAX_STEPS)
+                em.call_formula(code_addr(slot), IT_C1, STACK_TOP, MAX_STEPS)
             };
             if let Err(e) = r {
                 status = format!("EMU ERROR {e}");
@@ -183,14 +191,14 @@ fn main() {
                 break;
             }
             let _ = RETURN_SENTINEL;
-            if translated && base.prog(code_addr(0)).is_some_and(|p| p.is_native()) {
+            if translated && base.prog(code_addr(slot)).is_some_and(|p| p.is_native()) {
                 // the same start once more in the interpreter
                 let mut ei = m.clone();
                 mb3d::x86::NATIVE_ENABLED.store(false, std::sync::atomic::Ordering::Relaxed);
                 let r2 = if difs {
-                    ei.call_difs(code_addr(0), IT_BASE + 144, pconst_addr(0), 0, 1, STACK_TOP, MAX_STEPS)
+                    ei.call_difs(code_addr(slot), IT_BASE + 144, pconst_addr(slot), slot as u32, 1, STACK_TOP, MAX_STEPS)
                 } else {
-                    ei.call_formula(code_addr(0), IT_C1, STACK_TOP, MAX_STEPS)
+                    ei.call_formula(code_addr(slot), IT_C1, STACK_TOP, MAX_STEPS)
                 };
                 mb3d::x86::NATIVE_ENABLED.store(true, std::sync::atomic::Ordering::Relaxed);
                 let regs_differ = (0..8).any(|r| em.reg(r) != ei.reg(r));
@@ -206,7 +214,7 @@ fn main() {
                 }
             }
             if let Some(o) = &oracle {
-                let native = match run_native(o, &start[..]) {
+                let native = match run_native(o, &start[..MEM_SIZE]) {
                     Some(n) => n,
                     None => {
                         status = "native run failed".into();

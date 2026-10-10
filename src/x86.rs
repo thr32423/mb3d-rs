@@ -16,6 +16,10 @@ use std::collections::HashMap;
 /// Base address of the emulated memory (also used by the native test oracle).
 pub const BASE: u32 = 0x1000_0000;
 pub const MEM_SIZE: usize = 0x10000;
+/// The allocation: 16 bytes behind the image, so that the unchecked
+/// accesses of the translated formulas (address masked to the image) stay
+/// inside the allocation.
+const MEM_ALLOC: usize = MEM_SIZE + 16;
 /// Addresses at or above this value inside the image are "magic" host
 /// functions (see [`Machine::host_functions`]).
 pub const MAGIC_START: u32 = BASE + 0xF000;
@@ -1083,6 +1087,20 @@ fn push_l(m: &mut Machine, r: &mut [u32; 8], v: u32) -> R<()> {
     m.wr32(r[ESP], v)
 }
 
+/// `push` / `pop` on a local register file with an unchecked stack access.
+#[inline(always)]
+fn push_lu(m: &mut Machine, r: &mut [u32; 8], v: u32) {
+    r[ESP] = r[ESP].wrapping_sub(4);
+    m.wr32u(r[ESP], v)
+}
+
+#[inline(always)]
+fn pop_lu(m: &mut Machine, r: &mut [u32; 8]) -> u32 {
+    let v = m.rd32u(r[ESP]);
+    r[ESP] = r[ESP].wrapping_add(4);
+    v
+}
+
 /// `pop` on a local register file (translated formulas).
 #[inline(always)]
 fn pop_l(m: &mut Machine, r: &mut [u32; 8]) -> R<u32> {
@@ -1094,7 +1112,7 @@ fn pop_l(m: &mut Machine, r: &mut [u32; 8]) -> R<u32> {
 #[derive(Clone)]
 pub struct Machine {
     /// fixed size, so that the bounds checks compare with a constant
-    pub mem: Box<[u8; MEM_SIZE]>,
+    pub mem: Box<[u8; MEM_ALLOC]>,
     pub regs: [u32; 8],
     /// the arithmetic flags
     fl: Flags,
@@ -1125,7 +1143,7 @@ const EDI: usize = 7;
 impl Machine {
     pub fn new() -> Machine {
         Machine {
-            mem: vec![0u8; MEM_SIZE].into_boxed_slice().try_into().expect("memory size"),
+            mem: vec![0u8; MEM_ALLOC].into_boxed_slice().try_into().expect("memory size"),
             regs: [0; 8],
             fl: Flags::default(),
             st: [0.0; 8],
@@ -1308,6 +1326,95 @@ impl Machine {
     pub fn wrf64(&mut self, a: u32, v: f64) -> R<()> {
         self.wr64(a, v.to_bits())
     }
+    // ---- unchecked accesses for the translated formulas, at addresses the
+    // lifting analysis resolved to the iteration record, the variable
+    // buffer or the stack (masked into the image: never out of bounds)
+    #[inline(always)]
+    fn ui(a: u32) -> usize {
+        (a.wrapping_sub(BASE) as usize) & (MEM_SIZE - 1)
+    }
+    #[inline(always)]
+    pub fn rd8u(&self, a: u32) -> u8 {
+        self.mem[Self::ui(a)]
+    }
+    #[inline(always)]
+    pub fn rd16u(&self, a: u32) -> u16 {
+        let i = Self::ui(a);
+        u16::from_le_bytes([self.mem[i], self.mem[i + 1]])
+    }
+    #[inline(always)]
+    pub fn rd32u(&self, a: u32) -> u32 {
+        let i = Self::ui(a);
+        u32::from_le_bytes(self.mem[i..i + 4].try_into().unwrap())
+    }
+    #[inline(always)]
+    pub fn rd64u(&self, a: u32) -> u64 {
+        let i = Self::ui(a);
+        u64::from_le_bytes(self.mem[i..i + 8].try_into().unwrap())
+    }
+    #[inline(always)]
+    pub fn rdf64u(&self, a: u32) -> f64 {
+        f64::from_bits(self.rd64u(a))
+    }
+    #[inline(always)]
+    pub fn wr8u(&mut self, a: u32, v: u8) {
+        self.mem[Self::ui(a)] = v;
+    }
+    #[inline(always)]
+    pub fn wr16u(&mut self, a: u32, v: u16) {
+        let i = Self::ui(a);
+        self.mem[i..i + 2].copy_from_slice(&v.to_le_bytes());
+    }
+    #[inline(always)]
+    pub fn wr32u(&mut self, a: u32, v: u32) {
+        let i = Self::ui(a);
+        self.mem[i..i + 4].copy_from_slice(&v.to_le_bytes());
+    }
+    #[inline(always)]
+    pub fn wr64u(&mut self, a: u32, v: u64) {
+        let i = Self::ui(a);
+        self.mem[i..i + 8].copy_from_slice(&v.to_le_bytes());
+    }
+    #[inline(always)]
+    pub fn wrf64u(&mut self, a: u32, v: f64) {
+        self.wr64u(a, v.to_bits())
+    }
+    #[inline(always)]
+    fn floadu(&self, kind: FKind, a: u32) -> f64 {
+        match kind {
+            FKind::F32 => f32::from_bits(self.rd32u(a)) as f64,
+            FKind::F64 => self.rdf64u(a),
+            FKind::I16 => self.rd16u(a) as i16 as f64,
+            FKind::I32 => self.rd32u(a) as i32 as f64,
+            FKind::I64 => self.rd64u(a) as i64 as f64,
+            FKind::F80 => f80_to_f64(self.rd64u(a), self.rd16u(a.wrapping_add(8))),
+        }
+    }
+    #[inline]
+    fn fstoreu(&mut self, kind: FKind, a: u32, v: f64) {
+        // the same conversions as `fstore`, without the bounds checks
+        let mut tmp = [0u8; 10];
+        let n = match kind {
+            FKind::F32 => {
+                tmp[..4].copy_from_slice(&(v as f32).to_bits().to_le_bytes());
+                4
+            }
+            FKind::F64 => {
+                tmp[..8].copy_from_slice(&v.to_bits().to_le_bytes());
+                8
+            }
+            _ => {
+                // integer and 80 bit stores: through the checked path on a
+                // scratch machine would be overkill; they are rare
+                let r = self.fstore(kind, a, v);
+                debug_assert!(r.is_ok());
+                return;
+            }
+        };
+        let i = Self::ui(a);
+        self.mem[i..i + n].copy_from_slice(&tmp[..n]);
+    }
+
     pub fn rdf32(&self, a: u32) -> R<f32> {
         Ok(f32::from_bits(self.rd32(a)?))
     }
@@ -2619,6 +2726,12 @@ pub static NATIVE_ENABLED: std::sync::LazyLock<std::sync::atomic::AtomicBool> =
 #[path = "native.rs"]
 mod native;
 
+#[path = "lift.rs"]
+pub mod lift;
+
+#[path = "lift_emit.rs"]
+mod lift_emit;
+
 /// A compiled formula.
 pub struct Prog {
     ops: Vec<Op>,
@@ -3202,6 +3315,55 @@ impl std::fmt::Debug for Prog {
     }
 }
 
+/// Rewrites the memory accesses of a line to the unchecked variants (no
+/// `Result`): for ops whose addresses the lifting analysis resolved.
+fn uncheck(line: &str) -> String {
+    let names = [
+        ("m.rd8(", "m.rd8u("),
+        ("m.rd16(", "m.rd16u("),
+        ("m.rd32(", "m.rd32u("),
+        ("m.rd64(", "m.rd64u("),
+        ("m.rdf64(", "m.rdf64u("),
+        ("m.fload(", "m.floadu("),
+        ("m.wr8(", "m.wr8u("),
+        ("m.wr16(", "m.wr16u("),
+        ("m.wr32(", "m.wr32u("),
+        ("m.wr64(", "m.wr64u("),
+        ("m.wrf64(", "m.wrf64u("),
+        ("m.fstore(", "m.fstoreu("),
+        ("push_l(", "push_lu("),
+        ("pop_l(", "pop_lu("),
+    ];
+    let mut l = line.to_string();
+    for (a, b) in names {
+        let mut from = 0;
+        while let Some(i) = l[from..].find(a).map(|i| i + from) {
+            // the matching parenthesis, then drop a following `?`
+            let open = i + a.len() - 1;
+            let mut depth = 0;
+            let mut close = None;
+            for (j, c) in l[open..].char_indices() {
+                match c {
+                    '(' => depth += 1,
+                    ')' => {
+                        depth -= 1;
+                        if depth == 0 {
+                            close = Some(open + j);
+                            break;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            let Some(c) = close else { break };
+            let q = l[c + 1..].starts_with('?');
+            l = format!("{}{}{}{}", &l[..i], b, &l[i + a.len()..=c], &l[c + 1 + q as usize..]);
+            from = i + b.len();
+        }
+    }
+    l
+}
+
 /// Rewrites a line of generated code from the machine's registers, flags
 /// and counters to the locals of the translated function (`rg`, `fl`,
 /// `fsw`, `steps`); interpreter calls get the machine state written back
@@ -3313,7 +3475,6 @@ fn sse_native(op: SseOp, src: &Rm) -> bool {
 
 /// Rust code for one SSE op, with the semantics of `Machine::sse`.
 fn emit_sse(op: SseOp, d: usize, src: &Rm, imm: u8) -> String {
-    use SseOp::*;
     let s16 = match src {
         Rm::Reg(r) => format!("m.xmm[{r}]"),
         Rm::Mem(mm) => format!("{{ let a = {}; [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] }}", ea_expr(mm)),
@@ -3322,6 +3483,18 @@ fn emit_sse(op: SseOp, d: usize, src: &Rm, imm: u8) -> String {
         Rm::Reg(r) => format!("m.xmm[{r}][0]"),
         Rm::Mem(mm) => format!("m.rd64({})?", ea_expr(mm)),
     };
+    let src_reg = match src {
+        Rm::Reg(r) => Some(*r),
+        Rm::Mem(_) => None,
+    };
+    emit_sse_with(op, d, src_reg, &s16, &s8, imm)
+}
+
+/// `emit_sse` with the source given as expressions: `s16` the 16 bytes
+/// (`[u64; 2]`), `s8` the low 8 bytes (`u64`); `src_reg` when the source is
+/// a register.
+fn emit_sse_with(op: SseOp, d: usize, src_reg: Option<u8>, s16: &str, s8: &str, imm: u8) -> String {
+    use SseOp::*;
     let fd = |x: &str| format!("f64::from_bits({x})");
     let bin = |o: &str, a: &str, b: &str| -> String {
         match o {
@@ -3349,9 +3522,9 @@ fn emit_sse(op: SseOp, d: usize, src: &Rm, imm: u8) -> String {
             (imm >> 6) & 3
         ),
         MovU => format!("m.xmm[{d}] = {s16};"),
-        MovSdLoad => match src {
-            Rm::Reg(r) => format!("m.xmm[{d}][0] = m.xmm[{r}][0];"),
-            _ => format!("{{ let s: u64 = {s8}; m.xmm[{d}] = [s, 0]; }}"),
+        MovSdLoad => match src_reg {
+            Some(r) => format!("m.xmm[{d}][0] = m.xmm[{r}][0];"),
+            None => format!("{{ let s: u64 = {s8}; m.xmm[{d}] = [s, 0]; }}"),
         },
         MovqLoad => format!("{{ let s: u64 = {s8}; m.xmm[{d}] = [s, 0]; }}"),
         MovLpdLoad => format!("{{ let s: u64 = {s8}; m.xmm[{d}][0] = s; }}"),
@@ -3398,7 +3571,10 @@ impl Prog {
     /// signature of [`NativeFn`].  Hot micro ops become inline code with
     /// constant slot numbers; all others call `Machine::exec_op` on the
     /// same op of the runtime `Prog` (which must have the same `hash`).
-    pub fn emit_rust(&self, name: &str) -> String {
+    /// `difs`: the formula uses the dIFS calling convention (for the lifting
+    /// analysis, which decides which accesses need no bounds check).
+    pub fn emit_rust(&self, name: &str, difs: bool) -> String {
+        let safe = self.lift_report(difs).safe_ops().unwrap_or_else(|| vec![false; self.ops.len()]);
         use std::fmt::Write;
         let n = self.ops.len();
         // basic block starts
@@ -3610,7 +3786,11 @@ impl Prog {
                     Op::FScale { a, s } => format!("f[{0}] *= f[{1}].trunc().exp2();", a & 7, s & 7),
                     _ => format!("m.exec_op(&p.ops[{k}], &mut f)?; // {}", format!("{op:?}").replace('\n', " ")),
                 };
-                let _ = writeln!(o, "                {}", localize(&line, permute_rotations));
+                let mut l = localize(&line, permute_rotations);
+                if safe.get(k).copied().unwrap_or(false) {
+                    l = uncheck(&l);
+                }
+                let _ = writeln!(o, "                {l}");
                 k += 1;
                 if ended || k >= n || start[k] {
                     break;

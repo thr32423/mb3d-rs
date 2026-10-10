@@ -29,6 +29,10 @@ fn main() {
             }
             return;
         }
+        if args[i] == "--lift-report" {
+            lift_report(&args[i + 1], args.get(i + 2).is_some_and(|a| a == "-v"));
+            return;
+        }
         if args[i] == "-o" {
             out = args[i + 1].clone();
             i += 2;
@@ -46,7 +50,7 @@ fn main() {
     files.sort();
     // hash -> (op count, function name, formula names, code)
     let mut funcs: BTreeMap<u64, (usize, String, Vec<String>, String)> = BTreeMap::new();
-    let (mut skipped, mut total) = (0, 0);
+    let (mut skipped, mut total, mut lifted) = (0, 0, 0);
     for f in &files {
         total += 1;
         let Ok(def) = M3f::load(f) else {
@@ -54,6 +58,7 @@ fn main() {
             continue;
         };
         let name = def.name.clone();
+        let difs = def.de_option >= 20;
         let cf = CustomFormula::new(Arc::new(def));
         let m = build_machine(&[Some(&cf)]);
         let Some(p) = m.prog(code_addr(0)) else {
@@ -62,7 +67,16 @@ fn main() {
         };
         let e = funcs.entry(p.hash).or_insert_with(|| {
             let fname = format!("f_{:016x}", p.hash);
-            (p.len(), fname.clone(), Vec::new(), p.emit_rust(&fname))
+            // the lifted version (memory as locals) where the analysis
+            // allows it, the emulated memory otherwise
+            let code = match (std::env::var_os("M3F2RS_NO_LIFT"), p.emit_lifted(&fname, difs)) {
+                (None, Some(c)) => {
+                    lifted += 1;
+                    c
+                }
+                _ => p.emit_rust(&fname, difs),
+            };
+            (p.len(), fname.clone(), Vec::new(), code)
         });
         e.2.push(name);
     }
@@ -85,8 +99,70 @@ fn main() {
     }
     std::fs::write(&out, o).expect("write output");
     eprintln!(
-        "{total} formula files: {} translated functions ({} files), {skipped} not compilable",
+        "{total} formula files: {} translated functions ({} files, {lifted} functions lifted), {skipped} not compilable",
         funcs.len(),
         funcs.values().map(|v| v.2.len()).sum::<usize>()
     );
+}
+
+/// `--lift-report DIR [-v]`: the lifting analysis of every formula (which
+/// memory each access touches); lists the formulas that cannot be lifted.
+fn lift_report(dir: &str, verbose: bool) {
+    use mb3d::x86::lift::Loc;
+    let mut files: Vec<_> = std::fs::read_dir(dir)
+        .expect("formula dir")
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .filter(|p| p.extension().is_some_and(|e| e.eq_ignore_ascii_case("m3f")))
+        .collect();
+    files.sort();
+    let (mut ok, mut bad, mut skipped) = (0, 0, 0);
+    let mut reasons: BTreeMap<String, usize> = BTreeMap::new();
+    let mut fields: BTreeMap<(u32, bool), usize> = BTreeMap::new();
+    for f in &files {
+        let Ok(def) = M3f::load(f) else {
+            skipped += 1;
+            continue;
+        };
+        let name = def.name.clone();
+        let difs = def.de_option >= 20;
+        let cf = CustomFormula::new(Arc::new(def));
+        let m = build_machine(&[Some(&cf)]);
+        let Some(p) = m.prog(code_addr(0)) else {
+            skipped += 1;
+            continue;
+        };
+        let r = p.lift_report(difs);
+        for (_, l, w) in &r.accesses {
+            if let Loc::Field(o) = l {
+                *fields.entry((*o, *w)).or_default() += 1;
+            }
+        }
+        if r.problems.is_empty() {
+            ok += 1;
+            if verbose {
+                println!("OK    {name}: {} ops, {} accesses", r.ops, r.accesses.len());
+            }
+        } else {
+            bad += 1;
+            println!("NO    {name}: {}", r.problems.iter().take(3).cloned().collect::<Vec<_>>().join("; "));
+            for p in &r.problems {
+                // the kind of problem without the op number
+                let kind = p.split_once(": ").map(|x| x.1).unwrap_or(p);
+                let kind: String = kind.chars().take(40).collect();
+                *reasons.entry(kind).or_default() += 1;
+            }
+        }
+    }
+    println!("\n{} formula files: {ok} liftable, {bad} not, {skipped} not compiled", files.len());
+    println!("problem kinds:");
+    let mut v: Vec<_> = reasons.into_iter().collect();
+    v.sort_by(|a, b| b.1.cmp(&a.1));
+    for (k, n) in v.iter().take(15) {
+        println!("  {n:5}  {k}");
+    }
+    println!("iteration record fields used (offset, write: count):");
+    for ((o, w), n) in fields {
+        print!(" {o}{}:{n}", if w { "w" } else { "" });
+    }
+    println!();
 }

@@ -921,17 +921,183 @@ fn decode_0f(d: &mut Dec, addr: u32, p66: bool, rep: Option<u8>, osz: u8) -> R<I
 /// Host functions callable from formula code (`call` to a magic address).
 pub type HostFn = fn(&mut Machine) -> R<()>;
 
+/// The arithmetic flags of the emulated CPU.  The interpreter keeps them in
+/// the machine; the translated formulas (`native.rs`) keep a local copy, so
+/// that the compiler can drop flags nobody reads.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct Flags {
+    pub cf: bool,
+    pub zf: bool,
+    pub sf: bool,
+    pub of: bool,
+    pub pf: bool,
+    pub af: bool,
+}
+
+impl Flags {
+    #[inline(always)]
+    pub fn set_szp(&mut self, r: u32, size: u8) {
+        let bits = size as u32 * 8;
+        self.zf = mask(r, size) == 0;
+        self.sf = (r >> (bits - 1)) & 1 == 1;
+        self.pf = (r as u8).count_ones() % 2 == 0;
+    }
+    #[inline(always)]
+    pub fn cond(&self, cc: u8) -> bool {
+        let r = match cc >> 1 {
+            0 => self.of,
+            1 => self.cf,
+            2 => self.zf,
+            3 => self.cf || self.zf,
+            4 => self.sf,
+            5 => self.pf,
+            6 => self.sf != self.of,
+            _ => self.zf || (self.sf != self.of),
+        };
+        if cc & 1 == 1 {
+            !r
+        } else {
+            r
+        }
+    }
+    #[inline(always)]
+    fn alu(&mut self, op: Alu, a: u32, b: u32, size: u8) -> u32 {
+        let bits = size as u32 * 8;
+        let m = if size == 4 { u32::MAX } else { (1u32 << bits) - 1 };
+        let sign = 1u32 << (bits - 1);
+        let (a, b) = (a & m, b & m);
+        let r = match op {
+            Alu::Add | Alu::Adc => {
+                let c = if op == Alu::Adc && self.cf { 1u64 } else { 0 };
+                let full = a as u64 + b as u64 + c;
+                let r = (full as u32) & m;
+                self.cf = full > m as u64;
+                self.of = ((a ^ r) & (b ^ r) & sign) != 0;
+                self.af = ((a ^ b ^ r) & 0x10) != 0;
+                r
+            }
+            Alu::Sub | Alu::Sbb | Alu::Cmp => {
+                let c = if op == Alu::Sbb && self.cf { 1u64 } else { 0 };
+                let r = (a as u64).wrapping_sub(b as u64).wrapping_sub(c) as u32 & m;
+                self.cf = (b as u64 + c) > a as u64;
+                self.of = ((a ^ b) & (a ^ r) & sign) != 0;
+                self.af = ((a ^ b ^ r) & 0x10) != 0;
+                r
+            }
+            Alu::And | Alu::Or | Alu::Xor => {
+                let r = match op {
+                    Alu::And => a & b,
+                    Alu::Or => a | b,
+                    _ => a ^ b,
+                };
+                self.cf = false;
+                self.of = false;
+                r
+            }
+        };
+        self.set_szp(r, size);
+        r
+    }
+}
+
+#[inline(always)]
+fn reg_get(regs: &[u32; 8], r: u8, size: u8) -> u32 {
+    match size {
+        1 => {
+            if r < 4 {
+                regs[r as usize] & 0xFF
+            } else {
+                (regs[(r - 4) as usize] >> 8) & 0xFF
+            }
+        }
+        2 => regs[r as usize] & 0xFFFF,
+        _ => regs[r as usize],
+    }
+}
+
+#[inline(always)]
+fn reg_set(regs: &mut [u32; 8], r: u8, size: u8, v: u32) {
+    match size {
+        1 => {
+            if r < 4 {
+                let x = &mut regs[r as usize];
+                *x = (*x & !0xFF) | (v & 0xFF);
+            } else {
+                let x = &mut regs[(r - 4) as usize];
+                *x = (*x & !0xFF00) | ((v & 0xFF) << 8);
+            }
+        }
+        2 => {
+            let x = &mut regs[r as usize];
+            *x = (*x & !0xFFFF) | (v & 0xFFFF);
+        }
+        _ => regs[r as usize] = v,
+    }
+}
+
+#[inline(always)]
+fn shift_reg_l(regs: &mut [u32; 8], fl: &mut Flags, op: Shift, reg: u8, c: u32, size: u8) {
+    let c = c & 31;
+    if c == 0 {
+        return;
+    }
+    let bits = size as u32 * 8;
+    let v = reg_get(regs, reg, size);
+    let m = mask(u32::MAX, size);
+    let r = match op {
+        Shift::Shl => {
+            fl.cf = c <= bits && (v >> (bits - c)) & 1 == 1;
+            let r = if c >= 32 { 0 } else { (v << c) & m };
+            fl.of = ((r >> (bits - 1)) & 1 == 1) != fl.cf;
+            r
+        }
+        Shift::Shr => {
+            fl.cf = (v >> (c - 1)) & 1 == 1;
+            fl.of = (v >> (bits - 1)) & 1 == 1;
+            if c >= 32 { 0 } else { v >> c }
+        }
+        _ => {
+            let sv = sign_extend(v, size);
+            fl.cf = (sv >> (c - 1).min(31)) & 1 == 1;
+            fl.of = false;
+            (sv >> c.min(31)) as u32 & m
+        }
+    };
+    fl.set_szp(r, size);
+    reg_set(regs, reg, size, r);
+}
+
+/// `fcom`: the condition bits C3 C2 C0 of the FPU status word.
+#[inline(always)]
+fn fcompare_cc(a: f64, b: f64) -> u16 {
+    // branch free: unordered 0x4500, a < b 0x0100, a == b 0x4000, a > b 0
+    let (lt, eq, gt) = (a < b, a == b, a > b);
+    let un = !(lt | eq | gt);
+    ((lt | un) as u16) << 8 | ((eq | un) as u16) << 14 | (un as u16) << 10
+}
+
+/// `push` on a local register file (translated formulas).
+#[inline(always)]
+fn push_l(m: &mut Machine, r: &mut [u32; 8], v: u32) -> R<()> {
+    r[ESP] = r[ESP].wrapping_sub(4);
+    m.wr32(r[ESP], v)
+}
+
+/// `pop` on a local register file (translated formulas).
+#[inline(always)]
+fn pop_l(m: &mut Machine, r: &mut [u32; 8]) -> R<u32> {
+    let v = m.rd32(r[ESP])?;
+    r[ESP] = r[ESP].wrapping_add(4);
+    Ok(v)
+}
+
 #[derive(Clone)]
 pub struct Machine {
     /// fixed size, so that the bounds checks compare with a constant
     pub mem: Box<[u8; MEM_SIZE]>,
     pub regs: [u32; 8],
-    cf: bool,
-    zf: bool,
-    sf: bool,
-    of: bool,
-    pf: bool,
-    af: bool,
+    /// the arithmetic flags
+    fl: Flags,
     st: [f64; 8],
     top: usize,
     /// condition bits C0..C3 of the FPU status word (bit 8, 9, 10, 14)
@@ -961,12 +1127,7 @@ impl Machine {
         Machine {
             mem: vec![0u8; MEM_SIZE].into_boxed_slice().try_into().expect("memory size"),
             regs: [0; 8],
-            cf: false,
-            zf: false,
-            sf: false,
-            of: false,
-            pf: false,
-            af: false,
+            fl: Flags::default(),
             st: [0.0; 8],
             top: 0,
             fsw_cc: 0,
@@ -1171,70 +1332,14 @@ impl Machine {
     }
 
     // ---- registers of various sizes ----
-    #[inline(always)]
-    fn shift_reg_const(&mut self, op: Shift, reg: u8, c: u32, size: u8) {
-        let c = c & 31;
-        if c == 0 {
-            return;
-        }
-        let bits = size as u32 * 8;
-        let v = self.get_reg(reg, size);
-        let m = mask(u32::MAX, size);
-        let r = match op {
-            Shift::Shl => {
-                self.cf = c <= bits && (v >> (bits - c)) & 1 == 1;
-                let r = if c >= 32 { 0 } else { (v << c) & m };
-                self.of = ((r >> (bits - 1)) & 1 == 1) != self.cf;
-                r
-            }
-            Shift::Shr => {
-                self.cf = (v >> (c - 1)) & 1 == 1;
-                self.of = (v >> (bits - 1)) & 1 == 1;
-                if c >= 32 { 0 } else { v >> c }
-            }
-            _ => {
-                let sv = sign_extend(v, size);
-                self.cf = (sv >> (c - 1).min(31)) & 1 == 1;
-                self.of = false;
-                (sv >> c.min(31)) as u32 & m
-            }
-        };
-        self.set_szp(r, size);
-        self.set_reg(reg, size, r);
-    }
 
     #[inline(always)]
     fn get_reg(&self, r: u8, size: u8) -> u32 {
-        match size {
-            1 => {
-                if r < 4 {
-                    self.regs[r as usize] & 0xFF
-                } else {
-                    (self.regs[(r - 4) as usize] >> 8) & 0xFF
-                }
-            }
-            2 => self.regs[r as usize] & 0xFFFF,
-            _ => self.regs[r as usize],
-        }
+        reg_get(&self.regs, r, size)
     }
     #[inline(always)]
     fn set_reg(&mut self, r: u8, size: u8, v: u32) {
-        match size {
-            1 => {
-                if r < 4 {
-                    let x = &mut self.regs[r as usize];
-                    *x = (*x & !0xFF) | (v & 0xFF);
-                } else {
-                    let x = &mut self.regs[(r - 4) as usize];
-                    *x = (*x & !0xFF00) | ((v & 0xFF) << 8);
-                }
-            }
-            2 => {
-                let x = &mut self.regs[r as usize];
-                *x = (*x & !0xFFFF) | (v & 0xFFFF);
-            }
-            _ => self.regs[r as usize] = v,
-        }
+        reg_set(&mut self.regs, r, size, v);
     }
     fn get_rm(&self, rm: &Rm, size: u8) -> R<u32> {
         match rm {
@@ -1287,70 +1392,19 @@ impl Machine {
     // ---- flags ----
     #[inline]
     fn set_szp(&mut self, r: u32, size: u8) {
-        let bits = size as u32 * 8;
-        self.zf = mask(r, size) == 0;
-        self.sf = (r >> (bits - 1)) & 1 == 1;
-        self.pf = (r as u8).count_ones() % 2 == 0;
+        self.fl.set_szp(r, size);
     }
     #[inline]
     fn cond(&self, cc: u8) -> bool {
-        let r = match cc >> 1 {
-            0 => self.of,
-            1 => self.cf,
-            2 => self.zf,
-            3 => self.cf || self.zf,
-            4 => self.sf,
-            5 => self.pf,
-            6 => self.sf != self.of,
-            _ => self.zf || (self.sf != self.of),
-        };
-        if cc & 1 == 1 {
-            !r
-        } else {
-            r
-        }
+        self.fl.cond(cc)
     }
     fn eflags_ah(&self) -> u8 {
-        (self.sf as u8) << 7 | (self.zf as u8) << 6 | (self.af as u8) << 4 | (self.pf as u8) << 2 | 2 | self.cf as u8
+        (self.fl.sf as u8) << 7 | (self.fl.zf as u8) << 6 | (self.fl.af as u8) << 4 | (self.fl.pf as u8) << 2 | 2 | self.fl.cf as u8
     }
 
     #[inline]
     fn alu(&mut self, op: Alu, a: u32, b: u32, size: u8) -> u32 {
-        let bits = size as u32 * 8;
-        let m = if size == 4 { u32::MAX } else { (1u32 << bits) - 1 };
-        let sign = 1u32 << (bits - 1);
-        let (a, b) = (a & m, b & m);
-        let r = match op {
-            Alu::Add | Alu::Adc => {
-                let c = if op == Alu::Adc && self.cf { 1u64 } else { 0 };
-                let full = a as u64 + b as u64 + c;
-                let r = (full as u32) & m;
-                self.cf = full > m as u64;
-                self.of = ((a ^ r) & (b ^ r) & sign) != 0;
-                self.af = ((a ^ b ^ r) & 0x10) != 0;
-                r
-            }
-            Alu::Sub | Alu::Sbb | Alu::Cmp => {
-                let c = if op == Alu::Sbb && self.cf { 1u64 } else { 0 };
-                let r = (a as u64).wrapping_sub(b as u64).wrapping_sub(c) as u32 & m;
-                self.cf = (b as u64 + c) > a as u64;
-                self.of = ((a ^ b) & (a ^ r) & sign) != 0;
-                self.af = ((a ^ b ^ r) & 0x10) != 0;
-                r
-            }
-            Alu::And | Alu::Or | Alu::Xor => {
-                let r = match op {
-                    Alu::And => a & b,
-                    Alu::Or => a | b,
-                    _ => a ^ b,
-                };
-                self.cf = false;
-                self.of = false;
-                r
-            }
-        };
-        self.set_szp(r, size);
-        r
+        self.fl.alu(op, a, b, size)
     }
 
     // ---- x87 ----
@@ -1378,11 +1432,7 @@ impl Machine {
     }
     #[inline]
     fn fcompare(&mut self, a: f64, b: f64) {
-        // C3 C2 C0
-        // branch free: unordered 0x4500, a < b 0x0100, a == b 0x4000, a > b 0
-        let (lt, eq, gt) = (a < b, a == b, a > b);
-        let un = !(lt | eq | gt);
-        self.fsw_cc = ((lt | un) as u16) << 8 | ((eq | un) as u16) << 14 | (un as u16) << 10;
+        self.fsw_cc = fcompare_cc(a, b);
     }
     fn round_int(&self, v: f64) -> f64 {
         match (self.fcw >> 10) & 3 {
@@ -1536,10 +1586,10 @@ impl Machine {
             }
             Ins::Inc(rm, size) | Ins::Dec(rm, size) => {
                 let a = self.get_rm(rm, *size)?;
-                let cf = self.cf;
+                let cf = self.fl.cf;
                 let op = if matches!(ins, Ins::Inc(..)) { Alu::Add } else { Alu::Sub };
                 let r = self.alu(op, a, 1, *size);
-                self.cf = cf;
+                self.fl.cf = cf;
                 self.set_rm(rm, *size, r)?;
             }
             Ins::Not(rm, size) => {
@@ -1549,7 +1599,7 @@ impl Machine {
             Ins::Neg(rm, size) => {
                 let a = self.get_rm(rm, *size)?;
                 let r = self.alu(Alu::Sub, 0, a, *size);
-                self.cf = mask(a, *size) != 0;
+                self.fl.cf = mask(a, *size) != 0;
                 self.set_rm(rm, *size, r)?;
             }
             Ins::Mul(rm, size) | Ins::IMul1(rm, size) if *size != 4 => {
@@ -1559,15 +1609,15 @@ impl Machine {
                     let a = self.regs[EAX] & 0xFF;
                     let r = if signed { (a as u8 as i8 as i32 * b as u8 as i8 as i32) as u32 } else { a * b };
                     self.set_reg(0, 2, r);
-                    self.cf = if signed { (r as u16 as i16) != (r as u8 as i8 as i16) } else { (r >> 8) & 0xFF != 0 };
+                    self.fl.cf = if signed { (r as u16 as i16) != (r as u8 as i8 as i16) } else { (r >> 8) & 0xFF != 0 };
                 } else {
                     let a = self.regs[EAX] & 0xFFFF;
                     let r = if signed { (a as u16 as i16 as i32 * b as u16 as i16 as i32) as u32 } else { a * b };
                     self.set_reg(0, 2, r);
                     self.set_reg(2, 2, r >> 16);
-                    self.cf = if signed { (r as i32) != (r as u16 as i16 as i32) } else { (r >> 16) != 0 };
+                    self.fl.cf = if signed { (r as i32) != (r as u16 as i16 as i32) } else { (r >> 16) != 0 };
                 }
-                self.of = self.cf;
+                self.fl.of = self.fl.cf;
             }
             Ins::Mul(rm, size) | Ins::IMul1(rm, size) => {
                 let _ = size;
@@ -1585,8 +1635,8 @@ impl Machine {
                 } else {
                     (r as i64) != (r as u32 as i32 as i64)
                 };
-                self.cf = hi_used;
-                self.of = hi_used;
+                self.fl.cf = hi_used;
+                self.fl.of = hi_used;
             }
             Ins::Div(rm, size) | Ins::IDiv(rm, size) if *size != 4 => {
                 let b = self.get_rm(rm, *size)?;
@@ -1645,15 +1695,15 @@ impl Machine {
                 let a = self.get_rm(src, 4)? as i32 as i64;
                 let r = a * (*imm as i32 as i64);
                 self.regs[*reg as usize] = r as u32;
-                self.cf = r != (r as i32 as i64);
-                self.of = self.cf;
+                self.fl.cf = r != (r as i32 as i64);
+                self.fl.of = self.fl.cf;
             }
             Ins::IMul2 { reg, src } => {
                 let a = self.regs[*reg as usize] as i32 as i64;
                 let r = a * (self.get_rm(src, 4)? as i32 as i64);
                 self.regs[*reg as usize] = r as u32;
-                self.cf = r != (r as i32 as i64);
-                self.of = self.cf;
+                self.fl.cf = r != (r as i32 as i64);
+                self.fl.of = self.fl.cf;
             }
             Ins::Test { a, b, size } => {
                 let x = self.get_rm(a, *size)?;
@@ -1671,23 +1721,23 @@ impl Machine {
                     let m = mask(u32::MAX, *size);
                     let r = match op {
                         Shift::Shl => {
-                            self.cf = c <= bits && (v >> (bits - c)) & 1 == 1;
+                            self.fl.cf = c <= bits && (v >> (bits - c)) & 1 == 1;
                             let r = if c >= 32 { 0 } else { (v << c) & m };
-                            self.of = ((r >> (bits - 1)) & 1 == 1) != self.cf;
+                            self.fl.of = ((r >> (bits - 1)) & 1 == 1) != self.fl.cf;
                             self.set_szp(r, *size);
                             r
                         }
                         Shift::Shr => {
-                            self.cf = (v >> (c - 1)) & 1 == 1;
-                            self.of = (v >> (bits - 1)) & 1 == 1;
+                            self.fl.cf = (v >> (c - 1)) & 1 == 1;
+                            self.fl.of = (v >> (bits - 1)) & 1 == 1;
                             let r = if c >= 32 { 0 } else { v >> c };
                             self.set_szp(r, *size);
                             r
                         }
                         Shift::Sar => {
                             let sv = sign_extend(v, *size);
-                            self.cf = (sv >> (c - 1).min(31)) & 1 == 1;
-                            self.of = false;
+                            self.fl.cf = (sv >> (c - 1).min(31)) & 1 == 1;
+                            self.fl.of = false;
                             let r = (sv >> c.min(31)) as u32 & m;
                             self.set_szp(r, *size);
                             r
@@ -1695,13 +1745,13 @@ impl Machine {
                         Shift::Rol => {
                             let c = c % bits;
                             let r = ((v << c) | (v >> ((bits - c) % bits))) & m;
-                            self.cf = r & 1 == 1;
+                            self.fl.cf = r & 1 == 1;
                             r
                         }
                         Shift::Ror => {
                             let c = c % bits;
                             let r = ((v >> c) | (v << ((bits - c) % bits))) & m;
-                            self.cf = (r >> (bits - 1)) & 1 == 1;
+                            self.fl.cf = (r >> (bits - 1)) & 1 == 1;
                             r
                         }
                         Shift::Rcl | Shift::Rcr => {
@@ -1709,12 +1759,12 @@ impl Machine {
                             for _ in 0..c {
                                 if *op == Shift::Rcl {
                                     let out = (r >> (bits - 1)) & 1 == 1;
-                                    r = ((r << 1) | self.cf as u32) & m;
-                                    self.cf = out;
+                                    r = ((r << 1) | self.fl.cf as u32) & m;
+                                    self.fl.cf = out;
                                 } else {
                                     let out = r & 1 == 1;
-                                    r = (r >> 1) | ((self.cf as u32) << (bits - 1));
-                                    self.cf = out;
+                                    r = (r >> 1) | ((self.fl.cf as u32) << (bits - 1));
+                                    self.fl.cf = out;
                                 }
                             }
                             r
@@ -1776,11 +1826,11 @@ impl Machine {
             Ins::Cwde => self.regs[EAX] = self.regs[EAX] as u16 as i16 as i32 as u32,
             Ins::Sahf => {
                 let ah = (self.regs[EAX] >> 8) as u8;
-                self.sf = ah & 0x80 != 0;
-                self.zf = ah & 0x40 != 0;
-                self.af = ah & 0x10 != 0;
-                self.pf = ah & 0x04 != 0;
-                self.cf = ah & 0x01 != 0;
+                self.fl.sf = ah & 0x80 != 0;
+                self.fl.zf = ah & 0x40 != 0;
+                self.fl.af = ah & 0x10 != 0;
+                self.fl.pf = ah & 0x04 != 0;
+                self.fl.cf = ah & 0x01 != 0;
             }
             Ins::Lahf => {
                 let ah = self.eflags_ah() as u32;
@@ -1846,17 +1896,17 @@ impl Machine {
             }
             Ins::FComi { i, pop } => {
                 let (a, b) = (self.st(0), self.st(*i));
-                self.of = false;
-                self.sf = false;
-                self.af = false;
+                self.fl.of = false;
+                self.fl.sf = false;
+                self.fl.af = false;
                 if a.is_nan() || b.is_nan() {
-                    self.zf = true;
-                    self.pf = true;
-                    self.cf = true;
+                    self.fl.zf = true;
+                    self.fl.pf = true;
+                    self.fl.cf = true;
                 } else {
-                    self.zf = a == b;
-                    self.pf = false;
-                    self.cf = a < b;
+                    self.fl.zf = a == b;
+                    self.fl.pf = false;
+                    self.fl.cf = a < b;
                 }
                 if *pop {
                     self.fpop();
@@ -2174,17 +2224,17 @@ impl Machine {
                 } else {
                     (fd(self.xmm[d][0]), fd(self.xmm_src(src, 8)?[0]))
                 };
-                self.of = false;
-                self.sf = false;
-                self.af = false;
+                self.fl.of = false;
+                self.fl.sf = false;
+                self.fl.af = false;
                 if a.is_nan() || b.is_nan() {
-                    self.zf = true;
-                    self.pf = true;
-                    self.cf = true;
+                    self.fl.zf = true;
+                    self.fl.pf = true;
+                    self.fl.cf = true;
                 } else {
-                    self.zf = a == b;
-                    self.pf = false;
-                    self.cf = a < b;
+                    self.fl.zf = a == b;
+                    self.fl.pf = false;
+                    self.fl.cf = a < b;
                 }
             }
             SseOp::HAddPd | SseOp::HSubPd => {
@@ -3094,17 +3144,17 @@ impl Machine {
                 }
                 Op::FComi { a, b } => {
                     let (x, y) = (f[(*a & 7) as usize], f[(*b & 7) as usize]);
-                    self.of = false;
-                    self.sf = false;
-                    self.af = false;
+                    self.fl.of = false;
+                    self.fl.sf = false;
+                    self.fl.af = false;
                     if x.is_nan() || y.is_nan() {
-                        self.zf = true;
-                        self.pf = true;
-                        self.cf = true;
+                        self.fl.zf = true;
+                        self.fl.pf = true;
+                        self.fl.cf = true;
                     } else {
-                        self.zf = x == y;
-                        self.pf = false;
-                        self.cf = x < y;
+                        self.fl.zf = x == y;
+                        self.fl.pf = false;
+                        self.fl.cf = x < y;
                     }
                 }
                 Op::FCmov { cc, dst, src } => {
@@ -3150,6 +3200,60 @@ impl std::fmt::Debug for Prog {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Prog({} ops, hash {:016x}, native {})", self.ops.len(), self.hash, self.native.is_some())
     }
+}
+
+/// Rewrites a line of generated code from the machine's registers, flags
+/// and counters to the locals of the translated function (`rg`, `fl`,
+/// `fsw`, `steps`); interpreter calls get the machine state written back
+/// before and read again after.
+fn localize(line: &str, permute_rotations: bool) -> String {
+    const SYNC_OUT: &str = "m.regs = rg; m.fl = fl; m.fsw_cc = fsw; m.steps = steps;";
+    const SYNC_IN: &str = "rg = m.regs; fl = m.fl; fsw = m.fsw_cc; steps = m.steps;";
+    let mut l = line.to_string();
+    for call in ["m.exec(ins, *nx, *at)?;", "m.exec_op("] {
+        if let Some(i) = l.find(call) {
+            // the whole statement up to its `?;`
+            let end = l[i..].find("?;").map(|e| i + e + 2).unwrap_or(l.len());
+            let stmt = &l[i..end - 2];
+            let new = format!("{{ {SYNC_OUT} let res = {stmt}; {SYNC_IN} res?; }}");
+            l = format!("{}{}{}", &l[..i], new, &l[end..]);
+            return l;
+        }
+    }
+    let rep = [
+        ("m.regs[", "rg["),
+        ("m.alu(", "fl.alu("),
+        ("m.cond(", "fl.cond("),
+        ("m.fl.", "fl."),
+        ("m.fsw_cc", "fsw"),
+        ("m.steps", "steps"),
+        ("m.shift_reg_const(", "shift_reg_l(&mut rg, &mut fl, "),
+        ("m.get_reg(", "reg_get(&rg, "),
+        ("m.set_reg(", "reg_set(&mut rg, "),
+        ("m.push(", "push_l(m, &mut rg, "),
+        ("m.pop()", "pop_l(m, &mut rg)"),
+    ];
+    for (a, b) in rep {
+        l = l.replace(a, b);
+    }
+    // f.rotate_right(n) as a fixed permutation (keeps f in registers;
+    // rotate_right is a memory move).  Not in code with local subroutines:
+    // their returns are dynamic jumps, and the permutations become register
+    // shuffles at every call site (slower than the memory move there)
+    while permute_rotations {
+        let Some(i) = l.find("f.rotate_right(") else { break };
+        let end = l[i..].find(");").map(|e| i + e + 2).unwrap_or(l.len());
+        let n: usize = l[i + "f.rotate_right(".len()..end - 2].trim().parse().unwrap_or(0);
+        let perm: Vec<String> = (0..8).map(|k| format!("f[{}]", (k + 8 - n % 8) % 8)).collect();
+        l = format!("{}f = [{}];{}", &l[..i], perm.join(", "), &l[end..]);
+    }
+    // m.fcompare(a, b);  ->  fsw = fcompare_cc(a, b);
+    while let Some(i) = l.find("m.fcompare(") {
+        let end = l[i..].find(");").map(|e| i + e + 2).unwrap_or(l.len());
+        let args = &l[i + "m.fcompare(".len()..end - 2];
+        l = format!("{}fsw = fcompare_cc({args});{}", &l[..i], &l[end..]);
+    }
+    l
 }
 
 /// Rust expression reading the operand `rm` of `size` bytes (as u32).
@@ -3200,7 +3304,7 @@ fn sse_native(op: SseOp, src: &Rm) -> bool {
     use SseOp::*;
     match op {
         MovU | MovLpdLoad | MovHpdLoad | AddPd | SubPd | MulPd | DivPd | MinPd | MaxPd | SqrtPd | AddSd | SubSd | MulSd | DivSd
-        | MinSd | MaxSd | SqrtSd | And | AndN | Or | Xor | UnpckLpd | UnpckHpd | ShufPd | HAddPd => true,
+        | MinSd | MaxSd | SqrtSd | And | AndN | Or | Xor | UnpckLpd | UnpckHpd | ShufPd | HAddPd | UComiSd | ComiSd | Pshufd => true,
         MovSdLoad | MovqLoad => true,
         MovHlps | MovLhps => matches!(src, Rm::Reg(_)),
         _ => false,
@@ -3231,6 +3335,19 @@ fn emit_sse(op: SseOp, d: usize, src: &Rm, imm: u8) -> String {
     let bits = |o: &str| format!("{{ let s: [u64; 2] = {s16}; let a = m.xmm[{d}]; m.xmm[{d}] = [{}, {}]; }}",
         o.replace("X", "a[0]").replace("Y", "s[0]"), o.replace("X", "a[1]").replace("Y", "s[1]"));
     match op {
+        // the flags as in `Machine::sse`
+        UComiSd | ComiSd => format!(
+            "{{ let b = f64::from_bits({s8}); let a = f64::from_bits(m.xmm[{d}][0]); m.fl.of = false; m.fl.sf = false; m.fl.af = false; \
+             let un = a.is_nan() || b.is_nan(); m.fl.zf = un || a == b; m.fl.pf = un; m.fl.cf = un || a < b; }}"
+        ),
+        Pshufd => format!(
+            "{{ let s: [u64; 2] = {s16}; let dw = |i: u8| -> u64 {{ (s[(i >> 1) as usize] >> ((i & 1) * 32)) & 0xFFFF_FFFF }}; \
+             m.xmm[{d}] = [dw({}) | dw({}) << 32, dw({}) | dw({}) << 32]; }}",
+            imm & 3,
+            (imm >> 2) & 3,
+            (imm >> 4) & 3,
+            (imm >> 6) & 3
+        ),
         MovU => format!("m.xmm[{d}] = {s16};"),
         MovSdLoad => match src {
             Rm::Reg(r) => format!("m.xmm[{d}][0] = m.xmm[{r}][0];"),
@@ -3325,10 +3442,20 @@ impl Prog {
                 FOp::DivR => format!("{b} / {a}"),
             }
         };
+        let permute_rotations = !self.ops.iter().any(|op| matches!(op, Op::Call { .. } | Op::CallRot { .. }));
         let mut o = String::new();
+        // registers, flags, FPU condition bits and the step counter are
+        // locals (the compiler keeps them in registers and drops unused
+        // flags); they go back to the machine at the end and around
+        // interpreter calls
         let _ = writeln!(o, "pub(super) fn {name}(m: &mut Machine, p: &Prog, max_steps: u64) -> R<()> {{");
         let _ = writeln!(o, "    let mut f = [0f64; 8];
-    let limit = m.steps + max_steps;
+    let mut rg = m.regs;
+    let mut fl = m.fl;
+    let mut fsw = m.fsw_cc;
+    let mut steps = m.steps;
+    let limit = steps + max_steps;
+    let res = (|| -> R<()> {{
     let mut b: u32 = 0;
     loop {{
         match b {{");
@@ -3422,8 +3549,8 @@ impl Prog {
                     ),
                     Op::Gen(ins, _, _) => match ins.as_ref() {
                         Ins::Nop => String::new(),
-                        Ins::Sahf => "{ let ah = (m.regs[EAX] >> 8) as u8; m.sf = ah & 0x80 != 0; m.zf = ah & 0x40 != 0; \
-                                      m.af = ah & 0x10 != 0; m.pf = ah & 0x04 != 0; m.cf = ah & 0x01 != 0; }"
+                        Ins::Sahf => "{ let ah = (m.regs[EAX] >> 8) as u8; m.fl.sf = ah & 0x80 != 0; m.fl.zf = ah & 0x40 != 0; \
+                                      m.fl.af = ah & 0x10 != 0; m.fl.pf = ah & 0x04 != 0; m.fl.cf = ah & 0x01 != 0; }"
                             .to_string(),
                         Ins::Alu { op, dst, src, size } if !matches!(op, Alu::Adc | Alu::Sbb) => {
                             let b = src_expr(src, *size);
@@ -3443,10 +3570,10 @@ impl Prog {
                             let aop = if matches!(ins.as_ref(), Ins::Inc(..)) { "Add" } else { "Sub" };
                             match rm {
                                 Rm::Reg(r) => format!(
-                                    "{{ let cf = m.cf; let r = m.alu(Alu::{aop}, m.regs[{r}], 1, 4); m.cf = cf; m.regs[{r}] = r; }}"
+                                    "{{ let cf = m.fl.cf; let r = m.alu(Alu::{aop}, m.regs[{r}], 1, 4); m.fl.cf = cf; m.regs[{r}] = r; }}"
                                 ),
                                 Rm::Mem(mm) => format!(
-                                    "{{ let a = {}; let v = m.rd32(a)?; let cf = m.cf; let r = m.alu(Alu::{aop}, v, 1, 4); m.cf = cf; m.wr32(a, r)?; }}",
+                                    "{{ let a = {}; let v = m.rd32(a)?; let cf = m.fl.cf; let r = m.alu(Alu::{aop}, v, 1, 4); m.fl.cf = cf; m.wr32(a, r)?; }}",
                                     ea_expr(mm)
                                 ),
                             }
@@ -3483,7 +3610,7 @@ impl Prog {
                     Op::FScale { a, s } => format!("f[{0}] *= f[{1}].trunc().exp2();", a & 7, s & 7),
                     _ => format!("m.exec_op(&p.ops[{k}], &mut f)?; // {}", format!("{op:?}").replace('\n', " ")),
                 };
-                let _ = writeln!(o, "                {line}");
+                let _ = writeln!(o, "                {}", localize(&line, permute_rotations));
                 k += 1;
                 if ended || k >= n || start[k] {
                     break;
@@ -3501,6 +3628,17 @@ impl Prog {
         let _ = writeln!(o, "            _ => return Err(unsup(0, \"bad block\".into())),
         }}
     }}
+    }})();
+    // after an error the machine state does not matter (the caller drops
+    // the result, the next call starts with fresh registers); writing it
+    // back only on success keeps the locals dead on the error paths
+    if res.is_ok() {{
+        m.regs = rg;
+        m.fl = fl;
+        m.fsw_cc = fsw;
+        m.steps = steps;
+    }}
+    res
 }}");
         o
     }

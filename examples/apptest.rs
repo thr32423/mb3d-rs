@@ -23,6 +23,8 @@ fn main() {
     ui.click("Mand3DForm", "Button2");
     app.process(&mut ui);
     wait(&mut ui, &mut app);
+    #[cfg(feature = "gpu")]
+    eprintln!("calculate 3D: {}", mb3d::gpu::last_status());
     for f in ["Mand3DForm", "FormulaGUIForm", "LightAdjustForm"] {
         ui.save_form_png(f, &out.join(format!("{f}.png")), 1.0).unwrap();
     }

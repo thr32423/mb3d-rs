@@ -39,6 +39,8 @@ OPTIONS:
     -t, --threads <N>        Number of threads (default: all cores)
         --auto-color         Fit the colour range to the rendered surface
         --stats              Print G-buffer statistics
+        --gpu                Ray march on the graphics card (prototype: Integer
+                             Power formulas; other scenes use the CPU)
         --save-scene <FILE>  Write the final scene as .m3s text (e.g. to convert a .m3p)
         --save-text <FILE>   Write MB3D text parameters (Mandelbulb3Dv18{...})
         --save-m3p <FILE>    Write a MB3D parameter file (.m3p); parameter inputs are
@@ -78,6 +80,14 @@ fn gui(args: &[String]) -> Result<(), String> {
 #[cfg(not(feature = "gui"))]
 fn gui(_args: &[String]) -> Result<(), String> {
     Err("this program was built without the desktop application (cargo feature \"gui\")".into())
+}
+
+/// `--gpu`: the main calculation on the graphics card.
+fn use_gpu() {
+    #[cfg(feature = "gpu")]
+    mb3d::gpu::set_enabled(true);
+    #[cfg(not(feature = "gpu"))]
+    eprintln!("  --gpu: this program was built without the GPU support (cargo feature \"gpu\"), using the CPU");
 }
 
 fn run() -> Result<(), String> {
@@ -140,6 +150,7 @@ fn run() -> Result<(), String> {
             "--aa" => aa = val(&a)?.parse::<usize>().map_err(|_| "bad --aa value".to_string())?.clamp(1, 8),
             "--scale" => scale = Some(val(&a)?.parse::<f64>().map_err(|_| "bad --scale value".to_string())?),
             "--stats" => stats = true,
+            "--gpu" => use_gpu(),
             "--save-scene" => save_scene = Some(val(&a)?),
             "--save-text" => save_text = Some(val(&a)?),
             "--save-m3p" => save_m3p = Some(val(&a)?),
@@ -398,6 +409,10 @@ fn render_single(
             res.paint_seconds,
             res.coverage() * 100.0
         );
+    }
+    #[cfg(feature = "gpu")]
+    if !quiet && mb3d::gpu::enabled() {
+        eprintln!("  calculated on: {}", mb3d::gpu::last_status());
     }
     if stats {
         print_stats(&res);

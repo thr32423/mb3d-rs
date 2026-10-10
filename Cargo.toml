@@ -1,6 +1,6 @@
 [package]
 name = "mb3d"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 description = "Rust port of Mandelbulb3D (MB3D) - renderer and desktop application"
 license = "LGPL-2.1-or-later"
@@ -10,12 +10,17 @@ license = "LGPL-2.1-or-later"
 # the command line renderer is built, which has no dependencies
 default = ["gui"]
 gui = ["dep:winit", "dep:softbuffer", "dep:fontdue", "dep:arboard"]
+# ray marching on the graphics card (wgpu: Vulkan, Metal, DirectX 12);
+# prototype, see src/gpu.rs
+gpu = ["dep:wgpu", "dep:pollster"]
 
 [dependencies]
 winit = { version = "0.30", optional = true }
 softbuffer = { version = "0.4", optional = true }
 fontdue = { version = "0.9", optional = true }
 arboard = { version = "3", optional = true, default-features = false, features = ["wayland-data-control"] }
+wgpu = { version = "30.0.1", optional = true }
+pollster = { version = "1.0.1", optional = true }
 
 [[bin]]
 name = "Mandelbulb3D"
@@ -27,3 +32,7 @@ opt-level = 3
 lto = true
 codegen-units = 1
 debug = false
+
+[[example]]
+name = "gpubench"
+required-features = ["gpu"]

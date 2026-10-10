@@ -107,6 +107,17 @@ fn calculate_inner(
     let p = p;
     let [x0, y0, w, h] = p.rect;
     let (x0, y0, w, h) = (x0 as usize, y0 as usize, w as usize, h as usize);
+    #[cfg(feature = "gpu")]
+    if !two_d && crate::gpu::enabled() {
+        let gpu = crate::gpu::march(&p, progress, cancel, |y, row| {
+            if let Some(f) = sink {
+                f(y, row);
+            }
+        });
+        if let Some(gbuf) = gpu {
+            return finish_calculation(sc, p, gbuf, post, threads, cancel);
+        }
+    }
     let done = AtomicUsize::new(0);
     let mut rows: Vec<Vec<SiLight>> = vec![Vec::new(); h];
     std::thread::scope(|s| {
@@ -150,7 +161,20 @@ fn calculate_inner(
     if cancel() {
         return Err("cancelled".into());
     }
-    let mut gbuf: Vec<SiLight> = rows.into_iter().flatten().collect();
+    let gbuf: Vec<SiLight> = rows.into_iter().flatten().collect();
+    finish_calculation(sc, p, gbuf, post, threads, cancel)
+}
+
+/// The post calculations after the main calculation (CPU or GPU).
+fn finish_calculation(
+    sc: &Scene,
+    p: CalcParams,
+    mut gbuf: Vec<SiLight>,
+    post: u8,
+    threads: usize,
+    cancel: &(dyn Fn() -> bool + Sync),
+) -> Result<(CalcParams, Vec<SiLight>), String> {
+    let two_d = p.slice_2d != 0;
     if two_d || post == 0 {
         // MB3D runs no post calculations after a 2D calculation
     } else if post == 2 {

@@ -23,6 +23,10 @@ jobs:
         run: cargo build --release --no-default-features --bin mb3d
       - name: Test
         run: cargo test --release
+      # the GPU prototype must compile everywhere (the runners have no
+      # graphics card: the comparison test skips itself)
+      - name: Build and test with the GPU feature
+        run: cargo test --release --features gpu --lib gpu
 
   mb3d-data:
     # renders and compiles against the formulas, maps and parameter files of

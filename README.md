@@ -360,6 +360,37 @@ window's parameters, renders in the background pass after pass (Start /
 Stop adds rays to the image), saves the picture or `.m3c` and has MB3D's
 batch panel.
 
+## Graphics card (prototype)
+
+The main calculation (the ray marching of every pixel) can run on the
+graphics card through [wgpu](https://wgpu.rs) (Vulkan, Metal, DirectX 12).
+It is a prototype behind the cargo feature `gpu`; the release downloads
+include it, switched off unless asked for:
+
+```sh
+cargo build --release --features gpu
+./target/release/mb3d examples/mandelbulb.m3s --gpu -o bulb.png
+MB3D_GPU=1 ./target/release/Mandelbulb3D      # the program
+```
+
+The shader (`src/gpu_march.wgsl`) is a port of the CPU's per-pixel loop
+and fills the same G-buffer; shadows, ambient occlusion and the painting
+stay on the CPU. It calculates in single precision and supports one
+*Integer Power* formula (the Mandelbulbs, powers 2–8, also as Julia sets)
+with the numerical DE, smooth normals, binary search and the colour options.
+Everything else is calculated on the CPU as before, and `mb3d` says which
+was used (`calculated on: ...`): other formulas and hybrids, cutting
+planes, inside rendering, volumetric light, and views zoomed so far that
+single precision would show as noise (about zoom 7 at 800 pixels width).
+
+On a GeForce GTX 1650 (laptop) against a Ryzen 5 3550H (8 threads),
+`examples/mandelbulb.m3s` takes 0.62 s instead of 2.5 s at 800×600 and
+2.0 s instead of 9.4 s at 1600×1200. The first calculation after a start
+waits for the driver to compile the shader (several seconds the first time,
+drivers keep it in a cache). `cargo test --features gpu` compares the GPU
+G-buffer with the CPU's (99.99% of the pixels agree on object or
+background, 1.4% of the normals differ by more than 25°).
+
 ## What is ported
 
 Each Delphi routine was ported from its assembler or Pascal source. Where only

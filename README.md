@@ -365,9 +365,10 @@ to switch:
 
 * in the program, a blinking LED right of the window title shows where the
   last calculation ran: **green** all on the graphics card, **orange**
-  mixed (ray marching on the graphics card, shadows / ambient occlusion /
-  reflections on the CPU), **red** on the CPU (also Monte Carlo renders),
-  grey before the first calculation;
+  mixed (ray marching, hard shadows and DE ambient occlusion on the
+  graphics card, the rest of the post calculations on the CPU: screen
+  space ambient occlusion, normals on the z-buffer), **red** on the CPU
+  (also Monte Carlo renders), grey before the first calculation;
 * `mb3d` uses it too (it prints `calculated on: ...`); `--cpu` calculates
   on the CPU only;
 * the environment variable `MB3D_GPU=0` switches it off for both.
@@ -376,8 +377,10 @@ It needs the cargo feature `gpu` (part of the default build; a build with
 `--no-default-features` is the CPU renderer without dependencies).
 
 The shader (`src/gpu_march.wgsl`) is a port of the CPU's per-pixel loop
-and fills the same G-buffer; shadows, ambient occlusion, reflections and
-the painting stay on the CPU. It calculates in single precision. The
+and fills the same G-buffer, then runs the hard (or soft) shadows and the
+DE ambient occlusion on it (the same shader, started on the surface of
+each pixel); screen space ambient occlusion, reflections and the painting
+stay on the CPU. It calculates in single precision. The
 formulas reach it through the lifter: the x86 code of an `.m3f` formula is
 analysed (`src/lift.rs`: every memory access resolved to the iteration
 record, the formula's constants or the stack) and translated to WGSL
@@ -396,13 +399,19 @@ used.
 Of the 80 example parameter files of MB3D, 17 run on the GPU. On a GeForce
 GTX 1650 (laptop) against a Ryzen 5 3550H (8 threads), at 640 pixels:
 *TimeMachine* 1.5 s instead of 19.8 s, *Theli-At - Bone Menger* 1.4 s
-instead of 11.8 s, *Hal-Tenny-Resistance* 16.5 s instead of 99 s (scenes
-whose time goes into shadows or ambient occlusion gain little). Scenes with
-many iterations of strongly expanding formulas show single precision noise
-(*MengerTrees*). Developer checks: `cargo run --release --example
-gpuformulas -- M3Formulas` runs every translatable formula on the GPU
-against the interpreter (all 278 agree), `cargo test` compares the GPU
-G-buffer of a Mandelbulb with the CPU's.
+instead of 11.8 s, *Hal-Tenny-Resistance* 16.5 s instead of 99 s; with
+the shadows on the card too, *TreePlanet* at 400 pixels takes 0.8 s
+instead of 6 s. Scenes with many iterations of strongly expanding formulas
+show single precision noise (*MengerTrees*). The shadow rays differ from
+MB3D in one point: MB3D stops a ray early when the neighbouring pixel found
+open air at that distance; the card marches every ray to its end, so fine
+structures throw slightly more shadow (a few percent of their pixels).
+Developer checks: `cargo run --release --example gpuformulas -- M3Formulas`
+runs every translatable formula on the GPU against the interpreter (all
+278 agree), `cargo test` compares the GPU G-buffer of a Mandelbulb with
+the CPU's, and `cargo run --release --example postcheck -- 320 MB3D_DIR
+FILES...` compares the shadow bits and the ambient occlusion of the card
+with the CPU's.
 
 ## What is ported
 

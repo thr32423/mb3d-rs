@@ -66,6 +66,20 @@ const DE_OPTION: u32 = 58u;
 const END_TO: u32 = 59u;
 const REPEAT_FROM: u32 = 60u;
 const J4: u32 = 61u;
+// the post calculations (hard shadows, DE ambient occlusion)
+const MODE: u32 = 112u;          // M_MARCH, M_SHADOW, M_DEAO
+const HS_N: u32 = 113u;          // lights of the shadow pass
+const HS_MAX_LEN_MUL: u32 = 114u;
+const HS_SOFT_RADIUS: u32 = 115u; // > 0: one soft shadow
+const AO_QUALITY: u32 = 116u;
+const AO_DITHER: u32 = 117u;
+const AO_MAX_LEN: u32 = 118u;
+const AO_FIRST_RANDOM: u32 = 119u;
+const WIDTH: u32 = 120u;
+const HS_LIGHTS: u32 = 124u;     // 6 x (light index, HSvec)
+const M_MARCH: u32 = 0u;
+const M_SHADOW: u32 = 1u;
+const M_DEAO: u32 = 2u;
 // 6 slots of 8 words: iterations, uncounted, constants base, fHln,
 // Integer Power power, z multiplier, kind (0 none, 1 Integer Power, 2 .m3f,
 // 3 Amazing Box: see amazing_box)
@@ -111,6 +125,10 @@ var<private> si_zpos: u32;
 var<private> si_shadow: u32;
 var<private> si_grad: u32;
 var<private> si_otrap: u32;
+var<private> si_amb: u32;
+// the rays of the ambient occlusion
+var<private> ao_dirs: array<vec3<f32>, 33>;
+var<private> ao_min: array<f32, 33>;
 
 fn is_nan(x: f32) -> bool {
     let b = bitcast<u32>(x) & 0x7FFFFFFFu;
@@ -500,6 +518,40 @@ fn calc_zpos_and_rough() {
     si_zpos = r;
 }
 
+// deao.rs get_rand
+fn get_rand() -> f32 {
+    seed = seed * 0x343FD + 0x269EC3;
+    return f32((u32(seed) >> 8u) & 0x7FFFFFu) / f32(0x7FFFFFu);
+}
+
+// -BuildRotMatrixS(0, ya, za)[2]
+fn ray_dir(ya: f32, za: f32) -> vec3<f32> {
+    return vec3<f32>(sin(ya) * cos(za), -sin(ya) * sin(za), -cos(ya));
+}
+
+// MakeRotQuatFromSNormals + CreateSMatrixFromQuat (deao.rs normal_matrix)
+fn normal_matrix(n: vec3<f32>) -> mat3x3<f32> {
+    let a = acos(clamp(-n.z, -1.0, 1.0)) * 0.5;
+    var sa = sin(a);
+    let ca = cos(a);
+    let nn = sqrt(n.y * n.y + n.x * n.x);
+    var q = vec4<f32>(0.0, 0.0, 0.0, ca);
+    if (nn >= 1e-25) {
+        sa /= nn;
+        q = vec4<f32>(-n.y * sa, n.x * sa, 0.0, ca);
+    }
+    // the rows of the CPU's matrix (m[i] dot d)
+    return mat3x3<f32>(
+        vec3<f32>(1.0 - 2.0 * (q.y * q.y + q.z * q.z), 2.0 * (q.x * q.y + q.z * q.w), 2.0 * (q.x * q.z - q.y * q.w)),
+        vec3<f32>(2.0 * (q.x * q.y - q.z * q.w), 1.0 - 2.0 * (q.x * q.x + q.z * q.z), 2.0 * (q.z * q.y + q.x * q.w)),
+        vec3<f32>(2.0 * (q.x * q.z + q.y * q.w), 2.0 * (q.y * q.z - q.x * q.w), 1.0 - 2.0 * (q.x * q.x + q.y * q.y)));
+}
+
+// MaxLHS
+fn hs_max_len(y: i32) -> f32 {
+    return f32(pi(WIDTH) + y) * 0.6 * (1.0 + 0.5 * min(mzz, pf(ZEND) * 0.4) * max(pf(FOV_Y), 0.0) / f32(pi(HEIGHT))) * pf(HS_MAX_LEN_MUL);
+}
+
 // states of march_pixel; a state may request an evaluation (`need`, at
 // `c`, DE or iteration count by `want_de`), whose result the next state gets
 const P_START: u32 = 0u;     // result: the DE at the start
@@ -524,6 +576,22 @@ const P_NSM_R: u32 = 18u;
 const P_SW: u32 = 19u;       // smoothing: the sweeps
 const P_SW_R: u32 = 20u;
 const P_NEND: u32 = 21u;
+// the post calculations start on the surface of the calculated pixel
+const P_PS: u32 = 22u;       // hs_surface_start / surface_point
+const P_PS_R: u32 = 23u;     // result: the DE at the stored depth
+// hard_shadow_row / soft_shadow_row
+const P_HS_INIT: u32 = 24u;
+const P_HS_LIGHT: u32 = 25u; // the next light
+const P_HS_R0: u32 = 26u;    // result: the DE at the start of the shadow ray
+const P_HS_STEP: u32 = 27u;  // a step towards the light
+const P_HS_R: u32 = 28u;     // result: the DE after the step
+const P_HS_DONE: u32 = 29u;  // the ray ended (hit or open)
+// deao_row
+const P_AO_INIT: u32 = 30u;
+const P_AO_RAY: u32 = 31u;   // the next ray
+const P_AO_STEP: u32 = 32u;  // a step along the ray
+const P_AO_R: u32 = 33u;     // result: the DE after the step
+const P_AO_CORR: u32 = 34u;  // the correction and the mean
 
 fn march_pixel(x: i32, y: i32) {
     si_normal = vec3<i32>(0);
@@ -531,7 +599,15 @@ fn march_pixel(x: i32, y: i32) {
     si_shadow = 0u;
     si_grad = 0u;
     si_otrap = 0u;
+    si_amb = 5000u; // MB3D's value when no ambient shadow is calculated
     s_roughness = 0.0;
+    pixel(x, y, M_MARCH);
+}
+
+// The march of a pixel (M_MARCH), or a post calculation on the G-buffer
+// pixel in si_* (M_SHADOW: the shadow bits, M_DEAO: si_amb); the DE is
+// evaluated at the single site of `evaluate`.
+fn pixel(x: i32, y: i32, mode: u32) {
     max_it = pi(MAX_IT);
     rstop = pf(D_RSTOP);
     max_its_result = max_it;
@@ -569,6 +645,47 @@ fn march_pixel(x: i32, y: i32) {
     var pc = P_START;
     var need = true;
     var want_de = true;
+    if (mode != M_MARCH) {
+        pc = P_PS;
+        need = false;
+    }
+    var after_bs = P_N_INIT;
+    var bs_thr = 0.001;
+    var zf = 0.0;
+    // shadows
+    let soft = pf(HS_SOFT_RADIUS) > 0.0;
+    var ic = vec3<f32>(0.0);
+    var nvec = vec3<f32>(0.0);
+    var max_lhs = 0.0;
+    var li = 0u;
+    var lidx = 0u;
+    var lvec = vec3<f32>(0.0);
+    var zz2 = 0.0;
+    var zz2mul = 0.0;
+    var rsf = 1.0;
+    var st = 0.0;
+    var zr_soft = 1.0;
+    var zrs_mul = 0.0;
+    // ambient occlusion
+    var ray_count = 0u;
+    var k = 0u;
+    var step_ao = 0.0;
+    var max_dist = 0.0;
+    var d_step_mul = 1.0;
+    var ms2 = 0.0;
+    var de_mul = 1.0;
+    var abr_c = 0.0;
+    var md_d10 = 0.0;
+    var d_min_a_dif = -1.0;
+    var corr_w = 0.0;
+    var rot_w = mat3x3<f32>();
+    var rv0 = vec3<f32>(0.0);
+    var rv1 = vec3<f32>(0.0);
+    var rv2 = vec3<f32>(0.0);
+    var sv = vec3<f32>(0.0);
+    var s_tmp = 1.0;
+    var b_end = false;
+    var b_first = false;
     var r = 0.0;
     var done = false;
     // march
@@ -720,15 +837,15 @@ fn march_pixel(x: i32, y: i32) {
             }
             // RMdoBinSearch
             case P_BS: {
-                if (abs(dtmp - ms_de_stop) <= 0.001) {
-                    pc = P_N_INIT;
+                if (abs(dtmp - ms_de_stop) <= bs_thr) {
+                    pc = after_bs;
                 } else {
                     mzz += dt1;
                     setc();
                     update_de_stop();
                     itmp -= 1;
                     if (itmp <= 0) {
-                        pc = P_N_INIT;
+                        pc = after_bs;
                     } else {
                         need = true;
                         want_de = true;
@@ -738,7 +855,7 @@ fn march_pixel(x: i32, y: i32) {
             }
             case P_BS_R: {
                 dtmp = r;
-                if (it_result >= max_its_result) {
+                if (mode != M_DEAO && it_result >= max_its_result) {
                     dt1 = -abs(dt1);
                 } else if (dtmp < ms_de_stop) {
                     dt1 = abs(dt1) * -0.55;
@@ -801,7 +918,7 @@ fn march_pixel(x: i32, y: i32) {
                 itmp -= 1;
                 if (itmp < 0) {
                     max_it = saved_max;
-                    pc = P_N_INIT;
+                    pc = after_bs;
                 } else {
                     pc = P_BSI;
                 }
@@ -988,6 +1105,288 @@ fn march_pixel(x: i32, y: i32) {
                 calc_zpos_and_rough();
                 done = true;
             }
+            // ---- the post calculations: the surface of the pixel
+            case P_PS: {
+                // the depth of the G-buffer (the inverse of calc_zpos_and_rough)
+                zf = f32(si_zpos >> 8u);
+                let a = (8388351.5 - zf) / pf(ZC_MUL);
+                mzz = a * (a + 2.0) / pf(ZCORR);
+                setc();
+                update_de_stop();
+                need = true;
+                want_de = true;
+                pc = P_PS_R;
+            }
+            case P_PS_R: {
+                dtmp = r;
+                if (mode == M_DEAO) {
+                    dtmp = min(dtmp, ms_de_stop * 2.0);
+                }
+                de_limited = it_result < max_its_result || dtmp < ms_de_stop;
+                itmp = pi(DE_ADD_STEPS);
+                after_bs = select(P_AO_INIT, P_HS_INIT, mode == M_SHADOW);
+                if (de_limited) {
+                    let a = (8388352.0 - zf) / pf(ZC_MUL);
+                    let q = a * (a + 2.0) / pf(ZCORR) - mzz;
+                    if (mode == M_SHADOW) {
+                        dt1 = q * -0.5;
+                        bs_thr = 0.001;
+                    } else {
+                        dt1 = q;
+                        bs_thr = 0.004;
+                    }
+                    pc = P_BS;
+                } else {
+                    yp = f32(max_it) - 0.99;
+                    saved_max = max_it;
+                    max_it += 1;
+                    calc_sit = true;
+                    dt1 = 0.0;
+                    dmul = 1.0;
+                    first = true;
+                    last_si = 0.0;
+                    last_dif = 0.0;
+                    pc = P_BSI;
+                }
+            }
+            // ---- hard_shadow_row / soft_shadow_row
+            case P_HS_INIT: {
+                calc_sit = false;
+                nvec = rot_rev(vec3<f32>(si_normal) / 32767.0);
+                let mz0 = mzz;
+                if (soft) {
+                    mzz -= 0.1;
+                } else {
+                    mzz = max(mzz - 0.1, 0.0);
+                }
+                c = base + vfov * (mz0 - 0.1);
+                update_de_stop();
+                ic = c;
+                max_lhs = hs_max_len(y);
+                zrs_mul = 80.0 / max(pf(HS_SOFT_RADIUS), 0.001);
+                li = 0u;
+                pc = P_HS_LIGHT;
+            }
+            case P_HS_LIGHT: {
+                if (li >= P[HS_N]) {
+                    done = true;
+                } else {
+                    lidx = P[HS_LIGHTS + li * 4u];
+                    lvec = pv(HS_LIGHTS + li * 4u + 1u);
+                    c = ic;
+                    zz2 = mzz;
+                    zz2mul = -dot(lvec, vfov) / max(sqrt(dot(lvec, lvec) * dot(vfov, vfov)), 1e-30);
+                    if (dot(nvec, lvec) > 0.0) {
+                        // the surface faces away from the light
+                        if (soft) {
+                            si_shadow &= 0x3FFu;
+                            done = true;
+                        } else {
+                            si_shadow |= 0x400u << lidx;
+                            li += 1u;
+                        }
+                    } else {
+                        dt1 = max_lhs;
+                        zr_soft = 1.0;
+                        if (dt1 > 0.0) {
+                            ms_de_stop = pf(DE_STOP) * (1.0 + abs(zz2) * pf(DE_STOP_FACTOR));
+                            rsf = 2.0;
+                            need = true;
+                            want_de = true;
+                            pc = P_HS_R0;
+                        } else {
+                            pc = P_HS_DONE;
+                        }
+                    }
+                }
+            }
+            case P_HS_R0: {
+                dtmp = r;
+                pc = P_HS_STEP;
+            }
+            case P_HS_STEP: {
+                last_de = dtmp;
+                st = min(max(0.11, (dtmp - pf(MS_DE_SUB) * ms_de_stop) * pf(Z_STEP_DIV) * rsf), max(ms_de_stop, 0.4) * pf(MH04ZSD));
+                dt1 -= st;
+                c -= lvec * st;
+                zz2 += st * zz2mul;
+                ms_de_stop = pf(DE_STOP) * (1.0 + abs(zz2) * pf(DE_STOP_FACTOR));
+                need = true;
+                want_de = true;
+                pc = P_HS_R;
+            }
+            case P_HS_R: {
+                dtmp = r;
+                if (soft) {
+                    let rr = (max_lhs - dt1) / max_lhs;
+                    let r8 = (rr * rr) * (rr * rr);
+                    zr_soft = min(zr_soft, (dtmp - ms_de_stop) * zrs_mul / (max_lhs - dt1 + 0.11) + r8 * r8);
+                }
+                if (it_result >= max_its_result || dtmp <= ms_de_stop) {
+                    pc = P_HS_DONE;
+                } else {
+                    if (dtmp > last_de + st) {
+                        dtmp = last_de + st;
+                    }
+                    rsf = 1.0;
+                    if (last_de > dtmp + 1e-30) {
+                        let t = st / (last_de - dtmp);
+                        if (t < 1.0) {
+                            rsf = max(0.5, t);
+                        }
+                    }
+                    if (dt1 < 0.0) {
+                        pc = P_HS_DONE;
+                    } else {
+                        pc = P_HS_STEP;
+                    }
+                }
+            }
+            case P_HS_DONE: {
+                if (soft) {
+                    si_shadow = (si_shadow & 0x3FFu) | (u32(round(clamp(zr_soft, 0.0, 1.0) * 63.4)) << 10u);
+                    done = true;
+                } else {
+                    if (dt1 > 0.0) {
+                        si_shadow |= 0x400u << lidx; // in shadow
+                    }
+                    li += 1u;
+                    pc = P_HS_LIGHT;
+                }
+            }
+            // ---- deao_row
+            case P_AO_INIT: {
+                calc_sit = false;
+                update_de_stop();
+                let msl = min(ms_de_stop, 1e6);
+                ic = c;
+                step_ao = msl / pf(DE_STOP);
+                let s_max_d = pf(AO_MAX_LEN) * 0.5 * sqrt(f32(pi(HEIGHT)) * f32(pi(HEIGHT)) + f32(pi(WIDTH)) * f32(pi(WIDTH)));
+                max_dist = s_max_d * sqrt(step_ao);
+                let q = min(u32(pi(AO_QUALITY)), 3u);
+                let abr = 0.5 * PI / (f32(q) + 0.9);
+                if (q == 0u) {
+                    d_step_mul = 1.8;
+                    d_min_a_dif = -1.0;
+                    corr_w = 0.3;
+                } else {
+                    d_step_mul = 1.0 + sin(abr);
+                    d_min_a_dif = cos(abr * 1.2);
+                    corr_w = select(0.1666, 0.2, q == 1u);
+                }
+                ms2 = select(pf(DE_STOP), msl, pf(DE_STOP_FACTOR) != 0.0) / (d_step_mul * d_step_mul);
+                // the ray directions, dithered per pixel
+                let dither = pi(AO_DITHER);
+                var dt1d = 0.0;
+                var dt2d = 0.0;
+                if (dither > 0) {
+                    dt1d = f32(y % (dither + 1)) * 0.5 / f32(dither);
+                    dt2d = f32(x % (dither + 1)) * 0.5 / f32(dither);
+                }
+                ray_count = 0u;
+                if (q == 0u) {
+                    for (var i = 0u; i < 3u; i++) {
+                        if (dither > 0) {
+                            ao_dirs[i] = ray_dir((dt1d + 0.5) * radians(50.0), (f32(i) + dt2d) * 2.0 * PI / 3.0);
+                        } else {
+                            ao_dirs[i] = ray_dir(0.5 * radians(60.0), f32(i) * 2.0 * PI / 3.0);
+                        }
+                    }
+                    ray_count = 3u;
+                } else {
+                    if (!(dither > 0 && dt1d > 0.1)) {
+                        ao_dirs[0] = ray_dir(0.0, 0.0);
+                        ray_count = 1u;
+                    }
+                    for (var rr = 1u; rr <= q; rr++) {
+                        let n = u32(round(sin(f32(rr) * abr) * 2.0 * PI / abr));
+                        for (var i = 0u; i < n; i++) {
+                            if (ray_count < 33u) {
+                                ao_dirs[ray_count] = ray_dir(abr * (f32(rr) + dt1d - select(0.0, 0.25, dither > 0)), (f32(i) + dt2d) * 2.0 * PI / f32(n));
+                                ray_count += 1u;
+                            }
+                        }
+                    }
+                }
+                de_mul = sqrt(f32(ray_count) * 0.5);
+                abr_c = 1.2 / asin(clamp(1.0 / de_mul, -1.0, 1.0));
+                md_d10 = 0.1 / (max_dist * de_mul);
+                rot_w = normal_matrix(normalize(vec3<f32>(si_normal)));
+                // normalise_matrix_to(step_width, vgrads)
+                rv0 = vg(0u) * (pf(STEP_WIDTH) / length(vg(0u)));
+                rv1 = vg(1u) * (pf(STEP_WIDTH) / length(vg(1u)));
+                rv2 = vg(2u) * (pf(STEP_WIDTH) / length(vg(2u)));
+                k = 0u;
+                pc = P_AO_RAY;
+            }
+            case P_AO_RAY: {
+                if (k >= ray_count) {
+                    pc = P_AO_CORR;
+                } else {
+                    let d = ao_dirs[k];
+                    let vv = vec3<f32>(dot(rot_w[0], d), dot(rot_w[1], d), dot(rot_w[2], d));
+                    sv = vv.x * rv0 + vv.y * rv1 + vv.z * rv2;
+                    dt1 = step_ao * d_step_mul;
+                    s_tmp = 1.0;
+                    b_end = false;
+                    b_first = pi(AO_FIRST_RANDOM) != 0;
+                    pc = P_AO_STEP;
+                }
+            }
+            case P_AO_STEP: {
+                if (b_first) {
+                    b_first = false;
+                    dt1 *= get_rand() * 1.5 + 0.5;
+                } else if (dt1 > max_dist) {
+                    dt1 = max_dist;
+                    b_end = true;
+                }
+                c = ic + sv * dt1;
+                need = true;
+                want_de = true;
+                pc = P_AO_R;
+            }
+            case P_AO_R: {
+                let dt2 = r;
+                s_tmp = min(s_tmp, (dt2 - ms2 + dt1 * md_d10) / dt1);
+                var fin = s_tmp < 0.02;
+                if (!fin) {
+                    dt1 += max(dt2, dt1 * d_step_mul);
+                    fin = b_end;
+                }
+                if (fin) {
+                    ao_min[k] = max(s_tmp, 0.0) * de_mul;
+                    k += 1u;
+                    pc = P_AO_RAY;
+                } else {
+                    pc = P_AO_STEP;
+                }
+            }
+            case P_AO_CORR: {
+                // open neighbour rays lighten a closed one
+                var amount = 0.0;
+                for (var i = 0u; i < ray_count; i++) {
+                    var s_add = 0.0;
+                    if (ao_min[i] < 1.0) {
+                        let max_add = 1.0 - ao_min[i];
+                        for (var i2 = 0u; i2 < ray_count; i2++) {
+                            if (i2 == i) {
+                                continue;
+                            }
+                            let dt = dot(ao_dirs[i], ao_dirs[i2]);
+                            if (dt > d_min_a_dif) {
+                                let overlap = ao_min[i2] - acos(clamp(dt, -1.0, 1.0)) * abr_c + 1.0;
+                                if (overlap > 0.0) {
+                                    s_add += min(max_add, overlap) * corr_w;
+                                }
+                            }
+                        }
+                    }
+                    amount += min(s_add + ao_min[i], 1.0);
+                }
+                si_amb = u32(max(round(16383.0 * (1.0 - amount / f32(ray_count))), 0.0));
+                done = true;
+            }
             default: {
                 done = true;
             }
@@ -996,7 +1395,9 @@ fn march_pixel(x: i32, y: i32) {
             break;
         }
     }
-    si_shadow = u32(round(clamp(step_count, 0.0, 1023.0)));
+    if (mode == M_MARCH) {
+        si_shadow = u32(round(clamp(step_count, 0.0, 1023.0)));
+    }
 }
 
 
@@ -1024,10 +1425,39 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
     vary_scale = 1.0;
     deriv = vec3<f32>(1.0, 0.0, 0.0);
     dfree = vec2<f32>(0.0, 0.0);
-    march_pixel(x, y);
-    let o = u32(ly * w + lx) * 4u;
-    OUT[o] = (u32(si_normal.x) & 0xFFFFu) | (u32(si_normal.y) << 16u);
+    let o = u32(ly * w + lx) * 5u;
+    let mode = P[MODE];
+    if (mode == M_MARCH) {
+        march_pixel(x, y);
+        OUT[o] = (u32(si_normal.x) & 0xFFFFu) | (u32(si_normal.y) << 16u);
+        OUT[o + 1u] = (u32(si_normal.z) & 0xFFFFu) | (si_shadow << 16u);
+        OUT[o + 2u] = si_zpos;
+        OUT[o + 3u] = si_grad | (si_otrap << 16u);
+        OUT[o + 4u] = si_amb;
+        return;
+    }
+    // a post calculation on the pixel of the G-buffer
+    let a = OUT[o];
+    let b = OUT[o + 1u];
+    si_normal = vec3<i32>(i32(a << 16u) >> 16u, i32(a) >> 16u, i32(b << 16u) >> 16u);
+    si_shadow = b >> 16u;
+    si_zpos = OUT[o + 2u];
+    si_grad = OUT[o + 3u] & 0xFFFFu;
+    si_amb = OUT[o + 4u];
+    if (mode == M_SHADOW) {
+        if (pf(HS_SOFT_RADIUS) > 0.0) {
+            si_shadow |= 0xFC00u;
+        } else {
+            for (var i = 0u; i < P[HS_N]; i++) {
+                si_shadow &= ~(0x400u << P[HS_LIGHTS + i * 4u]);
+            }
+        }
+    } else {
+        si_amb = 0u;
+    }
+    if ((si_zpos >> 16u) < 32768u && si_grad < 32768u) {
+        pixel(x, y, mode);
+    }
     OUT[o + 1u] = (u32(si_normal.z) & 0xFFFFu) | (si_shadow << 16u);
-    OUT[o + 2u] = si_zpos;
-    OUT[o + 3u] = si_grad | (si_otrap << 16u);
+    OUT[o + 4u] = si_amb;
 }

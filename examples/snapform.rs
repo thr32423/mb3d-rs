@@ -2,8 +2,11 @@
 //! layouts without clicking through the windows).
 //! `cargo run --release --example snapform -- [APP ARGS] -- STEPS...` with
 //! the steps `show:FORM`, `page:FORM:PAGECONTROL:SHEET`, `click:FORM:CONTROL`,
-//! `snap:FORM:FILE.png[:SCALE]`.
+//! `snap:FORM:FILE.png[:SCALE]`, `wait:SECONDS` (the program's idle work, e.g.
+//! a running calculation), `print:FORM:CONTROL` (its caption) and `led`
+//! (the title bar LED of the main window).
 use mb3d::vcl::canvas::Canvas;
+use mb3d::vcl::App;
 
 fn main() {
     let all: Vec<String> = std::env::args().skip(1).collect();
@@ -16,6 +19,19 @@ fn main() {
             "show" => ui.show(p[1]),
             "page" => ui.set_active_page(p[1], p[2], p[3]),
             "click" => ui.click(p[1], p[2]),
+            "wait" => {
+                let t = std::time::Instant::now();
+                while t.elapsed().as_secs_f64() < p[1].parse().unwrap() {
+                    app.idle(&mut ui);
+                    app.process(&mut ui);
+                    std::thread::sleep(std::time::Duration::from_millis(50));
+                }
+            }
+            "print" => println!("{}.{} = {:?}", p[1], p[2], ui.caption(p[1], p[2])),
+            "led" => {
+                let f = ui.fm(mb3d::app::MAIN);
+                println!("led {:?} blinking {}", f.caption_led.map(|c| format!("{c:06x}")), f.led_blink);
+            }
             "snap" => {
                 let scale: f32 = p.get(3).and_then(|v| v.parse().ok()).unwrap_or(2.0);
                 let theme = ui.theme;

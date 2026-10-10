@@ -1,6 +1,6 @@
 [package]
 name = "mb3d"
-version = "0.2.10"
+version = "0.2.11"
 edition = "2021"
 description = "Rust port of Mandelbulb3D (MB3D) - renderer and desktop application"
 license = "LGPL-2.1-or-later"
@@ -54,4 +54,8 @@ name = "pcsample"
 
 [[example]]
 name = "gpuformulas"
+required-features = ["gpu"]
+
+[[example]]
+name = "postcheck"
 required-features = ["gpu"]

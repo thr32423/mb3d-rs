@@ -120,7 +120,7 @@ pub fn calc_sig(sc: &Scene) -> String {
 }
 
 fn needs_post(sc: &Scene, p: &CalcParams) -> bool {
-    p.slice_2d == 0 && (sc.normals_on_zbuf || sc.shadows.is_some() || sc.ao.is_some())
+    crate::render::post_pending(sc, p)
 }
 
 pub fn stats_of(g: &[SiLight], calc_s: f64, post_s: f64) -> Stats {
@@ -346,7 +346,8 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, cancel: &(dyn Fn() -> bool + Sync)) ->
     }
     let t2 = Instant::now();
     let rgb = crate::render::paint(&sc, &p, &post);
-    let stats = stats_of(&post, (t1 - t0).as_secs_f64(), (t2 - t1).as_secs_f64());
+    let post_s = if needs_post(&sc, &p) { (t2 - t1).as_secs_f64() } else { 0.0 };
+    let stats = stats_of(&post, (t1 - t0).as_secs_f64(), post_s);
     e.publish(rgb, w, h, "", Some(stats));
     *e.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw, post, post_sig: post_sig(&sc), w, h }));
     Ok(())

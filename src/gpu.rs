@@ -2,14 +2,14 @@
 //!
 //! The main calculation (`Marcher::march_pixel` for every pixel) runs as a
 //! wgpu compute shader (`gpu_march.wgsl`: Vulkan, Metal or DirectX 12) and
-//! fills the same G-buffer as the CPU; the post calculations (shadows,
-//! ambient occlusion) and the painting stay on the CPU.  The shader
+//! fills the same G-buffer as the CPU, then runs the hard shadows and the
+//! DE ambient occlusion on it (the painting stays on the CPU).  The shader
 //! calculates in single precision: the alternating 3D hybrid of 'Integer
 //! Power' and the .m3f formulas the lifter translates to WGSL
 //! (`x86::lift_wgsl`), with the numerical or the analytic DE (options 0,
 //! 2, 11); [`unsupported`] says why a scene is calculated on the CPU.
 
-use crate::calc::CalcParams;
+use crate::calc::{CalcParams, PostJob};
 use crate::formulas::Formula;
 use crate::gbuffer::SiLight;
 use crate::iteration::HybridMode;
@@ -414,7 +414,10 @@ async fn init() -> Result<Gpu, String> {
 }
 
 /// The parameters in the order of the indices in `gpu_march.wgsl`.
-fn params(p: &CalcParams, row0: usize, rows: usize, slots: &[[u32; 8]; 6]) -> Vec<u32> {
+/// The words of the parameter buffer (`P` in the shader) for a band of
+/// rows; `mode` 0 is the march, 1 the shadow pass and 2 the ambient
+/// occlusion of `post`.
+fn params(p: &CalcParams, row0: usize, rows: usize, slots: &[[u32; 8]; 6], mode: u32, post: &PostJob) -> Vec<u32> {
     let (power, z_mul) = match p.slots[0].formula {
         Formula::IntPow { power, z_mul } => (power, z_mul),
         _ => (8, -1.0),
@@ -463,7 +466,8 @@ fn params(p: &CalcParams, row0: usize, rows: usize, slots: &[[u32; 8]; 6]) -> Ve
     f(&mut v, p.mh04zsd as f64);
     i(&mut v, p.dfog_on_it as i32);
     i(&mut v, p.first_step_random as i32);
-    i(&mut v, p.de_add_steps);
+    // the post passes use their own binary search depth
+    i(&mut v, [p.de_add_steps, 8, 5][mode as usize]);
     i(&mut v, p.normals_on_de as i32);
     i(&mut v, p.sm_normals);
     f(&mut v, p.de_offset as f64);
@@ -491,19 +495,50 @@ fn params(p: &CalcParams, row0: usize, rows: usize, slots: &[[u32; 8]; 6]) -> Ve
     for row in slots {
         v.extend_from_slice(row);
     }
-    debug_assert_eq!(v.len(), 64 + 48);
+    debug_assert_eq!(v.len(), 112);
+    i(&mut v, mode as i32);
+    let sh = post.shadows.as_ref();
+    i(&mut v, sh.map(|s| s.lights.len()).unwrap_or(0) as i32);
+    f(&mut v, sh.map(|s| s.max_len_mul).unwrap_or(1.0) as f64);
+    f(&mut v, sh.map(|s| s.soft_radius).unwrap_or(0.0) as f64);
+    let ao = post.deao.as_ref();
+    i(&mut v, ao.map(|d| d.quality).unwrap_or(0) as i32);
+    i(&mut v, ao.map(|d| d.dither).unwrap_or(0) as i32);
+    f(&mut v, ao.map(|d| d.max_len).unwrap_or(1.0) as f64);
+    i(&mut v, ao.map(|d| d.first_step_random).unwrap_or(false) as i32);
+    i(&mut v, p.width);
+    while v.len() < 124 {
+        v.push(0);
+    }
+    for k in 0..6 {
+        match sh.and_then(|s| s.lights.get(k)) {
+            Some(l) => {
+                i(&mut v, l.idx as i32);
+                for &x in &l.vec {
+                    f(&mut v, x);
+                }
+            }
+            None => v.extend_from_slice(&[0; 4]),
+        }
+    }
+    debug_assert_eq!(v.len(), PARAM_WORDS);
     v
 }
+
+/// The size of the parameter buffer.
+const PARAM_WORDS: usize = 148;
 
 fn bytes(v: &[u32]) -> Vec<u8> {
     v.iter().flat_map(|x| x.to_le_bytes()).collect()
 }
 
-/// Calculates the G-buffer of `p.rect` on the graphics card.  Returns
+/// Calculates the G-buffer of `p.rect` on the graphics card, with the
+/// post calculations of `post` (shadows, ambient occlusion).  Returns
 /// `None` when the scene or the computer cannot use it (the reason is in
 /// [`last_status`]); the caller then calculates on the CPU.
 pub fn march(
     p: &CalcParams,
+    post: &PostJob,
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
     mut sink: impl FnMut(usize, &[SiLight]),
@@ -526,9 +561,16 @@ pub fn march(
             return None;
         }
     };
-    match run(g, p, &sh, progress, cancel, &mut sink) {
+    match run(g, p, &sh, post, progress, cancel, &mut sink) {
         Ok(v) => {
-            set_status(format!("GPU {}", g.name));
+            let mut s = format!("GPU {}", g.name);
+            if post.shadows.is_some() {
+                s.push_str(" +shadows");
+            }
+            if post.deao.is_some() {
+                s.push_str(" +AO");
+            }
+            set_status(s);
             Some(v)
         }
         Err(e) => {
@@ -538,17 +580,35 @@ pub fn march(
     }
 }
 
+/// The passes of a band: the march and the post passes of `post`.
+fn modes(post: &PostJob) -> Vec<u32> {
+    let mut m = vec![0];
+    if post.shadows.is_some() {
+        m.push(1);
+    }
+    if post.deao.is_some() {
+        m.push(2);
+    }
+    m
+}
+
+#[allow(clippy::too_many_arguments)]
 fn run(
     g: &Gpu,
     p: &CalcParams,
     sh: &SceneShader,
+    post: &PostJob,
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
     sink: &mut dyn FnMut(usize, &[SiLight]),
 ) -> Result<Vec<SiLight>, String> {
     let (w, h) = (p.rect[2].max(0) as usize, p.rect[3].max(0) as usize);
-    let band = (BAND_PIXELS / w.max(1)).clamp(8, h.max(8));
-    let out_size = (w * band * 16) as u64;
+    // the post passes march several rays per pixel: smaller bands
+    let cost = 1
+        + post.shadows.as_ref().map(|s| s.lights.len()).unwrap_or(0)
+        + post.deao.map(|d| [3, 7, 17, 33][d.quality.min(3) as usize] / 2).unwrap_or(0);
+    let band = (BAND_PIXELS / cost / w.max(1)).clamp(8, h.max(8));
+    let out_size = (w * band * 20) as u64;
     let usage = wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC;
     let out = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some("gbuffer"), size: out_size.max(16), usage, mapped_at_creation: false });
     let read = g.device.create_buffer(&wgpu::BufferDescriptor {
@@ -558,12 +618,20 @@ fn run(
         mapped_at_creation: false,
     });
     let pipeline = pipeline(g, &sh.code)?;
-    let par = g.device.create_buffer(&wgpu::BufferDescriptor {
-        label: Some("params"),
-        size: 128 * 4,
-        usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
-        mapped_at_creation: false,
-    });
+    // one parameter buffer per pass (a buffer write before a submission
+    // takes effect before all of its passes)
+    let modes = modes(post);
+    let pars: Vec<wgpu::Buffer> = modes
+        .iter()
+        .map(|_| {
+            g.device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some("params"),
+                size: (PARAM_WORDS * 4) as u64,
+                usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            })
+        })
+        .collect();
     let words = |label: &'static str, d: &[u32]| {
         let d = if d.is_empty() { vec![0u32] } else { d.to_vec() };
         let b = g.device.create_buffer(&wgpu::BufferDescriptor {
@@ -577,16 +645,21 @@ fn run(
     };
     let cst = words("constants", &sh.cst);
     let rtpl = words("record", &sh.rtpl);
-    let bind = g.device.create_bind_group(&wgpu::BindGroupDescriptor {
-        label: None,
-        layout: &pipeline.get_bind_group_layout(0),
-        entries: &[
-            wgpu::BindGroupEntry { binding: 0, resource: par.as_entire_binding() },
-            wgpu::BindGroupEntry { binding: 1, resource: out.as_entire_binding() },
-            wgpu::BindGroupEntry { binding: 2, resource: cst.as_entire_binding() },
-            wgpu::BindGroupEntry { binding: 3, resource: rtpl.as_entire_binding() },
-        ],
-    });
+    let binds: Vec<wgpu::BindGroup> = pars
+        .iter()
+        .map(|par| {
+            g.device.create_bind_group(&wgpu::BindGroupDescriptor {
+                label: None,
+                layout: &pipeline.get_bind_group_layout(0),
+                entries: &[
+                    wgpu::BindGroupEntry { binding: 0, resource: par.as_entire_binding() },
+                    wgpu::BindGroupEntry { binding: 1, resource: out.as_entire_binding() },
+                    wgpu::BindGroupEntry { binding: 2, resource: cst.as_entire_binding() },
+                    wgpu::BindGroupEntry { binding: 3, resource: rtpl.as_entire_binding() },
+                ],
+            })
+        })
+        .collect();
     let mut gbuf = Vec::with_capacity(w * h);
     let mut row0 = 0;
     while row0 < h {
@@ -594,15 +667,17 @@ fn run(
             return Err("cancelled".into());
         }
         let rows = band.min(h - row0);
-        g.queue.write_buffer(&par, 0, &bytes(&params(p, row0, rows, &sh.slots)));
+        for (k, &mode) in modes.iter().enumerate() {
+            g.queue.write_buffer(&pars[k], 0, &bytes(&params(p, row0, rows, &sh.slots, mode, post)));
+        }
         let mut enc = g.device.create_command_encoder(&Default::default());
-        {
+        for bind in &binds {
             let mut pass = enc.begin_compute_pass(&Default::default());
             pass.set_pipeline(&pipeline);
-            pass.set_bind_group(0, &bind, &[]);
+            pass.set_bind_group(0, bind, &[]);
             pass.dispatch_workgroups(w.div_ceil(8) as u32, rows.div_ceil(8) as u32, 1);
         }
-        let n = (w * rows * 16) as u64;
+        let n = (w * rows * 20) as u64;
         enc.copy_buffer_to_buffer(&out, 0, &read, 0, n);
         g.queue.submit([enc.finish()]);
         let slice = read.slice(..n);
@@ -617,16 +692,16 @@ fn run(
         rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
         {
             let data = slice.get_mapped_range().map_err(|e| e.to_string())?;
-            for (r, row) in data.chunks_exact(w * 16).enumerate() {
+            for (r, row) in data.chunks_exact(w * 20).enumerate() {
                 let start = gbuf.len();
-                for px in row.chunks_exact(16) {
+                for px in row.chunks_exact(20) {
                     let u = |k: usize| u32::from_le_bytes(px[k * 4..k * 4 + 4].try_into().unwrap());
-                    let (a, b, z, s) = (u(0), u(1), u(2), u(3));
+                    let (a, b, z, s, amb) = (u(0), u(1), u(2), u(3), u(4));
                     gbuf.push(SiLight {
                         normal: [a as u16 as i16, (a >> 16) as u16 as i16, b as u16 as i16],
                         zpos_fine: z,
                         shadow: (b >> 16) as u16,
-                        amb_shadow: 5000,
+                        amb_shadow: amb as u16,
                         si_gradient: s as u16,
                         otrap: (s >> 16) as u16,
                     });
@@ -722,7 +797,7 @@ mod tests {
             return;
         }
         let t = std::time::Instant::now();
-        let g = march(&p, &|_, _| {}, &|| false, |_, _| {}).expect(&last_status());
+        let g = march(&p, &PostJob::default(), &|_, _| {}, &|| false, |_, _| {}).expect(&last_status());
         let gpu_s = t.elapsed().as_secs_f64();
         let [x0, y0, w, h] = p.rect;
         let t = std::time::Instant::now();

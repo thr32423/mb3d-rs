@@ -91,6 +91,34 @@ pub struct CalcParams {
     pub decomb: Option<DeComb>,
     /// Volumetric light map (`DFogOnIt = 65535`), built before the main pass.
     pub vol: Option<std::sync::Arc<crate::vollight::VolLightMap>>,
+    /// The post calculations the graphics card ran with the main
+    /// calculation (`render::post_process` skips them).
+    pub gpu_post: Option<PostJob>,
+}
+
+/// The post calculations on the G-buffer that follow the main calculation:
+/// hard (or one soft) shadow and DE ambient occlusion
+/// (`render::post_job`).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct PostJob {
+    pub shadows: Option<ShadowJob>,
+    pub deao: Option<crate::deao::DeaoParams>,
+}
+
+impl PostJob {
+    pub fn is_empty(&self) -> bool {
+        self.shadows.is_none() && self.deao.is_none()
+    }
+}
+
+/// The hard shadow pass: the selected lights, soft (one light) with its
+/// radius, and the ray length multiplier.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ShadowJob {
+    pub lights: Vec<HsLight>,
+    /// > 0: one soft shadow of this radius (`lights` has one entry)
+    pub soft_radius: f32,
+    pub max_len_mul: f32,
 }
 
 /// One part of a hybrid (the whole hybrid, or one of the two parts of a DE
@@ -714,6 +742,7 @@ impl CalcParams {
             inside_rendering: sc.inside != InsideMode::Outside,
             in_and_outside: sc.inside == InsideMode::Both,
             vol: None,
+            gpu_post: None,
             machine,
         })
     }
@@ -1787,7 +1816,7 @@ pub fn de_at(p: &CalcParams, pos: Vec3) -> (f64, i32) {
 
 /// One light for the hard shadow pass: header light index and `HSvecs[i]`
 /// (world space direction towards the light, scaled to -StepWidth).
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct HsLight {
     pub idx: usize,
     pub vec: Vec3,

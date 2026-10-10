@@ -4,7 +4,7 @@
 //! Like MB3D, rows are distributed interleaved over the threads
 //! (thread t calculates rows t, t + n, t + 2n, ...).
 
-use crate::calc::{CalcParams, HsLight, Marcher};
+use crate::calc::{CalcParams, HsLight, Marcher, PostJob, ShadowJob};
 use crate::gbuffer::SiLight;
 use crate::lighting::{LightVals, PaintCamera};
 use crate::math::normalise_matrix_to;
@@ -104,7 +104,8 @@ fn calculate_inner(
             p.vol = Some(std::sync::Arc::new(map));
         }
     }
-    let p = p;
+    #[allow(unused_mut)] // changed by the GPU path only
+    let mut p = p;
     let [x0, y0, w, h] = p.rect;
     let (x0, y0, w, h) = (x0 as usize, y0 as usize, w as usize, h as usize);
     #[cfg(feature = "gpu")]
@@ -113,15 +114,23 @@ fn calculate_inner(
     } else if !crate::gpu::enabled() {
         crate::gpu::set_status("CPU: the GPU is switched off".into());
     } else {
-        let gpu = crate::gpu::march(&p, progress, cancel, |y, row| {
+        // the shadows and the DE ambient occlusion run on the card with
+        // the main calculation (also for a raw calculation: post_process
+        // skips what is done)
+        let job = post_job(sc, &p);
+        let gpu = crate::gpu::march(&p, &job, progress, cancel, |y, row| {
             if let Some(f) = sink {
                 f(y, row);
             }
         });
         if let Some(gbuf) = gpu {
+            if !job.is_empty() {
+                p.gpu_post = Some(job);
+            }
             return finish_calculation(sc, p, gbuf, post, threads, cancel);
         }
     }
+    let p = p;
     let done = AtomicUsize::new(0);
     let mut rows: Vec<Vec<SiLight>> = vec![Vec::new(); h];
     std::thread::scope(|s| {
@@ -196,18 +205,58 @@ fn finish_calculation(
     Ok((p, gbuf))
 }
 
+/// The post calculations the scene asks for that the graphics card can
+/// run with the main calculation.
+pub fn post_job(sc: &Scene, p: &CalcParams) -> PostJob {
+    PostJob { shadows: shadow_job(sc, p), deao: sc.ao.and(sc.deao) }
+}
+
+/// Whether [`post_process`] has anything left to do for the scene (the
+/// graphics card may have run the shadows and the ambient occlusion).
+pub fn post_pending(sc: &Scene, p: &CalcParams) -> bool {
+    if p.slice_2d != 0 {
+        return false;
+    }
+    let job = post_job(sc, p);
+    let done = p.gpu_post.as_ref();
+    let skip = |want: bool, same: bool| want && done.is_some() && same;
+    let shadows = sc.shadows.is_some() && !skip(job.shadows.is_some(), done.is_some_and(|d| d.shadows == job.shadows));
+    let ao = sc.ao.is_some() && !skip(job.deao.is_some(), done.is_some_and(|d| d.deao == job.deao));
+    sc.normals_on_zbuf || shadows || ao
+}
+
 /// The automatic post calculations on the G-buffer (hard shadows, ambient
-/// occlusion), as MB3D runs them after the main calculation.
+/// occlusion), as MB3D runs them after the main calculation.  What the
+/// graphics card already ran with the same settings (`p.gpu_post`) is kept;
+/// what it ran with other settings is undone first.
 pub fn post_process(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: usize) {
     if sc.normals_on_zbuf {
         crate::reflect::normals_on_zbuf(sc, p, gbuf);
     }
-    if sc.shadows.is_some() {
+    let job = post_job(sc, p);
+    let (mut shadows_done, mut deao_done) = (false, false);
+    if let Some(d) = &p.gpu_post {
+        shadows_done = job.shadows.is_some() && d.shadows == job.shadows;
+        deao_done = job.deao.is_some() && d.deao == job.deao;
+        if d.shadows.is_some() && !shadows_done {
+            for s in gbuf.iter_mut() {
+                s.shadow &= 0x3FF;
+            }
+        }
+        if d.deao.is_some() && !deao_done {
+            for s in gbuf.iter_mut() {
+                s.amb_shadow = 5000;
+            }
+        }
+    }
+    if sc.shadows.is_some() && !shadows_done {
         hard_shadows(sc, p, gbuf, threads);
     }
     if let Some(ao) = &sc.ao {
         if let Some(d) = &sc.deao {
-            crate::deao::deao(p, gbuf, p.rect[2] as usize, p.rect[3] as usize, d, threads);
+            if !deao_done {
+                crate::deao::deao(p, gbuf, p.rect[2] as usize, p.rect[3] as usize, d, threads);
+            }
         } else {
             ssao(gbuf, p.rect[2] as usize, p.rect[3] as usize, p, ao, threads);
         }
@@ -327,10 +376,10 @@ pub fn paint_camera(sc: &Scene, p: &CalcParams) -> PaintCamera {
     }
 }
 
-/// `CalcHardShadowT`: hard (or one soft) shadow for the selected global
-/// lights, stored in the shadow bits of the G-buffer.
-pub fn hard_shadows(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: usize) {
-    let Some(hs) = &sc.shadows else { return };
+/// The shadow pass of the scene: the selected lights as `HSvecs`, soft or
+/// hard; `None` when the scene has no shadows (or no selected light).
+pub fn shadow_job(sc: &Scene, p: &CalcParams) -> Option<ShadowJob> {
+    let hs = sc.shadows.as_ref()?;
     let l = effective_lighting(sc);
     let lv = light_vals(sc, &l, &paint_camera(sc, p));
     // CalcHSVecsFromLights: HSvecs = RotateVectorReverse(-StepWidth * LN, M)
@@ -346,12 +395,20 @@ pub fn hard_shadows(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: u
         })
         .collect();
     if lights.is_empty() {
-        return;
+        return None;
     }
     if hs.soft {
         // calcHSsoft uses the last selected light
         lights = vec![*lights.last().unwrap()];
     }
+    Some(ShadowJob { lights, soft_radius: if hs.soft { hs.soft_radius.max(0.001) } else { 0.0 }, max_len_mul: hs.max_len_mul })
+}
+
+/// `CalcHardShadowT`: hard (or one soft) shadow for the selected global
+/// lights, stored in the shadow bits of the G-buffer.
+pub fn hard_shadows(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: usize) {
+    let Some(hs) = &sc.shadows else { return };
+    let Some(job) = shadow_job(sc, p) else { return };
     // the HS calculation always uses 8 binary search steps
     let mut p = p.clone();
     p.de_add_steps = 8;
@@ -360,7 +417,7 @@ pub fn hard_shadows(sc: &Scene, p: &CalcParams, gbuf: &mut [SiLight], threads: u
     let h = p.rect[3] as usize;
     let (x0, y0) = (p.rect[0], p.rect[1] as usize);
     let threads = threads.min(h).max(1);
-    let lights = &lights;
+    let lights = &job.lights;
     std::thread::scope(|s| {
         let mut rows: Vec<(usize, &mut [SiLight])> = gbuf.chunks_mut(w).enumerate().collect();
         let mut per: Vec<Vec<(usize, &mut [SiLight])>> = (0..threads).map(|_| Vec::new()).collect();

@@ -310,8 +310,11 @@ fn running_led(app: &Mb3d) -> Option<Led> {
         if s.is_empty() {
             return None;
         }
+        // the status says which post calculations the card ran
         let sc = &app.scene;
-        Some(calc_led(sc.normals_on_zbuf || sc.shadows.is_some() || sc.ao.is_some()))
+        let shadows = sc.shadows.is_some() && !s.contains("+shadows");
+        let ao = sc.ao.is_some() && !s.contains("+AO");
+        Some(calc_led(sc.normals_on_zbuf || shadows || ao))
     }
     #[cfg(not(feature = "gpu"))]
     {

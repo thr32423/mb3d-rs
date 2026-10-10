@@ -406,16 +406,19 @@ impl CalcParams {
                 (n, x1, y1, i) = (0.0, 0.0, 0.0, 0.0);
             }
             let is_custom_de = if second { is_custom_de2 } else { is_custom_de };
-            let sip = s.formula.si_pow();
-            let z1 = if sip > 1.0 { sip } else { s.formula.first_option() };
-            fhln[x] = (1.0 / f64::max(2.0, z1.abs()).ln()) as f32;
+            // fHln: only for the counted formulas (nHybrid > 0), 1/ln(2) else
+            if ipol.is_some() || !s.uncounted {
+                let sip = s.formula.si_pow();
+                let z1 = if sip > 1.0 { sip } else { s.formula.first_option() };
+                fhln[x] = (1.0 / f64::max(2.0, z1.abs()).ln()) as f32;
+            }
             // interpolation hybrid: weighted by the weights, counted once
             let (z1, cnt) = match ipol {
                 Some(w) => (w[x] as f64, 1.0),
                 None => (s.iterations as f64, s.iterations as f64),
             };
             let j = s.formula.de_option();
-            if is_custom_de && (j == 5 || j == 11) {
+            if is_custom_de && (ipol.is_some() || !s.uncounted) && (j == 5 || j == 11) {
                 n += cnt;
                 i += cnt;
                 let mut x2 = s.formula.first_option();
@@ -447,15 +450,38 @@ impl CalcParams {
         if n > 0.0 && i > 0.0 {
             d_col_plus = ((y1 / i).abs().powf(0.25) * 40.0 - 49.0) as f32;
         }
-        // mctColVarDEstopMul
+        // mctColVarDEstopMul: from the counted formulas of the first part
+        // (of a DE combination: of the part with more iterations)
         let mut col_var = 0.6f32;
         {
-            let (mut y1, mut z1) = (0f64, 0f64);
+            let (mut y1, mut z1, mut z2) = (0f64, 0f64, 0f64);
+            let (mut ia, mut itmp) = (0, 0);
+            let mut second = false;
             for (x, s) in slots.iter().enumerate() {
+                let counted = ipol.is_some() || (s.iterations > 0 && !s.uncounted);
+                if !counted {
+                    if ipol.is_none() && s.iterations > 0 {
+                        if x > end_to {
+                            ia += 1;
+                        } else {
+                            itmp += 1;
+                        }
+                    }
+                    continue;
+                }
+                if x > end_to && !second {
+                    second = true;
+                    col_var = if z1 > 0.0 { (y1 / z1) as f32 } else { 0.6 };
+                    z2 = z1;
+                    z1 = 0.0;
+                    y1 = 0.0;
+                    if dc.is_none() || part2_cfg.is_some_and(|c| c.3 == 20) {
+                        break;
+                    }
+                }
                 let x2 = match ipol {
                     Some(w) => w[x] as f64,
-                    None if s.iterations > 0 => s.iterations as f64,
-                    None => continue,
+                    None => s.iterations as f64,
                 };
                 let de = s.formula.de_option();
                 if de == 0 || de == 4 {
@@ -480,8 +506,10 @@ impl CalcParams {
                     }
                 }
             }
-            if z1 > 1e-3 {
+            if (z1 >= z2 && z1 > 1e-3) || (ia > itmp && (z1 - z2).abs() < 1e-3 && z1 > 1e-3) {
                 col_var = (y1 / z1) as f32;
+            } else if z2 < 1e-3 {
+                col_var = 0.6;
             }
         }
 
@@ -591,11 +619,34 @@ impl CalcParams {
         } else {
             (z_step_div0, 0.0)
         };
+        // dIFS (HeaderTrafos.pas, after the DE offset): more binary search
+        // steps, any iteration count is valid, and with only dIFS formulas
+        // the step limit is the image size (the raystep limiter does not
+        // apply) and the colour does not vary with the DE stop
+        let de2 = part2_cfg.map(|c| c.3);
+        let (mut de_add_steps, mut min_it) = (sc.bin_search_steps, sc.min_iterations.min(max_it));
+        let mut mh04zsd = mh04zsd;
+        if de_option == 20 || de2 == Some(20) {
+            de_add_steps = de_add_steps.max((z_step_div0.min(1.0) * 2.0).round() as i32 + 2);
+            if dc.as_ref().is_none_or(|d| d.kind < 5) {
+                min_it = 1;
+            }
+        }
+        if de_option == 20 && (dc.is_none() || de2 == Some(20)) {
+            mh04zsd = width.max(height) as f32;
+            col_var = 0.0;
+        }
         let ln_rstop = rstop.ln().ln() as f32;
         let d_rstop = (rstop * rstop) as f32 as f64;
         let rstop3d = ((d_rstop * d_rstop) * 64.0) as f32 as f64;
-        let mcts_m = 32767.0 / ((max_it + 1).max(1) as f32);
-        let d_col_plus = d_col_plus + max_it as f32 * 0.1;
+        // the iterations of both parts of a DE combination (iMaxitF2)
+        let its = match &dc {
+            Some(d) if d.kind > 5 => max_it + d.iterations2,
+            Some(d) => max_it.max(d.iterations2),
+            None => max_it,
+        };
+        let mcts_m = 32767.0 / ((its + 1).max(1) as f32);
+        let d_col_plus = d_col_plus + its as f32 * 0.1;
 
         Ok(CalcParams {
             slots,
@@ -610,12 +661,12 @@ impl CalcParams {
             sm_normals: sc.smooth_normals.clamp(0, 8),
             de_stop,
             z_step_div,
-            de_add_steps: sc.bin_search_steps,
+            de_add_steps,
             width,
             height,
             fov_y,
             max_it,
-            min_it: sc.min_iterations.min(max_it),
+            min_it,
             color_option: sc.color_option.min(5),
             mct_color_mul: (sc.color_mul * 512.0) as f32,
             rect: sc.calc_rect.unwrap_or([0, 0, width, height]),
@@ -639,7 +690,7 @@ impl CalcParams {
             mh04zsd,
             de_stop_factor,
             ln_rstop,
-            normals_on_de: sc.normals_on_de || is_custom_de,
+            normals_on_de: sc.normals_on_de || is_custom_de || dc.is_some(),
             ystart,
             de_offset,
             de_offset006,

@@ -1,7 +1,10 @@
 //! Developer tool: differential test of the x86 interpreter against native
 //! execution of the formula machine code.
 //!
-//! usage: m3fcheck <formula dir or .m3f files...> [--oracle PATH] [--trials N] [-v]
+//! usage: m3fcheck <formula dir or .m3f files...> [--oracle PATH] [--trials N] [--translated] [-v]
+//!
+//! `--translated` compares the translated native code (`native.rs`) with
+//! the interpreter: memory and registers must be identical bit for bit.
 //!
 //! The oracle is the 32-bit static program built from tools/oracle/oracle.asm
 //! (Linux x86/x86-64 with 32-bit support only).  Without an oracle the tool
@@ -98,12 +101,14 @@ fn main() {
     let mut oracle: Option<String> = None;
     let mut trials = 4;
     let mut verbose = false;
+    let mut translated = false;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
         match a.as_str() {
             "--oracle" => oracle = args.next(),
             "--trials" => trials = args.next().and_then(|s| s.parse().ok()).unwrap_or(4),
             "-v" => verbose = true,
+            "--translated" => translated = true,
             p => {
                 let pb = PathBuf::from(p);
                 if pb.is_dir() {
@@ -178,8 +183,30 @@ fn main() {
                 break;
             }
             let _ = RETURN_SENTINEL;
+            if translated && base.prog(code_addr(0)).is_some_and(|p| p.is_native()) {
+                // the same start once more in the interpreter
+                let mut ei = m.clone();
+                mb3d::x86::NATIVE_ENABLED.store(false, std::sync::atomic::Ordering::Relaxed);
+                let r2 = if difs {
+                    ei.call_difs(code_addr(0), IT_BASE + 144, pconst_addr(0), 0, 1, STACK_TOP, MAX_STEPS)
+                } else {
+                    ei.call_formula(code_addr(0), IT_C1, STACK_TOP, MAX_STEPS)
+                };
+                mb3d::x86::NATIVE_ENABLED.store(true, std::sync::atomic::Ordering::Relaxed);
+                let regs_differ = (0..8).any(|r| em.reg(r) != ei.reg(r));
+                let first_mem = (0..MEM_SIZE).find(|&i| em.mem[i] != ei.mem[i]);
+                if r2.is_err() || regs_differ || first_mem.is_some() {
+                    status = format!(
+                        "TRANSLATED DIFFERS trial {t}: interpreter {:?}, registers differ {regs_differ}, first memory difference {:?}",
+                        r2.err().map(|e| e.to_string()),
+                        first_mem.map(|i| format!("{:#x}", i as u32 + BASE))
+                    );
+                    fail_kind = 2;
+                    break;
+                }
+            }
             if let Some(o) = &oracle {
-                let native = match run_native(o, &start) {
+                let native = match run_native(o, &start[..]) {
                     Some(n) => n,
                     None => {
                         status = "native run failed".into();

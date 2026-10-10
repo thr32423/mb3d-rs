@@ -665,7 +665,7 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[175] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 13; continue; }
                 b = 12;
             }
@@ -732,7 +732,7 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[226] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 19; continue; }
                 b = 18;
             }
@@ -884,7 +884,7 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[352] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 29; continue; }
                 b = 28;
             }
@@ -900,7 +900,7 @@ pub(super) fn f_0146296d943bc3f7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[360] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 32; continue; }
                 b = 31;
             }
@@ -975,7 +975,7 @@ pub(super) fn f_0202689ab0f2cd69(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.rdf64(m.regs[7].wrapping_add(0x8u32))?;
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -1544,7 +1544,7 @@ pub(super) fn f_03738db42599e61c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[5] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 m.fcompare(f[5], f[4]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[132] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -2337,7 +2337,7 @@ pub(super) fn f_071393cecb2a880a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             1 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xfffffff8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -2978,10 +2978,10 @@ pub(super) fn f_09c020b05d5686d9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.regs[0];
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                m.regs[0] = 0x7fffffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0x7fffffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -3095,7 +3095,7 @@ pub(super) fn f_09c020b05d5686d9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff8u32))?; f[4] = f[4] * v; }
                 m.fcompare(f[4], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[106] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -3684,7 +3684,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[139] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 33; continue; }
                 b = 32;
             }
@@ -3712,7 +3712,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[154] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 38; continue; }
                 b = 37;
             }
@@ -3740,7 +3740,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[169] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 43; continue; }
                 b = 42;
             }
@@ -3768,7 +3768,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[184] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 48; continue; }
                 b = 47;
             }
@@ -3797,7 +3797,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[200] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 53; continue; }
                 b = 52;
             }
@@ -3826,7 +3826,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[216] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 58; continue; }
                 b = 57;
             }
@@ -3855,7 +3855,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[232] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 63; continue; }
                 b = 62;
             }
@@ -3883,7 +3883,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[247] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 68; continue; }
                 b = 67;
             }
@@ -3911,7 +3911,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[262] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 73; continue; }
                 b = 72;
             }
@@ -3939,7 +3939,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[277] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 78; continue; }
                 b = 77;
             }
@@ -3968,7 +3968,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[293] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 83; continue; }
                 b = 82;
             }
@@ -3997,7 +3997,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[309] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 88; continue; }
                 b = 87;
             }
@@ -4038,7 +4038,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[331] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 95; continue; }
                 b = 94;
             }
@@ -4254,7 +4254,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[464] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 127; continue; }
                 b = 126;
             }
@@ -4282,7 +4282,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[479] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 132; continue; }
                 b = 131;
             }
@@ -4310,7 +4310,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[494] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 137; continue; }
                 b = 136;
             }
@@ -4338,7 +4338,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[509] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 142; continue; }
                 b = 141;
             }
@@ -4367,7 +4367,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[525] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 147; continue; }
                 b = 146;
             }
@@ -4396,7 +4396,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[541] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 152; continue; }
                 b = 151;
             }
@@ -4425,7 +4425,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[557] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 157; continue; }
                 b = 156;
             }
@@ -4453,7 +4453,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[572] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 162; continue; }
                 b = 161;
             }
@@ -4481,7 +4481,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[587] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 167; continue; }
                 b = 166;
             }
@@ -4509,7 +4509,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[602] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 172; continue; }
                 b = 171;
             }
@@ -4538,7 +4538,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[618] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 177; continue; }
                 b = 176;
             }
@@ -4567,7 +4567,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[634] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 182; continue; }
                 b = 181;
             }
@@ -4608,7 +4608,7 @@ pub(super) fn f_0b2fd99bb080d92d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[656] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 189; continue; }
                 b = 188;
             }
@@ -4875,7 +4875,7 @@ pub(super) fn f_0b85098a5709425c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[3].abs();
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -4892,7 +4892,7 @@ pub(super) fn f_0b85098a5709425c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[4].abs();
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -4908,7 +4908,7 @@ pub(super) fn f_0b85098a5709425c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[4].abs();
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -5873,7 +5873,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[120] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 1;
             }
@@ -5883,7 +5883,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[127] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -5899,7 +5899,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[137] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 4;
             }
@@ -5909,7 +5909,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[144] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -5925,7 +5925,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[154] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 7;
             }
@@ -5935,7 +5935,7 @@ pub(super) fn f_0f34b1ecddc21cb4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[161] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 8;
             }
@@ -6644,7 +6644,7 @@ pub(super) fn f_1303ccb7dbfec158(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[5] = m.rdf64(m.regs[6].wrapping_add(0x0u32))?;
                 m.fcompare(f[5], f[4]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -6832,7 +6832,7 @@ pub(super) fn f_13798995920dbc66(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -7202,7 +7202,7 @@ pub(super) fn f_170526ee426bbc9d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             7 => {
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[51] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 8;
             }
@@ -7219,7 +7219,7 @@ pub(super) fn f_170526ee426bbc9d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             10 => {
                 m.fcompare(f[2], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[59] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -7237,7 +7237,7 @@ pub(super) fn f_170526ee426bbc9d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             13 => {
                 m.fcompare(f[2], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[68] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 15; continue; }
                 b = 14;
             }
@@ -7621,7 +7621,7 @@ pub(super) fn f_19167e07a00f877b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -8430,8 +8430,8 @@ pub(super) fn f_1b4a584dbcc33356(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[0] = f[0] + f[1];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(4), src: Rm(Mem(Mem { base: Some(2), index: None, disp: 7 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(128), size: 1 }
+                { let v = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); m.set_reg(4, 1, v); }
+                { let bv = 0x80u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 f[1] = f[1].abs();
@@ -8440,7 +8440,7 @@ pub(super) fn f_1b4a584dbcc33356(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(1, 0);
                 f[0] *= f[1].log2();
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(2), index: None, disp: 7 }), src: Rm(Reg(4)), size: 1 }
+                { let bv = m.get_reg(4, 1); let av = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[2].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 m.regs[0] = m.regs[3];
                 { let v = m.pop()?; m.regs[7] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
@@ -9132,7 +9132,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[2] = 0x1u32;
+                { let v = 0x1u32; m.regs[2] = v; }
                 b = 4;
             }
             4 => {
@@ -9177,7 +9177,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[3], f[2]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[66] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -9201,7 +9201,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[82] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 8;
             }
@@ -9223,7 +9223,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[96] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -9235,7 +9235,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[102] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 14; continue; }
                 b = 13;
             }
@@ -9248,7 +9248,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[109] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue; }
                 b = 15;
             }
@@ -9269,7 +9269,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[124] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 18; continue; }
                 b = 17;
             }
@@ -9281,7 +9281,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[130] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 20; continue; }
                 b = 19;
             }
@@ -9294,7 +9294,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[137] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 22; continue; }
                 b = 21;
             }
@@ -9323,7 +9323,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[4], f[3]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[160] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 24; continue; }
                 b = 23;
             }
@@ -9335,7 +9335,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[166] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 26; continue; }
                 b = 25;
             }
@@ -9353,7 +9353,7 @@ pub(super) fn f_1fc56909b67e214a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[176] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 29; continue; }
                 b = 28;
             }
@@ -9423,7 +9423,7 @@ pub(super) fn f_2029faef222702b4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[6].wrapping_add(0x38u32))?;
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xfffffff0u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -9434,7 +9434,7 @@ pub(super) fn f_2029faef222702b4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffe8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -9448,7 +9448,7 @@ pub(super) fn f_2029faef222702b4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             5 => {
                 f[0] = f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[22] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(0), b: Rm(Reg(0)), size: 4 }
+                { let bv = m.regs[0]; let av = m.regs[0]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(13) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
@@ -9462,7 +9462,7 @@ pub(super) fn f_2029faef222702b4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 8;
             }
             8 => {
-                m.regs[0] = 0x1869fu32;
+                { let v = 0x1869fu32; m.regs[0] = v; }
                 b = 9;
             }
             9 => {
@@ -9472,7 +9472,7 @@ pub(super) fn f_2029faef222702b4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 10;
             }
             10 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 13; continue;
             }
             11 => {
@@ -9481,7 +9481,7 @@ pub(super) fn f_2029faef222702b4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 12;
             }
             12 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 13;
             }
             13 => {
@@ -9573,8 +9573,8 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Reg(4), src: Imm(64), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
+                { let bv = 0x40u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Xor, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 3;
             }
@@ -9583,8 +9583,8 @@ pub(super) fn f_20f481396f51978b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x0);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[30] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Reg(4), src: Imm(64), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
+                { let bv = 0x40u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Xor, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
@@ -10170,7 +10170,7 @@ pub(super) fn f_217635cca6da9dd8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             1 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xfffffff8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -10199,7 +10199,7 @@ pub(super) fn f_217635cca6da9dd8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             4 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xffffffe8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[47] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -10266,7 +10266,7 @@ pub(super) fn f_221797652ab837b5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[6] = f[2];
                 f[6] = f[6] * f[3];
                 f[5] = f[5] + f[6];
-                { let bv = 0x1u32; let av = m.rd32(m.regs[4].wrapping_add(0x0u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[4].wrapping_add(0x0u32); m.wr32(a, r)?; }
+                { let bv = 0x1u32; let av = m.rd32(m.regs[4].wrapping_add(0x0u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[4].wrapping_add(0x0u32); m.wr32(a, r)?; } }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -10525,7 +10525,7 @@ pub(super) fn f_22e2557ab471f64e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[2] = 0x1u32;
+                { let v = 0x1u32; m.regs[2] = v; }
                 b = 4;
             }
             4 => {
@@ -10561,7 +10561,7 @@ pub(super) fn f_22e2557ab471f64e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[53] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -10577,7 +10577,7 @@ pub(super) fn f_22e2557ab471f64e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[61] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 8;
             }
@@ -10724,7 +10724,7 @@ pub(super) fn f_22e2557ab471f64e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[179] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 19; continue; }
                 b = 18;
             }
@@ -10740,7 +10740,7 @@ pub(super) fn f_22e2557ab471f64e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[187] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 22; continue; }
                 b = 21;
             }
@@ -10768,7 +10768,7 @@ pub(super) fn f_22e2557ab471f64e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[207] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 25; continue; }
                 b = 24;
             }
@@ -10986,8 +10986,8 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2] + f[3];
                 f[1] = f[1] * f[2];
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffccu32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[42] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(3), size: 2 }
-                if let Op::Gen(ins, nx, at) = &p.ops[43] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(0), size: 2 }
+                { let bv = 0x3u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::And, av, bv, 2); m.set_reg(0, 2, r); }
+                { let bv = 0x0u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -10997,7 +10997,7 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue;
             }
             4 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[48] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(1), size: 2 }
+                { let bv = 0x1u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -11007,7 +11007,7 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue;
             }
             6 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[53] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(2), size: 2 }
+                { let bv = 0x2u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -11043,8 +11043,8 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2] * f[3];
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffccu32))?;
                 m.shift_reg_const(Shift::Shr, 0, 2, 2);
-                if let Op::Gen(ins, nx, at) = &p.ops[81] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(3), size: 2 }
-                if let Op::Gen(ins, nx, at) = &p.ops[82] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(0), size: 2 }
+                { let bv = 0x3u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::And, av, bv, 2); m.set_reg(0, 2, r); }
+                { let bv = 0x0u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 11; continue; }
                 b = 10;
             }
@@ -11054,7 +11054,7 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue;
             }
             11 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[87] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(1), size: 2 }
+                { let bv = 0x1u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 13; continue; }
                 b = 12;
             }
@@ -11064,7 +11064,7 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue;
             }
             13 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[92] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(2), size: 2 }
+                { let bv = 0x2u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 15; continue; }
                 b = 14;
             }
@@ -11095,8 +11095,8 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xffffffe0u32))?; f[3] = f[3] * v; }
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffccu32))?;
                 m.shift_reg_const(Shift::Shr, 0, 4, 2);
-                if let Op::Gen(ins, nx, at) = &p.ops[115] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(3), size: 2 }
-                if let Op::Gen(ins, nx, at) = &p.ops[116] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(0), size: 2 }
+                { let bv = 0x3u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::And, av, bv, 2); m.set_reg(0, 2, r); }
+                { let bv = 0x0u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 18; continue; }
                 b = 17;
             }
@@ -11106,7 +11106,7 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 24; continue;
             }
             18 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[121] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(1), size: 2 }
+                { let bv = 0x1u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 20; continue; }
                 b = 19;
             }
@@ -11116,7 +11116,7 @@ pub(super) fn f_25017cb141564ccb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 24; continue;
             }
             20 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[126] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Imm(2), size: 2 }
+                { let bv = 0x2u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 22; continue; }
                 b = 21;
             }
@@ -11438,7 +11438,7 @@ pub(super) fn f_268ab00071700e27(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
-                m.regs[2] = 0x2u32;
+                { let v = 0x2u32; m.regs[2] = v; }
                 b = 3;
             }
             3 => {
@@ -11544,7 +11544,7 @@ pub(super) fn f_268ab00071700e27(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[113] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
@@ -11560,7 +11560,7 @@ pub(super) fn f_268ab00071700e27(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[122] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -11641,7 +11641,7 @@ pub(super) fn f_2a196bafa4357ec1(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[0] - f[3];
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -11656,7 +11656,7 @@ pub(super) fn f_2a196bafa4357ec1(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             3 => {
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
@@ -11880,7 +11880,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 1;
             }
             1 => {
-                m.regs[0] = 0x1u32;
+                { let v = 0x1u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
             2 => {
@@ -11889,7 +11889,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 4;
             }
             4 => {
@@ -11914,7 +11914,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 9;
             }
             9 => {
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue;
             }
             10 => {
@@ -11923,7 +11923,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 11;
             }
             11 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 12;
             }
             12 => {
@@ -11933,7 +11933,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 13;
             }
             13 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue;
             }
             14 => {
@@ -11942,7 +11942,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 15;
             }
             15 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 16;
             }
             16 => {
@@ -11978,7 +11978,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 22;
             }
             22 => {
-                m.regs[0] = 0x1u32;
+                { let v = 0x1u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 25; continue;
             }
             23 => {
@@ -11987,7 +11987,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 24;
             }
             24 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 25;
             }
             25 => {
@@ -12012,7 +12012,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 30;
             }
             30 => {
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 33; continue;
             }
             31 => {
@@ -12021,7 +12021,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 32;
             }
             32 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 33;
             }
             33 => {
@@ -12031,7 +12031,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 34;
             }
             34 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 37; continue;
             }
             35 => {
@@ -12040,7 +12040,7 @@ pub(super) fn f_2ae643c3730b173d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 36;
             }
             36 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 37;
             }
             37 => {
@@ -13544,7 +13544,7 @@ pub(super) fn f_319b6afb1ce0cefe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[2];
                 f[0] = f[1] / f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[41] { m.exec(ins, *nx, *at)?; } // Test { a: Mem(Mem { base: Some(0), index: None, disp: 7 }), b: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); m.alu(Alu::And, av, bv, 1); }
                 if m.cond(9) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -13760,7 +13760,7 @@ pub(super) fn f_31d3d4fa897a6b4a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 8;
             }
             8 => {
-                m.regs[2] = 0x3u32;
+                { let v = 0x3u32; m.regs[2] = v; }
                 b = 9;
             }
             9 => {
@@ -13938,8 +13938,8 @@ pub(super) fn f_31f1cc5bee2024dc(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[0] = f[0] + f[1];
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(3), index: None, disp: 7 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(128), size: 1 }
+                { let v = (m.rd8(m.regs[3].wrapping_add(0x7u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = 0x80u32; let av = m.get_reg(0, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(0, 1, r); }
                 
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
@@ -13949,7 +13949,7 @@ pub(super) fn f_31f1cc5bee2024dc(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(1, 0);
                 f[0] *= f[1].log2();
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(3), index: None, disp: 7 }), src: Rm(Reg(0)), size: 1 }
+                { let bv = m.get_reg(0, 1); let av = (m.rd8(m.regs[3].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[3].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 m.regs[0] = m.regs[3];
                 { let v = m.pop()?; m.regs[7] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
@@ -13994,7 +13994,7 @@ pub(super) fn f_324ecf945352b2bd(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 
                 
                 
@@ -14386,7 +14386,7 @@ pub(super) fn f_333566b600828b95(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -14701,7 +14701,7 @@ pub(super) fn f_359551ba93faa981(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Rm(Mem(Mem { base: Some(0), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); m.set_reg(2, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -14715,14 +14715,14 @@ pub(super) fn f_359551ba93faa981(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[1] = f[1].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(2, 1, r); }
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[1] = f[2] / f[1];
                 f[1] = -f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
                 f[0] = f[0] + f[1];
                 { let a = m.regs[0].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(0), index: None, disp: 7 }), src: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[0].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -16353,7 +16353,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             8 => {
                 
-                { let bv = 0x1u32; let av = m.rd32(m.regs[5].wrapping_add(0xffffffd4u32))?; let r = m.alu(Alu::Add, av, bv, 4); let a = m.regs[5].wrapping_add(0xffffffd4u32); m.wr32(a, r)?; }
+                { let bv = 0x1u32; let av = m.rd32(m.regs[5].wrapping_add(0xffffffd4u32))?; let r = m.alu(Alu::Add, av, bv, 4); { let a = m.regs[5].wrapping_add(0xffffffd4u32); m.wr32(a, r)?; } }
                 f[0] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[0] = f[0].abs();
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wrf64(a, f[0])?; }
@@ -16365,7 +16365,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xfffffff8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[64] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -16384,7 +16384,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xfffffff8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[77] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -16402,7 +16402,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[89] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 19; continue; }
                 b = 13;
             }
@@ -16411,7 +16411,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffd8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[95] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 19; continue; }
                 b = 14;
             }
@@ -16634,7 +16634,7 @@ pub(super) fn f_3ba307e95caa64f9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             22 => {
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[294] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 23;
             }
@@ -16833,7 +16833,7 @@ pub(super) fn f_3dd3d14c111a4f2c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -16879,7 +16879,7 @@ pub(super) fn f_3dd3d14c111a4f2c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[66] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -17159,8 +17159,8 @@ pub(super) fn f_3dde1df1a9f1ef97(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] * f[2];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] + v; }
                 f[0] = f[0] * f[1];
-                if let Op::Gen(ins, nx, at) = &p.ops[73] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(4), index: None, disp: 24 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[74] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(1), size: 1 }
+                { let v = (m.rd8(m.regs[4].wrapping_add(0x18u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = 0x1u32; let av = m.get_reg(0, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(0, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -17187,7 +17187,7 @@ pub(super) fn f_3e3f70ef8a7a49e9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffbcu32))?;
                 { let bv = 0x1u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 m.shift_reg_const(Shift::Shl, 0, 3, 4);
-                m.regs[2] = 0x8u32;
+                { let v = 0x8u32; m.regs[2] = v; }
                 { let bv = m.regs[0]; let av = m.regs[2]; let r = m.alu(Alu::Sub, av, bv, 4); m.regs[2] = r; }
                 m.shift_reg_const(Shift::Shl, 2, 1, 4);
                 m.xmm[0] = { let a = (m.regs[0].wrapping_add(0xffffff88u32)).wrapping_add(m.regs[6].wrapping_mul(1)); [m.rd64(a)?, m.rd64(a.wrapping_add(8))?] };
@@ -17223,15 +17223,15 @@ pub(super) fn f_3f765c463884471f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Rm(Mem(Mem { base: Some(0), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); m.set_reg(2, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(2, 1, r); }
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 { let a = m.regs[0].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(0), index: None, disp: 7 }), src: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[0].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -17483,15 +17483,15 @@ pub(super) fn f_416ffd7ed9f878b8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[1]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(1), src: Rm(Mem(Mem { base: Some(2), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); m.set_reg(1, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(1), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(1, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(1, 1, r); }
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(2), index: None, disp: 7 }), src: Rm(Reg(1)), size: 1 }
+                { let bv = m.get_reg(1, 1); let av = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[2].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[1] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -17823,7 +17823,7 @@ pub(super) fn f_43a8a7c55cb24ee2(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -18571,7 +18571,7 @@ pub(super) fn f_4a43a2f50978fa91(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -18638,7 +18638,7 @@ pub(super) fn f_4b22b09601619caa(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[0] = 0x2u32;
+                { let v = 0x2u32; m.regs[0] = v; }
                 b = 4;
             }
             4 => {
@@ -18839,7 +18839,7 @@ pub(super) fn f_4c9b645e9971eba8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -18918,7 +18918,7 @@ pub(super) fn f_4d17ae1bc641b68b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(7, 5);
                 f[6] = f[6] * f[7];
                 f[7] = f[6];
-                m.regs[1] = 0x7u32;
+                { let v = 0x7u32; m.regs[1] = v; }
                 b = 1;
             }
             1 => {
@@ -20290,13 +20290,13 @@ pub(super) fn f_5146a19bd6cd198b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             6 => {
                 f[3] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
-                m.regs[2] = 0x1u32;
+                { let v = 0x1u32; m.regs[2] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue;
             }
             7 => {
                 f[3] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[3] = -f[3];
-                m.regs[2] = 0xffffffffu32;
+                { let v = 0xffffffffu32; m.regs[2] = v; }
                 b = 8;
             }
             8 => {
@@ -20397,7 +20397,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 5;
             }
             5 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue;
             }
             6 => {
@@ -20406,7 +20406,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 7;
             }
             7 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 8;
             }
             8 => {
@@ -20430,7 +20430,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 11;
             }
             11 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 14; continue;
             }
             12 => {
@@ -20439,7 +20439,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 13;
             }
             13 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 14;
             }
             14 => {
@@ -20463,7 +20463,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 18;
             }
             18 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 21; continue;
             }
             19 => {
@@ -20472,7 +20472,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 20;
             }
             20 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 21;
             }
             21 => {
@@ -20496,7 +20496,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 24;
             }
             24 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 27; continue;
             }
             25 => {
@@ -20505,7 +20505,7 @@ pub(super) fn f_51c21cc6af31bb68(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 26;
             }
             26 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 27;
             }
             27 => {
@@ -21134,7 +21134,7 @@ pub(super) fn f_55905c9bc6aae0dd(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 26; continue;
             }
             25 => {
-                m.regs[1] = 0x1u32;
+                { let v = 0x1u32; m.regs[1] = v; }
                 { let a = m.regs[6].wrapping_add(0x80u32); m.wrf64(a, f[2])?; }
                 b = 26;
             }
@@ -22209,13 +22209,13 @@ pub(super) fn f_5ddbed1ac19ab491(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             3 => {
                 f[2] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
-                m.regs[2] = 0x1u32;
+                { let v = 0x1u32; m.regs[2] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue;
             }
             4 => {
                 f[2] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[2] = -f[2];
-                m.regs[2] = 0xffffffffu32;
+                { let v = 0xffffffffu32; m.regs[2] = v; }
                 b = 5;
             }
             5 => {
@@ -22519,7 +22519,7 @@ pub(super) fn f_5e75ec9f6e3108ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             1 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xfffffff8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[44] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -22551,7 +22551,7 @@ pub(super) fn f_5e75ec9f6e3108ac(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             4 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xffffffe8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[68] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -23531,14 +23531,14 @@ pub(super) fn f_5ed55c7747d8abf4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[6].wrapping_add(0x0u32))?;
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xfffffff0u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
             1 => {
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffe8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -23551,14 +23551,14 @@ pub(super) fn f_5ed55c7747d8abf4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0x8u32))?;
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffd8u32))?; m.fcompare(f[1], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
             4 => {
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffd0u32))?; m.fcompare(f[1], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -23571,14 +23571,14 @@ pub(super) fn f_5ed55c7747d8abf4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = m.rdf64(m.regs[6].wrapping_add(0x10u32))?;
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffc0u32))?; m.fcompare(f[2], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
             7 => {
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffb8u32))?; m.fcompare(f[2], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 8;
             }
@@ -23735,7 +23735,7 @@ pub(super) fn f_60c71cf10d673174(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -23747,7 +23747,7 @@ pub(super) fn f_60c71cf10d673174(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -23760,7 +23760,7 @@ pub(super) fn f_60c71cf10d673174(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -23802,7 +23802,7 @@ pub(super) fn f_60c71cf10d673174(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[71] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 11; continue; }
                 b = 10;
             }
@@ -23818,7 +23818,7 @@ pub(super) fn f_60c71cf10d673174(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[80] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 14; continue; }
                 b = 13;
             }
@@ -23920,7 +23920,7 @@ pub(super) fn f_63dbe858f3b68b24(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffb8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 
                 
                 
@@ -24305,7 +24305,7 @@ pub(super) fn f_6603c3111300ca65(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wr32(a, m.regs[2])?; }
                 
                 m.regs[0] = m.rd32(m.regs[6].wrapping_add(0xd0u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Alu { op: Sub, dst: Reg(0), src: Imm(15623), size: 2 }
+                { let bv = 0x3d07u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Sub, av, bv, 2); m.set_reg(0, 2, r); }
                 if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Mul(Reg(0), 4)
                 { let a = m.regs[4].wrapping_add(0xcu32); m.wr32(a, m.regs[0])?; }
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffdcu32))?;
@@ -24321,7 +24321,7 @@ pub(super) fn f_6603c3111300ca65(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let bv = 0x3fffu32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wr32(a, m.regs[0])?; }
                 
-                m.regs[0] = 0x3fffu32;
+                { let v = 0x3fffu32; m.regs[0] = v; }
                 { let a = m.regs[4].wrapping_add(0xcu32); m.wr32(a, m.regs[0])?; }
                 m.regs[2] = m.rd32(m.regs[4].wrapping_add(0x10u32))?;
                 
@@ -24731,7 +24731,7 @@ pub(super) fn f_67c5196c872080e3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[2] = 0x2u32;
+                { let v = 0x2u32; m.regs[2] = v; }
                 b = 4;
             }
             4 => {
@@ -24740,7 +24740,7 @@ pub(super) fn f_67c5196c872080e3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 5;
             }
             5 => {
-                m.regs[2] = 0x3e8u32;
+                { let v = 0x3e8u32; m.regs[2] = v; }
                 b = 6;
             }
             6 => {
@@ -24930,8 +24930,8 @@ pub(super) fn f_6837b44b110d69e5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 m.regs[3] = m.regs[0];
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(4), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -12 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff4u32))? as u32); m.set_reg(4, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 b = 1;
             }
             1 => {
@@ -24988,8 +24988,8 @@ pub(super) fn f_6837b44b110d69e5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] * f[1];
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[62] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -16 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff0u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(0, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(0, 1, r); }
                 
                 b = 3;
             }
@@ -25142,7 +25142,7 @@ pub(super) fn f_6837b44b110d69e5(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
                 if let Op::Gen(ins, nx, at) = &p.ops[206] { m.exec(ins, *nx, *at)?; } // Dec(Reg(4), 1)
-                if let Op::Gen(ins, nx, at) = &p.ops[207] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(4), src: Imm(0), size: 1 }
+                { let bv = 0x0u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue; }
                 b = 6;
             }
@@ -25426,10 +25426,10 @@ pub(super) fn f_6ad79cbb14959655(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.regs[0];
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                m.regs[0] = 0x7fffffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0x7fffffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -25459,7 +25459,7 @@ pub(super) fn f_6ad79cbb14959655(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] + f[3];
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[40] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -25470,7 +25470,7 @@ pub(super) fn f_6ad79cbb14959655(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 m.fcompare(f[2], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[45] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -25482,7 +25482,7 @@ pub(super) fn f_6ad79cbb14959655(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(2, 1);
                 m.fcompare(f[2], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[51] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -25666,7 +25666,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[40] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 32; continue; }
                 b = 1;
             }
@@ -25677,7 +25677,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[48] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -25688,7 +25688,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[56] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 32; continue; }
                 b = 3;
             }
@@ -25703,7 +25703,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[65] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -25714,7 +25714,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[73] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { f.rotate_right(1); m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 18; continue; }
                 b = 6;
             }
@@ -25726,8 +25726,8 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x0);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[82] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[83] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Reg(4), src: Imm(64), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
+                { let bv = 0x40u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Xor, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -25754,7 +25754,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x0);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[104] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -25815,7 +25815,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[5].wrapping_add(0xffffffe8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[155] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 14; continue; }
                 b = 13;
             }
@@ -25863,7 +25863,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x0);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[195] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 23; continue; }
                 b = 16;
             }
@@ -25927,7 +25927,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[234] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 27; continue; }
                 b = 25;
             }
@@ -25937,7 +25937,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[241] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 27; continue; }
                 b = 26;
             }
@@ -25970,7 +25970,7 @@ pub(super) fn f_6b4ba1e5a122ca5a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 29;
             }
             29 => {
-                { let bv = 0x1u32; let av = m.rd32(m.regs[5].wrapping_add(0xffffffc4u32))?; let r = m.alu(Alu::Add, av, bv, 4); let a = m.regs[5].wrapping_add(0xffffffc4u32); m.wr32(a, r)?; }
+                { let bv = 0x1u32; let av = m.rd32(m.regs[5].wrapping_add(0xffffffc4u32))?; let r = m.alu(Alu::Add, av, bv, 4); { let a = m.regs[5].wrapping_add(0xffffffc4u32); m.wr32(a, r)?; } }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0xffffffbcu32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] / v; }
                 { let a = m.regs[5].wrapping_add(0xffffffbcu32); m.wrf64(a, f[0])?; }
@@ -26987,7 +26987,7 @@ pub(super) fn f_709fa2c048d4bdda(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 m.regs[3] = m.regs[0];
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -68 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffbcu32))? as u32); m.set_reg(0, 1, v); }
                 b = 1;
             }
             1 => {
@@ -27067,14 +27067,14 @@ pub(super) fn f_709fa2c048d4bdda(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             2 => {
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[84] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -60 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[85] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 64 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffc4u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = (m.rd8(m.regs[6].wrapping_add(0x40u32))? as u32); let av = m.get_reg(0, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[87] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -64 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[88] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 64 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffc0u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = (m.rd8(m.regs[6].wrapping_add(0x40u32))? as u32); let av = m.get_reg(0, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
@@ -27102,8 +27102,8 @@ pub(super) fn f_709fa2c048d4bdda(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             5 => {
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[110] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -72 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[111] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 64 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffb8u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = (m.rd8(m.regs[6].wrapping_add(0x40u32))? as u32); let av = m.get_reg(0, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 11; continue; }
                 b = 6;
             }
@@ -27118,7 +27118,7 @@ pub(super) fn f_709fa2c048d4bdda(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[123] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -27149,7 +27149,7 @@ pub(super) fn f_709fa2c048d4bdda(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[148] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -27624,10 +27624,10 @@ pub(super) fn f_7179dcb1d7591178(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.regs[0];
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                m.regs[0] = 0x7fffffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0x7fffffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -28378,7 +28378,7 @@ pub(super) fn f_744b631186296222(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[91] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -28516,7 +28516,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[2] = 0x1u32;
+                { let v = 0x1u32; m.regs[2] = v; }
                 b = 4;
             }
             4 => {
@@ -28552,7 +28552,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[53] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -28568,7 +28568,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[61] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 8;
             }
@@ -28684,7 +28684,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[148] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 19; continue; }
                 b = 18;
             }
@@ -28702,7 +28702,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[158] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 22; continue; }
                 b = 21;
             }
@@ -28720,7 +28720,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[3], f[2]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[168] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 25; continue; }
                 b = 24;
             }
@@ -28736,7 +28736,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[176] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 28; continue; }
                 b = 27;
             }
@@ -28752,7 +28752,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[184] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 31; continue; }
                 b = 30;
             }
@@ -28771,7 +28771,7 @@ pub(super) fn f_761edaf86f8ce0b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[195] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 34; continue; }
                 b = 33;
             }
@@ -29107,7 +29107,7 @@ pub(super) fn f_76a1e74342587564(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[112] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue; }
                 b = 15;
             }
@@ -29220,7 +29220,7 @@ pub(super) fn f_7724433f6933be63(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -29232,7 +29232,7 @@ pub(super) fn f_7724433f6933be63(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -29245,7 +29245,7 @@ pub(super) fn f_7724433f6933be63(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -29309,7 +29309,7 @@ pub(super) fn f_7724433f6933be63(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[96] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -29432,10 +29432,10 @@ pub(super) fn f_778f7dea5adf2d48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 8;
             }
             8 => {
-                m.regs[0] = 0xfffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                m.regs[0] = 0x3ff00000u32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0xfffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let v = 0x3ff00000u32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue;
             }
             9 => {
@@ -29453,7 +29453,7 @@ pub(super) fn f_778f7dea5adf2d48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0x8u32))?; f[0] = f[0] + v; }
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 { let a = m.regs[5].wrapping_add(0x8u32); m.wr32(a, m.regs[0])?; }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[3].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
@@ -29461,7 +29461,7 @@ pub(super) fn f_778f7dea5adf2d48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[0] = m.rd32(m.regs[5].wrapping_add(0xcu32))?;
                 { let bv = 0x100000u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 m.shift_reg_const(Shift::Shl, 0, 11, 4);
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 
                 m.regs[0] = m.rd32(m.regs[2].wrapping_add(0x4u32))?;
                 { let bv = 0xfff00000u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
@@ -29506,10 +29506,10 @@ pub(super) fn f_778f7dea5adf2d48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 14;
             }
             14 => {
-                m.regs[0] = 0xfffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                m.regs[0] = 0x3ff00000u32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0xfffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let v = 0x3ff00000u32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue;
             }
             15 => {
@@ -29527,7 +29527,7 @@ pub(super) fn f_778f7dea5adf2d48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0x8u32))?; f[0] = f[0] + v; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 { let a = m.regs[5].wrapping_add(0x8u32); m.wr32(a, m.regs[0])?; }
                 f[0] = m.rdf64(m.regs[5].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[2].wrapping_add(0x0u32))?; f[0] = f[0] * v; }
@@ -29535,7 +29535,7 @@ pub(super) fn f_778f7dea5adf2d48(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[0] = m.rd32(m.regs[5].wrapping_add(0xcu32))?;
                 { let bv = 0x100000u32; let av = m.regs[0]; let r = m.alu(Alu::And, av, bv, 4); m.regs[0] = r; }
                 m.shift_reg_const(Shift::Shl, 0, 11, 4);
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::Xor, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 
                 { let bv = 0xffffffe0u32; let av = m.regs[4]; let r = m.alu(Alu::Sub, av, bv, 4); m.regs[4] = r; }
                 
@@ -29825,7 +29825,7 @@ pub(super) fn f_789b0e6fa175e144(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(1), src: Rm(Mem(Mem { base: Some(2), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); m.set_reg(1, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -29839,14 +29839,14 @@ pub(super) fn f_789b0e6fa175e144(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[1] = f[1].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(1), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(1, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(1, 1, r); }
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[1] = f[2] / f[1];
                 f[1] = -f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
                 f[0] = f[0] + f[1];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(2), index: None, disp: 7 }), src: Rm(Reg(1)), size: 1 }
+                { let bv = m.get_reg(1, 1); let av = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[2].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -30207,8 +30207,8 @@ pub(super) fn f_7a6c90aeb7f60905(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[0] = f[0] + f[1];
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(4), src: Rm(Mem(Mem { base: Some(1), index: None, disp: 7 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(128), size: 1 }
+                { let v = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); m.set_reg(4, 1, v); }
+                { let bv = 0x80u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 f[1] = f[1].abs();
@@ -30217,7 +30217,7 @@ pub(super) fn f_7a6c90aeb7f60905(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(1, 0);
                 f[0] *= f[1].log2();
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(1), index: None, disp: 7 }), src: Rm(Reg(4)), size: 1 }
+                { let bv = m.get_reg(4, 1); let av = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[1].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 m.regs[0] = m.regs[3];
                 { let v = m.pop()?; m.regs[7] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
@@ -30423,7 +30423,7 @@ pub(super) fn f_7dd7527284569513(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 1;
             }
             1 => {
-                m.regs[0] = 0x1u32;
+                { let v = 0x1u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue;
             }
             2 => {
@@ -30432,7 +30432,7 @@ pub(super) fn f_7dd7527284569513(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 4;
             }
             4 => {
@@ -30457,7 +30457,7 @@ pub(super) fn f_7dd7527284569513(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 9;
             }
             9 => {
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue;
             }
             10 => {
@@ -30466,7 +30466,7 @@ pub(super) fn f_7dd7527284569513(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 11;
             }
             11 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 12;
             }
             12 => {
@@ -30476,7 +30476,7 @@ pub(super) fn f_7dd7527284569513(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 13;
             }
             13 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue;
             }
             14 => {
@@ -30485,7 +30485,7 @@ pub(super) fn f_7dd7527284569513(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 15;
             }
             15 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 16;
             }
             16 => {
@@ -32389,7 +32389,7 @@ pub(super) fn f_85cf25270cf6b0b0(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 20; continue;
             }
             2 => {
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 { let a = m.regs[5].wrapping_add(0xfffffff8u32); m.wr32(a, m.regs[0])?; }
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 f[1] = f[1].abs();
@@ -33200,7 +33200,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -33215,7 +33215,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             4 => {
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -33280,7 +33280,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x0);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[70] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 15; continue; }
                 b = 14;
             }
@@ -33317,7 +33317,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1].abs();
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[97] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 19; continue; }
                 b = 18;
             }
@@ -33348,7 +33348,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x0);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[115] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 27; continue; }
                 b = 23;
             }
@@ -33361,7 +33361,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1].abs();
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[125] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 25; continue; }
                 b = 24;
             }
@@ -33416,7 +33416,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[157] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 37; continue; }
                 b = 33;
             }
@@ -33426,7 +33426,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[164] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 38; continue; }
                 b = 34;
             }
@@ -33509,7 +33509,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[228] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 42; continue; }
                 b = 41;
             }
@@ -33528,7 +33528,7 @@ pub(super) fn f_862fd5f9a2ee5d0e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[242] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 44; continue; }
                 b = 43;
             }
@@ -33952,15 +33952,15 @@ pub(super) fn f_889ae4f4102ead81(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Rm(Mem(Mem { base: Some(1), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); m.set_reg(2, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(2, 1, r); }
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(1), index: None, disp: 7 }), src: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[1].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -34104,7 +34104,7 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[125] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -34130,7 +34130,7 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[145] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -34156,7 +34156,7 @@ pub(super) fn f_8a76a45777ac6fb6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[165] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -34363,7 +34363,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wr32(a, m.regs[2])?; }
                 
                 m.regs[0] = m.rd32(m.regs[6].wrapping_add(0xd0u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[13] { m.exec(ins, *nx, *at)?; } // Alu { op: Sub, dst: Reg(0), src: Imm(15623), size: 2 }
+                { let bv = 0x3d07u32; let av = m.get_reg(0, 2); let r = m.alu(Alu::Sub, av, bv, 2); m.set_reg(0, 2, r); }
                 if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Mul(Reg(0), 4)
                 { let a = m.regs[4].wrapping_add(0xcu32); m.wr32(a, m.regs[0])?; }
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffdcu32))?;
@@ -34389,7 +34389,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[36] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(0), size: 2 }
+                { let v = 0x0u32; m.set_reg(2, 2, v); }
                 f[0] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x0u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = f[0] - v; }
@@ -34404,7 +34404,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[0] = f[1] - f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[48] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(1), size: 2 }
+                { let v = 0x1u32; m.set_reg(2, 2, v); }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue;
             }
             3 => {
@@ -34420,7 +34420,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[0] = f[0] + f[1];
                 f[0] = -f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[59] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(1), size: 2 }
+                { let v = 0x1u32; m.set_reg(2, 2, v); }
                 b = 5;
             }
             5 => {
@@ -34429,7 +34429,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[1] = f[2] - f[1];
                 f[1] = f[1].sqrt();
-                if let Op::Gen(ins, nx, at) = &p.ops[65] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(2), src: Imm(0), size: 2 }
+                { let bv = 0x0u32; let av = m.get_reg(2, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
@@ -34468,7 +34468,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 9;
             }
             9 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[93] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(0), size: 2 }
+                { let v = 0x0u32; m.set_reg(2, 2, v); }
                 f[0] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x4u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[0] = f[0] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[0] = f[0] - v; }
@@ -34483,7 +34483,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             10 => {
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[0] = f[1] - f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[105] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(1), size: 2 }
+                { let v = 0x1u32; m.set_reg(2, 2, v); }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 13; continue;
             }
             11 => {
@@ -34499,7 +34499,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[0] = f[0] + f[1];
                 f[0] = -f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[116] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(1), size: 2 }
+                { let v = 0x1u32; m.set_reg(2, 2, v); }
                 b = 13;
             }
             13 => {
@@ -34508,7 +34508,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[1] = f[2] - f[1];
                 f[1] = f[1].sqrt();
-                if let Op::Gen(ins, nx, at) = &p.ops[122] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(2), src: Imm(0), size: 2 }
+                { let bv = 0x0u32; let av = m.get_reg(2, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 15; continue; }
                 b = 14;
             }
@@ -34546,7 +34546,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 17;
             }
             17 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[148] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(0), size: 2 }
+                { let v = 0x0u32; m.set_reg(2, 2, v); }
                 f[7] = m.fload(FKind::I32, m.regs[4].wrapping_add(0x8u32))?;
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[7] = f[7] * v; }
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[7] = f[7] - v; }
@@ -34561,7 +34561,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             18 => {
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[7] = f[0] - f[7];
-                if let Op::Gen(ins, nx, at) = &p.ops[160] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(1), size: 2 }
+                { let v = 0x1u32; m.set_reg(2, 2, v); }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 21; continue;
             }
             19 => {
@@ -34577,7 +34577,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 f[7] = f[7] + f[0];
                 f[7] = -f[7];
-                if let Op::Gen(ins, nx, at) = &p.ops[171] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Imm(1), size: 2 }
+                { let v = 0x1u32; m.set_reg(2, 2, v); }
                 b = 21;
             }
             21 => {
@@ -34586,7 +34586,7 @@ pub(super) fn f_8b71fb6924199361(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] - f[0];
                 f[0] = f[0].sqrt();
-                if let Op::Gen(ins, nx, at) = &p.ops[177] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(2), src: Imm(0), size: 2 }
+                { let bv = 0x0u32; let av = m.get_reg(2, 2); let r = m.alu(Alu::Cmp, av, bv, 2); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 23; continue; }
                 b = 22;
             }
@@ -34852,7 +34852,7 @@ pub(super) fn f_8b8b7877060a52b7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -34911,7 +34911,7 @@ pub(super) fn f_8b8b7877060a52b7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[72] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
@@ -35107,7 +35107,7 @@ pub(super) fn f_8b8b7877060a52b7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[6], f[5]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x1800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[260] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -35282,7 +35282,7 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[126] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -35308,7 +35308,7 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[144] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
@@ -35334,7 +35334,7 @@ pub(super) fn f_8bd00246408e9517(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x0);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[162] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -35711,7 +35711,7 @@ pub(super) fn f_8e4e8be2b0066d00(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[4].wrapping_add(0x8u32); m.wrf64(a, f[1])?; }
                 { let a = m.regs[4].wrapping_add(0x10u32); m.wrf64(a, f[0])?; }
                 { let bv = 0x2cu32; let av = m.regs[7]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[7] = r; }
-                if let Op::Gen(ins, nx, at) = &p.ops[48] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Rm(Mem(Mem { base: Some(4), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[4].wrapping_add(0x7u32))? as u32); m.set_reg(2, 1, v); }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x0u32))?;
                 
                 f[0] = f[0].abs();
@@ -35721,11 +35721,11 @@ pub(super) fn f_8e4e8be2b0066d00(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[55] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::Xor, av, bv, 1); m.set_reg(2, 1, r); }
                 b = 4;
             }
             4 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[56] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(2, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -35867,7 +35867,7 @@ pub(super) fn f_8e56fc6ffe930349(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], 0.0);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[43] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(80), size: 1 }
+                { let bv = 0x50u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 { let ah = (m.regs[EAX] >> 8) as u8; m.sf = ah & 0x80 != 0; m.zf = ah & 0x40 != 0; m.af = ah & 0x10 != 0; m.pf = ah & 0x04 != 0; m.cf = ah & 0x01 != 0; }
                 f[1] = f[1];
                 
@@ -36671,7 +36671,7 @@ pub(super) fn f_918ee1cb611eb1eb(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[4].abs();
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -36813,7 +36813,7 @@ pub(super) fn f_939f180fc0184ac7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -36836,7 +36836,7 @@ pub(super) fn f_939f180fc0184ac7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[37] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -38113,7 +38113,7 @@ pub(super) fn f_9caf95e667741341(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[89] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 5;
             }
@@ -38123,7 +38123,7 @@ pub(super) fn f_9caf95e667741341(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[96] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
@@ -38242,7 +38242,7 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[41] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -38281,7 +38281,7 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[70] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
@@ -38441,7 +38441,7 @@ pub(super) fn f_9cd737f7d9103ebe(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[5] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
                 m.fcompare(f[5], f[4]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[222] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -38670,7 +38670,7 @@ pub(super) fn f_9d2a79825b93b352(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[5] = f[5] * f[2];
                 m.fcompare(f[5], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x1000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -38684,7 +38684,7 @@ pub(super) fn f_9d2a79825b93b352(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 m.fcompare(f[5], f[4]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x1000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -38699,7 +38699,7 @@ pub(super) fn f_9d2a79825b93b352(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(5, 4);
                 m.fcompare(f[5], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x1000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[34] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -38949,10 +38949,10 @@ pub(super) fn f_9e2252b50e598467(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.regs[0];
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                m.regs[0] = 0x7fffffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0x7fffffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 
                 { let bv = 0xffffffb0u32; let av = m.regs[4]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[4] = r; }
                 f[0] = m.rdf64(m.regs[6].wrapping_add(0xffffffb0u32))?;
@@ -39269,7 +39269,7 @@ pub(super) fn f_9ed2f86ae3d14801(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 m.regs[3] = m.regs[0];
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -52 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffccu32))? as u32); m.set_reg(0, 1, v); }
                 b = 1;
             }
             1 => {
@@ -39443,7 +39443,7 @@ pub(super) fn f_9ed668c4d828ee88(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 1;
             }
             1 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 31 })), size: 1 }
+                { let v = (m.rd8(m.regs[6].wrapping_add(0x1fu32))? as u32); m.set_reg(0, 1, v); }
                 m.shift_reg_const(Shift::Shl, 0, 1, 1);
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
@@ -40094,7 +40094,7 @@ pub(super) fn f_a11ae827485a8b8b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -40280,7 +40280,7 @@ pub(super) fn f_a17f8ba9b9d3f95f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
-                m.regs[2] = 0x0u32;
+                { let v = 0x0u32; m.regs[2] = v; }
                 { let a = m.regs[4].wrapping_add(0x1cu32); m.wr32(a, m.regs[2])?; }
                 f[0] = m.rdf64(m.regs[4].wrapping_add(0x10u32))?;
                 f[0] = f[0].abs();
@@ -40720,7 +40720,7 @@ pub(super) fn f_a22ef99f3a072d7d(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] * f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
-                if let Op::Gen(ins, nx, at) = &p.ops[43] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(2), b: Imm(2147483648), size: 4 }
+                { let bv = 0x80000000u32; let av = m.regs[2]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(9) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -41088,7 +41088,7 @@ pub(super) fn f_a3b564facf4224ee(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[64] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 5;
             }
@@ -41098,7 +41098,7 @@ pub(super) fn f_a3b564facf4224ee(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[71] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(12) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
@@ -41301,7 +41301,7 @@ pub(super) fn f_a4bf55564b130369(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[33] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -41332,7 +41332,7 @@ pub(super) fn f_a4bf55564b130369(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[56] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
@@ -42155,7 +42155,7 @@ pub(super) fn f_ab34829d48dfe24e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 3;
             }
             3 => {
-                m.regs[0] = 0x2u32;
+                { let v = 0x2u32; m.regs[0] = v; }
                 b = 4;
             }
             4 => {
@@ -42288,7 +42288,7 @@ pub(super) fn f_ab994d5e29131dbf(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x1800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -42672,7 +42672,7 @@ pub(super) fn f_ac3ff5358b339fc8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[14] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -42683,7 +42683,7 @@ pub(super) fn f_ac3ff5358b339fc8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 m.fcompare(f[2], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[19] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -42695,7 +42695,7 @@ pub(super) fn f_ac3ff5358b339fc8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(2, 1);
                 m.fcompare(f[2], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[25] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -42782,7 +42782,7 @@ pub(super) fn f_ad64becab40dc2e6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             1 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xffffffe8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[31] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -42810,7 +42810,7 @@ pub(super) fn f_ad64becab40dc2e6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             4 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xfffffff8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[51] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -42859,8 +42859,8 @@ pub(super) fn f_ae55f8c704ff1068(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 m.regs[3] = m.regs[0];
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(4), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -12 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff4u32))? as u32); m.set_reg(4, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 b = 1;
             }
             1 => {
@@ -42917,8 +42917,8 @@ pub(super) fn f_ae55f8c704ff1068(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] * f[1];
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[62] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -16 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff0u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(0, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(0, 1, r); }
                 
                 b = 3;
             }
@@ -43060,7 +43060,7 @@ pub(super) fn f_ae55f8c704ff1068(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
                 if let Op::Gen(ins, nx, at) = &p.ops[195] { m.exec(ins, *nx, *at)?; } // Dec(Reg(4), 1)
-                if let Op::Gen(ins, nx, at) = &p.ops[196] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(4), src: Imm(0), size: 1 }
+                { let bv = 0x0u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue; }
                 b = 6;
             }
@@ -43276,7 +43276,7 @@ pub(super) fn f_b20564341de25a3f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 2;
             }
             2 => {
-                m.regs[0] = 0x8u32;
+                { let v = 0x8u32; m.regs[0] = v; }
                 b = 3;
             }
             3 => {
@@ -43505,17 +43505,17 @@ pub(super) fn f_b2453fefc3b1431c(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Rm(Mem(Mem { base: Some(1), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); m.set_reg(2, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(2, 1, r); }
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[0] = f[0] + v; }
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(1), index: None, disp: 7 }), src: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[1].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -43909,7 +43909,7 @@ pub(super) fn f_b31dd057e6ca45d3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = m.rdf64(m.regs[6].wrapping_add(0x0u32))?;
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[38] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -43948,7 +43948,7 @@ pub(super) fn f_b31dd057e6ca45d3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[6].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[67] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
@@ -44159,8 +44159,8 @@ pub(super) fn f_b4c29c913bad48b4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x0);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[29] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Reg(4), src: Imm(64), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
+                { let bv = 0x40u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Xor, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -44441,7 +44441,7 @@ pub(super) fn f_b61d72457c8e4a80(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[4] - f[3];
                 m.regs[0] = m.rd32(m.regs[6].wrapping_add(0xffffff90u32))?;
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[120] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(0), b: Imm(4), size: 4 }
+                { let bv = 0x4u32; let av = m.regs[0]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -44450,7 +44450,7 @@ pub(super) fn f_b61d72457c8e4a80(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 2;
             }
             2 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[123] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(0), b: Imm(2), size: 4 }
+                { let bv = 0x2u32; let av = m.regs[0]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -44461,7 +44461,7 @@ pub(super) fn f_b61d72457c8e4a80(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 4;
             }
             4 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[128] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(0), b: Imm(1), size: 4 }
+                { let bv = 0x1u32; let av = m.regs[0]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -44732,7 +44732,7 @@ pub(super) fn f_b8c0565aa1a8fd35(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -44763,7 +44763,7 @@ pub(super) fn f_b8c0565aa1a8fd35(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[45] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(14) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -45217,7 +45217,7 @@ pub(super) fn f_bc1daa0162bb7f42(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x0u32))?; f[1] = f[1] * v; }
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -45263,7 +45263,7 @@ pub(super) fn f_bc1daa0162bb7f42(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffc8u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[66] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -45457,10 +45457,10 @@ pub(super) fn f_bd743493286d2fa8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.regs[0];
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                m.regs[0] = 0x7fffffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0x7fffffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -45566,7 +45566,7 @@ pub(super) fn f_bd743493286d2fa8(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff8u32))?; f[4] = f[4] * v; }
                 m.fcompare(f[4], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[98] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -46109,7 +46109,7 @@ pub(super) fn f_be4b6278d59c92da(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] * f[0];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x10u32))?; f[1] = f[1] * v; }
                 f[0] = f[0] - f[1];
-                if let Op::Gen(ins, nx, at) = &p.ops[43] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(2), b: Imm(2147483648), size: 4 }
+                { let bv = 0x80000000u32; let av = m.regs[2]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(9) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -46618,7 +46618,7 @@ pub(super) fn f_c2594bf5906a27ea(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Rm(Mem(Mem { base: Some(1), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); m.set_reg(2, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd0u32))?; f[0] = f[0] * v; }
                 f[0] = f[0].abs();
@@ -46632,14 +46632,14 @@ pub(super) fn f_c2594bf5906a27ea(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffc8u32))?; f[1] = f[1] * v; }
                 f[1] = f[1].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe0u32))?; f[1] = f[1] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[20] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(2, 1, r); }
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[1] = f[2] / f[1];
                 f[1] = -f[1];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffd8u32))?; f[1] = f[1] + v; }
                 f[0] = f[0] + f[1];
                 { let a = m.regs[1].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[27] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(1), index: None, disp: 7 }), src: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = (m.rd8(m.regs[1].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[1].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -46786,8 +46786,8 @@ pub(super) fn f_c2617e0c54c1c2de(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f[1] * f[2];
                 { let v = m.rdf64(m.regs[7].wrapping_add(0x8u32))?; f[1] = f[1] + v; }
                 f[0] = f[0] * f[1];
-                if let Op::Gen(ins, nx, at) = &p.ops[96] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(4), index: None, disp: 24 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[97] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(1), size: 1 }
+                { let v = (m.rd8(m.regs[4].wrapping_add(0x18u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = 0x1u32; let av = m.get_reg(0, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(0, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 18; continue; }
                 b = 17;
             }
@@ -47471,7 +47471,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 5;
             }
             5 => {
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue;
             }
             6 => {
@@ -47480,7 +47480,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 7;
             }
             7 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 8;
             }
             8 => {
@@ -47490,7 +47490,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 9;
             }
             9 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue;
             }
             10 => {
@@ -47499,7 +47499,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 11;
             }
             11 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 12;
             }
             12 => {
@@ -47521,7 +47521,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 15;
             }
             15 => {
-                m.regs[0] = 0x1u32;
+                { let v = 0x1u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 18; continue;
             }
             16 => {
@@ -47530,7 +47530,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 17;
             }
             17 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 18;
             }
             18 => {
@@ -47540,7 +47540,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 19;
             }
             19 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 22; continue;
             }
             20 => {
@@ -47549,7 +47549,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 21;
             }
             21 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 22;
             }
             22 => {
@@ -47573,7 +47573,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 26;
             }
             26 => {
-                m.regs[0] = 0x0u32;
+                { let v = 0x0u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 29; continue;
             }
             27 => {
@@ -47582,7 +47582,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 28;
             }
             28 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 29;
             }
             29 => {
@@ -47592,7 +47592,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 30;
             }
             30 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 33; continue;
             }
             31 => {
@@ -47601,7 +47601,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 32;
             }
             32 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 33;
             }
             33 => {
@@ -47623,7 +47623,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 36;
             }
             36 => {
-                m.regs[0] = 0x1u32;
+                { let v = 0x1u32; m.regs[0] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 39; continue;
             }
             37 => {
@@ -47632,7 +47632,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 38;
             }
             38 => {
-                m.regs[0] = 0x64u32;
+                { let v = 0x64u32; m.regs[0] = v; }
                 b = 39;
             }
             39 => {
@@ -47642,7 +47642,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 40;
             }
             40 => {
-                m.regs[7] = 0x1u32;
+                { let v = 0x1u32; m.regs[7] = v; }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 43; continue;
             }
             41 => {
@@ -47651,7 +47651,7 @@ pub(super) fn f_c692939cbb1d0771(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 42;
             }
             42 => {
-                m.regs[7] = 0x6u32;
+                { let v = 0x6u32; m.regs[7] = v; }
                 b = 43;
             }
             43 => {
@@ -47740,8 +47740,8 @@ pub(super) fn f_c77cd40678b1b679(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 m.regs[3] = m.regs[0];
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(4), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -12 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff4u32))? as u32); m.set_reg(4, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 b = 1;
             }
             1 => {
@@ -47798,8 +47798,8 @@ pub(super) fn f_c77cd40678b1b679(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] * f[1];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[62] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -16 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff0u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(0, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(0, 1, r); }
                 
                 b = 3;
             }
@@ -47956,7 +47956,7 @@ pub(super) fn f_c77cd40678b1b679(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
                 if let Op::Gen(ins, nx, at) = &p.ops[210] { m.exec(ins, *nx, *at)?; } // Dec(Reg(4), 1)
-                if let Op::Gen(ins, nx, at) = &p.ops[211] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(4), src: Imm(0), size: 1 }
+                { let bv = 0x0u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue; }
                 b = 6;
             }
@@ -48030,7 +48030,7 @@ pub(super) fn f_c7afd221a296d6e4(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             1 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xfffffff8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -49116,14 +49116,14 @@ pub(super) fn f_ccc969eed4f1b60e(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 9; continue; }
                 b = 2;
             }
             2 => {
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffd0u32))?; m.fcompare(f[3], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 3;
             }
@@ -49438,17 +49438,17 @@ pub(super) fn f_d015ffb71f7f9999(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(1), src: Rm(Mem(Mem { base: Some(2), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); m.set_reg(1, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(1), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(1, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(1, 1, r); }
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[0] = f[0] + v; }
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(2), index: None, disp: 7 }), src: Rm(Reg(1)), size: 1 }
+                { let bv = m.get_reg(1, 1); let av = (m.rd8(m.regs[2].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[2].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -49878,7 +49878,7 @@ pub(super) fn f_d1501a6baf7b8475(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             2 => {
                 { let a = m.regs[4].wrapping_add(0x0u32); let x = m.xmm[0]; m.wr64(a, x[0])?; m.wr64(a.wrapping_add(8), x[1])?; }
                 { let a = m.regs[4].wrapping_add(0x10u32); let x = m.xmm[1][0]; m.wr64(a, x)?; }
-                m.regs[2] = 0x2u32;
+                { let v = 0x2u32; m.regs[2] = v; }
                 b = 3;
             }
             3 => {
@@ -50006,7 +50006,7 @@ pub(super) fn f_d1501a6baf7b8475(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[138] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -50054,17 +50054,17 @@ pub(super) fn f_d1e51e777240591a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.regs[2]; m.push(v)?; }
                 f[0] = m.rdf64(m.regs[0].wrapping_add(0x0u32))?;
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[6] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(2), src: Rm(Mem(Mem { base: Some(0), index: None, disp: 7 })), size: 1 }
+                { let v = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); m.set_reg(2, 1, v); }
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 f[0] = f[0].abs();
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(2), src: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = m.get_reg(2, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(2, 1, r); }
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[1] / f[0];
                 f[0] = -f[0];
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xffffffe8u32))?; f[0] = f[0] + v; }
                 { let a = m.regs[0].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(0), index: None, disp: 7 }), src: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[0].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 { let v = m.pop()?; m.regs[2] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
                 { let v = m.pop()?; m.regs[5] = v; }
@@ -50191,7 +50191,7 @@ pub(super) fn f_d2b8522c28aec906(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] + f[1];
                 f[0] = f[0].sqrt();
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] - v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[81] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(2), b: Rm(Reg(2)), size: 4 }
+                { let bv = m.regs[2]; let av = m.regs[2]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 11; continue; }
                 b = 10;
             }
@@ -50240,7 +50240,7 @@ pub(super) fn f_d2b8522c28aec906(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             17 => {
                 { let v = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?; f[0] = f[0] + v; }
-                if let Op::Gen(ins, nx, at) = &p.ops[108] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(2), b: Rm(Reg(2)), size: 4 }
+                { let bv = m.regs[2]; let av = m.regs[2]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 19; continue; }
                 b = 18;
             }
@@ -51439,12 +51439,12 @@ pub(super) fn f_d585070180966e37(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[0] = m.rd32(m.regs[4].wrapping_add(0x28u32))?;
                 { let bv = 0x1000u32; let av = m.regs[0]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[0] = r; }
                 { let bv = m.regs[2]; let av = m.regs[2]; let r = m.alu(Alu::Xor, av, bv, 4); m.regs[2] = r; }
-                m.regs[1] = 0x3u32;
+                { let v = 0x3u32; m.regs[1] = v; }
                 if let Op::Gen(ins, nx, at) = &p.ops[86] { m.exec(ins, *nx, *at)?; } // Div(Reg(1), 4)
                 
                 
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[90] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(2), b: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = m.get_reg(2, 1); m.alu(Alu::And, av, bv, 1); }
                 
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
@@ -51459,12 +51459,12 @@ pub(super) fn f_d585070180966e37(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[0] = m.rd32(m.regs[4].wrapping_add(0x20u32))?;
                 { let bv = 0x1000u32; let av = m.regs[0]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[0] = r; }
                 { let bv = m.regs[2]; let av = m.regs[2]; let r = m.alu(Alu::Xor, av, bv, 4); m.regs[2] = r; }
-                m.regs[1] = 0x3u32;
+                { let v = 0x3u32; m.regs[1] = v; }
                 if let Op::Gen(ins, nx, at) = &p.ops[100] { m.exec(ins, *nx, *at)?; } // Div(Reg(1), 4)
                 
                 
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[104] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(2), b: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = m.get_reg(2, 1); m.alu(Alu::And, av, bv, 1); }
                 
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
@@ -51479,12 +51479,12 @@ pub(super) fn f_d585070180966e37(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[0] = m.rd32(m.regs[4].wrapping_add(0x24u32))?;
                 { let bv = 0x1000u32; let av = m.regs[0]; let r = m.alu(Alu::Add, av, bv, 4); m.regs[0] = r; }
                 { let bv = m.regs[2]; let av = m.regs[2]; let r = m.alu(Alu::Xor, av, bv, 4); m.regs[2] = r; }
-                m.regs[1] = 0x3u32;
+                { let v = 0x3u32; m.regs[1] = v; }
                 if let Op::Gen(ins, nx, at) = &p.ops[114] { m.exec(ins, *nx, *at)?; } // Div(Reg(1), 4)
                 
                 
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[118] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(2), b: Rm(Reg(2)), size: 1 }
+                { let bv = m.get_reg(2, 1); let av = m.get_reg(2, 1); m.alu(Alu::And, av, bv, 1); }
                 
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
@@ -52898,7 +52898,7 @@ pub(super) fn f_da1d5e182a89a43a(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 
                 f[3] = m.rdf64(m.regs[4].wrapping_add(0xcu32))?;
                 m.regs[0] = m.rd32(m.regs[7].wrapping_add(0xffffffccu32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[43] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(0), b: Rm(Reg(0)), size: 4 }
+                { let bv = m.regs[0]; let av = m.regs[0]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 1;
             }
@@ -53111,7 +53111,7 @@ pub(super) fn f_db586ffc50e7c8e7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -53842,8 +53842,8 @@ pub(super) fn f_ddde751ec8e90b97(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xfffffff0u32))?;
                 f[0] = f[0] + f[1];
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[16] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(4), src: Rm(Mem(Mem { base: Some(3), index: None, disp: 7 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[17] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(128), size: 1 }
+                { let v = (m.rd8(m.regs[3].wrapping_add(0x7u32))? as u32); m.set_reg(4, 1, v); }
+                { let bv = 0x80u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[7].wrapping_add(0xffffffe8u32))?;
                 f[1] = f[1].abs();
@@ -53852,7 +53852,7 @@ pub(super) fn f_ddde751ec8e90b97(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f.swap(1, 0);
                 f[0] *= f[1].log2();
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[26] { m.exec(ins, *nx, *at)?; } // Alu { op: Xor, dst: Mem(Mem { base: Some(3), index: None, disp: 7 }), src: Rm(Reg(4)), size: 1 }
+                { let bv = m.get_reg(4, 1); let av = (m.rd8(m.regs[3].wrapping_add(0x7u32))? as u32); let r = m.alu(Alu::Xor, av, bv, 1); { let a = m.regs[3].wrapping_add(0x7u32); m.wr8(a, r as u8)?; } }
                 m.regs[0] = m.regs[3];
                 { let v = m.pop()?; m.regs[7] = v; }
                 { let v = m.pop()?; m.regs[6] = v; }
@@ -53994,7 +53994,7 @@ pub(super) fn f_de241dcc0eea52d3(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[4] = f[4].abs();
                 m.fcompare(f[4], f[3]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[15] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -54702,7 +54702,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[156] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 27; continue; }
                 b = 26;
             }
@@ -54730,7 +54730,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[171] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 32; continue; }
                 b = 31;
             }
@@ -54758,7 +54758,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[186] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 37; continue; }
                 b = 36;
             }
@@ -54786,7 +54786,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[201] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 42; continue; }
                 b = 41;
             }
@@ -54815,7 +54815,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[217] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 47; continue; }
                 b = 46;
             }
@@ -54844,7 +54844,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[233] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 52; continue; }
                 b = 51;
             }
@@ -54873,7 +54873,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[249] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 57; continue; }
                 b = 56;
             }
@@ -54901,7 +54901,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[264] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 62; continue; }
                 b = 61;
             }
@@ -54929,7 +54929,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[279] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 67; continue; }
                 b = 66;
             }
@@ -54957,7 +54957,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[294] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 72; continue; }
                 b = 71;
             }
@@ -54986,7 +54986,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[310] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 77; continue; }
                 b = 76;
             }
@@ -55015,7 +55015,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[326] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 82; continue; }
                 b = 81;
             }
@@ -55214,7 +55214,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[452] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 111; continue; }
                 b = 110;
             }
@@ -55242,7 +55242,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[467] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 116; continue; }
                 b = 115;
             }
@@ -55270,7 +55270,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[482] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 121; continue; }
                 b = 120;
             }
@@ -55298,7 +55298,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[497] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 126; continue; }
                 b = 125;
             }
@@ -55327,7 +55327,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[513] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 131; continue; }
                 b = 130;
             }
@@ -55356,7 +55356,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[529] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 136; continue; }
                 b = 135;
             }
@@ -55385,7 +55385,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[545] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 141; continue; }
                 b = 140;
             }
@@ -55413,7 +55413,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[560] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 146; continue; }
                 b = 145;
             }
@@ -55441,7 +55441,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[575] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 151; continue; }
                 b = 150;
             }
@@ -55469,7 +55469,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[590] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 156; continue; }
                 b = 155;
             }
@@ -55498,7 +55498,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[606] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 161; continue; }
                 b = 160;
             }
@@ -55527,7 +55527,7 @@ pub(super) fn f_e10680500172f11f(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f[2].abs();
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[622] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(2) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 166; continue; }
                 b = 165;
             }
@@ -56314,7 +56314,7 @@ pub(super) fn f_e2464749d8a5b615(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[5].wrapping_add(0xffffff6cu32))?; f[1] = f[1] * v; }
                 f[0] = f[0] + f[1];
                 { let a = m.regs[5].wrapping_add(0xffffffecu32); m.wrf64(a, f[0])?; }
-                if let Op::Gen(ins, nx, at) = &p.ops[244] { m.exec(ins, *nx, *at)?; } // Test { a: Mem(Mem { base: Some(5), index: None, disp: -16 }), b: Imm(2147483647), size: 4 }
+                { let bv = 0x7fffffffu32; let av = m.rd32(m.regs[5].wrapping_add(0xfffffff0u32))?; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 10;
             }
@@ -56324,10 +56324,10 @@ pub(super) fn f_e2464749d8a5b615(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 b = 11;
             }
             11 => {
-                { let v = 0x0u32; let a = m.regs[5].wrapping_add(0xffffffd4u32); m.wr32(a, v)?; }
-                { let v = 0x0u32; let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wr32(a, v)?; }
-                { let v = 0x0u32; let a = m.regs[5].wrapping_add(0xffffffdcu32); m.wr32(a, v)?; }
-                { let v = 0x0u32; let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wr32(a, v)?; }
+                { let v = 0x0u32; { let a = m.regs[5].wrapping_add(0xffffffd4u32); m.wr32(a, v)?; } }
+                { let v = 0x0u32; { let a = m.regs[5].wrapping_add(0xffffffd8u32); m.wr32(a, v)?; } }
+                { let v = 0x0u32; { let a = m.regs[5].wrapping_add(0xffffffdcu32); m.wr32(a, v)?; } }
+                { let v = 0x0u32; { let a = m.regs[5].wrapping_add(0xffffffe0u32); m.wr32(a, v)?; } }
                 m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 13; continue;
             }
             12 => {
@@ -56432,8 +56432,8 @@ pub(super) fn f_e276c8207a91faec(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 m.regs[3] = m.regs[0];
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(4), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -12 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[11] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff4u32))? as u32); m.set_reg(4, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 b = 1;
             }
             1 => {
@@ -56490,8 +56490,8 @@ pub(super) fn f_e276c8207a91faec(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[0] = f[0] * f[1];
                 { let a = m.regs[2].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[62] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -16 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[63] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(0), src: Imm(7), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xfffffff0u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = 0x7u32; let av = m.get_reg(0, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(0, 1, r); }
                 
                 b = 3;
             }
@@ -56629,7 +56629,7 @@ pub(super) fn f_e276c8207a91faec(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let a = m.regs[3].wrapping_add(0x0u32); m.wrf64(a, f[0])?; }
                 
                 if let Op::Gen(ins, nx, at) = &p.ops[191] { m.exec(ins, *nx, *at)?; } // Dec(Reg(4), 1)
-                if let Op::Gen(ins, nx, at) = &p.ops[192] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(4), src: Imm(0), size: 1 }
+                { let bv = 0x0u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 1; continue; }
                 b = 6;
             }
@@ -58068,7 +58068,7 @@ pub(super) fn f_e5db1997040c3e06(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x3ff0000000000000);
                 f[0] = f[0] + f[2];
                 f[0] = f[1] / f[0];
-                if let Op::Gen(ins, nx, at) = &p.ops[41] { m.exec(ins, *nx, *at)?; } // Test { a: Mem(Mem { base: Some(0), index: None, disp: 7 }), b: Imm(128), size: 1 }
+                { let bv = 0x80u32; let av = (m.rd8(m.regs[0].wrapping_add(0x7u32))? as u32); m.alu(Alu::And, av, bv, 1); }
                 if m.cond(9) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -58271,7 +58271,7 @@ pub(super) fn f_e60fa9d255bb9543(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f64::from_bits(0x3ff0000000000000);
                 m.fcompare(f[3], f[2]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[23] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 1;
             }
@@ -58279,7 +58279,7 @@ pub(super) fn f_e60fa9d255bb9543(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[28] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 3; continue; }
                 b = 2;
             }
@@ -58294,7 +58294,7 @@ pub(super) fn f_e60fa9d255bb9543(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[35] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -59803,7 +59803,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[0], 0.0);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[50] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -59824,7 +59824,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[2], f[1]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[66] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -59885,7 +59885,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[116] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -59902,7 +59902,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[128] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -59927,7 +59927,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[4].wrapping_add(0x28u32))?; f[0] = f[0] + v; }
                 f[0] = f[0].abs();
                 f[1] = m.rdf64(m.regs[4].wrapping_add(0x8u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[143] { m.exec(ins, *nx, *at)?; } // Test { a: Reg(0), b: Rm(Reg(0)), size: 4 }
+                { let bv = m.regs[0]; let av = m.regs[0]; m.alu(Alu::And, av, bv, 4); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 16; continue; }
                 b = 15;
             }
@@ -59939,7 +59939,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[149] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 18; continue; }
                 b = 17;
             }
@@ -59962,7 +59962,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[164] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 21; continue; }
                 b = 20;
             }
@@ -59980,7 +59980,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[174] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 24; continue; }
                 b = 23;
             }
@@ -60007,7 +60007,7 @@ pub(super) fn f_edff98053358db3b(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[1], f[0]);
                 
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[191] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 28; continue; }
                 b = 27;
             }
@@ -60708,7 +60708,7 @@ pub(super) fn f_f15e7033ae08e677(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[34] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -60724,7 +60724,7 @@ pub(super) fn f_f15e7033ae08e677(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[44] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -60740,7 +60740,7 @@ pub(super) fn f_f15e7033ae08e677(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[54] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 5;
             }
@@ -60815,7 +60815,7 @@ pub(super) fn f_f15e7033ae08e677(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[123] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(7) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 8; continue; }
                 b = 7;
             }
@@ -60832,7 +60832,7 @@ pub(super) fn f_f15e7033ae08e677(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 m.fcompare(f[1], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x0) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[135] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(6) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }
@@ -60890,10 +60890,10 @@ pub(super) fn f_f19722dc8c8c12d9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[3] = m.regs[0];
                 m.regs[6] = m.rd32(m.regs[5].wrapping_add(0x8u32))?;
                 m.regs[6] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
-                m.regs[0] = 0x7fffffffu32;
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; }
-                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; }
+                { let v = 0x7fffffffu32; m.regs[0] = v; }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[1].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[1].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[2].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[2].wrapping_add(0x4u32); m.wr32(a, r)?; } }
+                { let bv = m.regs[0]; let av = m.rd32(m.regs[3].wrapping_add(0x4u32))?; let r = m.alu(Alu::And, av, bv, 4); { let a = m.regs[3].wrapping_add(0x4u32); m.wr32(a, r)?; } }
                 f[0] = m.rdf64(m.regs[1].wrapping_add(0x0u32))?;
                 f[1] = m.rdf64(m.regs[2].wrapping_add(0x0u32))?;
                 f[2] = m.rdf64(m.regs[3].wrapping_add(0x0u32))?;
@@ -61040,7 +61040,7 @@ pub(super) fn f_f19722dc8c8c12d9(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 { let v = m.rdf64(m.regs[6].wrapping_add(0xfffffff8u32))?; f[4] = f[4] * v; }
                 m.fcompare(f[4], f[0]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[127] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 12; continue; }
                 b = 11;
             }
@@ -61165,7 +61165,7 @@ pub(super) fn f_f1d590365a4793b6(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[2] = f64::from_bits(0x0);
                 m.fcompare(f[2], f[1]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[21] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 2; continue; }
                 b = 1;
             }
@@ -61274,7 +61274,7 @@ pub(super) fn f_f6c64401ae59f789(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[3] = f[3].sqrt();
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0xffffffd8u32))?; m.fcompare(f[3], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[24] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 6; continue; }
                 b = 1;
             }
@@ -61285,7 +61285,7 @@ pub(super) fn f_f6c64401ae59f789(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 f[5] = f[5].abs();
                 { let v = m.fload(FKind::F64, m.regs[7].wrapping_add(0x0u32))?; m.fcompare(f[5], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x1800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[32] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 2;
             }
@@ -61295,7 +61295,7 @@ pub(super) fn f_f6c64401ae59f789(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.fcompare(f[5], f[4]);
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x2000) as u32;
                 f[4] = m.rdf64(m.regs[7].wrapping_add(0x0u32))?;
-                if let Op::Gen(ins, nx, at) = &p.ops[39] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(5) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
@@ -61355,7 +61355,7 @@ pub(super) fn f_f7d7af6ba66543c7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
                 m.regs[7] = m.rd32(m.regs[6].wrapping_add(0x30u32))?;
                 m.regs[3] = m.regs[0];
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[10] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -68 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffbcu32))? as u32); m.set_reg(0, 1, v); }
                 b = 1;
             }
             1 => {
@@ -61435,14 +61435,14 @@ pub(super) fn f_f7d7af6ba66543c7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             2 => {
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[84] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -60 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[85] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 64 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffc4u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = (m.rd8(m.regs[6].wrapping_add(0x40u32))? as u32); let av = m.get_reg(0, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 4; continue; }
                 b = 3;
             }
             3 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[87] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -64 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[88] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 64 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffc0u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = (m.rd8(m.regs[6].wrapping_add(0x40u32))? as u32); let av = m.get_reg(0, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 5; continue; }
                 b = 4;
             }
@@ -61470,14 +61470,14 @@ pub(super) fn f_f7d7af6ba66543c7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             }
             5 => {
                 
-                if let Op::Gen(ins, nx, at) = &p.ops[110] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -72 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[111] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 64 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffb8u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = (m.rd8(m.regs[6].wrapping_add(0x40u32))? as u32); let av = m.get_reg(0, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(4) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 7; continue; }
                 b = 6;
             }
             6 => {
-                if let Op::Gen(ins, nx, at) = &p.ops[113] { m.exec(ins, *nx, *at)?; } // Mov { dst: Reg(0), src: Rm(Mem(Mem { base: Some(7), index: None, disp: -76 })), size: 1 }
-                if let Op::Gen(ins, nx, at) = &p.ops[114] { m.exec(ins, *nx, *at)?; } // Alu { op: Cmp, dst: Reg(0), src: Rm(Mem(Mem { base: Some(6), index: None, disp: 64 })), size: 1 }
+                { let v = (m.rd8(m.regs[7].wrapping_add(0xffffffb4u32))? as u32); m.set_reg(0, 1, v); }
+                { let bv = (m.rd8(m.regs[6].wrapping_add(0x40u32))? as u32); let av = m.get_reg(0, 1); let r = m.alu(Alu::Cmp, av, bv, 1); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 11; continue; }
                 b = 7;
             }
@@ -61496,7 +61496,7 @@ pub(super) fn f_f7d7af6ba66543c7(m: &mut Machine, p: &Prog, max_steps: u64) -> R
             8 => {
                 { let v = m.fload(FKind::F64, m.regs[5].wrapping_add(0xfffffff8u32))?; m.fcompare(f[0], v); }
                 m.regs[EAX] = (m.regs[EAX] & 0xFFFF_0000) | (m.fsw_cc | 0x3800) as u32;
-                if let Op::Gen(ins, nx, at) = &p.ops[127] { m.exec(ins, *nx, *at)?; } // Alu { op: And, dst: Reg(4), src: Imm(65), size: 1 }
+                { let bv = 0x41u32; let av = m.get_reg(4, 1); let r = m.alu(Alu::And, av, bv, 1); m.set_reg(4, 1, r); }
                 if m.cond(15) { m.steps += 1; if m.steps > limit { return Err(EmuError::StepLimit); } b = 10; continue; }
                 b = 9;
             }

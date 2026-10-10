@@ -1,6 +1,6 @@
 [package]
 name = "mb3d"
-version = "0.2.5"
+version = "0.2.6"
 edition = "2021"
 description = "Rust port of Mandelbulb3D (MB3D) - renderer and desktop application"
 license = "LGPL-2.1-or-later"
@@ -41,3 +41,13 @@ debug = false
 [[example]]
 name = "gpubench"
 required-features = ["gpu"]
+
+[[example]]
+name = "profile"
+required-features = ["gpu"]
+
+[[example]]
+name = "formbench"
+
+[[example]]
+name = "pcsample"

@@ -26,7 +26,8 @@ pub const RETURN_SENTINEL: u32 = 0xFFFF_FFF0;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum EmuError {
-    Unsupported(u32, String),
+    /// boxed, so that the results of the emulated memory accesses stay small
+    Unsupported(Box<(u32, String)>),
     MemFault(u32),
     StepLimit,
     Halt(u32),
@@ -35,7 +36,7 @@ pub enum EmuError {
 impl std::fmt::Display for EmuError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            EmuError::Unsupported(a, s) => write!(f, "unsupported instruction at {a:#x}: {s}"),
+            EmuError::Unsupported(e) => write!(f, "unsupported instruction at {:#x}: {}", e.0, e.1),
             EmuError::MemFault(a) => write!(f, "memory access outside the image at {a:#x}"),
             EmuError::StepLimit => write!(f, "instruction limit exceeded"),
             EmuError::Halt(a) => write!(f, "halt/int at {a:#x}"),
@@ -358,7 +359,7 @@ impl<'a> Dec<'a> {
     fn mem(&mut self) -> R<(u8, Mem)> {
         match self.modrm()? {
             (r, Rm::Mem(m)) => Ok((r, m)),
-            _ => Err(EmuError::Unsupported(self.addr0, "register operand where memory expected".into())),
+            _ => Err(unsup(self.addr0, "register operand where memory expected".into())),
         }
     }
     fn imm(&mut self, size: u8) -> R<u32> {
@@ -370,8 +371,9 @@ impl<'a> Dec<'a> {
     }
 }
 
+#[cold]
 fn unsup(addr: u32, what: String) -> EmuError {
-    EmuError::Unsupported(addr, what)
+    EmuError::Unsupported(Box::new((addr, what)))
 }
 
 /// Decode one instruction at `addr` (code slice starts at `addr`).
@@ -921,7 +923,8 @@ pub type HostFn = fn(&mut Machine) -> R<()>;
 
 #[derive(Clone)]
 pub struct Machine {
-    pub mem: Vec<u8>,
+    /// fixed size, so that the bounds checks compare with a constant
+    pub mem: Box<[u8; MEM_SIZE]>,
     pub regs: [u32; 8],
     cf: bool,
     zf: bool,
@@ -956,7 +959,7 @@ const EDI: usize = 7;
 impl Machine {
     pub fn new() -> Machine {
         Machine {
-            mem: vec![0; MEM_SIZE],
+            mem: vec![0u8; MEM_SIZE].into_boxed_slice().try_into().expect("memory size"),
             regs: [0; 8],
             cf: false,
             zf: false,
@@ -1052,7 +1055,7 @@ impl Machine {
     #[inline]
     fn idx(&self, a: u32, n: usize) -> R<usize> {
         let o = a.wrapping_sub(BASE) as usize;
-        if o + n <= self.mem.len() {
+        if o + n <= MEM_SIZE {
             Ok(o)
         } else {
             Err(EmuError::MemFault(a))
@@ -1110,28 +1113,28 @@ impl Machine {
     #[inline(always)]
     pub fn put_f64(&mut self, a: u32, v: f64) {
         let i = a.wrapping_sub(BASE) as usize;
-        assert!(i + 8 <= MEM_SIZE && self.mem.len() == MEM_SIZE);
+        assert!(i + 8 <= MEM_SIZE );
         // SAFETY: checked above
         unsafe { *(self.mem.as_mut_ptr().add(i) as *mut [u8; 8]) = v.to_bits().to_le_bytes() };
     }
     #[inline(always)]
     pub fn get_f64(&self, a: u32) -> f64 {
         let i = a.wrapping_sub(BASE) as usize;
-        assert!(i + 8 <= MEM_SIZE && self.mem.len() == MEM_SIZE);
+        assert!(i + 8 <= MEM_SIZE );
         // SAFETY: checked above
         f64::from_bits(u64::from_le_bytes(unsafe { *(self.mem.as_ptr().add(i) as *const [u8; 8]) }))
     }
     #[inline(always)]
     pub fn put_u32(&mut self, a: u32, v: u32) {
         let i = a.wrapping_sub(BASE) as usize;
-        assert!(i + 4 <= MEM_SIZE && self.mem.len() == MEM_SIZE);
+        assert!(i + 4 <= MEM_SIZE );
         // SAFETY: checked above
         unsafe { *(self.mem.as_mut_ptr().add(i) as *mut [u8; 4]) = v.to_le_bytes() };
     }
     #[inline(always)]
     pub fn get_u32(&self, a: u32) -> u32 {
         let i = a.wrapping_sub(BASE) as usize;
-        assert!(i + 4 <= MEM_SIZE && self.mem.len() == MEM_SIZE);
+        assert!(i + 4 <= MEM_SIZE );
         // SAFETY: checked above
         u32::from_le_bytes(unsafe { *(self.mem.as_ptr().add(i) as *const [u8; 4]) })
     }
@@ -1289,6 +1292,7 @@ impl Machine {
         self.sf = (r >> (bits - 1)) & 1 == 1;
         self.pf = (r as u8).count_ones() % 2 == 0;
     }
+    #[inline]
     fn cond(&self, cc: u8) -> bool {
         let r = match cc >> 1 {
             0 => self.of,
@@ -1375,15 +1379,10 @@ impl Machine {
     #[inline]
     fn fcompare(&mut self, a: f64, b: f64) {
         // C3 C2 C0
-        self.fsw_cc = if a.is_nan() || b.is_nan() {
-            0x4500
-        } else if a > b {
-            0
-        } else if a < b {
-            0x0100
-        } else {
-            0x4000
-        };
+        // branch free: unordered 0x4500, a < b 0x0100, a == b 0x4000, a > b 0
+        let (lt, eq, gt) = (a < b, a == b, a > b);
+        let un = !(lt | eq | gt);
+        self.fsw_cc = ((lt | un) as u16) << 8 | ((eq | un) as u16) << 14 | (un as u16) << 10;
     }
     fn round_int(&self, v: f64) -> f64 {
         match (self.fcw >> 10) & 3 {
@@ -1408,6 +1407,7 @@ impl Machine {
             }
         })
     }
+    #[inline]
     fn fstore(&mut self, kind: FKind, a: u32, v: f64) -> R<()> {
         match kind {
             FKind::F32 => self.wrf32(a, v as f32),
@@ -3152,6 +3152,36 @@ impl std::fmt::Debug for Prog {
     }
 }
 
+/// Rust expression reading the operand `rm` of `size` bytes (as u32).
+fn rm_read(rm: &Rm, size: u8) -> String {
+    match (rm, size) {
+        (Rm::Reg(r), 4) => format!("m.regs[{r}]"),
+        (Rm::Reg(r), _) => format!("m.get_reg({r}, {size})"),
+        (Rm::Mem(mm), 1) => format!("(m.rd8({})? as u32)", ea_expr(mm)),
+        (Rm::Mem(mm), 2) => format!("(m.rd16({})? as u32)", ea_expr(mm)),
+        (Rm::Mem(mm), _) => format!("m.rd32({})?", ea_expr(mm)),
+    }
+}
+
+/// Rust statement writing the u32 value `v` to the operand `rm` of `size` bytes.
+fn rm_write(rm: &Rm, size: u8, v: &str) -> String {
+    match (rm, size) {
+        (Rm::Reg(r), 4) => format!("m.regs[{r}] = {v};"),
+        (Rm::Reg(r), _) => format!("m.set_reg({r}, {size}, {v});"),
+        (Rm::Mem(mm), 1) => format!("{{ let a = {}; m.wr8(a, {v} as u8)?; }}", ea_expr(mm)),
+        (Rm::Mem(mm), 2) => format!("{{ let a = {}; m.wr16(a, {v} as u16)?; }}", ea_expr(mm)),
+        (Rm::Mem(mm), _) => format!("{{ let a = {}; m.wr32(a, {v})?; }}", ea_expr(mm)),
+    }
+}
+
+/// Rust expression for the source operand of `size` bytes.
+fn src_expr(src: &Src, size: u8) -> String {
+    match src {
+        Src::Imm(v) => format!("{:#x}u32", mask(*v, size)),
+        Src::Rm(rm) => rm_read(rm, size),
+    }
+}
+
 /// Rust expression for the effective address of `m`.
 fn ea_expr(m: &Mem) -> String {
     let mut e = format!("{:#x}u32", m.disp as u32);
@@ -3395,21 +3425,16 @@ impl Prog {
                         Ins::Sahf => "{ let ah = (m.regs[EAX] >> 8) as u8; m.sf = ah & 0x80 != 0; m.zf = ah & 0x40 != 0; \
                                       m.af = ah & 0x10 != 0; m.pf = ah & 0x04 != 0; m.cf = ah & 0x01 != 0; }"
                             .to_string(),
-                        Ins::Alu { op, dst, src, size: 4 } if !matches!(op, Alu::Adc | Alu::Sbb) => {
-                            let rd = |rm: &Rm| match rm {
-                                Rm::Reg(r) => format!("m.regs[{r}]"),
-                                Rm::Mem(mm) => format!("m.rd32({})?", ea_expr(mm)),
-                            };
-                            let b = match src {
-                                Src::Imm(v) => format!("{v:#x}u32"),
-                                Src::Rm(rm) => rd(rm),
-                            };
-                            let calc = format!("{{ let bv = {b}; let av = {}; let r = m.alu(Alu::{op:?}, av, bv, 4);", rd(dst));
-                            match (op, dst) {
-                                (Alu::Cmp, _) => format!("{calc} }}"),
-                                (_, Rm::Reg(r)) => format!("{calc} m.regs[{r}] = r; }}"),
-                                (_, Rm::Mem(mm)) => format!("{calc} let a = {}; m.wr32(a, r)?; }}", ea_expr(mm)),
+                        Ins::Alu { op, dst, src, size } if !matches!(op, Alu::Adc | Alu::Sbb) => {
+                            let b = src_expr(src, *size);
+                            let calc = format!("{{ let bv = {b}; let av = {}; let r = m.alu(Alu::{op:?}, av, bv, {size});", rm_read(dst, *size));
+                            match op {
+                                Alu::Cmp => format!("{calc} }}"),
+                                _ => format!("{calc} {} }}", rm_write(dst, *size, "r")),
                             }
+                        }
+                        Ins::Test { a, b, size } => {
+                            format!("{{ let bv = {}; let av = {}; m.alu(Alu::And, av, bv, {size}); }}", src_expr(b, *size), rm_read(a, *size))
                         }
                         Ins::Shift { op: sop @ (Shift::Shl | Shift::Shr | Shift::Sar), dst: Rm::Reg(r), cnt: Some(c), size } => {
                             format!("m.shift_reg_const(Shift::{sop:?}, {r}, {c}, {size});")
@@ -3426,16 +3451,8 @@ impl Prog {
                                 ),
                             }
                         }
-                        Ins::Mov { dst, src, size: 4 } => {
-                            let v = match src {
-                                Src::Imm(v) => format!("{v:#x}u32"),
-                                Src::Rm(Rm::Reg(r)) => format!("m.regs[{r}]"),
-                                Src::Rm(Rm::Mem(mm)) => format!("m.rd32({})?", ea_expr(mm)),
-                            };
-                            match dst {
-                                Rm::Reg(r) => format!("m.regs[{r}] = {v};"),
-                                Rm::Mem(mm) => format!("{{ let v = {v}; let a = {}; m.wr32(a, v)?; }}", ea_expr(mm)),
-                            }
+                        Ins::Mov { dst, src, size } => {
+                            format!("{{ let v = {}; {} }}", src_expr(src, *size), rm_write(dst, *size, "v"))
                         }
                         Ins::Sse { op, dst, src, imm } if sse_native(*op, src) => emit_sse(*op, *dst as usize, src, *imm),
                         Ins::SseStore { op, dst, src } if matches!(op, SseOp::MovStore | SseOp::MovSdStore | SseOp::MovLpdStore | SseOp::MovqStore | SseOp::MovHpdStore) => {

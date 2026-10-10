@@ -44,6 +44,9 @@ pub struct State {
     pub finished_seen: u64,
     pub last_partial: Instant,
     pub calc_start: Instant,
+    /// the title bar LED: its state, blinking during a 3D calculation
+    pub led: Led,
+    pub led_running: bool,
     pub user_aspect: (i32, i32),
     pub intern_aspect: f64,
     pub user_change: bool,
@@ -56,13 +59,11 @@ pub struct State {
     pub undo: Vec<Scene>,
     pub undo_pos: usize,
     pub authors: [String; 2],
-    pub stick_it: usize,
     pub auto_m3i: Option<PathBuf>,
     pub waker_set: bool,
     pub image_text: bool,
     /// full size image (for saving)
     pub rgb: Option<(std::sync::Arc<Vec<u8>>, usize, usize)>,
-    pub forms_sticky: [i32; 3],
     pub last_history: Instant,
 }
 
@@ -78,6 +79,8 @@ impl Default for State {
             finished_seen: 0,
             last_partial: Instant::now(),
             calc_start: Instant::now(),
+            led: Led::Idle,
+            led_running: false,
             user_aspect: (0, 0),
             intern_aspect: 4.0 / 3.0,
             user_change: true,
@@ -88,12 +91,10 @@ impl Default for State {
             undo: Vec::new(),
             undo_pos: 0,
             authors: [String::new(), String::new()],
-            stick_it: 0,
             auto_m3i: None,
             waker_set: false,
             image_text: false,
             rgb: None,
-            forms_sticky: [1, 1, 1],
             last_history: Instant::now(),
         }
     }
@@ -131,10 +132,8 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
     ui.set_position(F, "UpDown3", cpus);
     set(ui, "Edit21", &cpus.to_string());
     ui.set_active_page(F, "PageControl2", "TabSheet7");
-    add_gpu_checkbox(app, ui);
+    init_compute(ui);
     // SetM3Dini
-    let j = pti(app.ini.get("StickOption"));
-    app.main.forms_sticky = [(j >> 4) & 3, j & 3, (j >> 6) & 3];
     set(ui, "Edit4", app.ini.get("MandRotDeg"));
     if let Some((a, b)) = app.ini.get("UserAspect").split_once(':') {
         let (x, y) = (pti(a), pti(b));
@@ -219,7 +218,6 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
     ui.show(F);
     ui.show("LightAdjustForm");
     ui.show("FormulaGUIForm");
-    place_sticky(app, ui);
     if start_timer && app.eng.base().is_none() {
         // Timer1: a first 2D calculation of the start parameters
         app.main.slice_calc = 2;
@@ -263,105 +261,74 @@ fn save_acc_preset(app: &Mb3d, i: usize) {
     let _ = std::fs::write(crate::appdirs::app_folder().join(PRESET_FILES[i]), t);
 }
 
-/// "GPU" (not in MB3D): calculate on the graphics card.  The box sits in
-/// the empty part of the tab row of the top bar, right of the "Prefs" tab;
-/// on by default, saved as `UseGPU` in the ini file.
-#[cfg(feature = "gpu")]
-fn add_gpu_checkbox(app: &mut Mb3d, ui: &mut Ui) {
-    use crate::vcl::control::Control;
-    let on = app.ini.get_extra("UseGPU").map(|v| v != "0").unwrap_or(true) && crate::gpu::default_on();
-    crate::gpu::set_enabled(on);
-    let f = ui.fm(F);
-    let Some(panel) = f.id("Panel2") else { return };
-    let mut c = Control::new("GpuCheckBox", "TCheckBox");
-    c.caption = "GPU".into();
-    c.left = 378;
-    c.top = 6;
-    c.width = 44;
-    c.height = 17;
-    c.checked = on;
-    c.state = on as u8;
-    c.show_hint = Some(true);
-    c.hint = "Calculate on the graphics card (Integer Power formulas;\nother scenes are calculated on the CPU)".into();
-    c.events.insert("OnClick".into(), "GpuCheckBoxClick".into());
-    f.add_control(panel, c);
-}
-
-#[cfg(not(feature = "gpu"))]
-fn add_gpu_checkbox(_app: &mut Mb3d, _ui: &mut Ui) {}
-
-/// After a calculation: the GPU box's hint says where it ran.
-fn show_gpu_status(_ui: &mut Ui) {
+/// Where the calculations run (not in MB3D): on the graphics card when the
+/// scene allows it, otherwise on the CPU; `MB3D_GPU=0` keeps everything on
+/// the CPU.  The LED right of the window title starts unlit (grey).
+fn init_compute(ui: &mut Ui) {
     #[cfg(feature = "gpu")]
-    if let Some(c) = _ui.fm(F).id("GpuCheckBox") {
+    crate::gpu::set_enabled(crate::gpu::default_on());
+    show_led(ui, Led::Idle, false);
+}
+
+/// The title bar LED: where the last calculation ran.
+#[derive(Clone, Copy, PartialEq)]
+pub enum Led {
+    /// nothing calculated yet
+    Idle,
+    /// everything on the graphics card
+    Gpu,
+    /// the ray march on the graphics card, post processing on the CPU
+    Mixed,
+    /// everything on the CPU
+    Cpu,
+}
+
+/// Sets the LED's colour; it blinks while a calculation runs.
+pub fn show_led(ui: &mut Ui, led: Led, blinking: bool) {
+    let f = ui.fm(F);
+    let col = Some(match led {
+        Led::Idle => 0x808080,
+        Led::Gpu => 0x30E040,
+        Led::Mixed => 0xFF9A1A,
+        Led::Cpu => 0xF02828,
+    });
+    if f.caption_led != col || f.led_blink != blinking {
+        if f.led_blink != blinking {
+            f.led_on = true;
+        }
+        f.caption_led = col;
+        f.led_blink = blinking;
+        f.dirty = true;
+    }
+}
+
+/// While a 3D calculation runs: where it runs, once the GPU has decided.
+fn running_led(app: &Mb3d) -> Option<Led> {
+    #[cfg(feature = "gpu")]
+    {
         let s = crate::gpu::last_status();
-        if !s.is_empty() {
-            _ui.fm(F).ctl[c].hint = format!("Calculate on the graphics card\nLast calculation: {s}");
+        if s.is_empty() {
+            return None;
         }
+        let sc = &app.scene;
+        Some(calc_led(sc.normals_on_zbuf || sc.shadows.is_some() || sc.ao.is_some()))
+    }
+    #[cfg(not(feature = "gpu"))]
+    {
+        let _ = app;
+        Some(Led::Cpu)
     }
 }
 
-/// The sticky option of the formula, lighting and post processing windows:
-/// placed right (1) or left (2) of the main window.
-pub fn place_sticky(app: &Mb3d, ui: &mut Ui) {
-    let m = ui.f(F);
-    let (ml, mt) = (m.left, m.top);
-    let (mw, _) = m.outer_size(&ui.theme);
-    for (k, form) in STICKY_FORMS.iter().enumerate() {
-        if !ui.has_form(form) {
-            continue;
-        }
-        let (fw, _) = ui.f(form).outer_size(&ui.theme);
-        let x = match app.main.forms_sticky[k] {
-            1 => ml + mw,
-            2 => ml - fw,
-            _ => continue,
-        };
-        ui.move_form(form, x, mt);
+/// After a 3D calculation: the GPU status and whether CPU post processing
+/// (shadows, ambient occlusion, reflections) ran.
+fn calc_led(post_on_cpu: bool) -> Led {
+    #[cfg(feature = "gpu")]
+    if crate::gpu::last_status().starts_with("GPU") {
+        return if post_on_cpu { Led::Mixed } else { Led::Gpu };
     }
-}
-
-const STICKY_FORMS: [&str; 3] = ["FormulaGUIForm", "LightAdjustForm", "PostProForm"];
-
-/// A window was moved (TMand3DForm.WndProc WM_Move): the sticky windows
-/// follow the main window. A formula, lighting or post processing window
-/// dragged within 17 pixels of a side of the main window (top edges
-/// aligned) snaps to that side and becomes sticky.
-pub fn wm_move(app: &mut Mb3d, ui: &mut Ui, form: &str) {
-    if form == F {
-        place_sticky(app, ui);
-        return;
-    }
-    let Some(k) = STICKY_FORMS.iter().position(|&n| n == form) else { return };
-    let m = ui.f(F);
-    let (ml, mt) = (m.left, m.top);
-    let (mw, _) = m.outer_size(&ui.theme);
-    let f = ui.f(form);
-    let (fw, _) = f.outer_size(&ui.theme);
-    if (f.top - mt).abs() >= 17 {
-        return;
-    }
-    let side = if (f.left - (ml + mw)).abs() < 17 {
-        1
-    } else if (f.left + fw - ml).abs() < 17 {
-        2
-    } else {
-        return;
-    };
-    let exact = if side == 1 { ml + mw } else { ml - fw };
-    if app.main.forms_sticky[k] != side {
-        app.main.forms_sticky[k] = side;
-        save_sticky(app);
-    }
-    if (f.left, f.top) != (exact, mt) {
-        ui.move_form(form, exact, mt);
-    }
-}
-
-fn save_sticky(app: &mut Mb3d) {
-    let s = app.main.forms_sticky;
-    let j = pti(app.ini.get("StickOption"));
-    app.ini.set("StickOption", &((j & 0xC) + s[1] + (s[0] << 4) + (s[2] << 6)).to_string());
+    let _ = post_on_cpu;
+    Led::Cpu
 }
 
 // ---------------------------------------------------------------------------
@@ -630,6 +597,9 @@ pub fn calc_mand(app: &mut Mb3d, ui: &mut Ui, calc3d: bool) {
     ui.set_visible(F, "ProgressBar1", calc3d);
     if calc3d {
         ui.set_caption(F, "Label6", "main rendering");
+        #[cfg(feature = "gpu")]
+        crate::gpu::set_status(String::new());
+        app.main.led_running = true;
     }
     let slice = if calc3d { 0 } else { app.main.slice_calc.clamp(1, 3) };
     app.eng.start(Job::Calc { scene: app.scene.clone(), slice });
@@ -641,6 +611,11 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         let o = app.eng.0.out.lock().unwrap();
         (o.ver, o.finished, o.running, o.stage.clone(), o.error.clone(), o.stats)
     };
+    if app.main.calculating && app.main.led_running {
+        let led = running_led(app).unwrap_or(app.main.led);
+        app.main.led = led;
+        show_led(ui, led, true);
+    }
     if app.main.calculating {
         ui.set_position(F, "ProgressBar1", (app.eng.progress() * ui.c(F, "ProgressBar1").max as f32) as i64);
         if !stage.is_empty() && app.main.calc3d {
@@ -663,6 +638,10 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         app.main.finished_seen = finished;
         if app.main.calculating {
             enable_buttons(app, ui);
+            if app.main.led_running {
+                app.main.led_running = false;
+                show_led(ui, app.main.led, false);
+            }
             if !err.is_empty() {
                 app.message(ui, &err);
             } else if app.main.calc3d {
@@ -671,7 +650,8 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
                 ui.set_caption(F, "Label32", "-");
                 ui.set_caption(F, "Label40", "?");
                 ui.set_caption(F, "Label52", &time_str((stats.calc_s * 10.0) as i64));
-                show_gpu_status(ui);
+                app.main.led = calc_led(stats.post_s > 0.0);
+                show_led(ui, app.main.led, false);
                 if stats.post_s > 0.0 {
                     let l = if app.scene.shadows.is_some() { "Label8" } else { "Label48" };
                     ui.set_caption(F, l, &time_str((stats.post_s * 10.0) as i64));
@@ -1048,31 +1028,13 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "Button10Click" => ui.show("FormulaGUIForm"),
         "Button18Click" => ui.show("LightAdjustForm"),
         "Button15Click" => ui.show("PostProForm"),
-        "Button10MouseDown" => {
-            if let Ev::MouseDown { button: MouseButton::Right, x, y, .. } = e.ev {
-                app.main.stick_it = ui.tag(F, &e.sender).clamp(0, 2) as usize;
-                let i = app.main.forms_sticky[app.main.stick_it];
-                ui.set_checked(F, "Stickthiswindowtotherightside1", i == 1);
-                ui.set_checked(F, "Stickthiswindowtotheleftside1", i == 2);
-                ui.set_checked(F, "Donotmakethiswindowsticky1", i == 0);
-                ui.popup_menu(F, "PopupMenu2", &e.sender, x, y);
-            }
-        }
-        "Stickthiswindowtotherightside1Click" => {
-            app.main.forms_sticky[app.main.stick_it] = ui.tag(F, &e.sender) as i32;
-            save_sticky(app);
-            place_sticky(app, ui);
-        }
-        #[cfg(feature = "gpu")]
-        "GpuCheckBoxClick" => {
-            let on = ui.checked(F, "GpuCheckBox");
-            crate::gpu::set_enabled(on);
-            app.ini.set_extra("UseGPU", if on { "1" } else { "0" });
-        }
         "SpeedButton12Click" => ui.show("AnimationForm"),
         "SpeedButton15Click" => ui.show("FNavigator"),
         "MeshExportBtnClick" => ui.show("BulbTracer2Frm"),
-        "MutaGenBtnClick" => ui.show("MutaGenFrm"),
+        "MutaGenBtnClick" => {
+            super::mutagen_form::opening(app, ui);
+            ui.show("MutaGenFrm");
+        }
         "ZBufferGenBtnClick" => ui.show("ZBuf16BitGenFrm"),
         "HeightMapGenBtnClick" => ui.show("HeightMapGenFrm"),
         "SpeedButton25Click" => ui.show("BatchForm1"),
@@ -1170,7 +1132,6 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             let mt = ui.c(F, "Memo1").top;
             let p4 = ui.c(F, "Panel4").height;
             ui.cm(F, "Memo1").height = (ph - mt - p4 - 1).clamp(80, 240);
-            place_sticky(app, ui);
         }
         "FormCloseQuery" => {
             if app.eng.running() && app.main.calc_start.elapsed().as_secs() > 900 {
@@ -1592,7 +1553,16 @@ fn save_image(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
             std::fs::write(path, crate::jpeg::encode(w, h, &rgb, q)).map_err(|e| e.to_string())
         }
         "bmp" => std::fs::write(path, crate::frames::encode_bmp(w, h, &rgb)).map_err(|e| e.to_string()),
-        _ => crate::png::write_rgb(&path.to_string_lossy(), w, h, &rgb).map_err(|e| e.to_string()),
+        _ => {
+            // "png par": the text parameters as the PNG comment (SavePNG)
+            let mut data = crate::png::encode_rgb(w, h, &rgb);
+            if ui.checked(F, "CheckBox13") {
+                let sc = app.eng.base().map(|b| b.scene.clone()).unwrap_or_else(|| app.scene.clone());
+                let text = crate::m3p::raw_to_text(&crate::m3p::write(&sc), ui.f(F).caption());
+                data = crate::png::with_text(data, "Comment", &text);
+            }
+            std::fs::write(path, data).map_err(|e| e.to_string())
+        }
     };
     match res {
         Ok(()) => app.message(ui, &format!("Saved {}", path.display())),

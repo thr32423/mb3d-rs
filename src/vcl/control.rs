@@ -386,7 +386,7 @@ impl Control {
             show_hint: None,
             font: None,
             color: None,
-            transparent: false,
+            transparent: kind == Kind::SpeedButton,
             tag: 0,
             tab_order: 0,
             tab_stop: kind.focusable(),

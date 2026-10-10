@@ -165,6 +165,11 @@ pub struct Form {
     pub dirty: bool,
     pub active: bool,
     pub caret_on: bool,
+    /// LED in the title bar right of the caption (colour 0xRRGGBB); while
+    /// `led_blink` it blinks at half the caret's rate, `led_on` is its phase.
+    pub caption_led: Option<u32>,
+    pub led_blink: bool,
+    pub led_on: bool,
     pub repeat_at: Option<Instant>,
     pub last_click: (Instant, i32, i32, Option<Id>),
     /// title bar button under the mouse / pressed (0 close, 1 max, 2 min)
@@ -241,6 +246,9 @@ impl Form {
             dirty: true,
             active: false,
             caret_on: true,
+            caption_led: None,
+            led_blink: false,
+            led_on: true,
             repeat_at: None,
             last_click: (Instant::now(), 0, 0, None),
             nc_hot: -1,

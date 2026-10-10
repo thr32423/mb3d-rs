@@ -263,6 +263,10 @@ impl Form {
             let right = buttons.iter().map(|(_, r)| r.x).min().unwrap_or(win_w);
             let old = cv.clip_to(Rect::new(tx, b, right - tx - 4, ch));
             cv.text(tx, b + (ch - lh) / 2, self.caption(), &tf, th.caption_text(active));
+            if let Some(c) = self.caption_led {
+                let lx = tx + cv.text_width(&tf, self.caption()) + 10;
+                draw_led(cv, Rect::new(lx, b + (ch - 9) / 2, 18, 9), c, self.led_on);
+            }
             cv.set_clip(old);
             for (k, r) in buttons {
                 th.caption_button(cv, r, k as u8, self.nc_hot == k, self.nc_pressed == k);
@@ -656,6 +660,10 @@ impl Form {
     fn paint_speed_button(&self, cv: &mut Canvas, th: &Theme, id: Id, r: Rect, en: bool, hot: bool, pressed: bool) {
         let c = &self.ctl[id];
         let st = BtnState { hot, pressed, down: c.down, enabled: en, flat: c.flat, ..Default::default() };
+        // a flat button with Transparent = False hides what lies under it
+        if c.flat && !c.transparent {
+            cv.fill(r, self.bg(id, th));
+        }
         th.button(cv, r, st);
         let font = self.font(id);
         let tc = if en { th.button_text(&st) } else { th.text_disabled() };
@@ -1170,4 +1178,23 @@ pub fn decode_ico(d: &[u8], size: usize) -> Option<super::bitmap::Bitmap> {
         }
     }
     Some(b)
+}
+
+/// The title bar LED: a sunken frame with the lamp lit in `c` (with a
+/// highlight stripe) or dark.
+fn draw_led(cv: &mut Canvas, r: Rect, c: u32, on: bool) {
+    let mix = |c: u32, t: u32, k: u32| {
+        let ch = |s: u32| ((c >> s & 255) * (256 - k) + (t >> s & 255) * k) >> 8 << s;
+        ch(16) | ch(8) | ch(0)
+    };
+    let c = c & 0xFF_FFFF;
+    cv.fill(r, 0xFF20_2020);
+    let lamp = Rect::new(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+    if on {
+        cv.fill(lamp, 0xFF00_0000 | c);
+        cv.fill(Rect::new(lamp.x + 1, lamp.y, lamp.w - 2, 2), 0xFF00_0000 | mix(c, 0xFFFFFF, 140));
+        cv.fill(Rect::new(lamp.x, lamp.y + lamp.h - 1, lamp.w, 1), 0xFF00_0000 | mix(c, 0, 80));
+    } else {
+        cv.fill(lamp, 0xFF00_0000 | mix(c, 0, 170));
+    }
 }

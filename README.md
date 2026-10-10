@@ -101,10 +101,8 @@ the controls itself in MB3D's two looks: *Glossy* (MB3D's default dark
 theme) and *Windows* (Prefs ▸ Visual themes). Text is drawn with the
 bundled Liberation fonts; on Windows Tahoma is used if present.
 
-As in MB3D the Formulas, Lighting and Post processing windows stick to the
-right side of the main window and follow it when it moves; right-click
-their buttons for left side or not sticky, or drag one of them next to a
-side of the main window to snap it there. Wayland does not let a program
+The Formulas, Lighting and Post processing windows are ordinary windows
+that move independently of the main window. Wayland does not let a program
 place its windows, so on a Wayland desktop on Linux the program uses
 X11 (XWayland) when it is available; `MB3D_WAYLAND=1` makes it use Wayland
 anyway (the compositor then places the windows). A tiling compositor
@@ -362,11 +360,14 @@ batch panel.
 
 The main calculation (the ray marching of every pixel) runs on the
 graphics card through [wgpu](https://wgpu.rs) (Vulkan, Metal, DirectX 12)
-when the scene allows it, and on the CPU otherwise. It is on by default:
+whenever the scene allows it, and on the CPU otherwise; there is nothing
+to switch:
 
-* in the program: the **GPU** box in the top bar (right of the *Prefs*
-  tab) switches it on and off; it is saved with the other settings, and its
-  hint says where the last calculation ran;
+* in the program, a blinking LED right of the window title shows where the
+  last calculation ran: **green** all on the graphics card, **orange**
+  mixed (ray marching on the graphics card, shadows / ambient occlusion /
+  reflections on the CPU), **red** on the CPU (also Monte Carlo renders),
+  grey before the first calculation;
 * `mb3d` uses it too (it prints `calculated on: ...`); `--cpu` calculates
   on the CPU only;
 * the environment variable `MB3D_GPU=0` switches it off for both.

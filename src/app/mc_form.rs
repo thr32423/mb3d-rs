@@ -328,6 +328,8 @@ fn start(app: &mut Mb3d, ui: &mut Ui) {
     app.mc.seen_ver = 0;
     app.mc.seen_live = 0;
     app.mc.running = true;
+    app.main.led = super::main_form::Led::Cpu;
+    super::main_form::show_led(ui, app.main.led, true);
     app.mc.start = Instant::now();
     ui.set_caption(F, "Button2", "Stop rendering");
     for c in ["Button3", "Button8", "Button9"] {
@@ -405,6 +407,7 @@ fn finish(app: &mut Mb3d, ui: &mut Ui) {
         return;
     }
     app.mc.running = false;
+    super::main_form::show_led(ui, app.main.led, false);
     app.mc.calc_time += (app.mc.start.elapsed().as_secs_f64() * 10.0) as i64;
     ui.set_visible(F, "ProgressBar1", false);
     ui.set_visible(F, "Label8", false);

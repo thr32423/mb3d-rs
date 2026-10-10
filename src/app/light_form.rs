@@ -267,18 +267,159 @@ fn save_custom_preset(app: &Mb3d, i: usize) {
     let _ = std::fs::write(crate::appdirs::app_folder().join(format!("color_preset_{}.bin", i + 1)), d);
 }
 
-/// Preset glyph: the palette colours of the preset.
-fn preset_glyph(l: &Lighting, w: usize, h: usize) -> Bitmap {
-    let mut b = Bitmap::new(w, h, 0xFF00_0000);
-    for x in 0..w {
-        let i = (x * 4 / w).min(3);
-        let c = argb(l.palette[i].diffuse);
-        for y in 0..h {
-            b.px[y * w + x] = if y < h / 3 { argb(l.amb_top) } else { c };
+/// `RenderPresetQuat`: the little quaternion of the preset buttons, 34 x 34
+/// samples of (depth, light X angle, light Y angle); depth 32768 is the
+/// background.  Angles in pi / 16384 units.
+#[allow(clippy::approx_constant)] // MB3D's rounded constants
+fn preset_quat() -> &'static [(i32, i32, i32)] {
+    static Q: std::sync::OnceLock<Vec<(i32, i32, i32)>> = std::sync::OnceLock::new();
+    Q.get_or_init(|| {
+        // isMemberQuat: smooth iteration count of the quaternion Mandelbrot
+        let smooth = |c: [f64; 3]| {
+            let (mut x, mut y, mut z, mut w) = (c[0], c[1], c[2], 0.0);
+            let mut it = 0;
+            let mut r;
+            loop {
+                let (xt, yt, zt) = (x, y, z);
+                x = x * x - y * y - z * z - w * w + c[0];
+                y = 2.0 * (y * xt + z * w) + c[1];
+                z = 2.0 * (z * xt - yt * w) + c[2];
+                w = 2.0 * (w * xt + yt * zt);
+                r = x * x + y * y + z * z + w * w;
+                it += 1;
+                if it >= 10 || r > 8.0 {
+                    break;
+                }
+            }
+            if r <= 1.0 {
+                it as f64
+            } else {
+                it as f64 - (0.5 * r.ln()).ln() * 1.4427
+            }
+        };
+        let mut v = Vec::with_capacity(34 * 34);
+        for y in 0..34 {
+            for x in 1..=34 {
+                let mut c = [x as f64 * 0.07 - 1.75, y as f64 * 0.07 - 1.156, -1.5];
+                let mut de = 0.055;
+                let mut s;
+                loop {
+                    c[2] += de * 0.3;
+                    s = smooth(c);
+                    de = (1.0 / (1.0 + (s - 3.0).exp())).abs() + 0.02;
+                    if c[2] > 0.5 || de < 0.04 {
+                        break;
+                    }
+                }
+                if c[2] > 0.499 {
+                    v.push((32768, 0, 0));
+                    continue;
+                }
+                let z = 32767 - ((1.0 - c[2]) * 9000.0).round() as i32;
+                let d = s;
+                let n3 = d - smooth([c[0], c[1], c[2] - 0.001]);
+                let n2 = d - smooth([c[0], c[1] + 0.001, c[2]]);
+                let n1 = smooth([c[0] - 0.001, c[1], c[2]]) - d;
+                let k = 1.0 / (n1 * n1 + n2 * n2 + n3 * n3 + 0.01).sqrt();
+                let a = |t: f64| ((t * k).clamp(-1.0, 1.0).asin() * 5215.1891752352).round() as i32 & 0x7FFF;
+                v.push((z, a(n1), a(n2)));
+            }
+        }
+        v
+    })
+}
+
+/// Preset glyph (`MakeColPresetGlyph`): the little quaternion lit with the
+/// preset (`CalcPixel`), 34 x 34 averaged down to 17 x 17 in a 19 x 17
+/// glyph whose side columns are the transparent colour.
+#[allow(clippy::approx_constant)] // MB3D's rounded constants
+fn preset_glyph(l: &Lighting, tb: [i64; 3]) -> Bitmap {
+    const SPEC_F: [f64; 8] = [1.0, 1.4142, 2.0, 2.8284, 4.0, 5.6568, 8.0, 11.313];
+    let f = |c: [u8; 3]| c.map(|v| v as f64);
+    let k16 = 16384.0 / std::f64::consts::PI;
+    let q = preset_quat();
+    let mut img = vec![[0f64; 3]; 34 * 34];
+    for y in 0..34 {
+        let dy = y as f64 * 0.03;
+        for x in 0..34 {
+            let (zpos, lxa, lya) = q[y * 34 + x];
+            let (d1, d2) = (f(l.depth_col), f(l.depth_col2));
+            let depth = [0, 1, 2].map(|i| d1[i] * (1.0 - dy) + d2[i] * dy);
+            let out = &mut img[y * 34 + x];
+            *out = depth;
+            if zpos >= 32768 {
+                continue;
+            }
+            let mut amb_sh = 0.6 - (3.3 - (32767 - zpos) as f64 * 3.6666e-4);
+            let col_index = (x as f64 + 1.0) * 1058.0 - 7800.0;
+            // the palette colours at colIndex
+            let pal = &l.palette;
+            let mut i2 = 5;
+            while i2 < 10 && (pal[i2].position as f64) < col_index {
+                i2 += 1;
+            }
+            while i2 > 1 && pal[i2 - 1].position as f64 >= col_index {
+                i2 -= 1;
+            }
+            let i1 = i2 - 1;
+            let mut ir = pal[i2.min(9)].position as f64;
+            if i2 > 9 {
+                i2 = 0;
+                ir = 32767.0;
+            }
+            let (dif, spe) = if l.no_col_ipol {
+                (f(pal[i1].diffuse).map(|v| v / 255.0), f(pal[i1].specular).map(|v| v / 255.0))
+            } else {
+                let t = (col_index - pal[i1].position as f64) / 255.0 / (ir - pal[i1].position as f64).max(1.0);
+                let s = 1.0 / 255.0 - t;
+                let mix = |a: [u8; 3], b: [u8; 3]| [0, 1, 2].map(|i| a[i] as f64 * s + b[i] as f64 * t);
+                (mix(pal[i1].diffuse, pal[i2].diffuse), mix(pal[i1].specular, pal[i2].specular))
+            };
+            let t3 = ((zpos - 20000) as f64 * 0.0001 + 1.0).max(0.0);
+            let dep_c = depth.map(|v| v * (1.0 - t3).max(0.0));
+            let t3 = t3 * amb_sh;
+            let (amb2, spec_k, diff_k) = (tb[2] as f64 * 0.005, tb[0] as f64 * 0.005, tb[1] as f64 * 0.005);
+            let (mut li_dif, mut li_spe) = ([0f64; 3], [0f64; 3]);
+            for lt in &l.lights[..4] {
+                // Loption = 0: a global light that is on
+                if !lt.on || lt.positional || lt.relative_to_object || !lt.hs_enabled {
+                    continue;
+                }
+                let sf = SPEC_F[lt.spec_func as usize & 7];
+                let fold = |a: i32| {
+                    let a = a & 0x7FFF;
+                    if a > 16383 { 32767 - a } else { a }
+                };
+                let a1 = (sf * fold((lt.x_angle * k16 * 0.5).round() as i32 + lxa) as f64).round() as i32;
+                let a3 = (sf * fold((lt.y_angle * k16 * 0.5).round() as i32 + lya) as f64).round() as i32;
+                let lc = f(lt.color);
+                if (a1 | a3) < 16384 {
+                    let g = (-((a1 as f64 / 16384.0).powi(2) + (a3 as f64 / 16384.0).powi(2)) * 9.0).exp() * spec_k;
+                    li_spe = [0, 1, 2].map(|i| li_spe[i] + lc[i] * g);
+                }
+                let ax = ((lt.x_angle * k16).round() as i32 + lxa) as f64 / k16;
+                let ay = ((lt.y_angle * k16).round() as i32 + lya) as f64 / k16;
+                let d = crate::lighting::get_cos_tab_val(lt.diff_func as usize & 3, (ax.cos() * ay.cos()) as f32, 0.0) as f64 * diff_k;
+                li_dif = [0, 1, 2].map(|i| li_dif[i] + lc[i] * d);
+            }
+            let (a1, a2) = (f(l.amb_top), f(l.amb_bottom));
+            amb_sh = amb_sh.min(1.0);
+            for i in 0..3 {
+                let amb = dif[i] * (li_dif[i] + (a1[i] * (1.0 - dy) + a2[i] * dy) * amb2) + spe[i] * li_spe[i];
+                out[i] = amb * ((dif[i] + spe[i] * 0.5) * (1.0 - amb_sh) + amb_sh) * t3 + dep_c[i];
+            }
         }
     }
-    // the transparent key colour of VCL glyphs is the bottom left pixel
-    b.px[(h - 1) * w] = 0xFFFF_00FF;
+    let key = 0xFFFF_FDFE;
+    let mut b = Bitmap::new(19, 17, key);
+    for y in 0..17 {
+        for x in 0..17 {
+            let p = |dx: usize, dy: usize| img[(y * 2 + dy) * 34 + x * 2 + dx];
+            let v = |dx: usize, dy: usize, i: usize| p(dx, dy)[i].clamp(0.0, 255.0) as u32;
+            let c = [0, 1, 2].map(|i| (v(0, 0, i) + v(1, 0, i) + v(0, 1, i) + v(1, 1, i)) >> 2);
+            b.px[y * 19 + x + 1] = 0xFF00_0000 | c[0] << 16 | c[1] << 8 | c[2];
+        }
+    }
     b
 }
 
@@ -870,16 +1011,17 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             if app.light.first_show {
                 app.light.first_show = false;
                 for k in 1..=5 {
-                    let (l, _) = builtin_preset(k);
+                    let (l, tb) = builtin_preset(k);
                     let c = ui.cm(F, &format!("SpeedButton{}", k + 14));
-                    c.glyph = Some(preset_glyph(&l, 22, 12));
+                    c.glyph = Some(preset_glyph(&l, tb));
                     c.num_glyphs = 1;
                 }
                 for k in 0..10 {
                     if load_custom_preset(app, k) {
                         let l = app.light.custom[k].clone().unwrap();
+                        let tb = app.light.custom_tb[k];
                         let c = ui.cm(F, &format!("SpeedButton{}", k + 20));
-                        c.glyph = Some(preset_glyph(&l, 22, 12));
+                        c.glyph = Some(preset_glyph(&l, tb));
                         c.num_glyphs = 1;
                     }
                 }
@@ -1225,8 +1367,9 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                 app.light.custom_tb[t - 6] = [pos(ui, "TrackBar7"), pos(ui, "TrackBar5"), pos(ui, "TrackBar8")];
                 save_custom_preset(app, t - 6);
                 let l = app.scene.lighting.clone();
+                let tb = app.light.custom_tb[t - 6];
                 let c = ui.cm(F, &e.sender);
-                c.glyph = Some(preset_glyph(&l, 22, 12));
+                c.glyph = Some(preset_glyph(&l, tb));
                 c.num_glyphs = 1;
             } else {
                 let keep = ui.checked(F, "CheckBox11");

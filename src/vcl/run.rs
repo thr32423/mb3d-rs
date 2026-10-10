@@ -53,6 +53,8 @@ struct Runner<A: App> {
     mods: ModifiersState,
     proxy: EventLoopProxy<UserEvent>,
     last_blink: Instant,
+    /// caret blinks so far (the title bar LED toggles on every second one)
+    blinks: u64,
     last_idle: Instant,
     caption_click: (Instant, usize),
     /// the form in mouse-look mode
@@ -61,9 +63,8 @@ struct Runner<A: App> {
 }
 
 /// The event loop. On Linux X11 is preferred, also on a Wayland desktop
-/// (through XWayland): MB3D places its windows next to each other (the
-/// sticky formula and lighting windows), and Wayland does not let a program
-/// position its windows. `MB3D_WAYLAND=1` uses Wayland anyway.
+/// (through XWayland): the windows open at their places of the .dfm files,
+/// and Wayland does not let a program position its windows. `MB3D_WAYLAND=1` uses Wayland anyway.
 fn event_loop() -> Result<EventLoop<UserEvent>, String> {
     #[cfg(all(unix, not(target_os = "macos")))]
     if std::env::var_os("MB3D_WAYLAND").is_none() && x11_reachable() {
@@ -99,6 +100,7 @@ pub fn run<A: App + 'static>(mut ui: Ui, app: A) -> Result<(), String> {
         mods: ModifiersState::empty(),
         proxy,
         last_blink: Instant::now(),
+        blinks: 0,
         last_idle: Instant::now(),
         caption_click: (Instant::now() - Duration::from_secs(10), usize::MAX),
         look: None,
@@ -707,7 +709,9 @@ impl<A: App> Runner<A> {
         let blink = now.duration_since(self.last_blink) >= Duration::from_millis(530);
         if blink {
             self.last_blink = now;
+            self.blinks += 1;
         }
+        let led_tick = blink && self.blinks % 2 == 0;
         next = next.min(self.last_blink + Duration::from_millis(530));
         for fi in 0..self.ui.forms.len() {
             if !self.ui.forms[fi].visible {
@@ -720,6 +724,10 @@ impl<A: App> Runner<A> {
             let f = &mut self.ui.forms[fi];
             if let Some(t) = f.repeat_at {
                 next = next.min(t);
+            }
+            if led_tick && f.led_blink && f.caption_led.is_some() {
+                f.led_on = !f.led_on;
+                f.dirty = true;
             }
             // caret
             if blink && f.active {

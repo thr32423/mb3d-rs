@@ -108,7 +108,11 @@ fn calculate_inner(
     let [x0, y0, w, h] = p.rect;
     let (x0, y0, w, h) = (x0 as usize, y0 as usize, w as usize, h as usize);
     #[cfg(feature = "gpu")]
-    if !two_d && crate::gpu::enabled() {
+    if two_d {
+        crate::gpu::set_status("CPU: 2D calculation (not on the GPU yet)".into());
+    } else if !crate::gpu::enabled() {
+        crate::gpu::set_status("CPU: the GPU is switched off".into());
+    } else {
         let gpu = crate::gpu::march(&p, progress, cancel, |y, row| {
             if let Some(f) = sink {
                 f(y, row);

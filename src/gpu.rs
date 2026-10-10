@@ -57,7 +57,7 @@ pub fn last_status() -> String {
     LAST.lock().map(|s| s.clone()).unwrap_or_default()
 }
 
-fn set_status(s: String) {
+pub fn set_status(s: String) {
     if let Ok(mut l) = LAST.lock() {
         *l = s;
     }

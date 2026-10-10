@@ -395,7 +395,7 @@ fn cos_tabs() -> &'static CosTabs {
 }
 
 /// `GetCosTabVal`: diffuse light function with roughness blending.
-fn get_cos_tab_val(tnr: usize, dotp: f32, rough: f32) -> f32 {
+pub(crate) fn get_cos_tab_val(tnr: usize, dotp: f32, rough: f32) -> f32 {
     let tabs = cos_tabs();
     let mut t = 62.0 - 60.0 * dotp;
     let mut ip = t.trunc() as i32 - 1;

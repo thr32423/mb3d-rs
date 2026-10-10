@@ -244,6 +244,19 @@ pub fn write_rgb(path: &str, width: usize, height: usize, rgb: &[u8]) -> std::io
     std::fs::File::create(path)?.write_all(&data)
 }
 
+/// `png` (from the encoders here) with a tEXt chunk `key` = `text` before
+/// its IEND chunk; the text is stored as Latin-1 (other characters as '?').
+pub fn with_text(mut png: Vec<u8>, key: &str, text: &str) -> Vec<u8> {
+    let latin1 = |s: &str| s.chars().map(|c| if (c as u32) < 256 && c != '\0' { c as u8 } else { b'?' }).collect::<Vec<u8>>();
+    let mut data = latin1(key);
+    data.push(0);
+    data.extend(latin1(text));
+    let iend = png.split_off(png.len() - 12);
+    chunk(&mut png, &crc32_table(), b"tEXt", &data);
+    png.extend(iend);
+    png
+}
+
 /// PNG file contents of an 8 bit greyscale image.
 pub fn encode_gray8(width: usize, height: usize, gray: &[u8]) -> Vec<u8> {
     encode(width, height, gray, 0, 8, 1)
@@ -267,6 +280,15 @@ mod tests {
     fn crc_known_value() {
         let t = crc32_table();
         assert_eq!(crc32(&t, b"IEND"), 0xAE426082);
+    }
+
+    #[test]
+    fn text_chunk_before_iend() {
+        let p = with_text(encode_rgb(1, 1, &[1, 2, 3]), "Comment", "Mandelbulb3Dv18{a}");
+        let i = p.windows(4).position(|w| w == b"tEXt").unwrap();
+        assert_eq!(&p[i + 4..i + 12], b"Comment\0");
+        assert_eq!(u32::from_be_bytes(p[i - 4..i].try_into().unwrap()), 26);
+        assert_eq!(&p[p.len() - 8..p.len() - 4], b"IEND");
     }
 
     #[test]

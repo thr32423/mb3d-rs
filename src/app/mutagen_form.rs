@@ -254,6 +254,29 @@ fn to_bitmap(rgb: &[u8], w: usize, h: usize, bw: usize, bh: usize) -> Bitmap {
     b
 }
 
+/// The window is opened (again): when the main window's parameters are no
+/// longer those the generations started from, the generations are dropped
+/// so that the next mutation starts from the current parameters (MB3D
+/// kept the old ones until the program was restarted).
+pub fn opening(app: &mut Mb3d, ui: &mut Ui) {
+    if app.mutagen.running || ui.showing(F) {
+        return;
+    }
+    let Some(root) = app.mutagen.generations.first().and_then(|g| g.first().cloned().flatten()) else { return };
+    app.make_scene(ui);
+    if root.member.scene.to_text() == app.scene.to_text() {
+        return;
+    }
+    app.mutagen.generations.clear();
+    app.mutagen.current = 0;
+    for i in 0..TREE.len() {
+        let b = blank(ui);
+        ui.set_picture(F, &image_name(i), Some(b));
+        ui.set_caption(F, &panel_name(i), "");
+    }
+    refresh_generation_label(app, ui);
+}
+
 /// The parameters of the main window as the root (`CreateInitialSet`).
 fn initial_from_main(app: &mut Mb3d, ui: &mut Ui) -> Option<GenMember> {
     app.make_scene(ui);

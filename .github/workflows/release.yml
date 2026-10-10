@@ -17,12 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, ext: "" }
-          - { os: windows-latest, target: x86_64-pc-windows-msvc, ext: ".exe" }
-          - { os: macos-latest, target: aarch64-apple-darwin, ext: "" }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, ext: "", asset: linux-x64 }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc, ext: ".exe", asset: windows-x64 }
+          - { os: macos-latest, target: aarch64-apple-darwin, ext: "", asset: macos-arm64 }
           # Intel Macs: cross-compiled on the Apple silicon runner (the
           # Intel macOS runners are retired)
-          - { os: macos-latest, target: x86_64-apple-darwin, ext: "" }
+          - { os: macos-latest, target: x86_64-apple-darwin, ext: "", asset: macos-x64 }
     steps:
       - uses: actions/checkout@v7
       # the original Mandelbulb3D folder (formulas, maps, parameters, sources)
@@ -65,13 +65,16 @@ jobs:
           cp README.md GETTING_STARTED.md LICENSE "$name"/
           mkdir -p "$name/examples"
           cp examples/*.m3s "$name/examples"/
-          if [ "${{ runner.os }}" = "Windows" ]; then 7z a "$name.zip" "$name" > /dev/null; else tar czf "$name.tar.gz" "$name"; fi
+          # the archive name has no version, so that the README can link to
+          # releases/latest/download/<archive>
+          if [ "${{ runner.os }}" = "Windows" ]; then archive=mb3d-rs-${{ matrix.asset }}.zip; 7z a "$archive" "$name" > /dev/null
+          else archive=mb3d-rs-${{ matrix.asset }}.tar.gz; tar czf "$archive" "$name"; fi
+          echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
+      # uploaded as it is (not zipped again): the artifact is the archive itself
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.target }}
-          path: |
-            mb3d-rs-*.tar.gz
-            mb3d-rs-*.zip
+          path: ${{ env.ARCHIVE }}
+          archive: false
           if-no-files-found: error
 
   release:
@@ -84,6 +87,7 @@ jobs:
         with:
           path: dist
           merge-multiple: true
+          skip-decompress: true
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}

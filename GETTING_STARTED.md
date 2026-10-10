@@ -7,15 +7,17 @@ installation.
 
 ## 1. Get the program
 
-Download the archive for your system from the
-[releases](../../releases) page and unpack it:
+Download the archive for your system and unpack it:
 
 | system | archive |
 |---|---|
-| Windows (64 bit) | `mb3d-rs-<version>-x86_64-pc-windows-msvc.zip` |
-| Linux (64 bit) | `mb3d-rs-<version>-x86_64-unknown-linux-gnu.tar.gz` |
-| macOS, Apple silicon | `mb3d-rs-<version>-aarch64-apple-darwin.tar.gz` |
-| macOS, Intel | `mb3d-rs-<version>-x86_64-apple-darwin.tar.gz` |
+| Windows (64 bit) | [mb3d-rs-windows-x64.zip](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-windows-x64.zip) |
+| Linux (64 bit) | [mb3d-rs-linux-x64.tar.gz](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-linux-x64.tar.gz) |
+| macOS, Apple silicon | [mb3d-rs-macos-arm64.tar.gz](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-macos-arm64.tar.gz) |
+| macOS, Intel | [mb3d-rs-macos-x64.tar.gz](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-macos-x64.tar.gz) |
+
+These links always give the latest release; older versions are on the
+[releases](../../releases) page.
 
 Or build it yourself with [Rust](https://rustup.rs) (stable):
 
@@ -26,7 +28,7 @@ cargo build --release          # target/release/Mandelbulb3D and target/release/
 ```
 
 On macOS, a downloaded binary may need
-`xattr -d com.apple.quarantine Mandelbulb3D mb3d` before the first start.
+`xattr -dr com.apple.quarantine .` (in the unpacked folder) before the first start.
 
 ## 2. Get MB3D's formulas and maps
 

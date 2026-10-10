@@ -18,6 +18,30 @@ files are rendered in batches.
 Formulas, Lighting, Post processing, Navigator, Animation and all tool
 windows, built from MB3D's own form files (see below).
 
+## Download
+
+Ready-to-run programs for the latest release (no installation needed):
+
+| System | Download |
+|---|---|
+| Windows (64 bit) | [mb3d-rs-windows-x64.zip](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-windows-x64.zip) |
+| Linux (64 bit) | [mb3d-rs-linux-x64.tar.gz](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-linux-x64.tar.gz) |
+| macOS, Apple silicon (M1 and later) | [mb3d-rs-macos-arm64.tar.gz](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-macos-arm64.tar.gz) |
+| macOS, Intel | [mb3d-rs-macos-x64.tar.gz](https://github.com/thr32423/mb3d-rs/releases/latest/download/mb3d-rs-macos-x64.tar.gz) |
+
+Unpack it and start **Mandelbulb3D** (`Mandelbulb3D.exe` on Windows) in the
+unpacked folder; `mb3d` is the command line renderer. The folder also has
+MB3D's formulas, maps and example parameters. Older versions and the
+release notes are on the [releases](https://github.com/thr32423/mb3d-rs/releases)
+page; [GETTING_STARTED.md](GETTING_STARTED.md) has the first steps.
+
+* Windows may show "Windows protected your PC" for a downloaded program:
+  click *More info* ▸ *Run anyway*.
+* macOS blocks programs downloaded from the internet that are not signed:
+  run `xattr -dr com.apple.quarantine .` in the unpacked folder once.
+
+## Building and the command line
+
 The renderer has **no external dependencies** (std only, including its own
 PNG and JPEG encoders); the windows use four crates (winit, softbuffer,
 fontdue, arboard). Everything builds with any recent stable Rust:

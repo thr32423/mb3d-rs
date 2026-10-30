@@ -2095,6 +2095,20 @@ Name2=نام
 ;Name
 NamedParams=نام والے پیرامیٹرز:
 ;Named Params:
+NaviExpBright=اصل چمک
+;True brightness
+NaviExpBrightHint=تصویر کو ویسا دکھاتا ہے جیسا حساب ہوا: چمک کا سلائیڈر لاگو نہیں ہوتا۔
+;Shows the picture as calculated: the brightness slider is not applied.
+NaviExpDetail=مرکزی ونڈو کی تفصیل
+;Main window's detail
+NaviExpDetailHint=نیویگیٹر کی تیز ترتیبات کے بجائے مرکزی ونڈو کے رے اسٹیپ، DE اسٹاپ اور بائنری تلاش کے مراحل سے حساب کرتا ہے۔\nسست، لیکن سطح کی تفصیل مرکزی تصویر جیسی دکھتی ہے۔
+;Calculates with the main window's raystep, DE stop and binary search steps instead of the navigator's faster settings.\nSlower, but the surface detail looks like the main picture.
+NaviExpLight=مرکزی ونڈو کی روشنی
+;Main window's lighting
+NaviExpLightHint=مرکزی ونڈو کی روشنی استعمال کرتا ہے اور روشنی کی ونڈو میں اس کی تبدیلیوں کی پیروی کرتا ہے۔\nیہاں کوئی روشنی پری سیٹ یا متحرک دھند چننے سے یہ بند ہو جاتا ہے۔
+;Uses the main window's lighting and follows its changes in the Lighting window.\nChoosing a light preset or the dynamic fog here turns it off.
+NaviExperimental=تجرباتی: مرکزی ونڈو جیسا
+;Experimental: match the main window
 Navigator=نیویگیٹر
 ;Navigator
 Navigator2=نیویگیٹر: {}

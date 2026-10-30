@@ -2230,6 +2230,58 @@ object FNavigator: TFNavigator
       OnClick = RadioGroup2Click
     end
   end
+  object Panel8: TPanel
+    Left = 0
+    Top = 587
+    Width = 640
+    Height = 46
+    BevelOuter = bvNone
+    TabOrder = 2
+    object GroupBox1: TGroupBox
+      Left = 4
+      Top = 0
+      Width = 632
+      Height = 44
+      Caption = '@MB:NaviExperimental'
+      TabOrder = 0
+      object ExpDetailCBx: TCheckBox
+        Left = 10
+        Top = 19
+        Width = 200
+        Height = 17
+        Hint = '@MB:NaviExpDetailHint'
+        Caption = '@MB:NaviExpDetail'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = ExpDetailCBxClick
+      end
+      object ExpBrightCBx: TCheckBox
+        Left = 220
+        Top = 19
+        Width = 190
+        Height = 17
+        Hint = '@MB:NaviExpBrightHint'
+        Caption = '@MB:NaviExpBright'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = ExpBrightCBxClick
+      end
+      object ExpLightCBx: TCheckBox
+        Left = 420
+        Top = 19
+        Width = 205
+        Height = 17
+        Hint = '@MB:NaviExpLightHint'
+        Caption = '@MB:NaviExpLight'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = ExpLightCBxClick
+      end
+    end
+  end
   object Timer1: TTimer
     Enabled = False
     Interval = 100

@@ -2094,6 +2094,20 @@ Name2=Miono
 ;Name
 NamedParams=Mionowóné parametrë:
 ;Named Params:
+NaviExpBright=Prôwdzëwô jasnosc
+;True brightness
+NaviExpBrightHint=Pòkazywô òbrôzk tak, jak béł wërechòwóny: sówk jasnoscë nie je brëkòwóny.
+;Shows the picture as calculated: the brightness slider is not applied.
+NaviExpDetail=Detale przédnégò òkna
+;Main window's detail
+NaviExpDetailHint=Rechùje z krokã proménia, zatrzimanim DE ë krokama binarnégò szëkaniô przédnégò òkna, nié z chùtczéjszima nastôwama nawigatora.\nWòlni, ale detale wiérzchù wëzdrzą jak na przédnym òbrôzkù.
+;Calculates with the main window's raystep, DE stop and binary search steps instead of the navigator's faster settings.\nSlower, but the surface detail looks like the main picture.
+NaviExpLight=Swiatło przédnégò òkna
+;Main window's lighting
+NaviExpLightHint=Brëkùje swiatła przédnégò òkna ë jidze za jegò zmianama w òknie Swiatło.\nWëbranié tu nastôwù swiatła abò dinamicznégò dôżdżu wëłączô to.
+;Uses the main window's lighting and follows its changes in the Lighting window.\nChoosing a light preset or the dynamic fog here turns it off.
+NaviExperimental=Eksperimentalno: jak w przédnym òknie
+;Experimental: match the main window
 Navigator=Nawigatór
 ;Navigator
 Navigator2=Nawigatór: {}

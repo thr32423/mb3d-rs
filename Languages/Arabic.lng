@@ -2095,6 +2095,20 @@ Name2=الاسم
 ;Name
 NamedParams=المعاملات المسماة:
 ;Named Params:
+NaviExpBright=السطوع الحقيقي
+;True brightness
+NaviExpBrightHint=يعرض الصورة كما حُسبت: لا يُطبَّق منزلق السطوع.
+;Shows the picture as calculated: the brightness slider is not applied.
+NaviExpDetail=تفاصيل النافذة الرئيسية
+;Main window's detail
+NaviExpDetailHint=يحسب بخطوة الشعاع وإيقاف DE وخطوات البحث الثنائي للنافذة الرئيسية بدلاً من إعدادات المتصفح الأسرع.\nأبطأ، لكن تفاصيل السطح تبدو كما في الصورة الرئيسية.
+;Calculates with the main window's raystep, DE stop and binary search steps instead of the navigator's faster settings.\nSlower, but the surface detail looks like the main picture.
+NaviExpLight=إضاءة النافذة الرئيسية
+;Main window's lighting
+NaviExpLightHint=يستخدم إضاءة النافذة الرئيسية ويتبع تغييراتها في نافذة الإضاءة.\nاختيار إعداد ضوء مسبق أو الضباب الديناميكي هنا يوقفه.
+;Uses the main window's lighting and follows its changes in the Lighting window.\nChoosing a light preset or the dynamic fog here turns it off.
+NaviExperimental=تجريبي: مثل النافذة الرئيسية
+;Experimental: match the main window
 Navigator=المستكشف
 ;Navigator
 Navigator2=المستكشف: {}

@@ -2095,6 +2095,20 @@ Name2=名前
 ;Name
 NamedParams=名前付きパラメータ:
 ;Named Params:
+NaviExpBright=実際の明るさ
+;True brightness
+NaviExpBrightHint=計算されたとおりの画像を表示します：明るさスライダーは適用されません。
+;Shows the picture as calculated: the brightness slider is not applied.
+NaviExpDetail=メインウィンドウの精細度
+;Main window's detail
+NaviExpDetailHint=ナビゲーターの高速設定の代わりに、メインウィンドウのレイステップ、DEストップ、二分探索ステップで計算します。\n遅くなりますが、表面の細部がメイン画像と同じに見えます。
+;Calculates with the main window's raystep, DE stop and binary search steps instead of the navigator's faster settings.\nSlower, but the surface detail looks like the main picture.
+NaviExpLight=メインウィンドウのライティング
+;Main window's lighting
+NaviExpLightHint=メインウィンドウのライティングを使い、ライティングウィンドウでの変更に追従します。\nここでライトプリセットや動的フォグを選ぶとオフになります。
+;Uses the main window's lighting and follows its changes in the Lighting window.\nChoosing a light preset or the dynamic fog here turns it off.
+NaviExperimental=実験的：メインウィンドウに合わせる
+;Experimental: match the main window
 Navigator=ナビゲーター
 ;Navigator
 Navigator2=ナビゲーター: {}

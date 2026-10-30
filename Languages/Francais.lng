@@ -2094,6 +2094,20 @@ Name2=Nom
 ;Name
 NamedParams=Paramètres nommés :
 ;Named Params:
+NaviExpBright=Luminosité réelle
+;True brightness
+NaviExpBrightHint=Affiche l'image telle que calculée : le curseur de luminosité n'est pas appliqué.
+;Shows the picture as calculated: the brightness slider is not applied.
+NaviExpDetail=Détail de la fenêtre principale
+;Main window's detail
+NaviExpDetailHint=Calcule avec le pas de rayon, l'arrêt DE et les pas de recherche binaire de la fenêtre principale au lieu des réglages plus rapides du navigateur.\nPlus lent, mais les détails de surface ressemblent à l'image principale.
+;Calculates with the main window's raystep, DE stop and binary search steps instead of the navigator's faster settings.\nSlower, but the surface detail looks like the main picture.
+NaviExpLight=Éclairage de la fenêtre principale
+;Main window's lighting
+NaviExpLightHint=Utilise l'éclairage de la fenêtre principale et suit ses changements dans la fenêtre Éclairage.\nChoisir ici un préréglage de lumière ou le brouillard dynamique le désactive.
+;Uses the main window's lighting and follows its changes in the Lighting window.\nChoosing a light preset or the dynamic fog here turns it off.
+NaviExperimental=Expérimental : comme la fenêtre principale
+;Experimental: match the main window
 Navigator=Navigateur
 ;Navigator
 Navigator2=Navigateur : {}

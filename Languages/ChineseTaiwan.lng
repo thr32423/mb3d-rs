@@ -2095,6 +2095,20 @@ Name2=名稱
 ;Name
 NamedParams=具名參數：
 ;Named Params:
+NaviExpBright=真實亮度
+;True brightness
+NaviExpBrightHint=依計算結果顯示圖像：不套用亮度滑桿。
+;Shows the picture as calculated: the brightness slider is not applied.
+NaviExpDetail=主視窗的細節
+;Main window's detail
+NaviExpDetailHint=使用主視窗的光線步長、DE 停止值與二分搜尋步數計算，而非導覽器較快的設定。\n較慢，但表面細節與主圖像一致。
+;Calculates with the main window's raystep, DE stop and binary search steps instead of the navigator's faster settings.\nSlower, but the surface detail looks like the main picture.
+NaviExpLight=主視窗的光照
+;Main window's lighting
+NaviExpLightHint=使用主視窗的光照，並跟隨光照視窗中的變更。\n在此選擇光照預設或動態霧會將其關閉。
+;Uses the main window's lighting and follows its changes in the Lighting window.\nChoosing a light preset or the dynamic fog here turns it off.
+NaviExperimental=實驗性：與主視窗一致
+;Experimental: match the main window
 Navigator=導航器
 ;Navigator
 Navigator2=導航器：{}

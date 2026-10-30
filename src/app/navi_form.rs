@@ -156,7 +156,7 @@ fn navi_scale(ui: &Ui) -> f64 {
 fn set_header_size(app: &mut Mb3d, ui: &Ui) {
     let st = &mut app.navi;
     let p2h = if ui.visible(F, "Panel2") { ui.c(F, "Panel2").height } else { 0 };
-    let hmax = (760 - ui.c(F, "Panel1").height - p2h).max(200);
+    let hmax = (760 - ui.c(F, "Panel1").height - p2h - ui.c(F, "Panel8").height).max(200);
     let (ow, oh) = (st.orig.0.max(1), st.orig.1.max(1));
     let (mut w, mut h);
     if oh * 640 / ow > hmax {
@@ -226,20 +226,23 @@ fn set_window_size(app: &mut Mb3d, ui: &mut Ui, panel2: bool) {
     let (w, h) = (app.navi.scene.width, app.navi.scene.height);
     let p2h = if panel2 { ui.c(F, "Panel2").height } else { 0 };
     let p1h = ui.c(F, "Panel1").height;
+    // the experimental options' strip, always at the bottom
+    let p8h = ui.c(F, "Panel8").height;
     // MB3D: Max(580, height + Panel1 + Panel2): below 580 the bottom panel
     // pushed the bar with its open/close arrows up, away from under the
     // mouse (they looked gone); the window grows by the panel instead, so
     // the bar stays where it is
-    let ch = (h + p1h).max(580) + p2h;
+    let ch = (h + p1h).max(580) + p2h + p8h;
     // MB3D: Max(646 (+ Panel3), width + Panel5.Width) kept room for the
     // adjustment panel also while it is hidden, which left a gap between
     // the image and the panel; the panel is added only when it is shown
     let pw = if ui.visible(F, "Panel3") { ui.c(F, "Panel3").width } else { 0 };
     let cw = 646.max(w) + pw;
     ui.set_client_size(F, cw, ch);
-    let p1top = ch - p2h - p1h;
+    let p1top = ch - p8h - p2h - p1h;
     ui.cm(F, "Panel1").top = p1top;
-    ui.cm(F, "Panel2").top = ch - p2h;
+    ui.cm(F, "Panel2").top = ch - p8h - p2h;
+    ui.cm(F, "Panel8").top = ch - p8h;
     let (x, y) = if w > 640 { (0, 0) } else { ((640 - w) / 2, (p1top - h) / 2) };
     let c = ui.cm(F, "Image1");
     c.set_bounds(x, y, w, h);
@@ -248,11 +251,35 @@ fn set_window_size(app: &mut Mb3d, ui: &mut Ui, panel2: bool) {
 }
 
 fn new_calc(app: &mut Mb3d, ui: &mut Ui) {
+    // experimental: the main window's lighting (taken from the Lighting
+    // window each time, so the navigator follows its changes)
+    if ui.checked(F, "ExpLightCBx") {
+        super::light_form::put_light_in_header(app, ui);
+        app.navi.scene.lighting = app.scene.lighting.clone();
+        app.navi.dynfog_changed = false;
+        let df = app.navi.scene.lighting.dyn_fog as i64;
+        ui.set_position(F, "UpDown1", df);
+        ui.set_caption(F, "Label38", &(df - 53).to_string());
+    }
+    let main_detail = ui.checked(F, "ExpDetailCBx");
+    let m = &app.scene;
+    let (m_step, m_limiter, m_bin, m_destop) = (m.z_step_div, m.raystep_limiter, m.bin_search_steps, m.de_stop);
     let st = &mut app.navi;
     let mut sc = st.scene.clone();
-    let hiq = ui.checked(F, "CheckBox4");
-    sc.z_step_div = 0.7 - if hiq { (st.quality + 6) as f64 * 0.05 } else { 0.0 };
-    sc.raystep_limiter = sc.raystep_limiter.max(sc.z_step_div * 0.5);
+    if main_detail {
+        // experimental: the main window's raystep and detail instead of
+        // the navigator's faster ones (a DE stop changed here is kept)
+        sc.z_step_div = m_step;
+        sc.raystep_limiter = m_limiter;
+        sc.bin_search_steps = m_bin;
+        if !st.destop_changed {
+            sc.de_stop = m_destop;
+        }
+    } else {
+        let hiq = ui.checked(F, "CheckBox4");
+        sc.z_step_div = 0.7 - if hiq { (st.quality + 6) as f64 * 0.05 } else { 0.0 };
+        sc.raystep_limiter = sc.raystep_limiter.max(sc.z_step_div * 0.5);
+    }
     sc.fov_y = ptf(&ui.text(F, "Edit3"));
     sc.optic = match ui.item_index(F, "RadioGroup2") {
         1 => crate::scene::CameraOptic::Planar,
@@ -298,7 +325,8 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         app.message(ui, &trf("@MB:Navigator2", &[&err]));
     }
     let Some(rgb) = rgb else { return };
-    let l = app.navi.lightness;
+    // experimental "true brightness": the picture as calculated
+    let l = if ui.checked(F, "ExpBrightCBx") { 1.0 } else { app.navi.lightness };
     let px: Vec<u8> = if (l - 1.0).abs() > 1e-3 { rgb.iter().map(|&v| (v as f64 * l).min(255.0) as u8).collect() } else { (*rgb).clone() };
     let mut b = Bitmap::from_rgb(w, h, &px);
     paint_coords(ui, &app.navi.scene, &mut b);
@@ -960,6 +988,10 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                 ui.set_text(F, "Edit2", &app.ini.get("NavLookAngle").to_string());
                 ui.set_text(F, "Edit3", &app.ini.get("NavFOVy").to_string());
                 ui.set_checked(F, "CheckBox2", app.ini.get("NaviAZERTY") == "1");
+                ui.set_checked(F, "ExpDetailCBx", app.ini.get("NavExpDetail") == "Yes");
+                ui.set_checked(F, "ExpBrightCBx", app.ini.get("NavExpBright") == "Yes");
+                ui.set_checked(F, "ExpLightCBx", app.ini.get("NavExpLight") == "Yes");
+                enable_experimental(ui);
                 ui.set_checked(F, "CheckBox5", app.ini.get("NavFkey") == "0");
                 ui.set_checked(F, "CheckBox4", app.ini.get("NavHiQ") != "No");
                 app.navi.double_click = app.ini.get("NavDoubleClickMode") != "No";
@@ -983,6 +1015,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             app.ini.set("NaviAZERTY", if ui.checked(F, "CheckBox2") { "1" } else { "0" });
             app.ini.set("NavFkey", if ui.checked(F, "CheckBox5") { "0" } else { "1" });
             app.ini.set("NavHiQ", if ui.checked(F, "CheckBox4") { "Yes" } else { "No" });
+            save_experimental(app, ui);
             if app.navi.look {
                 set_look(app, ui, false);
             }
@@ -996,6 +1029,17 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             navigate(app, ui, t, false);
         }
         "SpeedButton11Click" => insert_main(app, ui),
+        "ExpDetailCBxClick" | "ExpLightCBxClick" => {
+            enable_experimental(ui);
+            save_experimental(app, ui);
+            new_calc(app, ui);
+        }
+        "ExpBrightCBxClick" => {
+            enable_experimental(ui);
+            save_experimental(app, ui);
+            app.navi.ver = 0;
+            idle(app, ui);
+        }
         "SpeedButton14Click" => view_to_main(app, ui),
         "SpeedButton15Click" => {
             // the lighting of the main window
@@ -1182,6 +1226,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                     ui.set_enabled(F, &b, en);
                 }
             } else if let Some(l) = app.navi.presets[t].clone() {
+                leave_main_lighting(app, ui);
                 app.navi.scene.lighting = l;
                 let df = app.navi.scene.lighting.dyn_fog as i64;
                 ui.set_position(F, "UpDown1", df);
@@ -1208,6 +1253,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         }
         "UpDown1Click" => {
             if let Ev::UpDown { up } = e.ev {
+                leave_main_lighting(app, ui);
                 let l = &mut app.navi.scene.lighting;
                 l.dyn_fog = if up { (l.dyn_fog + 1.0).min(153.0) } else { (l.dyn_fog - 1.0).max(0.0) };
                 let df = l.dyn_fog as i64;
@@ -1459,6 +1505,39 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
 
 /// "Reset view": the position, direction and zoom taken from the main
 /// window (the adjusted values stay).
+/// The experimental options grey out what they replace: the navigator's
+/// quality (raystep) and its brightness slider.
+fn enable_experimental(ui: &mut Ui) {
+    let detail = ui.checked(F, "ExpDetailCBx");
+    ui.set_enabled(F, "CheckBox4", !detail);
+    ui.set_enabled(F, "UpDown4", !detail);
+    ui.set_enabled(F, "TrackBar1", !ui.checked(F, "ExpBrightCBx"));
+}
+
+fn save_experimental(app: &mut Mb3d, ui: &Ui) {
+    let yn = |b: bool| if b { "Yes" } else { "No" };
+    app.ini.set("NavExpDetail", yn(ui.checked(F, "ExpDetailCBx")));
+    app.ini.set("NavExpBright", yn(ui.checked(F, "ExpBrightCBx")));
+    app.ini.set("NavExpLight", yn(ui.checked(F, "ExpLightCBx")));
+}
+
+/// A light preset or dynamic fog chosen in the navigator ends "the main
+/// window's lighting" (the user's own choice wins).
+fn leave_main_lighting(app: &mut Mb3d, ui: &mut Ui) {
+    if ui.checked(F, "ExpLightCBx") {
+        ui.set_checked(F, "ExpLightCBx", false);
+        save_experimental(app, ui);
+    }
+}
+
+/// The Lighting window changed the main lighting: with the experimental
+/// "main window's lighting" on, the open navigator draws again with it.
+pub fn main_lighting_changed(app: &mut Mb3d, ui: &mut Ui) {
+    if ui.showing(F) && ui.checked(F, "ExpLightCBx") {
+        new_calc(app, ui);
+    }
+}
+
 fn reset_view(app: &mut Mb3d, ui: &mut Ui) {
     let Some(s0) = app.navi.start.clone() else { return };
     let sc = &mut app.navi.scene;

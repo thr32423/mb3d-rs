@@ -710,6 +710,7 @@ pub fn trigger_repaint(app: &mut Mb3d, ui: &mut Ui) {
     if app.eng.base().is_some() {
         app.eng.start(super::engine::Job::Relight { scene: app.scene.clone() });
     }
+    super::navi_form::main_lighting_changed(app, ui);
     ui.cm(F, "ComboBox3").font = Some(crate::vcl::font::Font { color: ui.theme.text_disabled(), custom_color: true, ..Default::default() });
 }
 

@@ -39,6 +39,9 @@ pub struct State {
     pub presets: [Option<Lighting>; 3],
     pub storing: bool,
     pub dynfog_changed: bool,
+    /// the navigator's own lighting while the experimental "main window's
+    /// lighting" draws with the main one (back when the option goes off)
+    pub own_light: Option<Lighting>,
     pub destop_changed: bool,
     pub adjust_first: bool,
     pub waker_set: bool,
@@ -71,6 +74,7 @@ impl Default for State {
             presets: [None, None, None],
             storing: false,
             dynfog_changed: false,
+            own_light: None,
             destop_changed: false,
             adjust_first: true,
             waker_set: false,
@@ -261,9 +265,17 @@ fn new_calc(app: &mut Mb3d, ui: &mut Ui) {
     // experimental: the main window's lighting (taken from the Lighting
     // window each time, so the navigator follows its changes)
     if ui.checked(F, "ExpLightCBx") {
+        if app.navi.own_light.is_none() {
+            app.navi.own_light = Some(app.navi.scene.lighting.clone());
+        }
         super::light_form::put_light_in_header(app, ui);
         app.navi.scene.lighting = app.scene.lighting.clone();
         app.navi.dynfog_changed = false;
+    } else if let Some(l) = app.navi.own_light.take() {
+        app.navi.scene.lighting = l;
+        let df = app.navi.scene.lighting.dyn_fog as i64;
+        ui.set_position(F, "UpDown1", df);
+        ui.set_caption(F, "Label38", &(df - 53).to_string());
         let df = app.navi.scene.lighting.dyn_fog as i64;
         ui.set_position(F, "UpDown1", df);
         ui.set_caption(F, "Label38", &(df - 53).to_string());
@@ -470,6 +482,7 @@ fn insert_main(app: &mut Mb3d, ui: &mut Ui) {
     app.navi.eng.stop();
     app.make_scene(ui);
     app.navi.scene = app.scene.clone();
+    app.navi.own_light = None;
     transform_header(app, ui);
     app.navi.start = Some(app.navi.scene.clone());
     app.navi.start_fixed = ui.checked(F, "CheckBox1");
@@ -1052,6 +1065,9 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             // the lighting of the main window
             super::light_form::put_light_in_header(app, ui);
             app.navi.scene.lighting = app.scene.lighting.clone();
+            if app.navi.own_light.is_some() {
+                app.navi.own_light = Some(app.navi.scene.lighting.clone());
+            }
             let df = app.navi.scene.lighting.dyn_fog as i64;
             ui.set_position(F, "UpDown1", df);
             ui.set_caption(F, "Label38", &(df - 53).to_string());
@@ -1531,6 +1547,7 @@ fn save_experimental(app: &mut Mb3d, ui: &Ui) {
 /// A light preset or dynamic fog chosen in the navigator ends "the main
 /// window's lighting" (the user's own choice wins).
 fn leave_main_lighting(app: &mut Mb3d, ui: &mut Ui) {
+    app.navi.own_light = None;
     if ui.checked(F, "ExpLightCBx") {
         ui.set_checked(F, "ExpLightCBx", false);
         save_experimental(app, ui);

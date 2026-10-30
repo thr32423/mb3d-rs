@@ -15,7 +15,7 @@
 
 use std::collections::VecDeque;
 use std::fs::{File, OpenOptions};
-use std::io::Write;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
@@ -175,11 +175,14 @@ fn stale_sessions(dir: &Path) -> Vec<String> {
             continue;
         }
         let p = e.path();
-        let Ok(f) = OpenOptions::new().read(true).write(true).open(&p) else { continue };
+        let Ok(mut f) = OpenOptions::new().read(true).write(true).open(&p) else { continue };
         if f.try_lock().is_err() {
             continue; // a session running now
         }
-        let info = std::fs::read_to_string(&p).unwrap_or_default();
+        // read through the locking handle: Windows locks are mandatory, a
+        // second handle's read fails while this one holds the lock
+        let mut info = String::new();
+        let _ = f.read_to_string(&mut info);
         let mut it = info.trim().split('\t');
         let (prog, pid, start) = (it.next().unwrap_or("?"), it.next().unwrap_or("?"), it.next().unwrap_or("?"));
         out.push(format!("{prog} (process {pid}) started {start} UTC"));

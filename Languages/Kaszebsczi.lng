@@ -2854,6 +2854,8 @@ Saved2=Zapisóné {}
 ;Saved {}
 SavedLower=zapisóné
 ;saved
+SavedOpenEXRFloatingPointColoursAnd=Zapisóné {} (OpenEXR, farwë zmiennoprzecynkowé ë warstwë)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Zapisóné {} (przezérné tło)
 ;Saved {} (transparent background)
 Saving=Zapisywanié:

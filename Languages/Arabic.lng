@@ -2855,6 +2855,8 @@ Saved2=حُفظ {}
 ;Saved {}
 SavedLower=محفوظ
 ;saved
+SavedOpenEXRFloatingPointColoursAnd=حُفظ {} (OpenEXR، ألوان بفاصلة عائمة وطبقات)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=حُفظ {} (خلفية شفافة)
 ;Saved {} (transparent background)
 Saving=الحفظ:

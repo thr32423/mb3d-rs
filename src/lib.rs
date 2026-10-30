@@ -50,6 +50,7 @@ pub mod denoise;
 #[allow(unsafe_code)]
 pub mod oidn;
 pub mod dof;
+pub mod exr;
 pub mod formulas;
 pub mod frames;
 pub mod gbuffer;

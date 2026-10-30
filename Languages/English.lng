@@ -2854,6 +2854,8 @@ Saved2=Saved {}
 ;the program
 SavedLower=saved
 ;the program
+SavedOpenEXRFloatingPointColoursAnd=Saved {} (OpenEXR, floating point colours and layers)
+;not used
 SavedTransparentBackground=Saved {} (transparent background)
 ;the program
 Saving=Saving:

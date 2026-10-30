@@ -2854,6 +2854,8 @@ Saved2={} gespeichert
 ;Saved {}
 SavedLower=gespeichert
 ;saved
+SavedOpenEXRFloatingPointColoursAnd={} gespeichert (OpenEXR, Fließkomma-Farben und Ebenen)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} gespeichert (transparenter Hintergrund)
 ;Saved {} (transparent background)
 Saving=Speichern:

@@ -2854,6 +2854,8 @@ Saved2=Disimpan {}
 ;Saved {}
 SavedLower=disimpan
 ;saved
+SavedOpenEXRFloatingPointColoursAnd=Disimpan {} (OpenEXR, warna floating point dan lapisan)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Disimpan {} (latar transparan)
 ;Saved {} (transparent background)
 Saving=Menyimpan:

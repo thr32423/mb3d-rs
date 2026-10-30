@@ -2431,6 +2431,12 @@ pub fn paint16(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> Vec<u16> {
     paint_with::<u16>(sc, p, gbuf, true, &|_, _| {}, &no_stage, &|| false).0
 }
 
+/// [`paint`] in floating point (1 = white), not clipped above white: the
+/// colours of the OpenEXR pictures, as shown (with the picture's gamma).
+pub fn paint_f32(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> Vec<f32> {
+    paint_with::<f32>(sc, p, gbuf, true, &|_, _| {}, &no_stage, &|| false).0
+}
+
 /// [`paint`], and the time of the reflections (None without them).
 pub fn paint_timed(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> (Vec<u8>, Option<f64>) {
     paint_with::<u8>(sc, p, gbuf, true, &|_, _| {}, &no_stage, &|| false)

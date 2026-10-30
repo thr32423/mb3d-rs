@@ -2854,6 +2854,8 @@ Saved2={} opgeslagen
 ;Saved {}
 SavedLower=opgeslagen
 ;saved
+SavedOpenEXRFloatingPointColoursAnd={} opgeslagen (OpenEXR, kleuren in drijvende komma en lagen)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} opgeslagen (transparante achtergrond)
 ;Saved {} (transparent background)
 Saving=Opslaan:

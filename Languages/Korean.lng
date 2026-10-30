@@ -2855,6 +2855,8 @@ Saved2={} 저장됨
 ;Saved {}
 SavedLower=저장됨
 ;saved
+SavedOpenEXRFloatingPointColoursAnd={} 저장됨 (OpenEXR, 부동소수점 색상과 레이어)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} 저장됨 (투명 배경)
 ;Saved {} (transparent background)
 Saving=저장:

@@ -2854,6 +2854,8 @@ Saved2=Salvato {}
 ;Saved {}
 SavedLower=salvato
 ;saved
+SavedOpenEXRFloatingPointColoursAnd=Salvato {} (OpenEXR, colori in virgola mobile e livelli)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Salvato {} (sfondo trasparente)
 ;Saved {} (transparent background)
 Saving=Salvataggio:

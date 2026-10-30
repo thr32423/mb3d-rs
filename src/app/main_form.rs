@@ -2918,7 +2918,7 @@ fn save_pic_dialog(app: &mut Mb3d, ui: &mut Ui, what: &str) {
         return;
     }
     let (filter, ext) = match what {
-        "png" => (format!("PNG (*.png)|*.png|{}|*.png|{}|*.png|{}|*.bmp", tr("@MB:PNG16BitColourPng"), tr("@MB:PNGTransparentBackgroundPng"), tr("@MB:BitmapBmp")), "png"),
+        "png" => (format!("PNG (*.png)|*.png|{}|*.png|{}|*.png|{}|*.bmp|OpenEXR (*.exr)|*.exr", tr("@MB:PNG16BitColourPng"), tr("@MB:PNGTransparentBackgroundPng"), tr("@MB:BitmapBmp")), "png"),
         "jpg" => ("JPEG (*.jpg)|*.jpg".to_string(), "jpg"),
         "jpgp" => ("JPEG + M3P (*.jpg)|*.jpg|PNG + M3P (*.png)|*.png".to_string(), "jpg"),
         _ => (format!("{}|*.png", tr("@MB:PNG16BitPng")), "png"),
@@ -2984,6 +2984,22 @@ fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
     }
     match std::fs::write(path, data) {
         Ok(()) => app.message(ui, &trf("@MB:Saved16BitColour", &[&path.display()])),
+        Err(e) => app.message(ui, &format!("{}: {e}", path.display())),
+    }
+}
+
+/// "OpenEXR": the colours in floating point (not clipped above white) with
+/// the opacity, depth and normal layers ([`crate::exr`]), reduced by the
+/// viewing scale.
+fn save_exr(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
+    let Some(b) = app.eng.base() else {
+        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        return;
+    };
+    let s = app.main.image_scale.max(1) as usize;
+    let l = crate::exr::layers(&b.scene, &b.params, &b.post, b.w, b.h, s);
+    match std::fs::write(path, crate::exr::encode(&l)) {
+        Ok(()) => app.message(ui, &trf("@MB:SavedOpenEXRFloatingPointColoursAnd", &[&path.display()])),
         Err(e) => app.message(ui, &format!("{}: {e}", path.display())),
     }
 }
@@ -3104,7 +3120,9 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
                 app.ini.dirs[super::ini::DIR_IMG] = d.to_path_buf();
             }
             let png = p.extension().is_some_and(|e| e.eq_ignore_ascii_case("png"));
-            if what == "savepng" && ui.filter_index == 2 && png {
+            if p.extension().is_some_and(|e| e.eq_ignore_ascii_case("exr")) {
+                save_exr(app, ui, p)
+            } else if what == "savepng" && ui.filter_index == 2 && png {
                 save_image16(app, ui, p)
             } else if what == "savepng" && ui.filter_index == 3 && png {
                 save_transparent(app, ui, p)

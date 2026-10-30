@@ -2854,6 +2854,8 @@ Saved2=Guardado {}
 ;Saved {}
 SavedLower=guardado
 ;saved
+SavedOpenEXRFloatingPointColoursAnd=Guardado {} (OpenEXR, colores en coma flotante y capas)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Guardado {} (fondo transparente)
 ;Saved {} (transparent background)
 Saving=Guardado:

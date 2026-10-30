@@ -2855,6 +2855,8 @@ Saved2={} を保存しました
 ;Saved {}
 SavedLower=保存した
 ;saved
+SavedOpenEXRFloatingPointColoursAnd={} を保存しました (OpenEXR、浮動小数点カラーとレイヤー)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} を保存しました (透明背景)
 ;Saved {} (transparent background)
 Saving=保存:

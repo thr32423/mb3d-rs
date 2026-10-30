@@ -35,7 +35,10 @@ OPTIONS:
     -i, --iterations <N>     Max iterations
         --scale <F>          Scale the image size (e.g. 0.1 for a preview of a .m3p)
         --aa <N>             Anti-aliasing: render N times larger and downsample
-    -o, --output <FILE>      Output PNG (default: mb3d.png); - writes it to the standard output
+    -o, --output <FILE>      Output PNG (default: mb3d.png); - writes it to the standard output;
+                             a name ending in .exr writes OpenEXR: colours in floating point
+                             (not clipped above white) with the layers A (opacity), Z (depth)
+                             and N.X, N.Y, N.Z (normals)
         --depth <FILE>       Also write a 16 bit depth map PNG
         --transparent        PNG with a transparent background (soft edges with --aa)
         --denoise <SIGMA>    Noise filter on the picture (DCT denoising as GIMP's Denoise DCT):
@@ -458,6 +461,10 @@ fn run() -> Result<(), String> {
             let _ = std::io::stderr().flush();
         }
     };
+    let exr = output.to_ascii_lowercase().ends_with(".exr");
+    if exr && (stereo_pair.is_some() || scene.tiling.is_some() || transparent || bits16 || denoise > 0.0) {
+        return Err(usage_err("OpenEXR output is for single pictures (not with --stereo-pair, --tiles, --transparent, --bits or --denoise)"));
+    }
     if bits16 && (stereo_pair.is_some() || scene.tiling.is_some()) {
         return Err(usage_err("--bits 16 is for single pictures (not with --stereo-pair or --tiles)"));
     }
@@ -661,7 +668,15 @@ fn render_single(
         }
     }
     // 16 bit: the colours before the rounding to 8 bit
-    let (rgb, rgb16) = if bits16 { (Vec::new(), Some(mb3d::render::paint16(scene, &params, &gbuffer))) } else { (mb3d::render::paint(scene, &params, &gbuffer), None) };
+    // OpenEXR paints its own colours (floating point) below
+    let exr = output.to_ascii_lowercase().ends_with(".exr");
+    let (rgb, rgb16) = if bits16 {
+        (Vec::new(), Some(mb3d::render::paint16(scene, &params, &gbuffer)))
+    } else if exr {
+        (Vec::new(), None)
+    } else {
+        (mb3d::render::paint(scene, &params, &gbuffer), None)
+    };
     mb3d::render::stage_times_print();
     let res = mb3d::RenderResult {
         width: scene.width as usize,
@@ -696,7 +711,10 @@ fn render_single(
             mb3d::elog!("  dof_focus for the image centre: {:.5}", z / res.width as f64);
         }
     }
-    if transparent {
+    if exr {
+        let l = mb3d::exr::layers(scene, &params, &res.gbuffer, res.width, res.height, aa);
+        write_out(output, &mb3d::exr::encode(&l))?;
+    } else if transparent {
         write_transparent(output, &res.rgb, &res.gbuffer, res.width, res.height, aa, denoise)?;
     } else if let Some(rgb16) = rgb16 {
         let (px, ow, oh) = if aa > 1 { mb3d::render::downsample(&rgb16, res.width, res.height, aa) } else { (rgb16, res.width, res.height) };

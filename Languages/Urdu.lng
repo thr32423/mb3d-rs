@@ -2855,6 +2855,8 @@ Saved2={} محفوظ ہوا
 ;Saved {}
 SavedLower=محفوظ ہوا
 ;saved
+SavedOpenEXRFloatingPointColoursAnd={} محفوظ ہوا (OpenEXR، فلوٹنگ پوائنٹ رنگ اور پرتیں)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} محفوظ ہوا (شفاف پس منظر)
 ;Saved {} (transparent background)
 Saving=محفوظ کرنا:

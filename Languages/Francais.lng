@@ -2854,6 +2854,8 @@ Saved2={} enregistré
 ;Saved {}
 SavedLower=enregistré
 ;saved
+SavedOpenEXRFloatingPointColoursAnd={} enregistré (OpenEXR, couleurs en virgule flottante et calques)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} enregistré (arrière-plan transparent)
 ;Saved {} (transparent background)
 Saving=Enregistrement :

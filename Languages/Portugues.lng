@@ -2854,6 +2854,8 @@ Saved2=Salvo {}
 ;Saved {}
 SavedLower=salvo
 ;saved
+SavedOpenEXRFloatingPointColoursAnd=Salvo {} (OpenEXR, cores em ponto flutuante e camadas)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Salvo {} (fundo transparente)
 ;Saved {} (transparent background)
 Saving=Salvando:

@@ -26,6 +26,8 @@ pub trait Sample: Copy + Default + Send + Sync + 'static {
     fn from_dof(v: f32) -> Self;
     /// the value on the 8 bit scale (0 to 255)
     fn to_255(self) -> f32;
+    /// keeps the colours above white (`f32`, the OpenEXR pictures)
+    const HDR: bool = false;
 }
 
 impl Sample for u8 {
@@ -63,6 +65,28 @@ impl Sample for u16 {
     #[inline]
     fn to_255(self) -> f32 {
         self as f32 / 257.0
+    }
+}
+
+/// Floating point (1 = white), not clipped above white: the OpenEXR
+/// pictures.
+impl Sample for f32 {
+    const HDR: bool = true;
+    #[inline]
+    fn from_paint(v: f32) -> f32 {
+        v / 255.0
+    }
+    #[inline]
+    fn from_unit(t: f32) -> f32 {
+        t
+    }
+    #[inline]
+    fn from_dof(v: f32) -> f32 {
+        v.max(0.0) / 255.0
+    }
+    #[inline]
+    fn to_255(self) -> f32 {
+        self * 255.0
     }
 }
 
@@ -1572,10 +1596,12 @@ impl LightVals {
         let sh = self.shade(si, &plv, cam, &ShadeOpts::default());
         let out = sh.light;
         let sqr = self.sqr;
+        // above white only in floating point
+        let top = if S::HDR { f32::MAX } else { 255.0 };
         let mut c = if sqr {
-            out.map(|v| (v * 255.0).clamp(0.0, 65025.0).sqrt())
+            out.map(|v| (v * 255.0).clamp(0.0, top * top).sqrt())
         } else {
-            [out[0].clamp(0.0, 255.0), out[1].clamp(0.0, 255.0), out[2].clamp(0.0, 255.0)]
+            out.map(|v| v.clamp(0.0, top))
         };
         if self.gamma_h != 0 {
             let g = if self.gamma_h > 0 {

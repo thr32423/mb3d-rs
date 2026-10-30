@@ -2855,6 +2855,8 @@ Saved2=已儲存 {}
 ;Saved {}
 SavedLower=已儲存
 ;saved
+SavedOpenEXRFloatingPointColoursAnd=已儲存 {}（OpenEXR，浮點色彩與圖層）
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=已儲存 {}（透明背景）
 ;Saved {} (transparent background)
 Saving=儲存：

@@ -2855,6 +2855,8 @@ Saved2={} सहेजा गया
 ;Saved {}
 SavedLower=सहेजी गई
 ;saved
+SavedOpenEXRFloatingPointColoursAnd={} सहेजा गया (OpenEXR, फ़्लोटिंग पॉइंट रंग और परतें)
+;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} सहेजा गया (पारदर्शी पृष्ठभूमि)
 ;Saved {} (transparent background)
 Saving=सहेजना:

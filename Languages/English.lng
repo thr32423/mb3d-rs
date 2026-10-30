@@ -3224,6 +3224,8 @@ TheImageSizeChangedCalculateThe=the image size changed: calculate the image agai
 ;the program
 TheItsTrapModeDependsOn=The its.trap mode depends on the calculated option in the "Coloring" tab.
 ;LightAdjustForm.RadioGroup1.Hint
+TheLastSessionCrashed=The last session crashed: {}. More in the Log window (the icon in the title bar).
+;the program
 TheLastSessionDidNotEnd=The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 ;the program
 TheMainEditorIsStillRendering=The main editor is still rendering. Please stop it first or wait until it is done.
@@ -3472,8 +3474,6 @@ Viewing=Viewing
 ;Mand3DForm.GroupBox2.Caption
 Visible=Visible:
 ;LightAdjustForm.Label25.Caption, LightAdjustForm.Label32.Caption
-VisitTheOfficialWebSiteFor=Visit the official web site for news and updates: https://mb3d.overwhale.com
-;the program
 VolumeLightNr=Volume light nr:
 ;the program
 VolumetricResolution=Volumetric resolution:
@@ -3505,8 +3505,6 @@ WavefrontOBJObj=Wavefront OBJ (*.obj)
 Weight=Weight
 ;the program
 WeightColon=Weight:
-;the program
-WelcomeToMandelbulb3D=Welcome to Mandelbulb 3D!
 ;the program
 WhatDidIDoInMb3d=What did I do in mb3d today? Were there any errors?
 ;the program

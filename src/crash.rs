@@ -13,6 +13,8 @@ pub fn install(name: &'static str) {
     let default = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
         crate::log::error("crash", &format!("{info}"));
+        // the next start tells it crashed, and why (log.rs)
+        crate::log::mark_crash(&info.payload_as_str().map_or_else(|| format!("{info}"), str::to_string));
         note(name, &format!("{info}\n{}", std::backtrace::Backtrace::force_capture()));
         default(info);
     }));

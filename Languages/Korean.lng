@@ -3225,6 +3225,8 @@ TheImageSizeChangedCalculateThe=이미지 크기가 바뀌었습니다. 이미�
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap 모드는 "색상" 탭에서 계산된 옵션에 따라 달라집니다.
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=지난 세션이 비정상 종료되었습니다: {}. 자세한 내용은 로그 창(제목 표시줄의 아이콘)에 있습니다.
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=지난 세션이 제대로 끝나지 않았습니다(멈췄거나, 강제 종료되었거나, 비정상 종료됨): {}. 마지막으로 한 일은 로그(로그 창, 제목 표시줄의 아이콘)에 있습니다.
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=메인 편집기가 아직 렌더링 중입니다. 먼저 중지하거나 끝날 때까지 기다리십시오.
@@ -3473,8 +3475,6 @@ Viewing=보기
 ;Viewing
 Visible=표시:
 ;Visible:
-VisitTheOfficialWebSiteFor=소식과 업데이트는 공식 웹사이트를 방문하십시오: https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=볼륨 조명 번호:
 ;Volume light nr:
 VolumetricResolution=볼류메트릭 해상도:
@@ -3507,8 +3507,6 @@ Weight=가중치
 ;Weight
 WeightColon=가중치:
 ;Weight:
-WelcomeToMandelbulb3D=Mandelbulb 3D에 오신 것을 환영합니다!
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=오늘 mb3d에서 무엇을 했나요? 오류가 있었나요?
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=발생한 일

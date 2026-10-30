@@ -3225,6 +3225,8 @@ TheImageSizeChangedCalculateThe=画像サイズが変わりました: 画像を�
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap モードは「カラーリング」タブで計算に選んだオプションに依存します。
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=前回のセッションはクラッシュしました: {}。詳細はログウィンドウ (タイトルバーのアイコン) にあります。
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=前回のセッションは正常に終了しませんでした (フリーズ、強制終了、またはクラッシュ): {}。最後に行ったことはログ (ログウィンドウ、タイトルバーのアイコン) にあります。
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=メインエディターはまだレンダリング中です。先に停止するか、完了するまでお待ちください。
@@ -3473,8 +3475,6 @@ Viewing=表示
 ;Viewing
 Visible=表示:
 ;Visible:
-VisitTheOfficialWebSiteFor=最新情報とアップデートは公式サイトをご覧ください: https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=ボリュームライト番号:
 ;Volume light nr:
 VolumetricResolution=ボリューム解像度:
@@ -3507,8 +3507,6 @@ Weight=重み
 ;Weight
 WeightColon=重み:
 ;Weight:
-WelcomeToMandelbulb3D=Mandelbulb 3D へようこそ!
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=今日 mb3d で何をした? エラーはあった?
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=出来事

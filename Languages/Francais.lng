@@ -3224,6 +3224,8 @@ TheImageSizeChangedCalculateThe=la taille de l'image a changé : recalculez l'im
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=Le mode its.trap dépend de l'option calculée dans l'onglet « Coloration ».
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=La dernière session a planté : {}. Plus de détails dans la fenêtre Journal (l'icône dans la barre de titre).
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=La dernière session ne s'est pas terminée correctement (elle s'est figée, a été tuée ou a planté) : {}. Ce qu'elle a fait en dernier se trouve dans le journal (la fenêtre Journal, l'icône dans la barre de titre).
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=L'éditeur principal est encore en train de rendre. Arrêtez-le d'abord ou attendez qu'il ait terminé.
@@ -3472,8 +3474,6 @@ Viewing=Affichage
 ;Viewing
 Visible=Visible:
 ;Visible:
-VisitTheOfficialWebSiteFor=Visitez le site officiel pour les nouvelles et les mises à jour : https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=Lumière volum. n° :
 ;Volume light nr:
 VolumetricResolution=Résolution volumétrique :
@@ -3506,8 +3506,6 @@ Weight=Poids
 ;Weight
 WeightColon=Poids :
 ;Weight:
-WelcomeToMandelbulb3D=Bienvenue dans Mandelbulb 3D !
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=Qu'ai-je fait dans mb3d aujourd'hui ? Y a-t-il eu des erreurs ?
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=Ce qui s'est passé

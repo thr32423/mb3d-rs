@@ -3224,6 +3224,8 @@ TheImageSizeChangedCalculateThe=ukuran gambar berubah: hitung gambar lagi
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=Mode its.trap bergantung pada opsi yang dihitung di tab "Pewarnaan".
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=Sesi terakhir crash: {}. Selengkapnya di jendela Log (ikon di bilah judul).
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=Sesi terakhir tidak berakhir dengan benar (macet, dimatikan, atau crash): {}. Apa yang terakhir dilakukannya ada di log (jendela Log, ikon di bilah judul).
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=Editor utama masih merender. Hentikan dulu atau tunggu hingga selesai.
@@ -3472,8 +3474,6 @@ Viewing=Tampilan
 ;Viewing
 Visible=Terlihat:
 ;Visible:
-VisitTheOfficialWebSiteFor=Kunjungi situs web resmi untuk berita dan pembaruan: https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=No. cahaya volume:
 ;Volume light nr:
 VolumetricResolution=Resolusi volumetrik:
@@ -3506,8 +3506,6 @@ Weight=Bobot
 ;Weight
 WeightColon=Bobot:
 ;Weight:
-WelcomeToMandelbulb3D=Selamat datang di Mandelbulb 3D!
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=Apa yang saya lakukan di mb3d hari ini? Apakah ada galat?
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=Apa yang terjadi

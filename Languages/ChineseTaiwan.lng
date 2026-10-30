@@ -3225,6 +3225,8 @@ TheImageSizeChangedCalculateThe=影像大小已變更：請重新計算影像
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap 模式取決於「著色」分頁中所計算的選項。
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=上一個工作階段當機了：{}。更多資訊見「記錄」視窗（標題列中的圖示）。
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=上一個工作階段未正常結束（凍結、被終止或當機）：{}。它最後做了什麼記載於記錄中（「記錄」視窗，標題列中的圖示）。
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=主編輯器仍在渲染。請先停止，或等待完成。
@@ -3473,8 +3475,6 @@ Viewing=檢視
 ;Viewing
 Visible=可見：
 ;Visible:
-VisitTheOfficialWebSiteFor=請造訪官方網站以取得最新消息與更新：https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=體積光編號：
 ;Volume light nr:
 VolumetricResolution=體積解析度：
@@ -3507,8 +3507,6 @@ Weight=權重
 ;Weight
 WeightColon=權重：
 ;Weight:
-WelcomeToMandelbulb3D=歡迎使用 Mandelbulb 3D！
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=我今天在 mb3d 中做了什麼？有沒有發生任何錯誤？
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=發生的事

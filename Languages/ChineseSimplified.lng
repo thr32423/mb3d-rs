@@ -3225,6 +3225,8 @@ TheImageSizeChangedCalculateThe=图像尺寸已更改：请重新计算图像
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap 模式取决于"着色"选项卡中计算时所用的选项。
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=上次会话崩溃了：{}。更多信息见“日志”窗口（标题栏中的图标）。
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=上次会话未正常结束（卡死、被终止或崩溃）：{}。它最后所做的操作记录在日志中（“日志”窗口，标题栏中的图标）。
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=主编辑器仍在渲染。请先停止它或等待其完成。
@@ -3473,8 +3475,6 @@ Viewing=查看
 ;Viewing
 Visible=可见：
 ;Visible:
-VisitTheOfficialWebSiteFor=访问官方网站获取新闻和更新：https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=体积光编号：
 ;Volume light nr:
 VolumetricResolution=体积分辨率：
@@ -3507,8 +3507,6 @@ Weight=权重
 ;Weight
 WeightColon=权重：
 ;Weight:
-WelcomeToMandelbulb3D=欢迎使用 Mandelbulb 3D！
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=我今天在 mb3d 中做了什么？有没有出错？
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=发生了什么

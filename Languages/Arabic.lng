@@ -3225,6 +3225,8 @@ TheImageSizeChangedCalculateThe=تغير حجم الصورة: احسب الصو�
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=يعتمد وضع its.trap على الخيار المحسوب في تبويب «التلوين».
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=تعطلت الجلسة الأخيرة: {}. المزيد في نافذة سجل الأحداث (الأيقونة في شريط العنوان).
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=لم تنتهِ الجلسة الأخيرة كما يجب (تجمدت أو أُنهيت قسرًا أو تعطلت): {}. آخر ما فعلته مدوّن في سجل الأحداث (نافذة سجل الأحداث، الأيقونة في شريط العنوان).
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=لا يزال المحرر الرئيسي يصيّر. يرجى إيقافه أولًا أو الانتظار حتى ينتهي.
@@ -3473,8 +3475,6 @@ Viewing=المشاهدة
 ;Viewing
 Visible=مرئي:
 ;Visible:
-VisitTheOfficialWebSiteFor=زر الموقع الرسمي للأخبار والتحديثات: https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=رقم الضوء الحجمي:
 ;Volume light nr:
 VolumetricResolution=الدقة الحجمية:
@@ -3507,8 +3507,6 @@ Weight=الوزن
 ;Weight
 WeightColon=الوزن:
 ;Weight:
-WelcomeToMandelbulb3D=مرحبًا بك في Mandelbulb 3D!
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=ماذا فعلت في mb3d اليوم؟ هل كانت هناك أخطاء؟
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=ما حدث

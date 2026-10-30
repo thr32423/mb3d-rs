@@ -3224,6 +3224,8 @@ TheImageSizeChangedCalculateThe=wiôlgòsc òbrôzka sã zmieniła: wërechùj �
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=Trib its.trap zanôlégô òd wërechòwóny òptacji w karce "Farwienié".
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=Òstatnô sesjô miała awariã: {}. Wiãcy w òknie Dzénnik (ikòna na pasku titla).
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=Òstatnô sesjô nie skùńczëła sã pòprawno (zamarzła, òsta zabitô abò miała awariã): {}. Co òna robiła na òstatkù, je w dzénniku (òkno Dzénnik, ikòna na pasku titla).
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=Przédny editor wcyg renderëje. Nôprzód gò zatrzëmôj abò żdżë, jaż skùńczi.
@@ -3472,8 +3474,6 @@ Viewing=Òbzéranié
 ;Viewing
 Visible=Widzawny:
 ;Visible:
-VisitTheOfficialWebSiteFor=Òdwiedzë òficjalną starnã, bë miec nowinë ë aktualizacje: https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=Nr wòlumetricznégò widu:
 ;Volume light nr:
 VolumetricResolution=Wòlumetricznô rozdzélnosc:
@@ -3506,8 +3506,6 @@ Weight=Wôga
 ;Weight
 WeightColon=Wôga:
 ;Weight:
-WelcomeToMandelbulb3D=Witôjtaż w Mandelbulb 3D!
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=Co jem dzysô robił w mb3d? Bëłë jaczés felë?
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=Co sã stało

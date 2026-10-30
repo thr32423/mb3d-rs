@@ -15,8 +15,9 @@
 //! a running calculation; `lagwait:SECONDS` also prints the longest
 //! blocking of the window), `print:FORM:CONTROL` (its caption),
 //! `printtext:FORM:CONTROL` (its text), `rect:FORM:CONTROL` (where it is),
-//! `formpos:FORM` (the window's position and size) and `led`
-//! (the title bar LED of the main window).
+//! `formpos:FORM` (the window's position and size), `led`
+//! (the title bar LED of the main window) and `panic` (a crash, as the
+//! program's: crash.rs writes it down, the next start tells it).
 use mb3d::vcl::canvas::Canvas;
 use mb3d::vcl::App;
 
@@ -24,7 +25,8 @@ fn main() {
     let all: Vec<String> = std::env::args().skip(1).collect();
     let split = all.iter().position(|a| a == "--").unwrap_or(all.len());
     let (app_args, steps) = (&all[..split], all.get(split + 1..).unwrap_or(&[]));
-    // the log as the desktop program keeps it (the Log window shows it)
+    // a crash and the log as the desktop program keeps them (the Log window shows it)
+    mb3d::crash::install("snapform");
     mb3d::log::init("gui", true);
     mb3d::log::session_start("snapform");
     let (mut ui, mut app) = mb3d::app::build(app_args).unwrap().unwrap();
@@ -32,6 +34,7 @@ fn main() {
         let p: Vec<&str> = s.split(':').collect();
         match p[0] {
             "show" => ui.show(p[1]),
+            "panic" => panic!("snapform: the panic step"),
             "page" => ui.set_active_page(p[1], p[2], p[3]),
             "click" => ui.click(p[1], p[2]),
             "text" => ui.set_text(p[1], p[2], &p[3..].join(":")),

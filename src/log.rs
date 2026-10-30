@@ -8,7 +8,8 @@
 //! A desktop session holds `logs/session-<pid>.lock` locked while it runs
 //! and deletes it at its end; a lock file the next start can lock again
 //! was left by a session that never ended (a freeze, a kill, a crash, a
-//! power cut): [`init`] reports it.  Nothing is logged before [`init`] (the
+//! power cut): [`init`] reports it.  A panic writes its message into the
+//! lock file ([`mark_crash`]), so a crash is told apart from the rest.  Nothing is logged before [`init`] (the
 //! library's functions log for whichever program uses them).  Writing is
 //! synchronous under a lock: nothing is logged per pixel or per row, and a
 //! line written is on disk even if the process dies the moment after.
@@ -123,7 +124,23 @@ struct State {
 static LOGGER: OnceLock<Logger> = OnceLock::new();
 /// What [`init`] found of a session that never ended, for the program to
 /// tell (taken once).
-static UNCLEAN: Mutex<Option<String>> = Mutex::new(None);
+static UNCLEAN: Mutex<Option<Unclean>> = Mutex::new(None);
+
+/// Sessions before this one that never ended.
+#[derive(Clone, Debug, Default)]
+pub struct Unclean {
+    /// the program, process and start of each
+    pub sessions: String,
+    /// the panic message one of them left ([`mark_crash`]): it crashed
+    pub crash: Option<String>,
+}
+
+/// A session found by [`stale_sessions`].
+#[derive(Debug)]
+struct Stale {
+    desc: String,
+    crash: Option<String>,
+}
 
 /// The folder of the log files.
 pub fn folder() -> PathBuf {
@@ -158,15 +175,19 @@ fn init_in(dir: PathBuf, program: &str, lock: bool) {
         return;
     }
     if !unclean.is_empty() {
-        let text = unclean.join("; ");
-        log(Level::Warn, "session", &format!("an earlier session never ended (froze, was killed, crashed or lost its power): {text}"));
-        *UNCLEAN.lock().unwrap_or_else(|e| e.into_inner()) = Some(text);
+        let sessions = unclean.iter().map(|u| u.desc.as_str()).collect::<Vec<_>>().join("; ");
+        let crash = unclean.into_iter().find_map(|u| u.crash);
+        match &crash {
+            Some(c) => log(Level::Warn, "session", &format!("an earlier session crashed: {sessions}: {c} (details in {})", crate::crash::file().display())),
+            None => log(Level::Warn, "session", &format!("an earlier session never ended (froze, was killed, crashed or lost its power): {sessions}")),
+        }
+        *UNCLEAN.lock().unwrap_or_else(|e| e.into_inner()) = Some(Unclean { sessions, crash });
     }
 }
 
 /// The lock files of sessions that are not running any more (their lock
 /// can be taken): what they say, and they are deleted.
-fn stale_sessions(dir: &Path) -> Vec<String> {
+fn stale_sessions(dir: &Path) -> Vec<Stale> {
     let mut out = Vec::new();
     let Ok(rd) = std::fs::read_dir(dir) else { return out };
     for e in rd.flatten() {
@@ -183,9 +204,12 @@ fn stale_sessions(dir: &Path) -> Vec<String> {
         // second handle's read fails while this one holds the lock
         let mut info = String::new();
         let _ = f.read_to_string(&mut info);
-        let mut it = info.trim().split('\t');
+        let mut lines = info.lines();
+        let mut it = lines.next().unwrap_or("").trim().split('\t');
         let (prog, pid, start) = (it.next().unwrap_or("?"), it.next().unwrap_or("?"), it.next().unwrap_or("?"));
-        out.push(format!("{prog} (process {pid}) started {start} UTC"));
+        // the first panic written (the later ones often follow from it)
+        let crash = lines.find_map(|l| l.strip_prefix("crash\t")).map(|c| c.trim().to_string());
+        out.push(Stale { desc: format!("{prog} (process {pid}) started {start} UTC"), crash });
         drop(f);
         let _ = std::fs::remove_file(&p);
     }
@@ -241,8 +265,21 @@ fn system() -> (String, u64) {
     (format!("{name}{kernel}"), mem)
 }
 
+/// Writes a panic's message into the session's lock file: the next start
+/// tells that this session crashed, and why.  It only tries the log's lock
+/// (the panic may have come while it was held) and keeps one line.
+pub fn mark_crash(text: &str) {
+    let Some(l) = LOGGER.get() else { return };
+    let Ok(mut st) = l.state.try_lock() else { return };
+    if let Some((_, f)) = st.lock.as_mut() {
+        let one: String = text.split_whitespace().collect::<Vec<_>>().join(" ").chars().take(300).collect();
+        let _ = writeln!(f, "crash\t{one}");
+        let _ = f.sync_data();
+    }
+}
+
 /// A session that never ended, found at the start (once).
-pub fn take_unclean() -> Option<String> {
+pub fn take_unclean() -> Option<Unclean> {
     UNCLEAN.lock().unwrap_or_else(|e| e.into_inner()).take()
 }
 
@@ -418,7 +455,8 @@ mod tests {
         std::fs::write(dir.join("mb3d-2099-01-01.log"), "new\n").unwrap();
         let found = stale_sessions(&dir);
         assert_eq!(found.len(), 1, "{found:?}");
-        assert!(found[0].contains("999999") && found[0].contains("2026-10-29"));
+        assert!(found[0].desc.contains("999999") && found[0].desc.contains("2026-10-29"));
+        assert!(found[0].crash.is_none());
         assert!(!dir.join("session-999999.lock").exists());
         assert!(held.exists());
         prune(&dir, now_ms() / 1000);
@@ -426,6 +464,12 @@ mod tests {
         assert!(dir.join("mb3d-2099-01-01.log").exists());
         assert_eq!(days_in(&dir)[0].0, "2099-01-01");
         drop(f);
+        // a session that crashed: the panic's line after the first
+        std::fs::write(dir.join("session-777777.lock"), "gui\t777777\t2026-10-29 11:00:00.000\ncrash\tpanicked at src/x.rs:1:2: boom\ncrash\tlater\n").unwrap();
+        let found = stale_sessions(&dir);
+        assert_eq!(found.len(), 2, "{found:?}");
+        let c = found.iter().find(|s| s.desc.contains("777777")).unwrap();
+        assert_eq!(c.crash.as_deref(), Some("panicked at src/x.rs:1:2: boom"));
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

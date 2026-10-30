@@ -3224,6 +3224,8 @@ TheImageSizeChangedCalculateThe=de afbeeldingsgrootte is gewijzigd: bereken de a
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=De its.trap-modus hangt af van de berekende optie op het tabblad "Kleuring".
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=De vorige sessie is gecrasht: {}. Meer in het venster Logboek (het pictogram in de titelbalk).
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=De vorige sessie is niet goed afgesloten (ze liep vast, werd beëindigd of crashte): {}. Wat ze het laatst deed, staat in het logboek (het venster Logboek, het pictogram in de titelbalk).
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=De hoofdeditor is nog aan het renderen. Stop die eerst of wacht tot hij klaar is.
@@ -3472,8 +3474,6 @@ Viewing=Weergave
 ;Viewing
 Visible=Zichtbaar:
 ;Visible:
-VisitTheOfficialWebSiteFor=Bezoek de officiële website voor nieuws en updates: https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=Volumelicht nr:
 ;Volume light nr:
 VolumetricResolution=Volumetrische resolutie:
@@ -3506,8 +3506,6 @@ Weight=Gewicht
 ;Weight
 WeightColon=Gewicht:
 ;Weight:
-WelcomeToMandelbulb3D=Welkom bij Mandelbulb 3D!
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=Wat heb ik vandaag in mb3d gedaan? Waren er fouten?
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=Wat er gebeurde

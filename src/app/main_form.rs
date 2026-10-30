@@ -296,12 +296,12 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
     set_language_badge(ui);
     ui.fm(F).history_hint = tr("@MB:HistoryThePicturesCalculatedTheFiles");
     ui.fm(F).log_hint = tr("@MB:LogEverythingTheProgramDidIts");
-    app.message(ui, &tr("@MB:WelcomeToMandelbulb3D"));
-    app.message(ui, &tr("@MB:VisitTheOfficialWebSiteFor"));
-    app.message(ui, "");
     // a session before this one that never ended (see log.rs)
     if let Some(u) = crate::log::take_unclean() {
-        app.message(ui, &trf("@MB:TheLastSessionDidNotEnd", &[&u]));
+        match &u.crash {
+            Some(c) => app.message(ui, &trf("@MB:TheLastSessionCrashed", &[c])),
+            None => app.message(ui, &trf("@MB:TheLastSessionDidNotEnd", &[&u.sessions])),
+        }
     }
     ui.set_caption(F, "Label3", &version_str());
     let cpus = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4).min(64) as i64;

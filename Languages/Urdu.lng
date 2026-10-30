@@ -3225,6 +3225,8 @@ TheImageSizeChangedCalculateThe=تصویر کا سائز بدل گیا: تصوی
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap موڈ "رنگ کاری" ٹیب میں حساب شدہ اختیار پر منحصر ہے۔
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheLastSessionCrashed=پچھلا سیشن کریش ہو گیا: {}۔ مزید لاگ ونڈو میں (ٹائٹل بار میں آئیکن)۔
+;The last session crashed: {}. More in the Log window (the icon in the title bar).
 TheLastSessionDidNotEnd=پچھلا سیشن درست طریقے سے ختم نہیں ہوا (رک گیا، بند کیا گیا یا کریش ہوا): {}۔ اس نے آخری بار کیا کیا، یہ لاگ میں ہے (لاگ ونڈو، ٹائٹل بار میں آئیکن)۔
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=مرکزی ایڈیٹر ابھی رینڈر کر رہا ہے۔ براہ کرم پہلے اسے روکیں یا مکمل ہونے تک انتظار کریں۔
@@ -3473,8 +3475,6 @@ Viewing=نظارہ
 ;Viewing
 Visible=نظر آنے والا:
 ;Visible:
-VisitTheOfficialWebSiteFor=خبروں اور اپ ڈیٹس کے لیے سرکاری ویب سائٹ دیکھیں: https://mb3d.overwhale.com
-;Visit the official web site for news and updates: https://mb3d.overwhale.com
 VolumeLightNr=حجمی روشنی نمبر:
 ;Volume light nr:
 VolumetricResolution=حجمی ریزولوشن:
@@ -3507,8 +3507,6 @@ Weight=وزن
 ;Weight
 WeightColon=وزن:
 ;Weight:
-WelcomeToMandelbulb3D=Mandelbulb 3D میں خوش آمدید!
-;Welcome to Mandelbulb 3D!
 WhatDidIDoInMb3d=آج میں نے mb3d میں کیا کیا؟ کیا کوئی خرابیاں تھیں؟
 ;What did I do in mb3d today? Were there any errors?
 WhatHappened=کیا ہوا

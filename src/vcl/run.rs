@@ -404,6 +404,7 @@ impl<A: App> Runner<A> {
         let (mut sw, mut sh) = (w as f64 * us, h as f64 * us);
         if let Some(m) = &mon {
             let ms: LogicalSize<f64> = m.size().to_logical(m.scale_factor());
+            self.ui.screen = Some(((ms.width / us) as i32, (ms.height / us) as i32));
             sw = sw.min(ms.width);
             sh = sh.min(ms.height);
         }

@@ -156,7 +156,14 @@ fn navi_scale(ui: &Ui) -> f64 {
 fn set_header_size(app: &mut Mb3d, ui: &Ui) {
     let st = &mut app.navi;
     let p2h = if ui.visible(F, "Panel2") { ui.c(F, "Panel2").height } else { 0 };
-    let hmax = (760 - ui.c(F, "Panel1").height - p2h - ui.c(F, "Panel8").height).max(200);
+    let mut hmax = 760 - ui.c(F, "Panel1").height - p2h - ui.c(F, "Panel8").height;
+    // the whole window within the screen: the preview at its size (the
+    // size combo) plus the panels, the title bar and a taskbar's room
+    if let Some((_, sh)) = ui.screen {
+        let room = sh - ui.c(F, "Panel1").height - p2h - ui.c(F, "Panel8").height - 110;
+        hmax = hmax.min((room as f64 / navi_scale(ui)) as i32);
+    }
+    let hmax = hmax.max(200);
     let (ow, oh) = (st.orig.0.max(1), st.orig.1.max(1));
     let (mut w, mut h);
     if oh * 640 / ow > hmax {

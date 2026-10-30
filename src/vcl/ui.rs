@@ -88,6 +88,10 @@ pub struct Ui {
     /// of the screen's scale factor: windows, controls and text all grow
     /// with it, the layouts stay as they are.
     pub ui_scale: f64,
+    /// The monitor's size in .dfm units (its logical size divided by
+    /// `ui_scale`), once a window was opened: windows that grow with their
+    /// content (the Navigator) keep within it.
+    pub screen: Option<(i32, i32)>,
 }
 
 impl Default for Ui {
@@ -119,6 +123,7 @@ impl Ui {
             file_dialog_save: false,
             busy: false,
             ui_scale: 1.0,
+            screen: None,
         }
     }
 

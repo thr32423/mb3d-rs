@@ -23,6 +23,45 @@ pub enum FirstOptionType {
     NoVar,
 }
 
+/// Optional pre-transforms shared by the clean-room power-bulb family.
+/// Angles are expressed in degrees, as they are in the MB3D formula UI.  A
+/// fold value of zero leaves its coordinate plane alone.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct BulbTransforms {
+    pub rotate: [f64; 3],
+    pub fold: [f64; 3],
+}
+
+impl Default for BulbTransforms {
+    fn default() -> Self {
+        Self { rotate: [0.0; 3], fold: [0.0; 3] }
+    }
+}
+
+fn bulb_transform_options(t: BulbTransforms) -> Vec<(&'static str, f64)> {
+    vec![
+        ("Rotate X (degrees)", t.rotate[0]),
+        ("Rotate Y (degrees)", t.rotate[1]),
+        ("Rotate Z (degrees)", t.rotate[2]),
+        ("Fold XY", t.fold[0]),
+        ("Fold YZ", t.fold[1]),
+        ("Fold XZ", t.fold[2]),
+    ]
+}
+
+fn set_bulb_transform_option(t: &mut BulbTransforms, key: &str, value: f64) -> bool {
+    match key {
+        "rotate x" | "rotate x degrees" | "rotate x (degrees)" => t.rotate[0] = value,
+        "rotate y" | "rotate y degrees" | "rotate y (degrees)" => t.rotate[1] = value,
+        "rotate z" | "rotate z degrees" | "rotate z (degrees)" => t.rotate[2] = value,
+        "fold xy" => t.fold[0] = value.max(0.0),
+        "fold yz" => t.fold[1] = value.max(0.0),
+        "fold xz" => t.fold[2] = value.max(0.0),
+        _ => return false,
+    }
+    true
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Formula {
     /// 'Integer Power' – the triplex sine bulb, power 2..8 (f = 0).
@@ -63,6 +102,28 @@ pub enum Formula {
         /// 8 swap Cy/Cz, 16 use Z - C instead of C for the angles
         mode: i32,
     },
+    /// A clean-room, angularly warped power bulb.  The three variants use
+    /// distinct radial modulations; the names follow recent formula-family
+    /// terminology, but the implementation belongs to mb3d-rs.
+    SinCosBulb {
+        variant: u8,
+        power: f64,
+        warp: f64,
+        frequency: f64,
+        z_mul: f64,
+        transform: BulbTransforms,
+    },
+    /// A power bulb with a radius-dependent "tail" modulation.
+    TailsBulb { power: f64, tail: f64, frequency: f64, z_mul: f64, transform: BulbTransforms },
+    /// A three-dimensional Mandelbar: a power bulb conjugated across the
+    /// xz-plane before each power step.
+    MandelbarBulb { power: f64, z_mul: f64, transform: BulbTransforms },
+    /// Independently implemented from the published Lambdabulb definition.
+    Lambdabulb { power: f64, phase: f64, c_scale: f64 },
+    /// A four-dimensional Hopf-coordinate power bulb.
+    Hopfbrot { power: f64 },
+    /// A clean-room 4D box fold projected into the tetrahedral hyperplane.
+    TetrahedralBox { scale: f64, min_r: f64, fold: f64 },
     /// A custom formula from a `.m3f` file, run by the x86 interpreter.
     Custom(Box<CustomFormula>),
 }
@@ -244,6 +305,14 @@ impl Formula {
             Formula::Bulbox { .. } => "Bulbox",
             Formula::FoldingIntPow { .. } => "Folding Int Pow",
             Formula::AexionC { .. } => "Aexion C",
+            Formula::SinCosBulb { variant: 1, .. } => "SinCos Bulb",
+            Formula::SinCosBulb { variant: 2, .. } => "SinCos Bulb V2",
+            Formula::SinCosBulb { .. } => "SinCos Bulb V3",
+            Formula::TailsBulb { .. } => "Tails Bulb",
+            Formula::MandelbarBulb { .. } => "Mandelbar Bulb",
+            Formula::Lambdabulb { .. } => "Lambdabulb",
+            Formula::Hopfbrot { .. } => "Hopfbrot",
+            Formula::TetrahedralBox { .. } => "Tetrahedral Box",
         }
     }
 
@@ -258,6 +327,14 @@ impl Formula {
             "Bulbox",
             "Folding Int Pow",
             "Aexion C",
+            "SinCos Bulb",
+            "SinCos Bulb V2",
+            "SinCos Bulb V3",
+            "Tails Bulb",
+            "Mandelbar Bulb",
+            "Lambdabulb",
+            "Hopfbrot",
+            "Tetrahedral Box",
         ]
     }
 
@@ -298,6 +375,45 @@ impl Formula {
                 powc_dist: false,
                 mode: 0,
             },
+            "sincos bulb" | "sincos" => Formula::SinCosBulb {
+                variant: 1,
+                power: 8.0,
+                warp: 0.22,
+                frequency: 3.0,
+                z_mul: 1.0,
+                transform: BulbTransforms::default(),
+            },
+            "sincos bulb v2" | "sincos v2" => Formula::SinCosBulb {
+                variant: 2,
+                power: 8.0,
+                warp: 0.22,
+                frequency: 3.0,
+                z_mul: 1.0,
+                transform: BulbTransforms::default(),
+            },
+            "sincos bulb v3" | "sincos v3" => Formula::SinCosBulb {
+                variant: 3,
+                power: 8.0,
+                warp: 0.22,
+                frequency: 3.0,
+                z_mul: 1.0,
+                transform: BulbTransforms::default(),
+            },
+            "tails bulb" | "tails" => Formula::TailsBulb {
+                power: 8.0,
+                tail: 0.35,
+                frequency: 2.5,
+                z_mul: 1.0,
+                transform: BulbTransforms::default(),
+            },
+            "mandelbar bulb" | "mandelbar" => Formula::MandelbarBulb {
+                power: 8.0,
+                z_mul: 1.0,
+                transform: BulbTransforms::default(),
+            },
+            "lambdabulb" | "lambda bulb" => Formula::Lambdabulb { power: 4.0, phase: 1.815_142, c_scale: 1.0 },
+            "hopfbrot" => Formula::Hopfbrot { power: 2.0 },
+            "tetrahedral box" | "tetra box" => Formula::TetrahedralBox { scale: 2.0, min_r: 0.5, fold: 1.0 },
             _ => return None,
         })
     }
@@ -348,6 +464,28 @@ impl Formula {
                 ("PowC on dist Vec-C (0,1)", powc_dist as i32 as f64),
                 ("Mode (0..31)", mode as f64),
             ],
+            Formula::SinCosBulb { power, warp, frequency, z_mul, transform, .. } => {
+                let mut o = vec![("Power", power), ("Angular warp", warp), ("Frequency", frequency), ("Z multiplier", z_mul)];
+                o.extend(bulb_transform_options(transform));
+                o
+            }
+            Formula::TailsBulb { power, tail, frequency, z_mul, transform } => {
+                let mut o = vec![("Power", power), ("Tail strength", tail), ("Tail frequency", frequency), ("Z multiplier", z_mul)];
+                o.extend(bulb_transform_options(transform));
+                o
+            }
+            Formula::MandelbarBulb { power, z_mul, transform } => {
+                let mut o = vec![("Power", power), ("Z multiplier", z_mul)];
+                o.extend(bulb_transform_options(transform));
+                o
+            }
+            Formula::Lambdabulb { power, phase, c_scale } => vec![
+                ("Power", power), ("Phase (radians)", phase), ("C multiplier", c_scale),
+            ],
+            Formula::Hopfbrot { power } => vec![("Power", power)],
+            Formula::TetrahedralBox { scale, min_r, fold } => vec![
+                ("Scale", scale), ("Min radius", min_r), ("Fold", fold),
+            ],
         };
         v.into_iter().map(|(k, x)| (k.to_string(), x)).collect()
     }
@@ -371,6 +509,12 @@ impl Formula {
                     c.def.options.iter().map(|o| o.name.clone()).collect::<Vec<_>>().join(", ")
                 )),
             };
+        }
+        if let Some(i) = k.strip_prefix("option").and_then(|n| n.trim().parse::<usize>().ok()) {
+            let Some(name) = self.options().get(i).map(|(name, _)| name.clone()) else {
+                return Err(format!("unknown option '{key}' for {}", self.name()));
+            };
+            return self.set_option(&name, value);
         }
         let ok = match self {
             Formula::IntPow { power, z_mul } | Formula::FoldingIntPow { power, z_mul, .. }
@@ -400,6 +544,60 @@ impl Formula {
                     "powc on dist" | "powc on dist vec c (0,1)" | "powc on dist vec c" => *powc_dist = on,
                     "mode" | "mode (0..31)" => *mode = (value.round() as i32).clamp(0, 31),
                     _ => return Err(format!("unknown option '{key}' for Aexion C")),
+                }
+                true
+            }
+            Formula::SinCosBulb { power, warp, frequency, z_mul, transform, .. } => {
+                match k.as_str() {
+                    "power" => *power = value,
+                    "angular warp" | "warp" => *warp = value,
+                    "frequency" => *frequency = value,
+                    "z mul" | "z multiplier" | "zmul" => *z_mul = value,
+                    _ if set_bulb_transform_option(transform, &k, value) => {}
+                    _ => return Err(format!("unknown option '{key}' for {}", self.name())),
+                }
+                true
+            }
+            Formula::TailsBulb { power, tail, frequency, z_mul, transform } => {
+                match k.as_str() {
+                    "power" => *power = value,
+                    "tail strength" | "tail" => *tail = value,
+                    "tail frequency" | "frequency" => *frequency = value,
+                    "z mul" | "z multiplier" | "zmul" => *z_mul = value,
+                    _ if set_bulb_transform_option(transform, &k, value) => {}
+                    _ => return Err(format!("unknown option '{key}' for Tails Bulb")),
+                }
+                true
+            }
+            Formula::MandelbarBulb { power, z_mul, transform } => {
+                match k.as_str() {
+                    "power" => *power = value,
+                    "z mul" | "z multiplier" | "zmul" => *z_mul = value,
+                    _ if set_bulb_transform_option(transform, &k, value) => {}
+                    _ => return Err(format!("unknown option '{key}' for Mandelbar Bulb")),
+                }
+                true
+            }
+            Formula::Lambdabulb { power, phase, c_scale } => {
+                match k.as_str() {
+                    "power" => *power = value,
+                    "phase" | "phase radians" | "phase (radians)" => *phase = value,
+                    "c multiplier" | "c scale" => *c_scale = value,
+                    _ => return Err(format!("unknown option '{key}' for Lambdabulb")),
+                }
+                true
+            }
+            Formula::Hopfbrot { power } => {
+                if k != "power" { return Err(format!("unknown option '{key}' for Hopfbrot")); }
+                *power = value;
+                true
+            }
+            Formula::TetrahedralBox { scale, min_r, fold } => {
+                match k.as_str() {
+                    "scale" => *scale = value,
+                    "min radius" | "min r" => *min_r = value,
+                    "fold" => *fold = value,
+                    _ => return Err(format!("unknown option '{key}' for Tetrahedral Box")),
                 }
                 true
             }
@@ -482,6 +680,12 @@ impl Formula {
             Formula::IntPow { .. } => vec![10, 0],
             Formula::FoldingIntPow { .. } => vec![10, 0, 0],
             Formula::AexionC { .. } => vec![0, 0, 2, 2, 0, 0, 2, 2],
+            // The last six controls of these formulas are Rotate X/Y/Z
+            // (DoubleAngle = 3) and the three ordinary pair folds.
+            Formula::SinCosBulb { .. } | Formula::TailsBulb { .. } => {
+                vec![0, 0, 0, 0, 3, 3, 3, 0, 0, 0]
+            }
+            Formula::MandelbarBulb { .. } => vec![0, 0, 3, 3, 3, 0, 0, 0],
             _ => vec![0; self.options().len()],
         }
     }
@@ -491,7 +695,7 @@ impl Formula {
     pub fn de_option(&self) -> i32 {
         match self {
             Formula::Custom(c) => c.def.de_option,
-            Formula::Quaternion { .. } => 4,
+            Formula::Quaternion { .. } | Formula::Hopfbrot { .. } | Formula::TetrahedralBox { .. } => 4,
             Formula::AmazingBox { .. } => 11,
             _ => 0,
         }
@@ -538,6 +742,11 @@ impl Formula {
                     power
                 }
             }
+            Formula::SinCosBulb { power, .. }
+            | Formula::TailsBulb { power, .. }
+            | Formula::MandelbarBulb { power, .. }
+            | Formula::Lambdabulb { power, .. }
+            | Formula::Hopfbrot { power } => power,
             _ => 2.0,
         }
     }
@@ -632,8 +841,130 @@ impl Formula {
                 int_pow(power, z_mul, v, j);
             }
             Formula::AexionC { .. } => aexion_c(self, v, j),
+            Formula::SinCosBulb { variant, power, warp, frequency, z_mul, transform } => {
+                let transformed_rout = power_bulb_transform(v, transform);
+                sincos_bulb(variant, power, warp, frequency, z_mul, v, j, transformed_rout)
+            }
+            Formula::TailsBulb { power, tail, frequency, z_mul, transform } => {
+                let transformed_rout = power_bulb_transform(v, transform);
+                tails_bulb(power, tail, frequency, z_mul, v, j, transformed_rout)
+            }
+            Formula::MandelbarBulb { power, z_mul, transform } => {
+                let transformed_rout = power_bulb_transform(v, transform);
+                mandelbar_bulb(power, z_mul, v, j, transformed_rout)
+            }
+            Formula::Lambdabulb { power, phase, c_scale } => lambdabulb(power, phase, c_scale, v, j),
+            Formula::Hopfbrot { power } => hopfbrot(power, v, j),
+            Formula::TetrahedralBox { scale, min_r, fold } => tetrahedral_box(scale, min_r, fold, v, j),
         }
     }
+}
+
+/// The optional rotations and pair folds used by the clean-room power bulbs.
+/// Rotations are X then Y then Z.  A pair fold applies the same MB3D-style
+/// box fold to its two coordinates; zero keeps that plane unchanged.
+fn power_bulb_transform(v: &mut [f64; 4], t: BulbTransforms) -> f64 {
+    let (sx, cx) = t.rotate[0].to_radians().sin_cos();
+    let (y, z) = (v[1], v[2]);
+    v[1] = cx * y - sx * z;
+    v[2] = sx * y + cx * z;
+    let (sy, cy) = t.rotate[1].to_radians().sin_cos();
+    let (x, z) = (v[0], v[2]);
+    v[0] = cy * x + sy * z;
+    v[2] = -sy * x + cy * z;
+    let (sz, cz) = t.rotate[2].to_radians().sin_cos();
+    let (x, y) = (v[0], v[1]);
+    v[0] = cz * x - sz * y;
+    v[1] = sz * x + cz * y;
+    for &(a, b, fold) in &[(0usize, 1usize, t.fold[0]), (1, 2, t.fold[1]), (0, 2, t.fold[2])] {
+        if fold > 0.0 {
+            v[a] = box_fold(v[a], fold);
+            v[b] = box_fold(v[b], fold);
+        }
+    }
+    v[0] * v[0] + v[1] * v[1] + v[2] * v[2]
+}
+
+/// Lambdabulb, from the mathematical iteration published by mathr.co.uk.
+/// This is an independent implementation, not a translation of source code.
+fn lambdabulb(power: f64, phase: f64, c_scale: f64, v: &mut [f64; 4], j: &[f64; 4]) {
+    let r = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt();
+    if r <= 1e-300 { *v = [0.0; 4]; return; }
+    let theta = v[1].atan2(v[0]) * power;
+    let phi = (v[2] / r).clamp(-1.0, 1.0).acos() * power + phase;
+    let rp = r.powf(power);
+    let p = [rp * phi.sin() * theta.cos(), rp * phi.sin() * theta.sin(), rp * phi.cos()];
+    let a = [v[0] - p[0], v[1] - p[1], v[2] - p[2]];
+    let c = [j[0] * c_scale, j[1] * c_scale, j[2] * c_scale];
+    let (rc, ra) = ((c[0] * c[0] + c[1] * c[1] + c[2] * c[2]).sqrt(), (a[0] * a[0] + a[1] * a[1] + a[2] * a[2]).sqrt());
+    if rc <= 1e-300 || ra <= 1e-300 { *v = [0.0; 4]; return; }
+    let q = 1.0 - c[2] * a[2] / (rc * ra);
+    v[0] = q * (c[0] * a[0] - c[1] * a[1]);
+    v[1] = q * (a[0] * c[1] + c[0] * a[1]);
+    v[2] = ra * c[2] + rc * a[2];
+}
+
+/// Hopfbrot in four-dimensional Hopf coordinates (clean-room from the
+/// published definition); numerical 4D DE is used by the renderer.
+fn hopfbrot(power: f64, v: &mut [f64; 4], j: &[f64; 4]) {
+    let r = v.iter().map(|x| x * x).sum::<f64>().sqrt();
+    if r <= 1e-300 { *v = *j; return; }
+    let t = (v[2] * v[2] + v[3] * v[3]).sqrt().atan2((v[0] * v[0] + v[1] * v[1]).sqrt()) * power;
+    let u = v[1].atan2(v[0]) * power;
+    let q = v[3].atan2(v[2]) * power;
+    let rp = r.powf(power);
+    *v = [rp * t.cos() * u.cos() + j[0], rp * t.cos() * u.sin() + j[1], rp * t.sin() * q.cos() + j[2], rp * t.sin() * q.sin() + j[3]];
+}
+
+/// A 4D box fold projected into the sum-zero tetrahedral hyperplane. This is
+/// a clean-room formula inspired by Jeannot's linked-coordinate experiments.
+fn tetrahedral_box(scale: f64, min_r: f64, fold: f64, v: &mut [f64; 4], j: &[f64; 4]) {
+    let mut p = *v;
+    let avg = p.iter().sum::<f64>() * 0.25;
+    for x in &mut p { *x = box_fold(*x - avg, fold); }
+    let r2 = p.iter().map(|x| x * x).sum::<f64>();
+    let k = if r2 < min_r * min_r { scale / (min_r * min_r) } else if r2 < 1.0 { scale / r2 } else { scale };
+    *v = [p[0] * k + j[0], p[1] * k + j[1], p[2] * k + j[2], p[3] * k + j[3]];
+}
+
+/// Clean-room angular power bulb variants. Numerical DE is used by the
+/// renderer, so these intentionally do not claim an analytic derivative.
+fn sincos_bulb(variant: u8, power: f64, warp: f64, frequency: f64, z_mul: f64, v: &mut [f64; 4], j: &[f64; 4], rout: f64) {
+    let (x, y, z) = (v[0], v[1], v[2]);
+    let base_theta = y.atan2(x);
+    let base_phi = z.atan2((x * x + y * y).sqrt());
+    let theta = power * base_theta + warp * (frequency * base_phi).sin();
+    let phi = power * base_phi + warp * (frequency * base_theta).cos();
+    let mut radius = rout.max(1e-300).powf(power * 0.5);
+    match variant {
+        2 => radius *= 1.0 + warp * (frequency * rout.sqrt()).sin(),
+        3 => radius *= 1.0 + warp * (frequency * base_theta).cos() * (frequency * base_phi).sin(),
+        _ => {}
+    }
+    v[0] = theta.cos() * phi.cos() * radius + j[0];
+    v[1] = theta.sin() * phi.cos() * radius + j[1];
+    v[2] = phi.sin() * radius * z_mul + j[2];
+}
+
+fn tails_bulb(power: f64, tail: f64, frequency: f64, z_mul: f64, v: &mut [f64; 4], j: &[f64; 4], rout: f64) {
+    let (x, y, z) = (v[0], v[1], v[2]);
+    let theta = power * y.atan2(x);
+    let phi = power * z.atan2((x * x + y * y).sqrt());
+    let r = rout.sqrt();
+    let radius = rout.max(1e-300).powf(power * 0.5) * (1.0 + tail * (frequency * r).sin() / (1.0 + r));
+    v[0] = theta.cos() * phi.cos() * radius + j[0];
+    v[1] = theta.sin() * phi.cos() * radius + j[1];
+    v[2] = phi.sin() * radius * z_mul + j[2];
+}
+
+fn mandelbar_bulb(power: f64, z_mul: f64, v: &mut [f64; 4], j: &[f64; 4], rout: f64) {
+    let (x, y, z) = (v[0], v[1], v[2]);
+    let theta = -power * y.atan2(x);
+    let phi = power * z.atan2((x * x + y * y).sqrt());
+    let radius = rout.max(1e-300).powf(power * 0.5);
+    v[0] = theta.cos() * phi.cos() * radius + j[0];
+    v[1] = theta.sin() * phi.cos() * radius + j[1];
+    v[2] = phi.sin() * radius * z_mul + j[2];
 }
 
 /// `AexionC` (formulas.pas, x87 code): a real power bulb step (angles as
@@ -889,6 +1220,73 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn builtin_formula_names_are_unique() {
+        let mut names = Formula::all_names().to_vec();
+        let count = names.len();
+        names.sort_unstable();
+        names.dedup();
+        assert_eq!(names.len(), count, "formula picker contains duplicate names");
+    }
+
+    #[test]
+    fn modern_bulb_transforms_are_editable_and_finite() {
+        for name in ["SinCos Bulb", "SinCos Bulb V2", "SinCos Bulb V3", "Tails Bulb", "Mandelbar Bulb"] {
+            let mut f = Formula::default_for(name).unwrap();
+            f.set_option("Rotate X", 20.0).unwrap();
+            f.set_option("Rotate Y (degrees)", -15.0).unwrap();
+            f.set_option("Rotate Z", 35.0).unwrap();
+            f.set_option("Fold XY", 1.1).unwrap();
+            f.set_option("Fold YZ", 0.9).unwrap();
+            f.set_option("Fold XZ", 0.7).unwrap();
+            let o = f.options();
+            assert!(o.iter().any(|(k, v)| k == "Rotate X (degrees)" && (*v - 20.0).abs() < 1e-12));
+            assert!(o.iter().any(|(k, v)| k == "Fold XZ" && (*v - 0.7).abs() < 1e-12));
+            let mut v = [0.4, -0.3, 0.2, 0.0];
+            let mut j = [0.1, -0.2, 0.3, 0.0];
+            f.iterate(&mut v, &mut j, 0.29, false);
+            assert!(v[..3].iter().all(|x| x.is_finite()), "{name}: {v:?}");
+        }
+    }
+
+    #[test]
+    fn modern_bulb_rotation_options_are_angles() {
+        for name in ["SinCos Bulb", "Tails Bulb", "Mandelbar Bulb"] {
+            let f = Formula::default_for(name).unwrap();
+            let options = f.options();
+            let types = f.option_types();
+            for (index, (option, _)) in options.iter().enumerate() {
+                match option.as_str() {
+                    "Rotate X (degrees)" | "Rotate Y (degrees)" | "Rotate Z (degrees)" => {
+                        assert_eq!(types[index], 3, "{name}: {option}");
+                    }
+                    "Fold XY" | "Fold YZ" | "Fold XZ" => {
+                        assert_eq!(types[index], 0, "{name}: {option}");
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn modern_bulbs_produce_finite_steps() {
+        for name in [
+            "SinCos Bulb",
+            "SinCos Bulb V2",
+            "SinCos Bulb V3",
+            "Tails Bulb",
+            "Mandelbar Bulb",
+        ] {
+            let f = Formula::default_for(name).unwrap();
+            let mut v = [0.31, -0.42, 0.27, 0.0];
+            let mut j = [0.12, -0.08, 0.20, 0.0];
+            let rout = v[..3].iter().map(|x| x * x).sum();
+            f.iterate(&mut v, &mut j, rout, false);
+            assert!(v[..3].iter().all(|x| x.is_finite()), "{name}: {v:?}");
+        }
+    }
 
     /// Reference triplex power formula (spherical coordinates, as used by
     /// White/Nylander):  r^n (cos(n th) cos(n ph), sin(n th) cos(n ph), -sin(n ph))

@@ -691,6 +691,10 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
                         for k in 0..nopt.min(c.values.len()) {
                             c.values[k] = vals[k];
                         }
+                    } else {
+                        for k in 0..nopt {
+                            f.set_option(&format!("option{k}"), vals[k])?;
+                        }
                     }
                     f
                 }
@@ -1284,6 +1288,13 @@ pub fn write(sc: &Scene) -> Vec<u8> {
             Formula::Bulbox { .. } => (5, vec![0; 6]),
             Formula::FoldingIntPow { .. } => (6, vec![2, 0, 0]),
             Formula::AexionC { .. } => (9, vec![0, 0, 2, 2, 0, 0, 2, 2]),
+            Formula::SinCosBulb { .. } | Formula::TailsBulb { .. } | Formula::MandelbarBulb { .. }
+            | Formula::Lambdabulb { .. } | Formula::Hopfbrot { .. } | Formula::TetrahedralBox { .. } => {
+                // New formulas use the existing custom-formula record so
+                // their name and options round-trip without claiming an old
+                // Mandelbulb3D internal formula number.
+                (20, vec![0; opts.len()])
+            }
         };
         pi32(&mut d, o + 4, fnr);
         pi32(&mut d, o + 8, opts.len().min(16) as i32);
@@ -1303,6 +1314,30 @@ pub fn write(sc: &Scene) -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn modern_formulas_round_trip_as_named_formulas() {
+        for name in ["SinCos Bulb", "SinCos Bulb V2", "SinCos Bulb V3", "Tails Bulb", "Mandelbar Bulb", "Lambdabulb", "Hopfbrot", "Tetrahedral Box"] {
+            let scene = Scene::preset(name).unwrap();
+            let back = parse(&write(&scene)).unwrap().scene;
+            assert_eq!(back.formulas[0].formula.name(), name);
+        }
+    }
+
+    #[test]
+    fn modern_bulb_transform_options_round_trip() {
+        let mut scene = Scene::preset("Tails Bulb").unwrap();
+        let f = &mut scene.formulas[0].formula;
+        f.set_option("Rotate X", 27.0).unwrap();
+        f.set_option("Rotate Y", -13.0).unwrap();
+        f.set_option("Fold YZ", 0.75).unwrap();
+        let back = parse(&write(&scene)).unwrap().scene;
+        let options = back.formulas[0].formula.options();
+        for (name, expected) in [("Rotate X (degrees)", 27.0), ("Rotate Y (degrees)", -13.0), ("Fold YZ", 0.75)] {
+            let value = options.iter().find(|(k, _)| k == name).unwrap().1;
+            assert!((value - expected).abs() < 1e-12, "{name}: {value}");
+        }
+    }
 
     #[test]
     fn m3i_round_trip() {

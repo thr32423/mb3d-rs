@@ -364,6 +364,28 @@ you check further on your own:
   <a href="docs/img/navigator_values.png"><img src="docs/img/navigator_values.png" width="640" alt="The Navigator with the formula values and the input box of a clicked value"></a>
 
   </details>
+* **Five modern power-bulb formulas:** **SinCos Bulb**, **SinCos Bulb V2**,
+  **SinCos Bulb V3**, **Tails Bulb**, and **Mandelbar Bulb**. They are
+  clean-room, built-in formulas with editable Power and shape controls,
+  available in the desktop formula list and through `mb3d --formula` on the
+  command line. They run on both the processor and the graphics card. Each
+  also has optional pre-iteration **Rotate X/Y/Z** (degrees) and **Fold
+  XY/YZ/XZ** controls; all default to zero, so existing scenes remain
+  unchanged.
+
+  Their names and controls are saved in mb3d-rs parameter files. Original
+  Mandelbulb3D does not know these new formula names, so use **Save m3s** (or
+  mb3d-rs) when sharing a scene that uses them.
+* **Contemporary formula studies:** **Lambdabulb** and the 4D **Hopfbrot**
+  are clean-room implementations of the mathematical definitions published
+  by [mathr.co.uk](https://mathr.co.uk/web/lambdabulb.html) (2024) and
+  [mathr.co.uk](https://mathr.co.uk/web/hopfbrot.html) (2026). The formulas
+  retain their source names and credits; they are not copied from either
+  implementation. **Tetrahedral Box** is an experimental 4D box fold in the
+  tetrahedral hyperplane, independently written after Jeannot's
+  [linked-coordinate extraction discussion](https://fractalforums.org/index.php?topic=4255.0).
+  Lambdabulb is 3D; Hopfbrot and Tetrahedral Box use the renderer's 4D
+  numerical distance estimate. All three currently render on the CPU.
 * **A new formula, SphereTree:** a tree of touching spheres that branch
   smaller and smaller, by Tom Lowe.
 

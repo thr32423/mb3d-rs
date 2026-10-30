@@ -1360,7 +1360,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             if let Ev::MouseDown { button: MouseButton::Right, .. } = e.ev {
                 let o = crate::vcl::dialogs::FileOptions {
                     title: tr("@MB:ChooseAMap"),
-                    filter: format!("{}|*.png;*.jpg;*.jpeg;*.bmp|{}|*.*", tr("@MB:Images"), tr("@MB:AllFilesParen")),
+                    filter: format!("{}|*.png;*.jpg;*.jpeg;*.bmp;*.hdr|{}|*.*", tr("@MB:Images"), tr("@MB:AllFilesParen")),
                     initial_dir: Some(app.ini.dir(super::ini::DIR_MAPS)),
                     ..Default::default()
                 };
@@ -1567,7 +1567,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                 if ui.checked(F, "CheckBox8") {
                     let o = crate::vcl::dialogs::FileOptions {
                         title: tr("@MB:BackgroundImage2"),
-                        filter: format!("{}|*.png;*.jpg;*.jpeg;*.bmp|{}|*.*", tr("@MB:Images"), tr("@MB:AllFilesParen")),
+                        filter: format!("{}|*.png;*.jpg;*.jpeg;*.bmp;*.hdr|{}|*.*", tr("@MB:Images"), tr("@MB:AllFilesParen")),
                         initial_dir: Some(app.ini.dir(super::ini::DIR_BGPIC)),
                         ..Default::default()
                     };

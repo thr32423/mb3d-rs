@@ -2699,7 +2699,7 @@ fn pass_inner(
     let threads = if threads == 0 { crate::render::thread_count(&sc) } else { threads }.min(sc.height as usize).max(1);
     let l = sc.lighting.clone();
     let cam = crate::render::paint_camera(&sc, &p);
-    let lv = crate::render::light_vals(&sc, &l, &cam);
+    let mut lv = crate::render::light_vals(&sc, &l, &cam);
     if let Some(vp) = sc.vol_light.as_ref() {
         if let Some((ln, positional)) = lv.light_ln(vp.light) {
             // the map of the last pass while the scene is the same
@@ -2732,6 +2732,7 @@ fn pass_inner(
     let mid = sc.stereo_mid();
     // CalcHSVecsFromLights
     let m1 = normalise_matrix_to(1.0, &p.vgrads);
+    hdr_sun(&mut lv, &m1, sc.mc.soft_shadow_radius as f64);
     let hs_vecs: Vec<Vec3> = lv
         .lights
         .iter()
@@ -3629,6 +3630,64 @@ pub fn read_m3c(data: &[u8]) -> Result<(crate::m3p::M3pFile, McImage), String> {
     }
     img.passes = 1;
     Ok((f, img))
+}
+
+/// An HDR background picture's sun as a light: taken out of the picture
+/// ([`crate::maps::LightMap::split_sun`]) and added to the lights as a
+/// global light in a free light slot, with soft shadows of the sun's size
+/// (when the soft shadow radius is not 0).  The light gives about the
+/// light that the rays leaving the surface in all directions found in the
+/// sun before (MB3D's diffuse light, with its cos² instead of cos).
+fn hdr_sun(lv: &mut LightVals, m1: &Mat3, soft_radius: f64) {
+    type Split = (usize, Option<(std::sync::Arc<crate::maps::LightMap>, crate::maps::Sun)>);
+    static LAST: std::sync::Mutex<Option<Split>> = std::sync::Mutex::new(None);
+    if lv.bg_direct || lv.s_diff <= 0.0 {
+        return;
+    }
+    let Some(bg) = lv.bg.as_mut() else { return };
+    let Some(idx) = (0..6).find(|i| !lv.lights.iter().any(|l| l.idx == *i)) else {
+        crate::elog!("  note: the HDR background's sun is not a light: all six lights are in use");
+        return;
+    };
+    let key = std::sync::Arc::as_ptr(&bg.map) as usize;
+    let split = {
+        let mut last = LAST.lock().unwrap();
+        match last.as_ref().filter(|(k, _)| *k == key) {
+            Some((_, s)) => s.clone(),
+            None => {
+                let s = bg.map.split_sun().map(|(m, sun)| (std::sync::Arc::new(m), sun));
+                *last = Some((key, s.clone()));
+                s
+            }
+        }
+    };
+    let Some((map, sun)) = split else { return };
+    // the direction in the picture's sphere -> the march's directions
+    // (`sphere_pixel_t` turns a direction v into v * rot)
+    let r = &bg.rot;
+    let d: Vec3 = std::array::from_fn(|i| (0..3).map(|j| r[i][j] as f64 * sun.dir[j] as f64).sum::<f64>());
+    let ln = rotate_vector(&normalize(d), m1);
+    let k = std::f32::consts::PI * lv.s_diff;
+    let col = sun.power.map(|v| v * bg.intensity / k);
+    // the soft shadow's spread is sqrt(lmax_l) * 2.5e-5 * radius (radians)
+    let lmax_l = if soft_radius > 0.0 { (sun.radius.tan() as f64 / (2.5e-5 * soft_radius)).powi(2) as f32 } else { 1.0 };
+    bg.map = map;
+    lv.lights.push(crate::lighting::LightVal {
+        idx,
+        on: true,
+        sub_amb_sh: false,
+        hs_calced: false,
+        hs_mask: 0x400 << idx,
+        ln: ln.map(|v| v as f32),
+        col,
+        pow_func: 2 << 5,
+        diff_func: 0,
+        positional: false,
+        visible: 0,
+        lmax_l,
+        pos_z: 0.0,
+        pos_lp: 0.0,
+    });
 }
 
 #[cfg(test)]

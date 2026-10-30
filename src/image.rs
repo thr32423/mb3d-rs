@@ -983,8 +983,159 @@ fn decode_jpeg(b: &[u8]) -> Result<Image, String> {
     Ok(img)
 }
 
+// ---------------------------------------------------------------------------
+// Radiance HDR (.hdr, RGBE)
+// ---------------------------------------------------------------------------
+
+/// A picture with floating point colours (1 = white, brighter parts above
+/// 1): Radiance HDR files, the 360° environment pictures that light a
+/// scene.
+pub struct HdrImage {
+    pub width: usize,
+    pub height: usize,
+    pub data: Vec<[f32; 3]>,
+}
+
+/// Whether `bytes` are a Radiance HDR file.
+pub fn is_hdr(bytes: &[u8]) -> bool {
+    bytes.starts_with(b"#?RADIANCE") || bytes.starts_with(b"#?RGBE")
+}
+
+/// Decodes a Radiance HDR file (RGBE, flat or run length encoded, the
+/// rows from the top or from the bottom).
+pub fn decode_hdr(b: &[u8]) -> Result<HdrImage, String> {
+    if !is_hdr(b) {
+        return Err("not a Radiance HDR file".into());
+    }
+    // the header: lines up to an empty one, then the size line
+    let mut pos = 0;
+    let mut line = || -> Result<&[u8], String> {
+        let start = pos;
+        let end = b[start..].iter().position(|&c| c == b'\n').ok_or("truncated HDR header")? + start;
+        pos = end + 1;
+        Ok(&b[start..end])
+    };
+    loop {
+        let l = line()?;
+        if l.is_empty() {
+            break;
+        }
+        if let Some(f) = l.strip_prefix(b"FORMAT=") {
+            if f.trim_ascii() != b"32-bit_rle_rgbe" {
+                return Err(format!("HDR format {} is not supported (only RGB)", String::from_utf8_lossy(f)));
+            }
+        }
+    }
+    let size = String::from_utf8_lossy(line()?).to_string();
+    let t: Vec<&str> = size.split_whitespace().collect();
+    let num = |s: &str| s.parse::<usize>().map_err(|_| format!("HDR size line '{size}'"));
+    let (h, w, bottom_up) = match t.as_slice() {
+        ["-Y", h, "+X", w] => (num(h)?, num(w)?, false),
+        ["+Y", h, "+X", w] => (num(h)?, num(w)?, true),
+        _ => return Err(format!("HDR orientation '{size}' is not supported")),
+    };
+    if w == 0 || h == 0 || w.checked_mul(h).is_none_or(|n| n > 1 << 28) {
+        return Err(format!("HDR size {w}x{h}"));
+    }
+    let mut rgbe = vec![[0u8; 4]; w * h];
+    let mut d = &b[pos..];
+    for y in 0..h {
+        let row = &mut rgbe[y * w..(y + 1) * w];
+        if (8..=0x7fff).contains(&w) && d.len() >= 4 && d[0] == 2 && d[1] == 2 && d[2] & 0x80 == 0 {
+            // run length encoded: each of the four components in turn
+            if ((d[2] as usize) << 8 | d[3] as usize) != w {
+                return Err("HDR scan line of the wrong length".into());
+            }
+            d = &d[4..];
+            for c in 0..4 {
+                let mut x = 0;
+                while x < w {
+                    let (&n, rest) = d.split_first().ok_or("truncated HDR data")?;
+                    d = rest;
+                    if n > 128 {
+                        let n = (n - 128) as usize;
+                        let (&v, rest) = d.split_first().ok_or("truncated HDR data")?;
+                        d = rest;
+                        if n == 0 || x + n > w {
+                            return Err("bad HDR run".into());
+                        }
+                        row[x..x + n].iter_mut().for_each(|p| p[c] = v);
+                        x += n;
+                    } else {
+                        let n = n as usize;
+                        if n == 0 || x + n > w || d.len() < n {
+                            return Err("bad HDR run".into());
+                        }
+                        for (p, &v) in row[x..x + n].iter_mut().zip(&d[..n]) {
+                            p[c] = v;
+                        }
+                        d = &d[n..];
+                        x += n;
+                    }
+                }
+            }
+        } else {
+            // flat pixels; (1, 1, 1, n) repeats the previous one
+            let (mut x, mut shift) = (0, 0);
+            while x < w {
+                let px: [u8; 4] = d.get(..4).ok_or("truncated HDR data")?.try_into().unwrap();
+                d = &d[4..];
+                if px[0] == 1 && px[1] == 1 && px[2] == 1 {
+                    let n = (px[3] as usize) << shift;
+                    if x == 0 || x + n > w {
+                        return Err("bad HDR run".into());
+                    }
+                    let prev = row[x - 1];
+                    row[x..x + n].iter_mut().for_each(|p| *p = prev);
+                    x += n;
+                    shift += 8;
+                } else {
+                    row[x] = px;
+                    x += 1;
+                    shift = 0;
+                }
+            }
+        }
+    }
+    let mut data = Vec::with_capacity(w * h);
+    for y in 0..h {
+        let sy = if bottom_up { h - 1 - y } else { y };
+        for p in &rgbe[sy * w..(sy + 1) * w] {
+            data.push(if p[3] == 0 {
+                [0.0; 3]
+            } else {
+                let f = 2f32.powi(p[3] as i32 - 136);
+                [(p[0] as f32 + 0.5) * f, (p[1] as f32 + 0.5) * f, (p[2] as f32 + 0.5) * f]
+            });
+        }
+    }
+    Ok(HdrImage { width: w, height: h, data })
+}
+
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn radiance_hdr() {
+        // 8 x 2: a run length encoded row (a run and literals), then a flat
+        // row with a repeat (1, 1, 1, n); exponent 129 = values 2 to 4
+        let mut f = b"#?RADIANCE\nFORMAT=32-bit_rle_rgbe\n\n-Y 2 +X 8\n".to_vec();
+        f.extend([2, 2, 0, 8]);
+        f.extend([128 + 8, 128]); // R: 8 x 128
+        f.extend([8, 0, 32, 64, 96, 128, 160, 192, 224]); // G: literals
+        f.extend([128 + 8, 255]); // B
+        f.extend([128 + 8, 129]); // E
+        f.extend([255, 0, 0, 130, 1, 1, 1, 7]); // flat: one pixel, repeated 7 times
+        let i = decode_hdr(&f).unwrap();
+        assert_eq!((i.width, i.height), (8, 2));
+        let v = |m: f32, e: i32| (m + 0.5) * 2f32.powi(e - 136);
+        assert_eq!(i.data[0], [v(128.0, 129), v(0.0, 129), v(255.0, 129)]);
+        assert_eq!(i.data[7], [v(128.0, 129), v(224.0, 129), v(255.0, 129)]);
+        assert!(i.data[8..].iter().all(|p| *p == [v(255.0, 130), v(0.0, 130), v(0.0, 130)]));
+        assert!(i.data[8][0] > 3.9); // above white
+        assert!(decode_hdr(&f[..f.len() - 2]).is_err());
+        assert!(decode_hdr(b"#?RADIANCE\nFORMAT=32-bit_rle_xyze\n\n-Y 1 +X 1\n\0\0\0\0").is_err());
+    }
+
     use super::*;
 
     #[test]

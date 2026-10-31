@@ -3554,6 +3554,8 @@ WireframeColor=Colore wireframe
 ;Wireframe color
 WithHS=con HS
 ;with HS
+WithThe360PanoramaCameraA=Con la fotocamera Panorama 360: un panorama stereo per la VR, i due occhi uno sopra l'altro (il sinistro sopra), la profondità giusta in ogni direzione
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Con Z-buffer
 ;With ZBuffer
 Wrap1=wrap1

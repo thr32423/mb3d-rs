@@ -3554,6 +3554,8 @@ WireframeColor=Couleur du fil de fer
 ;Wireframe color
 WithHS=avec O.F.
 ;with HS
+WithThe360PanoramaCameraA=Avec la caméra Panorama 360 : un panorama stéréo pour la VR, les deux yeux l'un au-dessus de l'autre (le gauche en haut), la profondeur juste dans toutes les directions
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Avec Z-buffer
 ;With ZBuffer
 Wrap1=wrap1

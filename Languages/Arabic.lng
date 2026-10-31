@@ -3555,6 +3555,8 @@ WireframeColor=لون الإطار السلكي
 ;Wireframe color
 WithHS=مع HS
 ;with HS
+WithThe360PanoramaCameraA=مع كاميرا بانوراما 360: بانوراما ستيريو للواقع الافتراضي، العينان إحداهما فوق الأخرى (اليسرى في الأعلى)، والعمق صحيح في كل اتجاه
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=مع مخزن Z
 ;With ZBuffer
 Wrap1=wrap1

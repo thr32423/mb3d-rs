@@ -3554,6 +3554,8 @@ WireframeColor=Drahtgitterfarbe
 ;Wireframe color
 WithHS=mit HS
 ;with HS
+WithThe360PanoramaCameraA=Mit der Kamera 360°-Panorama: ein Stereopanorama für VR, beide Augen übereinander (das linke oben), die Tiefe in jeder Richtung richtig
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Mit Z-Buffer
 ;With ZBuffer
 Wrap1=wrap1

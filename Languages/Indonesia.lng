@@ -3554,6 +3554,8 @@ WireframeColor=Warna wireframe
 ;Wireframe color
 WithHS=dengan HS
 ;with HS
+WithThe360PanoramaCameraA=Dengan kamera Panorama 360: panorama stereo untuk VR, kedua mata bertumpuk (kiri di atas), kedalamannya benar ke segala arah
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Dengan ZBuffer
 ;With ZBuffer
 Wrap1=wrap1

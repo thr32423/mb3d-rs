@@ -3554,6 +3554,8 @@ WireframeColor=Farwa drótowi sécë
 ;Wireframe color
 WithHS=z HS
 ;with HS
+WithThe360PanoramaCameraA=Z kamerą Panorama 360: panorama stereo dlô VR, òbadwa òczë jedno nad drëdżim (lewé na górze), głãbizna pòprawnô w kòżdim kierënkù
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Z Z-buforã
 ;With ZBuffer
 Wrap1=wrap1

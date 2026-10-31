@@ -3555,6 +3555,8 @@ WireframeColor=ワイヤーフレームの色
 ;Wireframe color
 WithHS=HS あり
 ;with HS
+WithThe360PanoramaCameraA=360 パノラマ カメラでは: VR 用のステレオパノラマ。両目を上下に並べ (左目が上)、どの方向でも奥行きが正しくなります
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Zバッファ付き
 ;With ZBuffer
 Wrap1=wrap1

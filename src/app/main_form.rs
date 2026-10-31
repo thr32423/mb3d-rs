@@ -369,6 +369,9 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
         f.ctl[0].height = (h - 38).max(300);
     }
     // FirstShowUpdate
+    for (b, h) in [("Button12", "@MB:RenderBothEyeImagesAndShow"), ("StereoPairSaveButton", "@MB:ChooseAFilenameThenRenderBoth")] {
+        ui.cm(F, b).hint = format!("{}\n{}", tr(h), tr("@MB:WithThe360PanoramaCameraA"));
+    }
     ui.cm(F, "RadioGroup2").hint = format!("{}\n{}", tr("@MB:PanoramaModeTheFOVIsChoosen"), tr("@MB:FisheyeNotInMB3DTheField"));
     ui.cm(F, "Edit19").hint = tr("@MB:IfSetToAHigherValue");
     ui.cm(F, "Edit20").hint = tr("@MB:DefinesHowAccurateThePositionWith");
@@ -1011,7 +1014,10 @@ fn calc_mand_go(app: &mut Mb3d, ui: &mut Ui, calc3d: bool) {
 fn start_stereo_pair(app: &mut Mb3d, ui: &mut Ui) {
     app.make_scene(ui);
     store_undo(app);
-    let layout = if ui.checked(F, "StereoCrossCheck") {
+    // a panorama: the 360 degree stereo panorama of VR players
+    let layout = if app.scene.optic == CameraOptic::Panorama {
+        crate::render::StereoLayout::TopBottom
+    } else if ui.checked(F, "StereoCrossCheck") {
         crate::render::StereoLayout::Cross
     } else {
         crate::render::StereoLayout::Parallel

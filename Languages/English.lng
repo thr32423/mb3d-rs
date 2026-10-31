@@ -487,7 +487,7 @@ CheckThisToStopSettingThe=Check this to stop setting the slowest thread to a hig
 CheckToChangeTheValueX=Check to change the value [x]
 ;AniProcessForm.Label1.Caption
 ChooseAFilenameThenRenderBoth=Choose a filename, then render both eye images and save the completed stereo pair automatically.
-;Mand3DForm.StereoPairSaveButton.Hint
+;Mand3DForm.StereoPairSaveButton.Hint; the program
 ChooseAMap=Choose a map
 ;the program
 ChooseASharedFolderFirstOne=choose a shared folder first (one every computer of the swarm can see)
@@ -2665,7 +2665,7 @@ RemoveThisFormulaFromTheLocal=Remove this formula from the local appdata folder
 RenderAllTilesIncludedInThe=Render all tiles included in the lines:
 ;TilingForm.CheckBox6.Caption
 RenderBothEyeImagesAndShow=Render both eye images and show a side-by-side stereo preview without saving it.
-;Mand3DForm.Button12.Hint
+;Mand3DForm.Button12.Hint; the program
 RenderEveryNThFrame=Render every\n   n'th frame:
 ;AnimationForm.Label9.Caption
 RenderMyLastPictureAt4K=Render my last picture at 4K and tell me how long it took.
@@ -3553,6 +3553,8 @@ Wireframe=Wireframe
 WireframeColor=Wireframe color
 ;MeshPreviewFrm.Label2.Caption
 WithHS=with HS
+;the program
+WithThe360PanoramaCameraA=With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 ;the program
 WithZBuffer=With ZBuffer
 ;MCForm.WithZBufferCbx.Caption

@@ -3555,6 +3555,8 @@ WireframeColor=와이어프레임 색상
 ;Wireframe color
 WithHS=HS 포함
 ;with HS
+WithThe360PanoramaCameraA=360 파노라마 카메라에서는: VR용 스테레오 파노라마, 두 눈을 위아래로 (왼쪽 눈이 위), 모든 방향에서 깊이가 정확합니다
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Z 버퍼 포함
 ;With ZBuffer
 Wrap1=wrap1

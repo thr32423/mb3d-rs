@@ -3554,6 +3554,8 @@ WireframeColor=Cor do aramado
 ;Wireframe color
 WithHS=com SD
 ;with HS
+WithThe360PanoramaCameraA=Com a câmera Panorama 360: um panorama estéreo para RV, os dois olhos um sobre o outro (o esquerdo em cima), a profundidade certa em todas as direções
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Com ZBuffer
 ;With ZBuffer
 Wrap1=wrap1

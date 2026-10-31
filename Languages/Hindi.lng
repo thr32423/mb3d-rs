@@ -3555,6 +3555,8 @@ WireframeColor=वायरफ़्रेम रंग
 ;Wireframe color
 WithHS=HS के साथ
 ;with HS
+WithThe360PanoramaCameraA=360 पैनोरमा कैमरे के साथ: VR के लिए स्टीरियो पैनोरमा, दोनों आँखें एक के ऊपर एक (बाईं ऊपर), गहराई हर दिशा में सही
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=ZBuffer के साथ
 ;With ZBuffer
 Wrap1=wrap1

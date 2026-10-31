@@ -3554,6 +3554,8 @@ WireframeColor=Kolor szkieletu
 ;Wireframe color
 WithHS=z HS
 ;with HS
+WithThe360PanoramaCameraA=Z kamerą Panorama 360: panorama stereo dla VR, oba oczy jedno nad drugim (lewe na górze), głębia poprawna w każdym kierunku
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Z Z-bufferem
 ;With ZBuffer
 Wrap1=wrap1

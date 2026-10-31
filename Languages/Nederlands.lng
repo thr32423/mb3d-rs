@@ -3554,6 +3554,8 @@ WireframeColor=Draadmodelkleur
 ;Wireframe color
 WithHS=met HS
 ;with HS
+WithThe360PanoramaCameraA=Met de camera 360 Panorama: een stereopanorama voor VR, beide ogen boven elkaar (het linker boven), de diepte in elke richting juist
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Met Z-buffer
 ;With ZBuffer
 Wrap1=wrap1

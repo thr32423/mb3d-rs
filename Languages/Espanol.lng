@@ -3554,6 +3554,8 @@ WireframeColor=Color del alambre
 ;Wireframe color
 WithHS=con SD
 ;with HS
+WithThe360PanoramaCameraA=Con la cámara Panorama 360: un panorama estéreo para RV, ambos ojos uno encima del otro (el izquierdo arriba), la profundidad correcta en todas las direcciones
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=Con búfer Z
 ;With ZBuffer
 Wrap1=wrap1

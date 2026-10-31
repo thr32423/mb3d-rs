@@ -3555,6 +3555,8 @@ WireframeColor=線框顏色
 ;Wireframe color
 WithHS=含 HS
 ;with HS
+WithThe360PanoramaCameraA=使用 360 全景相機時：用於 VR 的立體全景，兩隻眼睛上下排列 (左眼在上)，各個方向的深度都正確
+;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=含 Z-buffer
 ;With ZBuffer
 Wrap1=wrap1

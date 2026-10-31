@@ -431,6 +431,45 @@ MB3D 當年只能使用處理器。它能開啟 MB3D 的參數檔（`.m3p`、`.m
   公尺) 一樣遠。Mandelbulb3D 沒有魚眼：參數中的 mb3d-rs 區塊會儲存它。
 
   </details>
+* **體積雲** (來自 Mandelbulber 的構想)：在碎形上方、下方或周圍放一層雲，由場景
+  的光照亮，畫在碎形的前方和後方。
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="雲天下海面上的碎形"></a>
+
+  <details><summary>詳細說明</summary>
+
+  *後製處理* 視窗的 *雲* 區段：勾選 *繪製雲*，設定雲層 (一個軸和其上的兩個高度)、
+  密度、覆蓋天空的比例、形狀大小和顏色，然後 *立即繪製*。它們在不到一秒內畫在
+  完成的圖片上，所以試驗設定很快；每個像素透過雲層看到它擊中的表面。動畫可以
+  移動它們 (關鍵影格之間的 `cloud_offset`)。不出現在反射和蒙地卡羅中；
+  Mandelbulb3D 沒有雲 (參數中的 mb3d-rs 區塊會儲存它們)。
+
+  </details>
+* **表面材質** (來自 Mandelbulber 的構想) 疊加在調色盤上：菲涅耳 (掠射角反射更多，
+  如玻璃和漆面)、虹彩 (薄膜的顏色) 和發光。
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="虹彩、帶菲涅耳和反射的虹彩，以及發光"></a>
+
+  <details><summary>詳細說明</summary>
+
+  *後製處理* 視窗的 *材質* 區段：勾選 *表面材質*，設定菲涅耳 (0 到 1)、虹彩 (0 到 1
+  及其顏色偏移) 和發光，然後 *立即繪製*。計算反射時菲涅耳最明顯。關閉時圖片與
+  Mandelbulb3D 完全相同；地平面保留自己的顏色和反射。尚未加入蒙地卡羅。
+
+  </details>
+* **一個場景中的兩個碎形** (來自 Mandelbulber 的構想)：使用 DE 組合時，混合的第二
+  部分可以與第一部分分開放置，平移、旋轉和縮放，以聯集、交集或切除組合。
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="並排的 Mandelbulb 和 Amazing Box"></a>
+
+  <details><summary>詳細說明</summary>
+
+  *公式* 視窗中選擇 DE 組合後：*第 2 部分位於* (它的中心)、*大小* 和 *旋轉* (繞 x、
+  y、z 軸的度數)。聯集 (*Min*) 把兩個物體並排放置，交集 (*Max*) 只保留共同部分，
+  反轉 max 從第一個中切去第二個，平滑聯集把它們融合。在顯示卡和處理器上計算；
+  參數中的 mb3d-rs 區塊儲存位置 (Mandelbulb3D 把兩部分顯示在同一處)。
+
+  </details>
 
 <a id="download"></a>
 

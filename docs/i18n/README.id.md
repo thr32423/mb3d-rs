@@ -723,6 +723,55 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   menyimpannya.
 
   </details>
+* **Awan volumetrik** (ide dari Mandelbulber): lapisan awan di atas, di bawah,
+  atau di sekitar fraktal, diterangi cahaya adegan, di depan dan di belakang
+  fraktal.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Fraktal di atas laut di bawah langit berawan"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Jendela *Pascaproses*, bagian *Awan*: centang *Lukis awan*, atur lapisannya
+  (sumbu dan dua ketinggian), kepadatan, seberapa banyak langit tertutup, ukuran
+  bentuk dan warnanya, lalu *Lukis sekarang*. Awan dilukis di atas gambar jadi
+  dalam sepersekian detik, jadi mencoba pengaturan itu cepat; setiap piksel
+  melihat menembus lapisan sampai permukaan yang dikenainya. Animasi dapat
+  menggerakkannya (`cloud_offset` antar keyframe). Tidak ada di pantulan dan
+  Monte Carlo; Mandelbulb3D tidak memilikinya (blok mb3d-rs di parameter
+  menyimpannya).
+
+  </details>
+* **Material permukaan** (ide dari Mandelbulber) di atas palet: Fresnel (pantulan
+  lebih kuat pada sudut landai, seperti kaca dan pernis), iridesensi (warna
+  lapisan tipis) dan pendar.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Iridesensi, iridesensi dengan Fresnel dan pantulan, dan pendar"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Jendela *Pascaproses*, bagian *Material*: centang *Material permukaan*, atur
+  Fresnel (0 sampai 1), iridesensi (0 sampai 1 dan pergeseran warnanya) dan
+  pendar, lalu *Lukis sekarang*. Fresnel paling terlihat dengan pantulan yang
+  dihitung. Bila mati, gambarnya persis seperti Mandelbulb3D; bidang tanah tetap
+  dengan warna dan pantulannya sendiri. Belum ada di Monte Carlo.
+
+  </details>
+* **Dua fraktal dalam satu adegan** (ide dari Mandelbulber): dengan kombinasi DE,
+  bagian kedua hibrida dapat berdiri terpisah dari yang pertama, digeser,
+  diputar, dan diskalakan, digabung, diiriskan, atau dipotong.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Mandelbulb dan Amazing Box berdampingan"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Jendela *Formula*, dengan kombinasi DE dipilih: *Bagian 2 di* (titik
+  tengahnya), *Ukuran* dan *Diputar* (derajat pada x, y, dan z). Gabungan (*Min*)
+  menaruh dua objek berdampingan, irisan (*Max*) hanya menyisakan yang sama, max
+  terbalik memotong yang kedua dari yang pertama, gabungan halus meleburkannya.
+  Dihitung di kartu grafis dan prosesor; blok mb3d-rs di parameter menyimpan
+  posisinya (Mandelbulb3D menampilkan kedua bagian di satu tempat).
+
+  </details>
 
 <a id="download"></a>
 

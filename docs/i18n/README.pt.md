@@ -723,6 +723,54 @@ pontos permitem que você confira mais por conta própria:
   guarda.
 
   </details>
+* **Nuvens volumétricas** (uma ideia do Mandelbulber): uma camada de nuvens
+  acima, abaixo ou ao redor do fractal, iluminada pela luz da cena, na frente e
+  atrás do fractal.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Um fractal sobre o mar sob um céu de nuvens"></a>
+
+  <details><summary>Saiba mais</summary>
+
+  Janela *Pós-processamento*, seção *Nuvens*: marque *Pintar nuvens*, ajuste a
+  camada (um eixo e duas alturas), a densidade, quanto do céu cobrem, o tamanho
+  das formas e a cor, depois *Pintar agora*. São pintadas sobre a imagem pronta
+  numa fração de segundo, então testar ajustes é rápido; cada pixel olha através
+  da camada até a superfície que atingiu. Uma animação pode movê-las
+  (`cloud_offset` entre quadros-chave). Não aparecem nos reflexos nem no Monte
+  Carlo; o Mandelbulb3D não as tem (o bloco mb3d-rs dos parâmetros as guarda).
+
+  </details>
+* **Materiais de superfície** (ideias do Mandelbulber) sobre a paleta: Fresnel
+  (mais reflexo em ângulos rasantes, como vidro e laca), iridescência (as cores de
+  uma película fina) e brilho.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Iridescência, iridescência com Fresnel e reflexos, e brilho"></a>
+
+  <details><summary>Saiba mais</summary>
+
+  Janela *Pós-processamento*, seção *Material*: marque *Material da superfície*,
+  ajuste Fresnel (0 a 1), iridescência (0 a 1 e um deslocamento das suas cores) e
+  brilho, depois *Pintar agora*. O Fresnel aparece melhor com os reflexos
+  calculados. Desligados, as imagens são exatamente as do Mandelbulb3D; o plano de
+  chão mantém a sua cor e reflexo. Ainda não no Monte Carlo.
+
+  </details>
+* **Dois fractais numa cena** (uma ideia do Mandelbulber): com uma combinação DE,
+  a segunda parte do híbrido pode ficar separada da primeira, movida, girada e
+  escalada, unidas, intersectadas ou recortadas.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Um Mandelbulb e uma Amazing Box lado a lado"></a>
+
+  <details><summary>Saiba mais</summary>
+
+  Janela *Fórmulas*, com uma combinação DE escolhida: *Parte 2 em* (o seu centro),
+  *Tamanho* e *Girada* (graus em torno de x, y e z). A união (*Min*) põe os dois
+  objetos lado a lado, a interseção (*Max*) guarda só o que é comum, o max
+  invertido recorta o segundo do primeiro, a união suave os funde. Calculado na
+  placa de vídeo e no processador; o bloco mb3d-rs dos parâmetros guarda a posição
+  (o Mandelbulb3D mostra as duas partes no mesmo lugar).
+
+  </details>
 
 <a id="download"></a>
 

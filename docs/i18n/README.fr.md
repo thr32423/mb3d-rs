@@ -735,6 +735,57 @@ Voici de quoi vérifier plus loin par vous-même :
   Mandelbulb3D n'a pas de fisheye : le bloc mb3d-rs des paramètres le garde.
 
   </details>
+* **Des nuages volumétriques** (une idée de Mandelbulber) : une couche de nuages
+  au-dessus, en dessous ou autour de la fractale, éclairée par la lumière de la
+  scène, devant et derrière la fractale.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Une fractale au-dessus de la mer sous un ciel de nuages"></a>
+
+  <details><summary>En savoir plus</summary>
+
+  Fenêtre *Post-traitement*, section *Nuages* : cochez *Peindre les nuages*,
+  réglez la couche (un axe et deux hauteurs), la densité, la part du ciel
+  couverte, la taille des formes et la couleur, puis *Peindre*. Ils sont peints
+  sur l'image terminée en une fraction de seconde, on essaie donc vite des
+  réglages ; chaque pixel regarde à travers la couche jusqu'à la surface touchée.
+  Une animation peut les déplacer (`cloud_offset` entre images clés). Pas dans les
+  reflets ni les rendus Monte Carlo ; Mandelbulb3D ne les a pas (le bloc mb3d-rs
+  des paramètres les garde).
+
+  </details>
+* **Des matériaux de surface** (idées de Mandelbulber) par-dessus la palette :
+  Fresnel (plus de reflet aux angles rasants, comme le verre et la laque),
+  irisation (les couleurs d'un film mince) et lueur.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Irisation, irisation avec Fresnel et reflets, et lueur"></a>
+
+  <details><summary>En savoir plus</summary>
+
+  Fenêtre *Post-traitement*, section *Matériau* : cochez *Matériau de surface*,
+  réglez Fresnel (0 à 1), l'irisation (0 à 1 et un décalage de ses couleurs) et
+  la lueur, puis *Peindre*. Fresnel se voit le mieux avec les reflets calculés.
+  Désactivées, les images sont exactement celles de Mandelbulb3D ; le plan de sol
+  garde sa couleur et son reflet. Pas encore dans Monte Carlo.
+
+  </details>
+* **Deux fractales dans une scène** (une idée de Mandelbulber) : avec une
+  combinaison DE, la deuxième partie de l'hybride peut se tenir à l'écart de la
+  première, déplacée, tournée et mise à l'échelle, réunies, intersectées ou
+  découpées.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Un Mandelbulb et une Amazing Box côte à côte"></a>
+
+  <details><summary>En savoir plus</summary>
+
+  Fenêtre *Formules*, avec une combinaison DE choisie : *Partie 2 à* (son
+  centre), *Taille* et *Tournée* (degrés autour de x, y et z). L'union (*Min*)
+  place les deux objets côte à côte, l'intersection (*Max*) ne garde que le
+  commun, le max inversé découpe le second dans le premier, l'union douce les
+  fond ensemble. Calculé sur la carte graphique et le processeur ; le bloc
+  mb3d-rs des paramètres garde la position (Mandelbulb3D montre les deux parties
+  au même endroit).
+
+  </details>
 
 <a id="download"></a>
 

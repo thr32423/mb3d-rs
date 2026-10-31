@@ -695,6 +695,57 @@ you check further on your own:
   mb3d-rs block of the parameters keeps it.
 
   </details>
+* **Volumetric clouds** (an idea from Mandelbulber): a layer of clouds
+  above, below or around the fractal, lit by the scene's light, in front of
+  and behind the fractal.
+
+  <a href="docs/img/clouds.jpg"><img src="docs/img/clouds.jpg" width="480" alt="A fractal over the sea under a sky of clouds"></a>
+
+  <details><summary>Read more</summary>
+
+  Post processing window, section *Clouds*: tick *Paint clouds*, set the
+  layer (an axis and two heights on it), how thick the clouds are, how much
+  of the sky they cover, the size of their shapes and their colour, then
+  *Paint now*. They are painted over the finished picture in a fraction of
+  a second, so trying out settings is quick; each pixel looks through the
+  layer up to the surface it hit. An animation can move them
+  (`cloud_offset` between keyframes). They are not in reflections or Monte
+  Carlo renders; Mandelbulb3D does not have them (the mb3d-rs block of the
+  parameters keeps them).
+
+  </details>
+* **Surface materials** (ideas from Mandelbulber) on top of the palette:
+  Fresnel (more reflection at grazing angles, as glass and lacquer have),
+  iridescence (the shimmering colours of a thin film) and glow.
+
+  <a href="docs/img/material.jpg"><img src="docs/img/material.jpg" width="760" alt="Iridescence, iridescence with Fresnel and reflections, and glow"></a>
+
+  <details><summary>Read more</summary>
+
+  Post processing window, section *Material*: tick *Surface material*, set
+  Fresnel (0 to 1), iridescence (0 to 1, and a shift of its colours) and glow,
+  then *Paint now*. Fresnel shows best with the reflections calculated. Off,
+  the pictures are exactly Mandelbulb3D's; the ground plane keeps its own
+  colour and reflection. Not in Monte Carlo renders yet.
+
+  </details>
+* **Two fractals in one scene** (an idea from Mandelbulber): with a DE
+  combination, the second hybrid part can stand apart from the first,
+  moved, turned and scaled, combined as union, intersection or cut.
+
+  <a href="docs/img/two_objects.jpg"><img src="docs/img/two_objects.jpg" width="360" alt="A Mandelbulb and an Amazing Box side by side"></a>
+
+  <details><summary>Read more</summary>
+
+  Formula window, with a DE combination chosen: *Part 2 at* (its middle),
+  *Size* and *Turned* (degrees about x, y and z). Union (*Min*) puts the two
+  objects side by side, intersection (*Max*) keeps only what both share, the
+  inverted max cuts the second out of the first, the smooth union melts them
+  together. Calculated on the graphics card and the processor; the mb3d-rs
+  block of the parameters keeps the place (Mandelbulb3D shows the two parts
+  in one place).
+
+  </details>
 
 ## Download
 

@@ -688,6 +688,53 @@ sprawdzëc sóm:
   parametrów gò trzëmô.
 
   </details>
+* **Wòlumetriczné chmùrë** (pòmësł z Mandelbulbera): warstwa chmùrów nad, pòd
+  abò wkół fraktala, òswiecónô swiatłã sceny, przed fraktalã ë za nim.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Fraktal nad mòrzã pòd niebã w chmùrach"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Òkno *Pòstprodukcja*, dzél *Chmùrë*: zaznaczë *Malëjë chmùrë*, ùstawi warstwã
+  (òsã ë dwie wiżawë), gãstosc, kùli nieba pòkriwają, wiôlgòsc ksztôłtów ë farwã,
+  pòtemù *Malëjë terô*. Są malowóné na gòtowim òbrazu w dzélu sekùndë, tak że
+  sprôwdzanié ùstawów je chùtczé; kòżdi piksel zdrzi przez warstwã do trafiony
+  pòwierzchni. Animacjô mòże je rëszac (`cloud_offset` midzë klucznyma
+  klatkama). Nie je jich w òdbiciach ë Monte Carlo; Mandelbulb3D jich ni mô
+  (blok mb3d-rs parametrów je trzëmô).
+
+  </details>
+* **Materiałë pòwierzchni** (pòmësłë z Mandelbulbera) na paletce: Fresnel (wicy
+  òdbicô przë òstrim kące, jak szkło ë lakier), òpalizacjô (farwë cenczi warstwë)
+  ë pòswiata.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Òpalizacjô, òpalizacjô z Fresnelã ë òdbiciama ë pòswiata"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Òkno *Pòstprodukcja*, dzél *Materiał*: zaznaczë *Materiał pòwierzchni*, ùstawi
+  Fresnel (òd 0 do 1), òpalizacjã (òd 0 do 1 ë przesënienié ji farwów) ë
+  pòswiatã, pòtemù *Malëjë terô*. Fresnel nôlepi widzec z rechòwónyma
+  òdbiciama. Wëłączoné dają akùratno òbrazë Mandelbulb3D; zemia trzëmô swòjã
+  farwã ë òdbicé. Jesz nie w Monte Carlo.
+
+  </details>
+* **Dwa fraktale w jedny scenie** (pòmësł z Mandelbulbera): przë kòmbinacji DE
+  drëdżi dzél hibridë mòże stojec òsóbno òd pierszégò, przesënióny, òbrócony ë
+  przeskalowóny, złączoné, przecãté abò wëcãté.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Mandelbulb ë Amazing Box kòl se"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Òkno *Fòrmùłë*, z wëbróną kòmbinacją DE: *Dzél 2 w* (jegò westrzódk),
+  *Wiôlgòsc* ë *Òbrócony* (gradë wkół x, y ë z). Sëma (*Min*) stôwiô òbadwa
+  òbiektë kòl se, przecãcé (*Max*) òstôwiô le wspólné, òdwrócony max wëcynô
+  drëdżi z pierszégò, gładkô sëma je zlewô. Rechòwóné na graficzny karce ë
+  procesorze; blok mb3d-rs parametrów trzëmô môle (Mandelbulb3D pòkazywô òbadwa
+  dzéle w jednym môlu).
+
+  </details>
 
 <a id="download"></a>
 

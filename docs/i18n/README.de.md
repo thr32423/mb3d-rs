@@ -711,6 +711,57 @@ können Sie selbst weiter prüfen:
   Mandelbulb3D hat kein Fischauge: der mb3d-rs-Block der Parameter bewahrt es.
 
   </details>
+* **Volumetrische Wolken** (eine Idee aus Mandelbulber): eine Wolkenschicht über,
+  unter oder um das Fraktal, vom Licht der Szene beleuchtet, vor und hinter dem
+  Fraktal.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Ein Fraktal über dem Meer unter einem Wolkenhimmel"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Fenster *Nachbearbeitung*, Abschnitt *Wolken*: *Wolken malen* ankreuzen, die
+  Schicht (eine Achse und zwei Höhen darauf), die Dichte, wie viel des Himmels
+  bedeckt ist, die Größe der Formen und die Farbe einstellen, dann *Jetzt malen*.
+  Sie werden in Sekundenbruchteilen über das fertige Bild gemalt, Einstellungen
+  lassen sich also schnell ausprobieren; jeder Bildpunkt blickt durch die Schicht
+  bis zur getroffenen Oberfläche. Eine Animation kann sie bewegen (`cloud_offset`
+  zwischen Keyframes). Nicht in Spiegelungen und Monte-Carlo-Bildern;
+  Mandelbulb3D hat sie nicht (der mb3d-rs-Block der Parameter bewahrt sie).
+
+  </details>
+* **Oberflächenmaterialien** (Ideen aus Mandelbulber) über der Palette: Fresnel
+  (mehr Spiegelung bei flachem Blickwinkel, wie bei Glas und Lack), Schillern
+  (die Farben eines dünnen Films) und Leuchten.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Schillern, Schillern mit Fresnel und Spiegelungen, und Leuchten"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Fenster *Nachbearbeitung*, Abschnitt *Material*: *Oberflächenmaterial*
+  ankreuzen, Fresnel (0 bis 1), Schillern (0 bis 1 und eine Verschiebung seiner
+  Farben) und Leuchten einstellen, dann *Jetzt malen*. Fresnel zeigt sich am
+  besten mit berechneten Spiegelungen. Ausgeschaltet sind die Bilder genau die
+  von Mandelbulb3D; die Bodenebene behält ihre eigene Farbe und Spiegelung. Noch
+  nicht in Monte-Carlo-Bildern.
+
+  </details>
+* **Zwei Fraktale in einer Szene** (eine Idee aus Mandelbulber): mit einer
+  DE-Kombination kann der zweite Hybridteil abseits vom ersten stehen,
+  verschoben, gedreht und skaliert, vereinigt, geschnitten oder ausgeschnitten.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Ein Mandelbulb und eine Amazing Box nebeneinander"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Fenster *Formeln*, mit gewählter DE-Kombination: *Teil 2 bei* (seine Mitte),
+  *Größe* und *Gedreht* (Grad um x, y und z). Die Vereinigung (*Min*) stellt die
+  beiden Objekte nebeneinander, der Schnitt (*Max*) behält nur das Gemeinsame,
+  das invertierte Max schneidet das zweite aus dem ersten, die weiche Vereinigung
+  lässt sie verschmelzen. Auf der Grafikkarte und dem Prozessor berechnet; der
+  mb3d-rs-Block der Parameter bewahrt den Ort (Mandelbulb3D zeigt beide Teile an
+  einem Ort).
+
+  </details>
 
 <a id="download"></a>
 

@@ -692,6 +692,53 @@ możesz sprawdzić sam:
   parametrów je przechowuje.
 
   </details>
+* **Chmury wolumetryczne** (pomysł z Mandelbulbera): warstwa chmur nad, pod lub
+  wokół fraktala, oświetlona światłem sceny, przed fraktalem i za nim.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Fraktal nad morzem pod zachmurzonym niebem"></a>
+
+  <details><summary>Więcej</summary>
+
+  Okno *Postprocessing*, sekcja *Chmury*: zaznacz *Maluj chmury*, ustaw warstwę
+  (oś i dwie wysokości), gęstość, ile nieba pokrywają, rozmiar kształtów i
+  kolor, potem *Maluj teraz*. Są malowane na gotowym obrazie w ułamku sekundy,
+  więc szybko można próbować ustawień; każdy piksel patrzy przez warstwę aż do
+  trafionej powierzchni. Animacja może je przesuwać (`cloud_offset` między
+  klatkami kluczowymi). Nie ma ich w odbiciach ani w Monte Carlo; Mandelbulb3D
+  ich nie ma (blok mb3d-rs parametrów je przechowuje).
+
+  </details>
+* **Materiały powierzchni** (pomysły z Mandelbulbera) na palecie: Fresnel (więcej
+  odbicia pod ostrym kątem, jak szkło i lakier), opalizacja (kolory cienkiej
+  warstwy) i poświata.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Opalizacja, opalizacja z Fresnelem i odbiciami oraz poświata"></a>
+
+  <details><summary>Więcej</summary>
+
+  Okno *Postprocessing*, sekcja *Materiał*: zaznacz *Materiał powierzchni*, ustaw
+  Fresnel (od 0 do 1), opalizację (od 0 do 1 i przesunięcie jej kolorów) i
+  poświatę, potem *Maluj teraz*. Fresnel najlepiej widać z liczonymi odbiciami.
+  Wyłączone dają dokładnie obrazy Mandelbulb3D; podłoże zachowuje własny kolor i
+  odbicie. Jeszcze nie w Monte Carlo.
+
+  </details>
+* **Dwa fraktale w jednej scenie** (pomysł z Mandelbulbera): przy kombinacji DE
+  druga część hybrydy może stać osobno od pierwszej, przesunięta, obrócona i
+  przeskalowana, połączone, przecięte albo wycięte.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Mandelbulb i Amazing Box obok siebie"></a>
+
+  <details><summary>Więcej</summary>
+
+  Okno *Formuły*, z wybraną kombinacją DE: *Część 2 w* (jej środek), *Rozmiar* i
+  *Obrót* (stopnie wokół x, y i z). Suma (*Min*) stawia oba obiekty obok siebie,
+  iloczyn (*Max*) zostawia tylko część wspólną, odwrócony max wycina drugi z
+  pierwszego, gładka suma stapia je razem. Liczone na karcie graficznej i
+  procesorze; blok mb3d-rs parametrów przechowuje położenie (Mandelbulb3D pokazuje
+  obie części w jednym miejscu).
+
+  </details>
 
 <a id="download"></a>
 

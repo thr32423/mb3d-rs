@@ -430,6 +430,45 @@ mb3d-rs 就是 [Mandelbulb3D](https://github.com/thargor6/mb3d)（MB3D）这款
   米) 一样远。Mandelbulb3D 没有鱼眼：参数中的 mb3d-rs 块会保存它。
 
   </details>
+* **体积云** (来自 Mandelbulber 的想法)：在分形上方、下方或周围放一层云，由场景
+  的光照亮，画在分形的前方和后方。
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="云天下海面上的分形"></a>
+
+  <details><summary>了解更多</summary>
+
+  *后期处理* 窗口的 *云* 部分：勾选 *绘制云*，设置云层 (一个轴和其上的两个高度)、
+  密度、覆盖天空的比例、形状大小和颜色，然后 *立即绘制*。它们在不到一秒内画在
+  完成的图片上，所以试验设置很快；每个像素透过云层看到它命中的表面。动画可以
+  移动它们 (关键帧之间的 `cloud_offset`)。不出现在反射和蒙特卡罗中；Mandelbulb3D
+  没有云 (参数中的 mb3d-rs 块会保存它们)。
+
+  </details>
+* **表面材质** (来自 Mandelbulber 的想法) 叠加在调色板上：菲涅耳 (掠射角反射更多，
+  如玻璃和漆面)、虹彩 (薄膜的颜色) 和发光。
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="虹彩、带菲涅耳和反射的虹彩，以及发光"></a>
+
+  <details><summary>了解更多</summary>
+
+  *后期处理* 窗口的 *材质* 部分：勾选 *表面材质*，设置菲涅耳 (0 到 1)、虹彩 (0 到 1
+  及其颜色偏移) 和发光，然后 *立即绘制*。计算反射时菲涅耳最明显。关闭时图片与
+  Mandelbulb3D 完全相同；地平面保留自己的颜色和反射。尚未加入蒙特卡罗。
+
+  </details>
+* **一个场景中的两个分形** (来自 Mandelbulber 的想法)：使用 DE 组合时，混合的第二
+  部分可以与第一部分分开放置，平移、旋转和缩放，以并集、交集或切除组合。
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="并排的 Mandelbulb 和 Amazing Box"></a>
+
+  <details><summary>了解更多</summary>
+
+  *公式* 窗口中选择 DE 组合后：*第 2 部分位于* (它的中心)、*大小* 和 *旋转* (绕 x、
+  y、z 轴的度数)。并集 (*Min*) 把两个物体并排放置，交集 (*Max*) 只保留共同部分，
+  反转 max 从第一个中切去第二个，平滑并集把它们融合。在显卡和处理器上计算；参数
+  中的 mb3d-rs 块保存位置 (Mandelbulb3D 把两部分显示在同一处)。
+
+  </details>
 
 <a id="download"></a>
 

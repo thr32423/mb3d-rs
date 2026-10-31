@@ -718,6 +718,56 @@ permettono di verificare ulteriormente da solo:
   parametri lo conserva.
 
   </details>
+* **Nuvole volumetriche** (un'idea di Mandelbulber): uno strato di nuvole sopra,
+  sotto o intorno al frattale, illuminato dalla luce della scena, davanti e dietro
+  il frattale.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Un frattale sul mare sotto un cielo di nuvole"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  Finestra *Postproduzione*, sezione *Nuvole*: spuntate *Dipingi nuvole*,
+  impostate lo strato (un asse e due altezze), la densità, quanto cielo coprono,
+  la grandezza delle forme e il colore, poi *Dipingi ora*. Vengono dipinte
+  sull'immagine finita in una frazione di secondo, quindi provare le impostazioni
+  è rapido; ogni pixel guarda attraverso lo strato fino alla superficie colpita.
+  Un'animazione può muoverle (`cloud_offset` tra i fotogrammi chiave). Non nei
+  riflessi né nei render Monte Carlo; Mandelbulb3D non le ha (il blocco mb3d-rs
+  dei parametri le conserva).
+
+  </details>
+* **Materiali di superficie** (idee di Mandelbulber) sopra la tavolozza: Fresnel
+  (più riflesso agli angoli radenti, come vetro e lacca), iridescenza (i colori di
+  una pellicola sottile) e bagliore.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Iridescenza, iridescenza con Fresnel e riflessi, e bagliore"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  Finestra *Postproduzione*, sezione *Materiale*: spuntate *Materiale superficie*,
+  impostate Fresnel (da 0 a 1), iridescenza (da 0 a 1 e uno spostamento dei suoi
+  colori) e bagliore, poi *Dipingi ora*. Fresnel si vede meglio con i riflessi
+  calcolati. Spente, le immagini sono esattamente quelle di Mandelbulb3D; il piano
+  del suolo mantiene il suo colore e riflesso. Non ancora in Monte Carlo.
+
+  </details>
+* **Due frattali in una scena** (un'idea di Mandelbulber): con una combinazione
+  DE, la seconda parte dell'ibrido può stare separata dalla prima, spostata,
+  ruotata e scalata, unite, intersecate o ritagliate.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Un Mandelbulb e un Amazing Box uno accanto all'altro"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  Finestra *Formule*, con una combinazione DE scelta: *Parte 2 a* (il suo centro),
+  *Dimens.* e *Ruotata* (gradi attorno a x, y e z). L'unione (*Min*) mette i due
+  oggetti uno accanto all'altro, l'intersezione (*Max*) tiene solo il comune, il
+  max invertito ritaglia il secondo dal primo, l'unione morbida li fonde.
+  Calcolato sulla scheda grafica e sul processore; il blocco mb3d-rs dei
+  parametri conserva la posizione (Mandelbulb3D mostra le due parti nello stesso
+  punto).
+
+  </details>
 
 <a id="download"></a>
 

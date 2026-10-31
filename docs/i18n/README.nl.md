@@ -681,6 +681,56 @@ kunt u zelf verder controleren:
   mb3d-rs-blok van de parameters bewaart het.
 
   </details>
+* **Volumetrische wolken** (een idee uit Mandelbulber): een wolkenlaag boven,
+  onder of rond de fractal, belicht door het licht van de scène, voor en achter de
+  fractal.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Een fractal boven de zee onder een wolkenlucht"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  Venster *Nabewerking*, sectie *Wolken*: vink *Wolken schilderen* aan, stel de
+  laag in (een as en twee hoogten), de dichtheid, hoeveel lucht ze bedekken, de
+  grootte van de vormen en de kleur, dan *Nu schilderen*. Ze worden in een
+  fractie van een seconde over de klare afbeelding geschilderd, instellingen
+  proberen gaat dus snel; elke pixel kijkt door de laag tot het oppervlak dat hij
+  raakte. Een animatie kan ze bewegen (`cloud_offset` tussen keyframes). Niet in
+  reflecties en Monte Carlo; Mandelbulb3D heeft ze niet (het mb3d-rs-blok van de
+  parameters bewaart ze).
+
+  </details>
+* **Oppervlaktematerialen** (ideeën uit Mandelbulber) bovenop het palet: Fresnel
+  (meer reflectie bij scherende hoeken, zoals glas en lak), iriseren (de kleuren
+  van een dunne film) en gloed.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Iriseren, iriseren met Fresnel en reflecties, en gloed"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  Venster *Nabewerking*, sectie *Materiaal*: vink *Oppervlaktemateriaal* aan,
+  stel Fresnel (0 tot 1), iriseren (0 tot 1 en een verschuiving van de kleuren)
+  en gloed in, dan *Nu schilderen*. Fresnel is het best te zien met berekende
+  reflecties. Uit zijn de afbeeldingen precies die van Mandelbulb3D; het
+  grondvlak houdt zijn eigen kleur en reflectie. Nog niet in Monte Carlo.
+
+  </details>
+* **Twee fractals in één scène** (een idee uit Mandelbulber): met een
+  DE-combinatie kan het tweede hybride deel los van het eerste staan, verplaatst,
+  gedraaid en geschaald, verenigd, doorsneden of uitgesneden.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Een Mandelbulb en een Amazing Box naast elkaar"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  Venster *Formules*, met een gekozen DE-combinatie: *Deel 2 op* (zijn midden),
+  *Grootte* en *Gedraaid* (graden om x, y en z). De vereniging (*Min*) zet de
+  twee objecten naast elkaar, de doorsnede (*Max*) houdt alleen het gemeenschap-
+  pelijke, de omgekeerde max snijdt het tweede uit het eerste, de zachte
+  vereniging laat ze samensmelten. Berekend op de grafische kaart en de
+  processor; het mb3d-rs-blok van de parameters bewaart de plaats (Mandelbulb3D
+  toont beide delen op één plek).
+
+  </details>
 
 <a id="download"></a>
 

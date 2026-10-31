@@ -736,6 +736,55 @@ esto puede comprobar más por su cuenta:
   los parámetros lo guarda.
 
   </details>
+* **Nubes volumétricas** (una idea de Mandelbulber): una capa de nubes por
+  encima, por debajo o alrededor del fractal, iluminada por la luz de la escena,
+  delante y detrás del fractal.
+
+  <a href="../img/clouds.jpg"><img src="../img/clouds.jpg" width="480" alt="Un fractal sobre el mar bajo un cielo de nubes"></a>
+
+  <details><summary>Más información</summary>
+
+  Ventana *Posprocesado*, sección *Nubes*: marque *Pintar nubes*, ajuste la capa
+  (un eje y dos alturas en él), la densidad, cuánto cielo cubren, el tamaño de
+  sus formas y su color, y pulse *Pintar ahora*. Se pintan sobre la imagen
+  terminada en una fracción de segundo, así que probar ajustes es rápido; cada
+  píxel mira a través de la capa hasta la superficie que alcanzó. Una animación
+  puede moverlas (`cloud_offset` entre fotogramas clave). No aparecen en reflejos
+  ni en Monte Carlo; Mandelbulb3D no las tiene (el bloque mb3d-rs de los
+  parámetros las guarda).
+
+  </details>
+* **Materiales de superficie** (ideas de Mandelbulber) sobre la paleta: Fresnel
+  (más reflejo en ángulos rasantes, como el vidrio y la laca), iridiscencia (los
+  colores de una película fina) y brillo.
+
+  <a href="../img/material.jpg"><img src="../img/material.jpg" width="760" alt="Iridiscencia, iridiscencia con Fresnel y reflejos, y brillo"></a>
+
+  <details><summary>Más información</summary>
+
+  Ventana *Posprocesado*, sección *Material*: marque *Material de superficie*,
+  ajuste Fresnel (0 a 1), iridiscencia (0 a 1 y un desplazamiento de sus colores)
+  y brillo, y pulse *Pintar ahora*. Fresnel se ve mejor con los reflejos
+  calculados. Apagado, las imágenes son exactamente las de Mandelbulb3D; el plano
+  de suelo conserva su color y reflejo. Aún no en Monte Carlo.
+
+  </details>
+* **Dos fractales en una escena** (una idea de Mandelbulber): con una combinación
+  DE, la segunda parte del híbrido puede estar aparte de la primera, movida,
+  girada y escalada, combinada como unión, intersección o corte.
+
+  <a href="../img/two_objects.jpg"><img src="../img/two_objects.jpg" width="360" alt="Un Mandelbulb y una Amazing Box uno junto al otro"></a>
+
+  <details><summary>Más información</summary>
+
+  Ventana *Fórmulas*, con una combinación DE elegida: *Parte 2 en* (su centro),
+  *Tamaño* y *Girada* (grados sobre x, y y z). La unión (*Min*) pone los dos
+  objetos uno junto al otro, la intersección (*Max*) deja solo lo común, el max
+  invertido recorta el segundo del primero, la unión suave los funde. Se calcula
+  en la tarjeta gráfica y en el procesador; el bloque mb3d-rs de los parámetros
+  guarda la posición (Mandelbulb3D muestra las dos partes en un mismo lugar).
+
+  </details>
 
 <a id="download"></a>
 

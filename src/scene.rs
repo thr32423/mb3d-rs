@@ -415,6 +415,17 @@ impl Scene {
     /// (omni-directional stereo, the 360 degree pictures of VR headsets).
     pub fn stereo_eye_shift(&self) -> f64 {
         let [sw, sd, md] = self.stereo_screen.map(|v| v as f64);
+        if self.optic == CameraOptic::Panorama {
+            // the eyes 6.5 cm apart, the middle at the viewing distance (a
+            // panorama's width spans 360 degrees: no screen to scale to)
+            let half = 0.0325 * (self.mid[2] - self.z_start).abs() / self.step_width() / sd.max(1e-6);
+            return match self.stereo_mode {
+                1 => -2.0 * half,
+                3 => half,
+                4 => -half,
+                _ => 0.0,
+            };
+        }
         let eyedist = 0.065 * self.width as f64 * sd / f64::max(1e-100, md * sw);
         let k = (sd - md) / sd;
         match self.stereo_mode {

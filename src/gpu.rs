@@ -439,9 +439,6 @@ pub fn unsupported(p: &CalcParams) -> Option<String> {
     if p.slice_2d != 0 {
         return r("2D calculation (not on the GPU yet)");
     }
-    if p.ground.is_some() {
-        return r("the ground plane (not on the GPU yet)");
-    }
     if p.is_custom_de && !p.difs && ![2, 5, 6, 11].contains(&p.de_option) {
         return r("this analytic DE option (not on the GPU yet)");
     }
@@ -1182,7 +1179,7 @@ fn prepare(g: &'static Gpu, code: String, entry: &'static str, constants: Vec<(&
 /// The constants of the Monte Carlo pipeline.
 fn mc_constants(p: &CalcParams) -> Vec<(&'static str, f64)> {
     let difs = p.difs || p.decomb.as_ref().is_some_and(|d| d.part2.difs);
-    vec![("MODE_KIND", 4.0), ("HAS_DIFS", difs as u8 as f64), ("HAS_DECOMB", p.decomb.is_some() as u8 as f64), ("HAS_4D", four_d(p) as u8 as f64), ("HAS_IPOL", has_ipol(p) as u8 as f64)]
+    vec![("MODE_KIND", 4.0), ("HAS_DIFS", difs as u8 as f64), ("HAS_DECOMB", p.decomb.is_some() as u8 as f64), ("HAS_4D", four_d(p) as u8 as f64), ("HAS_IPOL", has_ipol(p) as u8 as f64), ("HAS_GROUND", p.ground.is_some() as u8 as f64)]
 }
 
 /// Monte Carlo on the card: a flag that turns true once its shader is
@@ -1206,7 +1203,7 @@ fn march_constants(p: &CalcParams, mode: u32) -> Vec<(&'static str, f64)> {
         2 => 2.0,
         _ => 0.0,
     };
-    vec![("MODE_KIND", kind), ("HAS_DIFS", difs as u8 as f64), ("HAS_DECOMB", p.decomb.is_some() as u8 as f64), ("HAS_4D", four_d(p) as u8 as f64), ("HAS_IPOL", has_ipol(p) as u8 as f64)]
+    vec![("MODE_KIND", kind), ("HAS_DIFS", difs as u8 as f64), ("HAS_DECOMB", p.decomb.is_some() as u8 as f64), ("HAS_4D", four_d(p) as u8 as f64), ("HAS_IPOL", has_ipol(p) as u8 as f64), ("HAS_GROUND", p.ground.is_some() as u8 as f64)]
 }
 
 /// The single precision march of the scene is compiled already (no
@@ -1251,6 +1248,7 @@ fn reflect_constants(p: &CalcParams, march: bool, hs: bool, ao: bool) -> Vec<(&'
         ("HAS_DECOMB", p.decomb.is_some() as u8 as f64),
         ("HAS_4D", four_d(p) as u8 as f64),
         ("HAS_IPOL", has_ipol(p) as u8 as f64),
+        ("HAS_GROUND", p.ground.is_some() as u8 as f64),
         ("R_HS", hs as u8 as f64),
         ("R_AO", ao as u8 as f64),
         ("R_MARCH", march as u8 as f64),
@@ -1855,6 +1853,15 @@ fn params(p: &CalcParams, row0: usize, rows: usize, scene: &SceneShader, mode: u
     }
     while v.len() < PARAM_WORDS {
         v.push(0);
+    }
+    // the ground plane (GROUND_OPT ..)
+    if let Some(g) = &p.ground {
+        let slope = std::f64::consts::TAU * 1.59 * g.wave_height / g.wave_len.max(1e-30);
+        v[411] = 1 | ((g.axis as u32 % 3) << 1) | (g.above as u32) << 3;
+        v[412] = (g.pos as f32).to_bits();
+        v[413] = (g.wave_height as f32).to_bits();
+        v[414] = (g.wave_len as f32).to_bits();
+        v[415] = ((1.0 / (1.0 + slope * slope).sqrt()) as f32).to_bits();
     }
     v
 }

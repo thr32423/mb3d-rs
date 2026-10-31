@@ -186,6 +186,14 @@ const HS_POS: u32 = 391u;
 // M_VLMAP: the light map's march (vollight.rs build / vl_trace)
 const VOL_MIN_DIST: u32 = 409u;
 const VOL_MAX_DIST: u32 = 410u;   // in steps
+// the ground plane (scene::Ground): bit 0 on, bits 1-2 the axis, bit 3 the
+// solid side is the larger values; its position, the waves' height and
+// length, 1 / sqrt(1 + their steepest slope ^ 2)
+const GROUND_OPT: u32 = 411u;
+const GROUND_POS: u32 = 412u;
+const GROUND_WAVE: u32 = 413u;
+const GROUND_WLEN: u32 = 414u;
+const GROUND_LIP: u32 = 415u;
 
 const PI: R = 3.14159265358979;
 
@@ -198,6 +206,8 @@ override HAS_DIFS: bool = false;
 override HAS_DECOMB: bool = false;
 override HAS_4D: bool = false;
 override HAS_IPOL: bool = false;
+// the ground plane (scene::Ground; its values from GROUND_OPT)
+override HAS_GROUND: bool = false;
 // the reflection pass (MODE_KIND 3): the shadow rays / the ambient
 // occlusion at the hits; without them their states compile away
 override R_HS: bool = true;
@@ -1519,8 +1529,60 @@ fn calc_nangles_for_cut(plane: u32) {
     }
 }
 
+fn ground_on() -> bool {
+    return HAS_GROUND && (P[GROUND_OPT] & 1u) != 0u;
+}
+
+// Ground::distance, in steps
+fn ground_steps(q: vec3<R>) -> R {
+    let opt = P[GROUND_OPT];
+    let k = (opt >> 1u) & 3u;
+    var s = q[k] - pf(GROUND_POS);
+    if ((opt & 8u) != 0u) {
+        s = -s;
+    }
+    let h = pf(GROUND_WAVE);
+    if (h != 0.0) {
+        let a = q[(k + 1u) % 3u] / pf(GROUND_WLEN);
+        let b = q[(k + 2u) % 3u] / pf(GROUND_WLEN);
+        let t = 6.283185307179586;
+        let wave = h * (0.5 * r_sin(t * (0.8 * a + 0.6 * b))
+            + 0.3 * r_sin(t * 1.7 * (-0.45 * a + 0.9 * b) + 1.3)
+            + 0.2 * r_sin(t * 2.9 * (0.2 * a - 0.98 * b) + 2.1));
+        s = (s - wave) * pf(GROUND_LIP);
+    }
+    return s / pf(STEP_WIDTH);
+}
+
+// a surface at q is the ground's (the CPU knows it from its DE: Marcher::on_ground)
+fn ground_at(q: vec3<R>) -> bool {
+    return ground_on() && ground_steps(q) < ms_de_stop * 2.0;
+}
+
+// the ground's normal at q along the axes a (the view gradients for the
+// G-buffer, the world axes for the Monte Carlo marches)
+fn ground_normal(q: vec3<R>, world: bool) -> vec3<R> {
+    var n: vec3<R>;
+    for (var k = 0u; k < 3u; k++) {
+        var e = vec3<R>(0.0);
+        if (world) {
+            e[k] = pf(STEP_WIDTH) * 0.5;
+        } else {
+            e = vg(k) * 0.5;
+        }
+        n[k] = ground_steps(q + e) - ground_steps(q - e);
+    }
+    return n;
+}
+
 // RMdoColor
 fn do_color() {
+    if (ground_at(c)) {
+        // the ground plane: its own colour (gbuffer::GROUND)
+        si_grad = 0u;
+        si_otrap = 0xFFFFu;
+        return;
+    }
     let x = v.x;
     let y = v.y;
     let z = v.z;
@@ -2260,6 +2322,14 @@ fn pixel(x: i32, y: i32, mode: u32) {
         if (need) {
             r = evaluate(want_de);
             need = false;
+            if (want_de && ground_on()) {
+                // Marcher::calc_de: the smaller of the fractal's and the ground's
+                let g = ground_steps(c);
+                if (g < r) {
+                    r = g;
+                    it_result = max(it_result, pi(MIN_IT));
+                }
+            }
         }
         switch (pc) {
             case P_START: {
@@ -2321,6 +2391,12 @@ fn pixel(x: i32, y: i32, mode: u32) {
                 if (MODE_KIND == 0u) {
                     calc_nangles_for_cut(cut_plane);
                     do_color();
+                    if (si_otrap == 0xFFFFu) {
+                        // the start plane in the ground: a cut surface with the ground's normal
+                        store_normal(ground_normal(c, false));
+                        si_grad = 32768u;
+                        return;
+                    }
                     if (pi(COLOR_OPTION) > 4) {
                         si_grad |= 32768u;
                         return;
@@ -2587,7 +2663,7 @@ fn pixel(x: i32, y: i32, mode: u32) {
                     noffset = min(pf(DE_STOP), 1.0) * (1.0 + mzz * pf(DE_STOP_FACTOR)) * 0.15;
                     calc_sit = true;
                     ct1 = c;
-                    need = true;
+                                need = true;
                     want_de = on_de;
                     pc = P_N_0;
                 }
@@ -2779,6 +2855,10 @@ fn pixel(x: i32, y: i32, mode: u32) {
                     c = ct1;
                     // (the normals on the smoothed iteration count point
                     // out of the set: inverted inside, the DE ones are not)
+                    if (HAS_GROUND && !on_de && ground_at(ct1)) {
+                        // the ground's normal from its distance (as on the CPU)
+                        n = ground_normal(ct1, false);
+                    }
                     store_normal(select(n, -n, inside && !on_de));
                     var g: R;
                     if (de_limited) {
@@ -2793,6 +2873,10 @@ fn pixel(x: i32, y: i32, mode: u32) {
                 } else if (MODE_KIND == 3u && R_MARCH) {
                     // the hit of a reflected ray (calc_ray)
                     c = ct1;
+                    if (HAS_GROUND && !on_de && ground_at(ct1)) {
+                        // the ground's normal from its distance (as on the CPU)
+                        n = ground_normal(ct1, false);
+                    }
                     store_normal(select(n, -n, inside && !on_de));
                     var g: R;
                     if (de_limited) {
@@ -3344,7 +3428,20 @@ fn pixel(x: i32, y: i32, mode: u32) {
                 if (MODE_KIND == 4u) {
                     si_grad = 0u;
                     do_color();
-                    if (pi(COLOR_OPTION) > 4) {
+                    if (si_otrap == 0xFFFFu) {
+                        // the start plane in the ground (McMarch::ray)
+                        // (as McMarch::normals: a normal away from the ray is
+                        // replaced by the one towards the camera)
+                        let gn = ground_normal(c, true);
+                        let l = dot(gn, gn);
+                        if (l > 0.0 && dot(gn, vfov) < 0.0) {
+                            mc_n = gn / sqrt(l);
+                        } else {
+                            mc_n = -vfov / sqrt(dot(vfov, vfov));
+                        }
+                        si_grad = 32768u;
+                        pc = P_DONE;
+                    } else if (pi(COLOR_OPTION) > 4) {
                         si_grad |= 32768u;
                         pc = P_DONE;
                     } else if (inside) {
@@ -3549,7 +3646,7 @@ fn pixel(x: i32, y: i32, mode: u32) {
                     mc_sca = select(R(-0.15), R(0.15), (seed & 128) == 0);
                     calc_sit = true;
                     ct1 = c;
-                    need = true;
+                                need = true;
                     want_de = on_de;
                     pc = P_MC_N0;
                 }
@@ -3599,6 +3696,9 @@ fn pixel(x: i32, y: i32, mode: u32) {
                     if (kk < 3) {
                         pc = P_MC_NK;
                     } else {
+                        if (HAS_GROUND && !on_de && ground_at(ct1)) {
+                            n = ground_normal(ct1, true);
+                        }
                         let l = dot(n, n);
                         if (l > 0.0 && dot(n, vfov) < 0.0) {
                             mc_n = n / sqrt(l);

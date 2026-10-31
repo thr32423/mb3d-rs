@@ -8,7 +8,7 @@
 //! clouds are not part of the ray march: they shade the surfaces under them
 //! (the sunlight through them), do not show in the painting's reflections;
 //! Monte Carlo sees them along its view rays (`mc::Tracer::with_clouds`)
-//! and its reflected and refracted rays (`cloud_segment`) and shades the
+//! and its reflected, refracted and bounced rays (`cloud_segment`) and shades the
 //! sun's light at every hit with them.
 
 use crate::gbuffer::SiLight;

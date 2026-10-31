@@ -1837,9 +1837,9 @@ impl<'a, 'c> Tracer<'a, 'c> {
             h.start_difs
         };
         let mut calc_t = self.calc_trans_r;
-        if !rit1 && !self.calc_amb_shadow {
-            // a reflected or refracted ray through the clouds: their light
-            // joins, and what lies behind them gets dimmer
+        if !rit1 {
+            // a reflected, refracted or diffusely bounced ray through the
+            // clouds: their light joins, and what lies behind them gets dimmer
             t_absorb = self.cloud_segment(seg_start, dir, h.kind == 0, t_absorb);
         }
         zz = h.zz;
@@ -2066,7 +2066,7 @@ impl<'a, 'c> Tracer<'a, 'c> {
         None
     }
 
-    /// A reflected or refracted ray from `o` along `dir` up to `self.pos`
+    /// A reflected, refracted or bounced ray from `o` along `dir` up to `self.pos`
     /// (its hit), or into the distance when it hit nothing (`open_air`),
     /// through the clouds: adds their light seen along it (weighted by
     /// `t_absorb`) to the total and returns `t_absorb` dimmed by them.
@@ -2090,8 +2090,8 @@ impl<'a, 'c> Tracer<'a, 'c> {
 
     /// The light `l` of a view ray seen through the clouds in front of its
     /// first surface (`clouds::apply` of the painting, here per ray and in
-    /// linear light; the reflected and refracted rays see them through
-    /// `cloud_segment`, the diffuse bounces do not).
+    /// linear light; the reflected, refracted and bounced rays see them
+    /// through `cloud_segment`).
     fn with_clouds(&mut self, l: S3) -> S3 {
         let Some((cl, light)) = &self.c.clouds else { return l };
         let p = self.c.p;

@@ -736,7 +736,7 @@ pontos permitem que você confira mais por conta própria:
   das formas e a cor, depois *Pintar agora*. São pintadas sobre a imagem pronta
   numa fração de segundo, então testar ajustes é rápido; cada pixel olha através
   da camada até a superfície que atingiu. Uma animação pode movê-las
-  (`cloud_offset` entre quadros-chave). No Monte Carlo ao longo dos raios de visão e nos reflexos (não nos reflexos da pintura); o Mandelbulb3D não as tem (o bloco mb3d-rs dos parâmetros as guarda). Projetam as suas sombras no fractal e no chão, também de fora da imagem.
+  (`cloud_offset` entre quadros-chave). Os reflexos as mostram, também no Monte Carlo; o Mandelbulb3D não as tem (o bloco mb3d-rs dos parâmetros as guarda). Projetam as suas sombras no fractal e no chão, também de fora da imagem.
 
   </details>
 * **Materiais de superfície** (ideias do Mandelbulber) sobre a paleta: Fresnel

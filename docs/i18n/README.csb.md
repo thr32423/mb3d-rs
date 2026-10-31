@@ -700,7 +700,7 @@ sprawdzëc sóm:
   pòtemù *Malëjë terô*. Są malowóné na gòtowim òbrazu w dzélu sekùndë, tak że
   sprôwdzanié ùstawów je chùtczé; kòżdi piksel zdrzi przez warstwã do trafiony
   pòwierzchni. Animacjô mòże je rëszac (`cloud_offset` midzë klucznyma
-  klatkama). W Monte Carlo wzdłuż promieni widzeniô ë w òdbiciach (nie w òdbiciach malowaniô); Mandelbulb3D jich ni mô
+  klatkama). Widzec je w òdbiciach, téż w Monte Carlo; Mandelbulb3D jich ni mô
   (blok mb3d-rs parametrów je trzëmô). Rzucają cenie na fraktal ë zemiã, téż zza òbrazu.
 
   </details>

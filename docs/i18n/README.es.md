@@ -749,7 +749,7 @@ esto puede comprobar más por su cuenta:
   sus formas y su color, y pulse *Pintar ahora*. Se pintan sobre la imagen
   terminada en una fracción de segundo, así que probar ajustes es rápido; cada
   píxel mira a través de la capa hasta la superficie que alcanzó. Una animación
-  puede moverlas (`cloud_offset` entre fotogramas clave). En Monte Carlo se ven a lo largo de los rayos de vista y en los reflejos (no en los reflejos de la pintura); Mandelbulb3D no las tiene (el bloque mb3d-rs de los
+  puede moverlas (`cloud_offset` entre fotogramas clave). Los reflejos las muestran, también en Monte Carlo; Mandelbulb3D no las tiene (el bloque mb3d-rs de los
   parámetros las guarda). Proyectan sus sombras sobre el fractal y el suelo, también desde fuera de la imagen.
 
   </details>

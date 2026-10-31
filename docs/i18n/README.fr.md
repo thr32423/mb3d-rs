@@ -748,7 +748,7 @@ Voici de quoi vérifier plus loin par vous-même :
   couverte, la taille des formes et la couleur, puis *Peindre*. Ils sont peints
   sur l'image terminée en une fraction de seconde, on essaie donc vite des
   réglages ; chaque pixel regarde à travers la couche jusqu'à la surface touchée.
-  Une animation peut les déplacer (`cloud_offset` entre images clés). Dans Monte Carlo le long des rayons de vue et dans les reflets (pas dans ceux de la peinture) ; Mandelbulb3D ne les a pas (le bloc mb3d-rs
+  Une animation peut les déplacer (`cloud_offset` entre images clés). Les reflets les montrent, aussi dans Monte Carlo ; Mandelbulb3D ne les a pas (le bloc mb3d-rs
   des paramètres les garde). Ils projettent leurs ombres sur la fractale et le sol, aussi depuis l'extérieur de l'image.
 
   </details>

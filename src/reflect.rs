@@ -234,6 +234,8 @@ struct SrCtx<'a> {
     vol: bool,
     /// the rays are marched on the graphics card
     gpu: bool,
+    /// the clouds and their light (the reflected rays go through them)
+    clouds: Option<(crate::clouds::Clouds, crate::clouds::CloudLight)>,
 }
 
 struct SrTracer<'a, 'c> {
@@ -749,6 +751,30 @@ impl<'a, 'c> SrTracer<'a, 'c> {
         self.m.it.c = ic;
     }
 
+    /// A reflected or refracted ray from `o` along `dir` to its hit (None:
+    /// into the distance) through the clouds: adds their light seen along
+    /// it (weighted by `t_absorb`) and returns `t_absorb` dimmed by them.
+    fn cloud_segment(&mut self, o: Vec3, dir: Vec3, hit: Option<Vec3>, t_absorb: S3) -> S3 {
+        let Some((cl, light)) = &self.c.clouds else { return t_absorb };
+        let n = len(&dir);
+        if n < 1e-300 {
+            return t_absorb;
+        }
+        let d = scale(dir, 1.0 / n);
+        let tmax = hit.map_or(cl.far(), |h| len(&sub(h, o)));
+        // the steps' shift from the start (no random number: the card's
+        // and the processor's marches draw them differently)
+        let q = o.map(|v| (v * 65536.0) as i64);
+        let j = crate::clouds::jitter(q[0] ^ q[2].rotate_left(21), q[1]);
+        match cl.ray(o, d, tmax, light, j) {
+            Some((tr, acc)) => {
+                self.t_amb = add3(self.t_amb, mul3(acc, t_absorb));
+                sc3(t_absorb, tr)
+            }
+            None => t_absorb,
+        }
+    }
+
     /// `CalcOpenAir`: the background seen by a reflected ray
     fn calc_open_air(&mut self, si: &mut SiLight, sd: &mut ([f32; 3], f32, [f32; 3]), t_absorb: &mut S3, calc_t: bool, zz: f32) {
         let lv = self.c.lv;
@@ -983,11 +1009,22 @@ impl<'a, 'c> SrTracer<'a, 'c> {
                             self.t_amb = add3(self.t_amb, sc3(mul3(al, lin2(t_absorb, tmp_spec, 0.5)), stmp));
                             inside = Some((sd.2, c.absorp_coeff));
                         }
+                        if inside.is_none() {
+                            t_absorb = self.cloud_segment(f.origin, new_vec, Some(h.pos), t_absorb);
+                        }
                         let sh = self.shade(&si, inside);
                         if self.dbg {
                             crate::elog!("  hit: pos {:?} si {si:?}\n  plv {:?}\n  light {:?} result {:?} spe {:?} {} dif {:?} t_absorb {t_absorb:?}", h.pos, self.plv, sh.light, sh.result, sh.spe, sh.spe_a, sh.dif);
                         }
-                        let tmp_amb = sh.light.map(|v| (v / 255.0).clamp(0.0, 8.0));
+                        let mut tmp_amb = sh.light.map(|v| (v / 255.0).clamp(0.0, 8.0));
+                        if let Some((cl, light)) = &c.clouds {
+                            // the clouds' shadow on the surface (as on the
+                            // surfaces seen directly, `clouds::apply`)
+                            let sl = cl.sunlight(h.pos, light);
+                            if sl < 1.0 {
+                                tmp_amb = sc3(tmp_amb, crate::clouds::SHADE_AMBIENT + (1.0 - crate::clouds::SHADE_AMBIENT) * sl);
+                            }
+                        }
                         f.sd = (sh.spe, sh.spe_a, sh.dif);
                         self.t_amb = add3(self.t_amb, mul3(t_absorb, tmp_amb));
                         if !calc_t || !(self.trans_flip_inside ^ self.m.inside) {
@@ -1002,6 +1039,9 @@ impl<'a, 'c> SrTracer<'a, 'c> {
                     } else {
                         let mut sd = f.sd;
                         let mut t_absorb = if calc_t { sc3(f.t_absorb, sd.1) } else { mul3(f.t_absorb, sd.0) };
+                        if !(self.trans_flip_inside ^ self.m.inside) {
+                            t_absorb = self.cloud_segment(f.origin, new_vec, None, t_absorb);
+                        }
                         self.calc_open_air(&mut si, &mut sd, &mut t_absorb, calc_t, h.zz2.min(max_l) as f32);
                         (f.sd, f.t_absorb) = (sd, t_absorb);
                         if self.dbg {
@@ -1537,6 +1577,7 @@ fn reflections_cpu<S: Sample>(
         ao,
         vol: p.vol.is_some(),
         gpu: false,
+        clouds: sc.clouds.filter(|_| p.slice_2d == 0).map(|c| (c, c.light(&crate::render::effective_lighting(sc), lv, cam))),
     };
     let [x0, y0, w, h] = p.rect;
     let (wu, hu) = (w as usize, h as usize);
@@ -1676,6 +1717,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
         ao,
         vol: p.vol.is_some(),
         gpu: true,
+        clouds: sc.clouds.filter(|_| p.slice_2d == 0).map(|c| (c, c.light(&crate::render::effective_lighting(sc), lv, cam))),
     };
     // the lights of the shadow rays (calc_hs): soft shadows use the last one
     let mut lights: Vec<ReflectLight> = Vec::new();

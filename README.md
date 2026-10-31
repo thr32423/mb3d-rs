@@ -709,7 +709,7 @@ you check further on your own:
   *Paint now*. They are painted over the finished picture in a fraction of
   a second, so trying out settings is quick; each pixel looks through the
   layer up to the surface it hit. An animation can move them
-  (`cloud_offset` between keyframes). Monte Carlo shows them along the view rays and in the reflections (the painting's reflections do not); Mandelbulb3D does not have them (the mb3d-rs block of the
+  (`cloud_offset` between keyframes). Reflections show them, and Monte Carlo too; Mandelbulb3D does not have them (the mb3d-rs block of the
   parameters keeps them). They cast their shadows on the fractal and the ground, also from outside the picture.
 
   </details>

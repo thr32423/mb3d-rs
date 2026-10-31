@@ -731,7 +731,7 @@ permettono di verificare ulteriormente da solo:
   la grandezza delle forme e il colore, poi *Dipingi ora*. Vengono dipinte
   sull'immagine finita in una frazione di secondo, quindi provare le impostazioni
   è rapido; ogni pixel guarda attraverso lo strato fino alla superficie colpita.
-  Un'animazione può muoverle (`cloud_offset` tra i fotogrammi chiave). In Monte Carlo lungo i raggi di vista e nei riflessi (non nei riflessi della pittura); Mandelbulb3D non le ha (il blocco mb3d-rs
+  Un'animazione può muoverle (`cloud_offset` tra i fotogrammi chiave). I riflessi le mostrano, anche in Monte Carlo; Mandelbulb3D non le ha (il blocco mb3d-rs
   dei parametri le conserva). Proiettano le loro ombre sul frattale e sul suolo, anche da fuori dell'immagine.
 
   </details>

@@ -694,7 +694,7 @@ kunt u zelf verder controleren:
   grootte van de vormen en de kleur, dan *Nu schilderen*. Ze worden in een
   fractie van een seconde over de klare afbeelding geschilderd, instellingen
   proberen gaat dus snel; elke pixel kijkt door de laag tot het oppervlak dat hij
-  raakte. Een animatie kan ze bewegen (`cloud_offset` tussen keyframes). In Monte Carlo langs de kijkstralen en in reflecties (niet in die van het schilderen); Mandelbulb3D heeft ze niet (het mb3d-rs-blok van de
+  raakte. Een animatie kan ze bewegen (`cloud_offset` tussen keyframes). Reflecties tonen ze, ook in Monte Carlo; Mandelbulb3D heeft ze niet (het mb3d-rs-blok van de
   parameters bewaart ze). Ze werpen hun schaduwen op de fractal en de grond, ook van buiten de afbeelding.
 
   </details>

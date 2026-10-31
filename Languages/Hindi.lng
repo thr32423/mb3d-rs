@@ -581,6 +581,10 @@ CloseTheMeshAtTheBorders=किनारों पर मेश बंद कर
 ;Close the mesh at the borders
 CloseWindow=विंडो बंद करें
 ;Close window
+Clouds=बादल
+;Clouds
+CloudsOverThePictureALayer=चित्र पर बादल: फ़्रैक्टल के X, Y या Z अक्ष पर दो ऊँचाइयों के बीच एक परत, पहले प्रकाश से रोशन, फ़्रैक्टल के आगे और पीछे (MB3D में नहीं: पैरामीटरों में MB3D के भाग के बाद सहेजा जाता है; परावर्तनों और मोंटे कार्लो में नहीं)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=कोड
@@ -709,6 +713,8 @@ CouldNotWrite={} नहीं लिख सके: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=गणना की जाने वाली छवियों (वस्तु स्लाइस) की संख्या।
 ;Count of images (object slices) that will be calculated.
+Cover=आवरण:
+;Cover:
 CreateEditAJITCompiledFormula=JIT-कंपाइल्ड फ़ॉर्मूला बनाएँ/संपादित करें
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=भाषा फ़ाइल बनाएँ
@@ -853,6 +859,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=सभी अधूरे रें�
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=चुने गए रेंडर का रखा हुआ डेटा हटाएँ
 ;Delete what the selected render kept
+Density=घनत्व:
+;Density:
 Depth=गहराई
 ;Depth
 DepthColon=गहराई:
@@ -1415,6 +1423,8 @@ HowMuchThePlaneReflects0=तल कितना परावर्तित क�
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=हटाया जाने वाला शोर कितना प्रबल है (1 से 30, जैसे GIMP का "Denoise DCT")।\nअधिक मान अधिक शोर हटाता है, और अधिक बारीक विवरण भी।
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=बादल कितने घने हैं (1: पूरी परत लगभग 2 % प्रकाश जाने देती है) और आकाश का कितना भाग ढकते हैं (0 से 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=स्वार्म में यह कंप्यूटर किस नाम से दिखेगा
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ अतिपरवलयिक फ़ंक्शन और उनके व्युत्क्रम }
@@ -1689,6 +1699,8 @@ LastLengthIncrease=अंतिम लंबाई वृद्धि
 ;Last length increase
 LastPass=\s· पिछला पास {}
 ;\s· last pass {}
+Layer=परत:
+;Layer:
 LeftclickGoIntoMouseModeView=बायाँ क्लिक: माउस मोड में जाएँ.. माउस से देखें, +दायाँ माउस बटन.. रोलिंग\n(माउस मोड से बाहर निकलने के लिए फिर से बायाँ क्लिक करें या ESC दबाएँ)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=बायाँ क्लिक:   बल्ब को दर्शक के X अक्ष के चारों ओर Ymid+Zmid मानों पर घुमाएँ\nदायाँ क्लिक: बल्ब को वस्तु के X अक्ष के चारों ओर 0 पर घुमाएँ
@@ -2409,10 +2421,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG पारदर्शी पृष्ठभूमि (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=बादल बनाएँ
+;Paint clouds
+PaintNow=अभी बनाएँ
+;Paint now
 PaintOnImage=छवि पर पेंट करें
 ;Paint on image
 PaintingAPreview=पूर्वावलोकन बनाया जा रहा है
 ;painting a preview
+PaintsThePictureAgainWithThe=यहाँ की सेटिंग के बादलों के साथ चित्र फिर से बनाता है
+;Paints the picture again with the clouds as set here
 Pano=पैनो.
 ;pano.
 PanoramaModeTheFOVIsChoosen=पैनोरमा मोड:\n- FOV अपने आप चुना जाता है\n- परिवेश छाया के लिए 24bit SSAO या DEAO उपयोग करें\n- 2:1 पक्षानुपात की सलाह दी जाती है, पर आवश्यक नहीं।
@@ -3017,6 +3035,8 @@ SingleFilenumbering=एकल फ़ाइल क्रमांकन
 ;Single filenumbering
 Size=आकार
 ;Size
+Size2=आकार:
+;Size:
 SizeFactor=आकार गुणक:
 ;Size factor:
 Sliding=खिसकना
@@ -3183,6 +3203,8 @@ TheAnimationNeedsAtLeastTwo=एनिमेशन के लिए कम से
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp बिंदु पर एपर्चर, यह कैमरे का एपर्चर नहीं है!\nकैमरे का एपर्चर पाने के लिए इस मान को Zsharp बिंदु से कैमरे तक की\n(स्वतंत्र रूप से चुनी गई) दूरी से गुणा करें और कैमरे के लेंस की\nफ़ोकल लंबाई से भाग दें।\nइसलिए यदि आप कैमरे का आकार इतना बड़ा नहीं मानते, तो यह मान कम करें।\nबड़े मान का अर्थ अधिक धुंधलापन।
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=वह अक्ष जिसके आर-पार बादलों की परत है, और उस पर उसकी दो ऊँचाइयाँ
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=वह अक्ष जिसके आर-पार तल है, और उस अक्ष पर इसकी स्थिति (कटिंग तलों की तरह; इसका ठोस पक्ष कैमरे से दूर वाला है)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=यह प्रोग्राम BTracer2 कैश फ़ॉर्मेट का समर्थन नहीं करता।\nकृपया एक मेश फ़ॉर्मेट चुनें (*.ply या *.obj)।
@@ -3269,6 +3291,8 @@ TheSelectionMustBeBiggerThanLower=चयन की चौड़ाई और ऊ
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=स्वार्म का साझा फ़ोल्डर
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=बादलों की आकृतियों का आकार फ़्रैक्टल इकाइयों में, और उनका रंग (क्लिक करें)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=टाइलों का आकार
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=स्टीरियो आँख छवियों के आकार अलग-अलग हैं।

@@ -543,7 +543,7 @@ ClickToChooseTheOutputFolder=Click to choose the output folder
 ClickToChooseYourNameFor=Click to choose your name for automatic saving in parameters
 ;Mand3DForm.ButtonAuthor.Hint
 ClickToHideShow=Click to hide/show
-;Mand3DForm.PositionBtn.Hint, Mand3DForm.RotationBtn.Hint, FNavigator.Button2.Hint and 10 more
+;Mand3DForm.PositionBtn.Hint, Mand3DForm.RotationBtn.Hint, FNavigator.Button2.Hint and 11 more
 ClickToInsertYourNameBelow=Click to insert your name below
 ;Mand3DForm.ButtonInsertAuthor.Hint
 ClickToLoadABackgroundPicture=Click to load a background picture.
@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Close the mesh at the borders
 ;BulbTracer2Frm.CloseMeshCheckbox.Hint
 CloseWindow=Close window
 ;AnimationForm.Button1.Caption, BatchForm1.Button2.Caption
+Clouds=Clouds
+;PostProForm.CloudsBtn.Caption
+CloudsOverThePictureALayer=Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+;PostProForm.CloudsCbx.Hint
 Co=Co:
 ;the program
 Code=Code
@@ -708,6 +712,8 @@ CouldNotWrite=Could not write {}: {}
 ;the program
 CountOfImagesObjectSlicesThat=Count of images (object slices) that will be calculated.
 ;FVoxelExport.Edit10.Hint
+Cover=Cover:
+;PostProForm.CloudCoverLbl.Caption
 CreateEditAJITCompiledFormula=Create/edit a JIT-compiled formula
 ;FormulaGUIForm.JITFormulaBtn.Hint
 CreateLanguageFile=Create language file
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=Delete what all unfinished renders ke
 ;the program
 DeleteWhatTheSelectedRenderKept=Delete what the selected render kept
 ;UnfinishedFrm.Button3.Hint
+Density=Density:
+;PostProForm.CloudDensityLbl.Caption
 Depth=Depth
 ;LightAdjustForm.SpeedButton10.Caption
 DepthColon=Depth:
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=How much the plane reflects (0 to 1): its highlights, a
 ;Mand3DForm.GroundReflEdit.Hint
 HowStrongTheNoiseIsThat=How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 ;PostProForm.NoiseSigmaEdit.Hint
+HowThickTheCloudsAre1=How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
+;PostProForm.CloudDensityEdit.Hint, PostProForm.CloudCoverEdit.Hint
 HowThisComputerIsListedIn=How this computer is listed in the swarm
 ;SwarmFrm.Edit2.Hint
 HyperbolicFunctionsAndInverses={ Hyperbolic functions and inverses }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Last length increase
 ;Mand3DForm.RadioGroup1.Items
 LastPass=\s· last pass {}
 ;the program
+Layer=Layer:
+;PostProForm.CloudLayerLbl.Caption
 LeftclickGoIntoMouseModeView=Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 ;FNavigator.Image1.Hint
 LeftclickRotateTheBulbAroundThe=Leftclick:   Rotate the bulb around the viewers X axis @ Ymid+Zmid values\nRightclick: Rotate the bulb around the objects X axis @ 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;the program
 PNGTransparentBackgroundPng=PNG transparent background (*.png)
 ;the program
+PaintClouds=Paint clouds
+;PostProForm.CloudsCbx.Caption
+PaintNow=Paint now
+;PostProForm.CloudsNowBtn.Caption
 PaintOnImage=Paint on image
 ;ColorForm.CheckBox3.Caption
 PaintingAPreview=painting a preview
 ;the program
+PaintsThePictureAgainWithThe=Paints the picture again with the clouds as set here
+;PostProForm.CloudsNowBtn.Hint
 Pano=pano.
 ;FNavigator.RadioGroup2.Items
 PanoramaModeTheFOVIsChoosen=Panorama mode:\n- The FOV is choosen automatically\n- Use the 24bit SSAO or DEAO for ambient shadows\n- A 2:1 aspect ratio is recommended, but not necessary.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Single filenumbering
 ;TilingForm.CheckBox7.Caption
 Size=Size
 ;HistoryFrm.Caption, UnfinishedFrm.Caption; the program
+Size2=Size:
+;PostProForm.CloudSizeLbl.Caption
 SizeFactor=Size factor:
 ;TilingForm.Label4.Caption
 Sliding=Sliding
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=The animation needs at least two keyframes.
 ;the program
 TheApertureOnTheZsharpPoint=The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
 ;PostProForm.Edit3.Hint
+TheAxisTheCloudLayerLies=The axis the cloud layer lies across, and its two heights on it
+;PostProForm.CloudAxisCB.Hint, PostProForm.CloudFromEdit.Hint, PostProForm.CloudToEdit.Hint
 TheAxisThePlaneLiesAcross=The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 ;Mand3DForm.GroundAxisCB.Hint, Mand3DForm.GroundPosEdit.Hint
 TheBTracer2CacheFormatIsNot=The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=the selection must be bigger than 2 pixels in 
 ;the program
 TheSharedFolderOfTheSwarm=The shared folder of the swarm
 ;the program
+TheSizeOfTheCloudsFeatures=The size of the clouds' features in fractal units, and their colour (click)
+;PostProForm.CloudSizeEdit.Hint, PostProForm.CloudColBtn.Hint
 TheSizeOfTheTiles=The size of the tiles
 ;HistoryFrm.TrackBar1.Hint
 TheStereoEyeImagesHaveDifferent=The stereo eye images have different sizes.

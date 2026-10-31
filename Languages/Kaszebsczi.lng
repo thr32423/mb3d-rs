@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Zamikô séc na grańcach
 ;Close the mesh at the borders
 CloseWindow=Zamkni òkno
 ;Close window
+Clouds=Chmùrë
+;Clouds
+CloudsOverThePictureALayer=Chmùrë na òbrazu: warstwa midzë dwòma wiżawama wzdłuż òsë X, Y abò Z fraktala, òswiecónô pierszim swiatłã, przed fraktalã ë za nim (nie je w MB3D: zapisóné za dzélã parametrów MB3D; nie je jich w òdbiciach ë Monte Carlo)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=Kòd
@@ -708,6 +712,8 @@ CouldNotWrite=Nie dało sã zapisac {}: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=Lëczba òbrôzków (skrôwków òbiektu), jaczé mdą wërechòwóné.
 ;Count of images (object slices) that will be calculated.
+Cover=Pòkrëcé:
+;Cover:
 CreateEditAJITCompiledFormula=Ùsôdzë/editëj fòrmùłã kòmpilowóną JIT
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=Ùsôdzë lopk jãzëka
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=Rëmnąc to, co zachòwałë wszëtcz
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=Rëmô to, co wëbróny render trzimôł
 ;Delete what the selected render kept
+Density=Gãstosc:
+;Density:
 Depth=Głãbia
 ;Depth
 DepthColon=Głãbia:
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=Jak mòckò płaszczëzna òdbijô (òd 0 do 1): ji pò
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Jak mòcny je szëm, chtëren je ùsëwóny (1 do 30, jak "Denoise DCT" w GIMP).\nWëższé ùsëwô wicy szëmù, a téż wicy drobnëch detalów.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=Jak gãsté są chmùrë (1: pełnô warstwa przepùszczô kòl 2 % swiatła) ë jak wiele nieba pòkriwają (òd 0 do 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Jak nen kòmpùtr je wëpisóny w roju
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ Hiperbòliczné fùnkcje i jich òdwrotnoscë }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Òstatny przërost dłëgòscë
 ;Last length increase
 LastPass=\s· slédny przeńdzënk {}
 ;\s· last pass {}
+Layer=Warstwa:
+;Layer:
 LeftclickGoIntoMouseModeView=Lewé kliknienié:  wéńdzenié w trib mëszë.. zdrzenié mëszą, +prawi knąp mëszë.. òbrôcanié\n(Klikni znowa lewim abò ESC, żebë wińc z tribù mëszë)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=Lewé klikniãcé:   Òbrôcô bulb wkół òsë X òbzérôcza @ wôrtnotë Ymid+Zmid\nPrawé klikniãcé: Òbrôcô bulb wkół òsë X òbiektu @ 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG z przezérnym tłã (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=Malëjë chmùrë
+;Paint clouds
+PaintNow=Malëjë terô
+;Paint now
 PaintOnImage=Maluj na òbrôzkù
 ;Paint on image
 PaintingAPreview=malowanié pòdzérkù
 ;painting a preview
+PaintsThePictureAgainWithThe=Malëje òbrôz jesz rôz z chmùrama ùstawionyma tuwò
+;Paints the picture again with the clouds as set here
 Pano=pano.
 ;pano.
 PanoramaModeTheFOVIsChoosen=Trib panoramë:\n- FOV je wëbiéróny aùtomatno\n- Brëkùj 24bit SSAO abò DEAO do céniów òkòlô\n- Zalécóny je stosënk bòków 2:1, ale nie je nót.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Pòjedinczé numrowanié lopków
 ;Single filenumbering
 Size=Wiôlgòsc
 ;Size
+Size2=Wiôlgòsc:
+;Size:
 SizeFactor=Faktor wiôlgòscë:
 ;Size factor:
 Sliding=Przesëwanié
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=Animacjô pòtrzebùje nômni dwùch kluczowëch kla
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Apertura w pùnkce Zsharp, to nie je apertura kamerë!\nPòmnożë tã wôrtnosc przez (swòbódno wëbróną) òdległosc òd pùnktu Zsharp\ndo kamerë ë pòdzelë przez ògniskòwą dłużawã òbiektiwu kamerë, żebë dostac\naperturã kamerë.\nTej zmniészë tã wôrtnosc, jeżlë nie żdajesz tak wiôldżi kamerë.\nWikszé wôrtnoscë dôwają wicy rozmazaniô.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=Òsa, na sztót chtërny leżi warstwa chmùrów, ë ji dwie wiżawë
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=Òsa, na sztót chtërny leżi płaszczëzna, ë ji pòłożenié na ti òsë (jak przë płaszczëznach cãcô; ji pełnô strona je ta dali òd kamerë)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Fòrmat cache BTracer2 nie je wspieróny przez nen program.\nWëbierzë fòrmat sécë (*.ply abò *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=wëbiérk mùszi bëc wikszi jak 2 piksle w sz
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=Dzelony katalog roju
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=Wiôlgòsc ksztôłtów chmùrów w jednotkach fraktala ë jich farwa (klëknij)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=Wiôlgòsc kachlów
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=Òbrôzczi òczów stereo mają różné wiôlgòscë.

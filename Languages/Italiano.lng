@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Chiude la mesh ai bordi
 ;Close the mesh at the borders
 CloseWindow=Chiudi finestra
 ;Close window
+Clouds=Nuvole
+;Clouds
+CloudsOverThePictureALayer=Nuvole sull'immagine: uno strato tra due altezze lungo l'asse X, Y o Z del frattale, illuminato dalla prima luce, davanti e dietro il frattale (non in MB3D: salvato dopo la parte MB3D dei parametri; non nei riflessi né in Monte Carlo)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=Codice
@@ -708,6 +712,8 @@ CouldNotWrite=Impossibile scrivere {}: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=Numero di immagini (sezioni dell'oggetto) che verranno calcolate.
 ;Count of images (object slices) that will be calculated.
+Cover=Copert.:
+;Cover:
 CreateEditAJITCompiledFormula=Crea/modifica una formula compilata JIT
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=Crea file di lingua
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=Eliminare tutto ciò che hanno conser
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=Elimina quanto conservato dal render selezionato
 ;Delete what the selected render kept
+Density=Densità:
+;Density:
 Depth=Profondità
 ;Depth
 DepthColon=Profondità:
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=Quanto riflette il piano (da 0 a 1): i suoi riflessi lu
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Quanto è forte il rumore da rimuovere (da 1 a 30, come "Denoise DCT" di GIMP).\nValori più alti rimuovono più rumore e più dettagli fini.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=Quanto sono dense le nuvole (1: uno strato pieno lascia passare circa il 2 % della luce) e quanto cielo coprono (da 0 a 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Il nome con cui questo computer compare nello sciame
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ Funzioni iperboliche e loro inverse }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Ultimo aumento di lunghezza
 ;Last length increase
 LastPass=\s· ultimo passaggio {}
 ;\s· last pass {}
+Layer=Strato:
+;Layer:
 LeftclickGoIntoMouseModeView=Clic sinistro: entra in modalità mouse.. vista con il mouse, +tasto destro.. rollio\n(di nuovo clic sinistro o ESC per uscire dalla modalità mouse)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=Clic sinistro:   Ruota il bulbo attorno all'asse X dell'osservatore ai valori Ymid+Zmid\nClic destro: Ruota il bulbo attorno all'asse X dell'oggetto a 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG sfondo trasparente (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=Dipingi nuvole
+;Paint clouds
+PaintNow=Dipingi ora
+;Paint now
 PaintOnImage=Dipingi sull'immagine
 ;Paint on image
 PaintingAPreview=disegno di un'anteprima
 ;painting a preview
+PaintsThePictureAgainWithThe=Ridipinge l'immagine con le nuvole come impostate qui
+;Paints the picture again with the clouds as set here
 Pano=pano.
 ;pano.
 PanoramaModeTheFOVIsChoosen=Modalità panorama:\n- Il FOV viene scelto automaticamente\n- Usare SSAO a 24 bit o DEAO per le ombre ambientali\n- Si consiglia un rapporto 2:1, ma non è necessario.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Numerazione singola dei file
 ;Single filenumbering
 Size=Dimensione
 ;Size
+Size2=Dimens.:
+;Size:
 SizeFactor=Fattore di scala:
 ;Size factor:
 Sliding=Scorrimento
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=L'animazione richiede almeno due keyframe.
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=L'apertura nel punto Zsharp, non è l'apertura della fotocamera!\nMoltiplicare questo valore per la distanza (scelta liberamente) dal punto Zsharp\nalla fotocamera e dividerlo per la lunghezza focale dell'obiettivo per ottenere\nl'apertura della fotocamera.\nRidurre quindi questo valore se non si immagina una fotocamera così grande.\nValori maggiori danno più sfocatura.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=L'asse a cui lo strato di nuvole è perpendicolare, e le sue due altezze
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=L'asse a cui il piano è perpendicolare e la sua posizione su quell'asse (come per i piani di taglio; il lato pieno è quello lontano dalla fotocamera)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Il formato cache BTracer2 non è supportato da questo programma.\nScegliere un formato mesh (*.ply o *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=la selezione deve superare i 2 pixel in larghe
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=La cartella condivisa dello sciame
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=La grandezza delle forme delle nuvole in unità del frattale, e il loro colore (clic)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=La dimensione dei riquadri
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=Le immagini stereo dei due occhi hanno dimensioni diverse.

@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Sluit de mesh aan de randen
 ;Close the mesh at the borders
 CloseWindow=Venster sluiten
 ;Close window
+Clouds=Wolken
+;Clouds
+CloudsOverThePictureALayer=Wolken over de afbeelding: een laag tussen twee hoogten langs de X-, Y- of Z-as van de fractal, belicht door het eerste licht, voor en achter de fractal (niet in MB3D: bewaard na het MB3D-deel van de parameters; niet in reflecties en Monte Carlo)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=Code
@@ -708,6 +712,8 @@ CouldNotWrite=Kan {} niet schrijven: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=Aantal afbeeldingen (objectslices) dat wordt berekend.
 ;Count of images (object slices) that will be calculated.
+Cover=Bedekking:
+;Cover:
 CreateEditAJITCompiledFormula=Een JIT-gecompileerde formule maken/bewerken
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=Taalbestand aanmaken
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=Alles verwijderen wat de onvoltooide 
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=Verwijderen wat de geselecteerde render heeft bewaard
 ;Delete what the selected render kept
+Density=Dichtheid:
+;Density:
 Depth=Diepte
 ;Depth
 DepthColon=Diepte:
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=Hoeveel het vlak reflecteert (0 tot 1): de glanzen, en 
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Hoe sterk de ruis is die wordt verwijderd (1 tot 30, zoals "Denoise DCT" van GIMP).\nHoger verwijdert meer ruis, en meer fijne details.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=Hoe dicht de wolken zijn (1: een volle laag laat ongeveer 2 % van het licht door) en hoeveel van de lucht ze bedekken (0 tot 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Hoe deze computer in de zwerm wordt vermeld
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ Hyperbolische functies en hun inversen }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Laatste lengtetoename
 ;Last length increase
 LastPass=\s· laatste ronde {}
 ;\s· last pass {}
+Layer=Laag:
+;Layer:
 LeftclickGoIntoMouseModeView=Linksklikken:  muismodus in.. kijken met de muis, +rechter muisknop.. rollen\n(Nogmaals linksklikken of ESC om de muismodus te verlaten)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=Linksklik:   Draai de bulb rond de X-as van de kijker bij de Ymid+Zmid-waarden\nRechtsklik: Draai de bulb rond de X-as van het object bij 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG transparante achtergrond (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=Wolken schilderen
+;Paint clouds
+PaintNow=Nu schilderen
+;Paint now
 PaintOnImage=Op afbeelding tekenen
 ;Paint on image
 PaintingAPreview=voorbeeld tekenen
 ;painting a preview
+PaintsThePictureAgainWithThe=Schildert de afbeelding opnieuw met de wolken zoals hier ingesteld
+;Paints the picture again with the clouds as set here
 Pano=pano.
 ;pano.
 PanoramaModeTheFOVIsChoosen=Panoramamodus:\n- De FOV wordt automatisch gekozen\n- Gebruik de 24-bits SSAO of DEAO voor omgevingsschaduwen\n- Een beeldverhouding van 2:1 wordt aanbevolen, maar is niet verplicht.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Enkele bestandsnummering
 ;Single filenumbering
 Size=Grootte
 ;Size
+Size2=Grootte:
+;Size:
 SizeFactor=Groottefactor:
 ;Size factor:
 Sliding=Schuiven
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=De animatie heeft minstens twee keyframes nodig.
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Het diafragma op het Zsharp-punt, niet het diafragma van de camera!\nVermenigvuldig deze waarde met de (vrij gekozen) afstand van het Zsharp-punt\ntot de camera en deel door de brandpuntsafstand van de cameralens om\nhet diafragma van de camera te krijgen.\nVerklein deze waarde dus als u de camera niet zo groot verwacht.\nGrotere waarden geven meer vervaging.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=De as waar de wolkenlaag dwars op ligt, en haar twee hoogten daarop
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=De as waar het vlak dwars op ligt en de positie op die as (zoals bij de snijvlakken; de massieve kant is die van de camera af)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Het BTracer2-cacheformaat wordt door dit programma niet ondersteund.\nKies een meshformaat (*.ply of *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=de selectie moet in breedte en hoogte groter z
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=De gedeelde map van de zwerm
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=De grootte van de vormen van de wolken in fractaleenheden, en hun kleur (klikken)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=De grootte van de tegels
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=De stereo-oogafbeeldingen hebben verschillende afmetingen.

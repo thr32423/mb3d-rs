@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Tutup mesh di tepinya
 ;Close the mesh at the borders
 CloseWindow=Tutup jendela
 ;Close window
+Clouds=Awan
+;Clouds
+CloudsOverThePictureALayer=Awan di atas gambar: lapisan di antara dua ketinggian sepanjang sumbu X, Y, atau Z fraktal, diterangi cahaya pertama, di depan dan di belakang fraktal (tidak ada di MB3D: disimpan setelah bagian parameter MB3D; tidak ada di pantulan dan Monte Carlo)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=Kode
@@ -708,6 +712,8 @@ CouldNotWrite=Tidak dapat menulis {}: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=Jumlah gambar (irisan objek) yang akan dihitung.
 ;Count of images (object slices) that will be calculated.
+Cover=Tutupan:
+;Cover:
 CreateEditAJITCompiledFormula=Buat/edit formula yang dikompilasi JIT
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=Buat file bahasa
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=Hapus semua yang disimpan oleh render
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=Hapus yang disimpan oleh render yang dipilih
 ;Delete what the selected render kept
+Density=Kepadatan:
+;Density:
 Depth=Kedalaman
 ;Depth
 DepthColon=Kedalaman:
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=Seberapa kuat bidang memantul (0 sampai 1): kilaunya, d
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Seberapa kuat derau yang dihapus (1 sampai 30, seperti "Denoise DCT" GIMP).\nNilai lebih tinggi menghapus lebih banyak derau, dan lebih banyak detail halus.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=Seberapa tebal awannya (1: lapisan penuh meloloskan sekitar 2 % cahaya) dan seberapa banyak langit yang tertutup (0 sampai 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Nama komputer ini di daftar swarm
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ Fungsi hiperbolik dan inversnya }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Kenaikan panjang terakhir
 ;Last length increase
 LastPass=\s· lintasan terakhir {}
 ;\s· last pass {}
+Layer=Lapisan:
+;Layer:
 LeftclickGoIntoMouseModeView=Klik kiri:  masuk ke mode mouse.. lihat dengan mouse, +tombol kanan mouse.. berguling\n(Klik kiri lagi atau ESC untuk keluar dari mode mouse)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=Klik kiri:   Putar bulb di sekitar sumbu X pengamat @ nilai Ymid+Zmid\nKlik kanan: Putar bulb di sekitar sumbu X objek @ 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG latar transparan (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=Lukis awan
+;Paint clouds
+PaintNow=Lukis sekarang
+;Paint now
 PaintOnImage=Lukis pada gambar
 ;Paint on image
 PaintingAPreview=melukis pratinjau
 ;painting a preview
+PaintsThePictureAgainWithThe=Melukis gambar lagi dengan awan seperti diatur di sini
+;Paints the picture again with the clouds as set here
 Pano=pano.
 ;pano.
 PanoramaModeTheFOVIsChoosen=Mode panorama:\n- FOV dipilih otomatis\n- Gunakan SSAO 24bit atau DEAO untuk bayangan ambien\n- Rasio aspek 2:1 disarankan, tetapi tidak wajib.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Penomoran file tunggal
 ;Single filenumbering
 Size=Ukuran
 ;Size
+Size2=Ukuran:
+;Size:
 SizeFactor=Faktor ukuran:
 ;Size factor:
 Sliding=Meluncur
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=Animasi memerlukan setidaknya dua keyframe.
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Apertur pada titik Zsharp, ini bukan apertur kamera!\nKalikan nilai ini dengan jarak (bebas dipilih) dari titik Zsharp\nke kamera dan bagi dengan panjang fokus lensa kamera untuk mendapatkan\napertur kamera.\nJadi kecilkan nilai ini jika Anda tidak mengharapkan ukuran kamera sebesar itu.\nNilai lebih besar berarti blur lebih banyak.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=Sumbu yang dilintangi lapisan awan dan dua ketinggiannya pada sumbu itu
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=Sumbu yang dilintangi bidang ini dan posisinya pada sumbu itu (seperti bidang potong; sisi padatnya adalah sisi yang menjauhi kamera)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Format cache BTracer2 tidak didukung oleh program ini.\nPilih format mesh (*.ply atau *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=pilihan harus lebih besar dari 2 piksel dalam 
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=Folder bersama swarm
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=Ukuran bentuk awan dalam satuan fraktal, dan warnanya (klik)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=Ukuran tile
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=Gambar mata stereo memiliki ukuran berbeda.

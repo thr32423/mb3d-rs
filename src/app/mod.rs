@@ -278,6 +278,7 @@ impl Mb3d {
             "zbuf" => small_forms::zbuf_dialog(self, ui, what, r),
             "anim" => anim_form::dialog(self, ui, what, r),
             "palette" => palette_form::dialog(self, ui, what, r),
+            "post" => postpro_form::dialog(self, ui, what, r),
             "batch" => tools_forms::batch_dialog(self, ui, what, r),
             "tiling" => tools_forms::tiling_dialog(self, ui, what, r),
             "mc" => mc_form::dialog(self, ui, what, r),

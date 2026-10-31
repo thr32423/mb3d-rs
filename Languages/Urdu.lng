@@ -581,6 +581,10 @@ CloseTheMeshAtTheBorders=کناروں پر میش بند کریں
 ;Close the mesh at the borders
 CloseWindow=ونڈو بند کریں
 ;Close window
+Clouds=بادل
+;Clouds
+CloudsOverThePictureALayer=تصویر پر بادل: فریکٹل کے X، Y یا Z محور پر دو اونچائیوں کے درمیان ایک تہ، پہلی روشنی سے روشن، فریکٹل کے آگے اور پیچھے (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ؛ عکسوں اور مونٹی کارلو میں نہیں)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=کوڈ
@@ -709,6 +713,8 @@ CouldNotWrite={} لکھا نہیں جا سکا: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=تصاویر (شے کے ٹکڑوں) کی تعداد جن کا حساب کیا جائے گا۔
 ;Count of images (object slices) that will be calculated.
+Cover=احاطہ:
+;Cover:
 CreateEditAJITCompiledFormula=JIT کمپائل شدہ فارمولا بنائیں/ترمیم کریں
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=زبان کی فائل بنائیں
@@ -853,6 +859,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=تمام نامکمل رینڈرز ک
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=منتخب رینڈر کا محفوظ شدہ مواد حذف کریں
 ;Delete what the selected render kept
+Density=کثافت:
+;Density:
 Depth=گہرائی
 ;Depth
 DepthColon=گہرائی:
@@ -1415,6 +1423,8 @@ HowMuchThePlaneReflects0=سطح کتنا منعکس کرتی ہے (0 سے 1): ا
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=ہٹائے جانے والے شور کی شدت (1 سے 30، GIMP کے "Denoise DCT" کی طرح)۔\nزیادہ قدر زیادہ شور ہٹاتی ہے، اور زیادہ باریک تفصیل بھی۔
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=بادل کتنے گھنے ہیں (1: پوری تہ تقریباً 2 % روشنی گزارتی ہے) اور آسمان کا کتنا حصہ ڈھانپتے ہیں (0 سے 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=سوارم میں یہ کمپیوٹر کس نام سے درج ہے
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ ہائپربولک فنکشنز اور ان کے معکوس }
@@ -1689,6 +1699,8 @@ LastLengthIncrease=آخری لمبائی اضافہ
 ;Last length increase
 LastPass=\s· آخری مرحلہ {}
 ;\s· last pass {}
+Layer=تہ:
+;Layer:
 LeftclickGoIntoMouseModeView=بائیں کلک:  ماؤس موڈ میں جائیں.. ماؤس سے دیکھیں، + دایاں ماؤس بٹن.. لڑھکانا\n(ماؤس موڈ سے نکلنے کے لیے دوبارہ بائیں کلک یا ESC)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=بائیں کلک:   بلب کو دیکھنے والے کے X محور کے گرد Ymid+Zmid قدروں پر گھمائیں\nدائیں کلک: بلب کو شے کے X محور کے گرد 0 پر گھمائیں
@@ -2409,10 +2421,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG شفاف پس منظر (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=بادل بنائیں
+;Paint clouds
+PaintNow=ابھی بنائیں
+;Paint now
 PaintOnImage=تصویر پر پینٹ کریں
 ;Paint on image
 PaintingAPreview=پیش منظر پینٹ ہو رہا ہے
 ;painting a preview
+PaintsThePictureAgainWithThe=یہاں کی ترتیب کے بادلوں کے ساتھ تصویر دوبارہ بناتا ہے
+;Paints the picture again with the clouds as set here
 Pano=پینو.
 ;pano.
 PanoramaModeTheFOVIsChoosen=پینوراما موڈ:\n- FOV خودکار منتخب ہوتا ہے\n- ایمبیئنٹ سایوں کے لیے 24bit SSAO یا DEAO استعمال کریں\n- 2:1 تناسب تجویز کیا جاتا ہے، لیکن ضروری نہیں۔
@@ -3017,6 +3035,8 @@ SingleFilenumbering=واحد فائل نمبرنگ
 ;Single filenumbering
 Size=سائز
 ;Size
+Size2=سائز:
+;Size:
 SizeFactor=سائز فیکٹر:
 ;Size factor:
 Sliding=سرکنا
@@ -3183,6 +3203,8 @@ TheAnimationNeedsAtLeastTwo=اینیمیشن کے لیے کم از کم دو ک�
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp نقطے پر اپرچر، یہ کیمرے کا اپرچر نہیں ہے!\nکیمرے کا اپرچر حاصل کرنے کے لیے اس قدر کو Zsharp نقطے سے کیمرے تک کے\n(آزادانہ منتخب) فاصلے سے ضرب دیں اور کیمرے کے لینز کی فوکل لمبائی سے\nتقسیم کریں۔\nاس لیے اگر کیمرا اتنا بڑا نہیں چاہیے تو یہ قدر کم کریں۔\nبڑی قدروں کا مطلب زیادہ دھندلاپن ہے۔
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=وہ محور جس کے آر پار بادلوں کی تہ ہے، اور اس پر اس کی دو اونچائیاں
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=وہ محور جس کے آر پار سطح ہے، اور اس محور پر اس کا مقام (کٹنگ سطحوں کی طرح؛ اس کی ٹھوس طرف کیمرے سے دور والی ہے)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=BTracer2 کیش فارمیٹ اس پروگرام میں معاون نہیں۔\nبراہ کرم میش فارمیٹ منتخب کریں (*.ply یا *.obj)۔
@@ -3269,6 +3291,8 @@ TheSelectionMustBeBiggerThanLower=منتخب حصہ چوڑائی اور اونچ
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=سوارم کا مشترکہ فولڈر
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=بادلوں کی شکلوں کا سائز فریکٹل اکائیوں میں، اور ان کا رنگ (کلک کریں)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=ٹائلز کا سائز
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=اسٹیریو آنکھوں کی تصاویر کے سائز مختلف ہیں۔

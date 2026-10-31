@@ -2567,6 +2567,10 @@ fn paint_with<S: crate::lighting::Sample>(
         crate::reflect::reflections(sc, p, gbuf, &mut rgb, &cam, &lv, threads, progress, cancel);
         refl_s = Some(t.elapsed().as_secs_f64());
     }
+    if let Some(c) = sc.clouds.as_ref().filter(|_| p.slice_2d == 0 && !cancel()) {
+        stage("clouds");
+        crate::clouds::apply(c, &l, &lv, &cam, sc.stereo_mid(), gbuf, &mut rgb, w as usize, [x0, ry0], threads, cancel);
+    }
     if let Some(d) = sc.dof.as_ref().filter(|_| p.slice_2d == 0 && !cancel()) {
         stage("depth of field");
         crate::dof::apply_reporting(&mut rgb, gbuf, w as usize, h as usize, p.zc_mul, p.zcorr, sc.fov_y, d, progress, cancel);

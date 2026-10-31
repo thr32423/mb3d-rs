@@ -1416,6 +1416,12 @@ mod tests {
         assert_eq!(&raw[..HEADER_SIZE + ADDON_SIZE], &write(&plain)[..]);
         assert_eq!(parse(&raw).unwrap().scene.optic, crate::scene::CameraOptic::Fisheye);
         assert_eq!(parse(&raw_from_text(&raw_to_text(&raw, "t")).unwrap().0).unwrap().scene.optic, crate::scene::CameraOptic::Fisheye);
+        // the clouds
+        let mut cl = plain.clone();
+        cl.clouds = Some(crate::clouds::Clouds { axis: 0, from: 1.5, to: -0.25, density: 2.0, coverage: 0.4, size: 0.3, color: [250, 240, 230], offset: [0.5, 0.0, -1.0] });
+        let raw = write(&cl);
+        assert_eq!(parse(&raw).unwrap().scene.clouds, cl.clouds);
+        assert_eq!(parse(&raw_from_text(&raw_to_text(&raw, "t")).unwrap().0).unwrap().scene.clouds, cl.clouds);
     }
 
     #[test]

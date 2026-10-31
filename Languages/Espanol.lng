@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Cerrar la malla en los bordes
 ;Close the mesh at the borders
 CloseWindow=Cerrar ventana
 ;Close window
+Clouds=Nubes
+;Clouds
+CloudsOverThePictureALayer=Nubes sobre la imagen: una capa entre dos alturas a lo largo del eje X, Y o Z del fractal, iluminada por la primera luz, delante y detrás del fractal (no está en MB3D: se guarda tras la parte de MB3D de los parámetros; no en reflejos ni en Monte Carlo)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=Código
@@ -708,6 +712,8 @@ CouldNotWrite=No se pudo escribir {}: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=Número de imágenes (cortes del objeto) que se calcularán.
 ;Count of images (object slices) that will be calculated.
+Cover=Cobertura:
+;Cover:
 CreateEditAJITCompiledFormula=Crear/editar una fórmula compilada JIT
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=Crear archivo de idioma
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=¿Eliminar lo que conservan todos los
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=Eliminar lo que conserva el render seleccionado
 ;Delete what the selected render kept
+Density=Densidad:
+;Density:
 Depth=Profund.
 ;Depth
 DepthColon=Profundidad:
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=Cuánto refleja el plano (0 a 1): sus brillos y su espe
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Intensidad del ruido que se elimina (1 a 30, como "Denoise DCT" de GIMP).\nUn valor más alto elimina más ruido y más detalle fino.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=Cuán densas son las nubes (1: una capa completa deja pasar un 2 % de la luz) y cuánto cielo cubren (0 a 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Cómo aparece este equipo en el enjambre
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ Funciones hiperbólicas e inversas }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Último aumento de longitud
 ;Last length increase
 LastPass=\s· última pasada {}
 ;\s· last pass {}
+Layer=Capa:
+;Layer:
 LeftclickGoIntoMouseModeView=Clic izquierdo:  entrar en modo ratón.. mirar con el ratón, +botón derecho.. alabeo\n(clic izquierdo de nuevo o ESC para salir del modo ratón)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=Clic izquierdo:   gira el bulbo alrededor del eje X del observador @ valores Ymid+Zmid\nClic derecho: gira el bulbo alrededor del eje X del objeto @ 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG fondo transparente (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=Pintar nubes
+;Paint clouds
+PaintNow=Pintar ahora
+;Paint now
 PaintOnImage=Pintar en la imagen
 ;Paint on image
 PaintingAPreview=pintando una vista previa
 ;painting a preview
+PaintsThePictureAgainWithThe=Pinta la imagen de nuevo con las nubes tal como están aquí
+;Paints the picture again with the clouds as set here
 Pano=pano.
 ;pano.
 PanoramaModeTheFOVIsChoosen=Modo panorama:\n- El FOV se elige automáticamente\n- Use SSAO de 24 bits o DEAO para las sombras ambientales\n- Se recomienda una relación de aspecto 2:1, aunque no es necesaria.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Numeración de archivo única
 ;Single filenumbering
 Size=Tamaño
 ;Size
+Size2=Tamaño:
+;Size:
 SizeFactor=Factor de tamaño:
 ;Size factor:
 Sliding=Deslizar
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=La animación necesita al menos dos fotogramas clave
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=La apertura en el punto Zsharp; ¡no es la apertura de la cámara!\nMultiplique este valor por la distancia (elegida libremente) del punto Zsharp\na la cámara y divídalo por la distancia focal de la lente para obtener\nla apertura de la cámara.\nAsí que reduzca este valor si no espera una cámara tan grande.\nValores mayores dan más desenfoque.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=El eje al que la capa de nubes es perpendicular y sus dos alturas en él
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=El eje al que el plano es perpendicular y su posición en ese eje (como en los planos de corte; su lado sólido es el que está lejos de la cámara)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Este programa no admite el formato de caché de BTracer2.\nElija un formato de malla (*.ply o *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=la selección debe medir más de 2 píxeles de
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=La carpeta compartida del enjambre
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=El tamaño de las formas de las nubes en unidades del fractal, y su color (clic)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=El tamaño de las miniaturas
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=Las imágenes estéreo de los ojos tienen tamaños distintos.

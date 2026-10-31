@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Schließt das Mesh an den Rändern
 ;Close the mesh at the borders
 CloseWindow=Fenster schließen
 ;Close window
+Clouds=Wolken
+;Clouds
+CloudsOverThePictureALayer=Wolken über dem Bild: eine Schicht zwischen zwei Höhen entlang der X-, Y- oder Z-Achse des Fraktals, vom ersten Licht beleuchtet, vor und hinter dem Fraktal (nicht in MB3D: hinter MB3Ds Teil der Parameter gespeichert; nicht in Spiegelungen und Monte Carlo)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=Code
@@ -708,6 +712,8 @@ CouldNotWrite={} konnte nicht geschrieben werden: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=Anzahl der Bilder (Objektschichten), die berechnet werden.
 ;Count of images (object slices) that will be calculated.
+Cover=Deckung:
+;Cover:
 CreateEditAJITCompiledFormula=JIT-kompilierte Formel erstellen/bearbeiten
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=Sprachdatei erstellen
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=Löschen, was alle unfertigen Renderi
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=Löscht, was das ausgewählte Rendering behalten hat
 ;Delete what the selected render kept
+Density=Dichte:
+;Density:
 Depth=Tiefe
 ;Depth
 DepthColon=Tiefe:
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=Wie stark die Ebene spiegelt (0 bis 1): ihre Glanzlicht
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Wie stark das Rauschen ist, das entfernt wird (1 bis 30, wie „Denoise DCT“ in GIMP).\nHöhere Werte entfernen mehr Rauschen und mehr feine Details.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=Wie dicht die Wolken sind (1: eine volle Schicht lässt etwa 2 % des Lichts durch) und wie viel des Himmels sie bedecken (0 bis 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=So wird dieser Computer im Schwarm aufgeführt
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ Hyperbelfunktionen und ihre Umkehrfunktionen }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Letzter Längenzuwachs
 ;Last length increase
 LastPass=\s· letzter Durchgang {}
 ;\s· last pass {}
+Layer=Schicht:
+;Layer:
 LeftclickGoIntoMouseModeView=Linksklick:  Mausmodus starten.. Ansicht mit der Maus, +rechte Maustaste.. Rollen\n(Erneuter Linksklick oder ESC beendet den Mausmodus)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=Linksklick:   Dreht den Bulb um die X-Achse des Betrachters bei Ymid+Zmid\nRechtsklick: Dreht den Bulb um die X-Achse des Objekts bei 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG mit transparentem Hintergrund (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=Wolken malen
+;Paint clouds
+PaintNow=Jetzt malen
+;Paint now
 PaintOnImage=Auf Bild malen
 ;Paint on image
 PaintingAPreview=Vorschau wird gezeichnet
 ;painting a preview
+PaintsThePictureAgainWithThe=Malt das Bild noch einmal mit den Wolken, wie hier eingestellt
+;Paints the picture again with the clouds as set here
 Pano=Pano.
 ;pano.
 PanoramaModeTheFOVIsChoosen=Panoramamodus:\n- Das FOV wird automatisch gewählt\n- Verwenden Sie 24bit SSAO oder DEAO für Umgebungsschatten\n- Ein Seitenverhältnis von 2:1 wird empfohlen, ist aber nicht nötig.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Einfache Dateinummerierung
 ;Single filenumbering
 Size=Größe
 ;Size
+Size2=Größe:
+;Size:
 SizeFactor=Größenfaktor:
 ;Size factor:
 Sliding=Schieben
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=Die Animation braucht mindestens zwei Keyframes.
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Die Blende am Zsharp-Punkt, nicht die Blende der Kamera!\nMultiplizieren Sie diesen Wert mit dem (frei gewählten) Abstand vom Zsharp-Punkt\nzur Kamera und teilen Sie ihn durch die Brennweite des Kameraobjektivs, um die\nBlende der Kamera zu erhalten.\nVerkleinern Sie den Wert also, wenn Sie keine so große Kamera erwarten.\nGrößere Werte bedeuten mehr Unschärfe.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=Die Achse, quer zu der die Wolkenschicht liegt, und ihre zwei Höhen darauf
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=Die Achse, quer zu der die Ebene liegt, und ihre Position auf dieser Achse (wie bei den Schnittebenen; ihre feste Seite ist die von der Kamera abgewandte)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Das BTracer2-Cache-Format wird von diesem Programm nicht unterstützt.\nBitte wählen Sie ein Mesh-Format (*.ply oder *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=die Auswahl muss in Breite und Höhe größer 
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=Der gemeinsame Ordner des Schwarms
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=Die Größe der Formen der Wolken in Fraktaleinheiten und ihre Farbe (anklicken)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=Die Größe der Kacheln
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=Die Stereo-Augenbilder haben unterschiedliche Größen.

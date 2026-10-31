@@ -92,6 +92,11 @@ Ground plane / water (not in MB3D; global keys)
   DOWN the screen in most views: try both signs and preview.
 - ground_color = #RRGGBB; ground_reflect 0..1 (a mirror when mc_reflections is on);
   ground_waves = height, length (fractal units, e.g. 0.03, 0.4; height 0 = flat): water.
+Clouds (not in MB3D; painted over the picture, cheap to change)
+- clouds = y, -1.2, -2.2 (axis, the layer's two heights) or off; cloud_density (1 = thick),
+  cloud_coverage 0..1, cloud_size (features, fractal units), cloud_color = #RRGGBB,
+  cloud_offset = x, y, z (moves the pattern; animate it for drifting clouds). -y is up in most
+  views: place the layer above the fractal and preview.
 HDR lighting: background_image = a .hdr picture (with background_direct = false) lights a
   montecarlo render; its sun becomes a light with soft shadows.
 Formulas ([formula] sections, up to 6, an alternating hybrid)

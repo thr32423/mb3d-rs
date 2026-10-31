@@ -742,6 +742,9 @@ itself per light.
 | `ground_color` | `#RRGGBB` | its colour |
 | `ground_reflect` | 0..1 | its highlights, and its mirror with `mc_reflections` |
 | `ground_waves` | height, length | waves in fractal units (height 0 = flat) |
+| `clouds` | axis, from, to (`y, -1.2, -2.2`) or `off` | a layer of volumetric clouds (not in MB3D), painted after the lighting and reflections, before the depth of field (`src/clouds.rs`: each pixel's ray through the layer up to its surface, 3D value noise, the first global light through the cloud) |
+| `cloud_density`, `cloud_coverage`, `cloud_size` | number, 0..1, fractal units | how thick, how much sky, how big |
+| `cloud_color`, `cloud_offset` | `#RRGGBB`, x, y, z | colour; the noise's shift (keyframes animate it) |
 | `dof` | `off`, `sorted`, `forward` | depth of field |
 | `dof_focus`, `dof_focus2` | distance as fraction of the image width | sharp range (`--stats` prints the value for the image centre) |
 | `dof_aperture` | 0.0001..2 | aperture |

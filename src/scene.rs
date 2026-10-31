@@ -185,6 +185,8 @@ pub struct Scene {
     pub cut_pos: [f64; 3],
     /// A ground plane or water surface (not in MB3D): None = none
     pub ground: Option<Ground>,
+    /// A layer of volumetric clouds (not in MB3D): None = none
+    pub clouds: Option<crate::clouds::Clouds>,
     /// DE ambient occlusion instead of SSAO (used when `ao` is on)
     pub deao: Option<crate::deao::DeaoParams>,
     /// Inside rendering (`bOptions2` bits 1..2)
@@ -364,6 +366,7 @@ impl Default for Scene {
             cut_options: 0,
             cut_pos: [0.0; 3],
             ground: None,
+            clouds: None,
             deao: None,
             threads: 0,
             tiling: None,
@@ -808,10 +811,19 @@ impl Scene {
         t
     }
 
-    /// The ground plane's scene text lines ("" without one).
+    /// The ground plane's and the clouds' scene text lines ("" without).
     fn ground_text(&self) -> String {
         use std::fmt::Write;
         let mut t = String::new();
+        if let Some(c) = &self.clouds {
+            let k = c.color;
+            let _ = writeln!(t, "clouds = {}, {}, {}", ["x", "y", "z"][c.axis as usize % 3], c.from, c.to);
+            let _ = writeln!(t, "cloud_density = {}\ncloud_coverage = {}\ncloud_size = {}", c.density, c.coverage, c.size);
+            let _ = writeln!(t, "cloud_color = #{:02X}{:02X}{:02X}", k[0], k[1], k[2]);
+            if c.offset != [0.0; 3] {
+                let _ = writeln!(t, "cloud_offset = {}, {}, {}", c.offset[0], c.offset[1], c.offset[2]);
+            }
+        }
         if let Some(g) = &self.ground {
             let c = g.color;
             let _ = writeln!(t, "ground = {}, {}", ["x", "y", "z"][g.axis as usize % 3], g.pos);
@@ -1215,6 +1227,38 @@ impl Scene {
                             g.axis = axis;
                             g.pos = pos;
                         }
+                    }
+                    "clouds" => {
+                        if matches!(val.to_ascii_lowercase().as_str(), "off" | "none" | "no") {
+                            s.clouds = None;
+                        } else {
+                            let p: Vec<&str> = val.split(',').map(str::trim).collect();
+                            let [a, from, to] = p[..] else {
+                                return Err(err(format!("bad clouds '{val}' (axis, from, to: y, -1, -1.5)")));
+                            };
+                            let axis = match a.to_ascii_lowercase().as_str() {
+                                "x" => 0,
+                                "y" => 1,
+                                "z" => 2,
+                                _ => return Err(err(format!("bad clouds axis '{a}' (x, y or z)"))),
+                            };
+                            let n = |v: &str| v.parse::<f64>().map_err(|_| err(format!("bad clouds height '{v}'")));
+                            let c = s.clouds.get_or_insert_with(Default::default);
+                            c.axis = axis;
+                            c.from = n(from)?;
+                            c.to = n(to)?;
+                        }
+                    }
+                    "cloud_density" => s.clouds.get_or_insert_with(Default::default).density = num()?.max(0.0) as f32,
+                    "cloud_coverage" => s.clouds.get_or_insert_with(Default::default).coverage = num()?.clamp(0.0, 1.0) as f32,
+                    "cloud_size" => s.clouds.get_or_insert_with(Default::default).size = num()?.max(1e-9),
+                    "cloud_color" => {
+                        let c = parse_color(val).ok_or_else(|| err(format!("bad colour '{val}' (#RRGGBB)")))?;
+                        s.clouds.get_or_insert_with(Default::default).color = c;
+                    }
+                    "cloud_offset" => {
+                        let p = vec_n(3)?;
+                        s.clouds.get_or_insert_with(Default::default).offset = [p[0], p[1], p[2]];
                     }
                     "ground_color" => {
                         let c = parse_color(val).ok_or_else(|| err(format!("bad colour '{val}' (#RRGGBB)")))?;

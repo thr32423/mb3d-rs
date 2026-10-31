@@ -1006,6 +1006,20 @@ object PostProForm: TPostProForm
     ShowHint = True
     OnClick = NoiseFilterBtnClick
   end
+  object CloudsBtn: TSpeedButton
+    Left = 0
+    Top = 1220
+    Width = 255
+    Height = 21
+    Hint = '@MB:ClickToHideShow'
+    Align = alTop
+    AllowAllUp = True
+    GroupIndex = 8
+    Caption = '@MB:Clouds'
+    ParentShowHint = False
+    ShowHint = True
+    OnClick = CloudsBtnClick
+  end
   object DepthOfFieldPnl: TPanel
     Left = 0
     Top = 912
@@ -1628,5 +1642,150 @@ object PostProForm: TPostProForm
       FF1F000000000000FF8F000000000000FFC7000000000000FFE3000000000000
       FFF8000000000000FFFF00000000000000000000000000000000000000000000
       000000000000}
+  end
+  object CloudsPnl: TPanel
+    Left = 0
+    Top = 1241
+    Width = 255
+    Height = 112
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 11
+    Visible = False
+    object CloudsCbx: TCheckBox
+      Left = 27
+      Top = 9
+      Width = 212
+      Height = 17
+      Hint = '@MB:CloudsOverThePictureALayer'
+      Caption = '@MB:PaintClouds'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      OnClick = CloudsCbxClick
+    end
+    object CloudLayerLbl: TLabel
+      Left = 11
+      Top = 37
+      Width = 40
+      Height = 13
+      Caption = '@MB:Layer'
+    end
+    object CloudAxisCB: TComboBox
+      Left = 60
+      Top = 34
+      Width = 40
+      Height = 21
+      Hint = '@MB:TheAxisTheCloudLayerLies'
+      Style = csDropDownList
+      ItemIndex = 1
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      Text = 'Y'
+      Items.Strings = (
+        'X'
+        'Y'
+        'Z')
+    end
+    object CloudFromEdit: TEdit
+      Left = 103
+      Top = 34
+      Width = 66
+      Height = 21
+      Hint = '@MB:TheAxisTheCloudLayerLies'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 2
+      Text = '-1'
+    end
+    object CloudToEdit: TEdit
+      Left = 172
+      Top = 34
+      Width = 66
+      Height = 21
+      Hint = '@MB:TheAxisTheCloudLayerLies'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      Text = '-1.5'
+    end
+    object CloudDensityLbl: TLabel
+      Left = 11
+      Top = 63
+      Width = 40
+      Height = 13
+      Caption = '@MB:Density'
+    end
+    object CloudDensityEdit: TEdit
+      Left = 60
+      Top = 60
+      Width = 40
+      Height = 21
+      Hint = '@MB:HowThickTheCloudsAre1'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 4
+      Text = '1'
+    end
+    object CloudCoverLbl: TLabel
+      Left = 108
+      Top = 63
+      Width = 40
+      Height = 13
+      Caption = '@MB:Cover'
+    end
+    object CloudCoverEdit: TEdit
+      Left = 172
+      Top = 60
+      Width = 40
+      Height = 21
+      Hint = '@MB:HowThickTheCloudsAre1'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 5
+      Text = '0.5'
+    end
+    object CloudSizeLbl: TLabel
+      Left = 11
+      Top = 89
+      Width = 40
+      Height = 13
+      Caption = '@MB:Size2'
+    end
+    object CloudSizeEdit: TEdit
+      Left = 60
+      Top = 86
+      Width = 40
+      Height = 21
+      Hint = '@MB:TheSizeOfTheCloudsFeatures'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 6
+      Text = '0.5'
+    end
+    object CloudColBtn: TSpeedButton
+      Left = 106
+      Top = 85
+      Width = 23
+      Height = 23
+      Hint = '@MB:TheSizeOfTheCloudsFeatures'
+      Flat = True
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = CloudColBtnClick
+    end
+    object CloudsNowBtn: TButton
+      Left = 140
+      Top = 86
+      Width = 98
+      Height = 21
+      Hint = '@MB:PaintsThePictureAgainWithThe'
+      Caption = '@MB:PaintNow'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 7
+      OnClick = CloudsNowBtnClick
+    end
   end
 end

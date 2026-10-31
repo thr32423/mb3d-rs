@@ -352,6 +352,24 @@ fn interpolate_header(base: &Scene, h: &[&Scene], w: &[f64], rot: Quat, bezier: 
     for i in 0..4 {
         s.julia_c[i] = lin(&|x| x.julia_c[i]);
     }
+    // the clouds (mb3d-rs): blended when every keyframe has them across
+    // the same axis (an offset moving between keyframes: drifting clouds)
+    if let Some(c0) = base.clouds {
+        if h.iter().all(|x| x.clouds.is_some_and(|c| c.axis == c0.axis)) {
+            let c = |x: &Scene| x.clouds.unwrap();
+            let mut nc = c0;
+            nc.from = lin(&|x| c(x).from);
+            nc.to = lin(&|x| c(x).to);
+            nc.density = lin(&|x| c(x).density as f64).max(0.0) as f32;
+            nc.coverage = lin(&|x| c(x).coverage as f64).clamp(0.0, 1.0) as f32;
+            nc.size = lin(&|x| c(x).size).max(1e-9);
+            for k in 0..3 {
+                nc.offset[k] = lin(&|x| c(x).offset[k]);
+                nc.color[k] = lin(&|x| c(x).color[k] as f64).round().clamp(0.0, 255.0) as u8;
+            }
+            s.clouds = Some(nc);
+        }
+    }
     // the ground plane (mb3d-rs): blended when every keyframe has one
     // across the same axis, else the base keyframe's
     if let Some(g0) = base.ground {

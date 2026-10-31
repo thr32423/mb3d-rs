@@ -581,6 +581,10 @@ CloseTheMeshAtTheBorders=إغلاق الشبكة عند الحدود
 ;Close the mesh at the borders
 CloseWindow=إغلاق النافذة
 ;Close window
+Clouds=السحب
+;Clouds
+CloudsOverThePictureALayer=سحب فوق الصورة: طبقة بين ارتفاعين على المحور X أو Y أو Z للكسورية، يضيئها الضوء الأول، أمام الكسورية وخلفها (ليست في MB3D: تُحفظ بعد جزء MB3D من المعاملات؛ ليست في الانعكاسات ولا في مونت كارلو)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=الشيفرة
@@ -709,6 +713,8 @@ CouldNotWrite=تعذرت كتابة {}: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=عدد الصور (شرائح الجسم) التي ستُحسب.
 ;Count of images (object slices) that will be calculated.
+Cover=التغطية:
+;Cover:
 CreateEditAJITCompiledFormula=إنشاء/تحرير صيغة مترجمة بـ JIT
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=إنشاء ملف لغة
@@ -853,6 +859,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=أتريد حذف ما احتفظت �
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=حذف ما احتفظ به التصيير المحدد
 ;Delete what the selected render kept
+Density=الكثافة:
+;Density:
 Depth=العمق
 ;Depth
 DepthColon=العمق:
@@ -1415,6 +1423,8 @@ HowMuchThePlaneReflects0=مقدار انعكاس المستوى (من 0 إلى 1
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=مدى قوة التشويش الذي يُزال (من 1 إلى 30، كما في "Denoise DCT" في GIMP).\nالأعلى يزيل تشويشًا أكثر، وتفاصيل دقيقة أكثر.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=مدى كثافة السحب (1: الطبقة الكاملة تمرر نحو 2 % من الضوء) وكم تغطي من السماء (من 0 إلى 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=كيف يظهر هذا الحاسوب في السرب
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ الدوال الزائدية ومعكوساتها }
@@ -1689,6 +1699,8 @@ LastLengthIncrease=آخر زيادة في الطول
 ;Last length increase
 LastPass=\s· آخر تمريرة {}
 ;\s· last pass {}
+Layer=الطبقة:
+;Layer:
 LeftclickGoIntoMouseModeView=النقر الأيسر:  الدخول في وضع الفأرة.. النظر بالفأرة، + الزر الأيمن.. اللف\n(انقر بالأيسر مرة أخرى أو ESC للخروج من وضع الفأرة)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=النقر الأيسر:   تدوير الجسم حول محور X للمشاهد @ قيم Ymid+Zmid\nالنقر الأيمن: تدوير الجسم حول محور X للجسم @ 0
@@ -2409,10 +2421,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG بخلفية شفافة (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=رسم السحب
+;Paint clouds
+PaintNow=ارسم الآن
+;Paint now
 PaintOnImage=الرسم على الصورة
 ;Paint on image
 PaintingAPreview=جارٍ رسم معاينة
 ;painting a preview
+PaintsThePictureAgainWithThe=يرسم الصورة من جديد بالسحب كما ضُبطت هنا
+;Paints the picture again with the clouds as set here
 Pano=بانوراما
 ;pano.
 PanoramaModeTheFOVIsChoosen=وضع البانوراما:\n- يُختار FOV تلقائيًا\n- استخدم SSAO بـ 24 بت أو DEAO للظلال المحيطية\n- يُنصح بنسبة أبعاد 2:1، لكنها ليست ضرورية.
@@ -3017,6 +3035,8 @@ SingleFilenumbering=ترقيم ملفات واحد
 ;Single filenumbering
 Size=الحجم
 ;Size
+Size2=الحجم:
+;Size:
 SizeFactor=معامل الحجم:
 ;Size factor:
 Sliding=الانزلاق
@@ -3183,6 +3203,8 @@ TheAnimationNeedsAtLeastTwo=يحتاج التحريك إلى إطارين مفت
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=فتحة العدسة عند نقطة Zsharp، وليست فتحة عدسة الكاميرا!\nاضرب هذه القيمة في المسافة (المختارة بحرية) من نقطة Zsharp\nإلى الكاميرا واقسمها على البعد البؤري لعدسة الكاميرا لتحصل على\nفتحة عدسة الكاميرا.\nلذا صغّر هذه القيمة إن لم تتوقع أن تكون الكاميرا بهذا الحجم.\nالقيم الأكبر تعني تمويهًا أكثر.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=المحور الذي تتعامد عليه طبقة السحب، وارتفاعاها عليه
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=المحور الذي يتعامد عليه المستوى، وموضعه على هذا المحور (كما في مستويات القطع؛ جانبه الصلب هو البعيد عن الكاميرا)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=صيغة ذاكرة BTracer2 المؤقتة غير مدعومة في هذا البرنامج.\nيرجى اختيار صيغة شبكة (*.ply أو *.obj).
@@ -3269,6 +3291,8 @@ TheSelectionMustBeBiggerThanLower=يجب أن يكون الجزء المحدد �
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=المجلد المشترك للسرب
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=حجم أشكال السحب بوحدات الكسورية، ولونها (انقر)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=حجم المربعات
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=صورتا العينين المجسمتان بحجمين مختلفين.

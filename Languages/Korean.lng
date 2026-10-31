@@ -581,6 +581,10 @@ CloseTheMeshAtTheBorders=경계에서 메시를 닫습니다.
 ;Close the mesh at the borders
 CloseWindow=창 닫기
 ;Close window
+Clouds=구름
+;Clouds
+CloudsOverThePictureALayer=그림 위의 구름: 프랙탈의 X, Y 또는 Z 축을 따라 두 높이 사이의 층으로, 첫 번째 빛으로 비추며 프랙탈 앞과 뒤에 그려집니다 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장; 반사와 몬테카를로에는 없음)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=코드
@@ -709,6 +713,8 @@ CouldNotWrite={}을(를) 쓸 수 없습니다: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=계산할 이미지(물체 슬라이스)의 수입니다.
 ;Count of images (object slices) that will be calculated.
+Cover=덮음:
+;Cover:
 CreateEditAJITCompiledFormula=JIT 컴파일 공식을 만들거나 편집합니다
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=언어 파일 만들기
@@ -853,6 +859,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=완료되지 않은 렌더링이 보�
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=선택한 렌더링이 보존한 내용을 삭제합니다
 ;Delete what the selected render kept
+Density=밀도:
+;Density:
 Depth=깊이
 ;Depth
 DepthColon=깊이:
@@ -1415,6 +1423,8 @@ HowMuchThePlaneReflects0=평면의 반사 정도 (0에서 1): 하이라이트, �
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=제거할 노이즈의 강도입니다(1~30, GIMP의 "Denoise DCT"와 동일).\n높을수록 노이즈를 더 많이 제거하지만 미세한 디테일도 더 사라집니다.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=구름의 짙기 (1: 꽉 찬 층은 빛의 약 2 %를 통과시킴) 와 하늘을 덮는 정도 (0에서 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=스웜에서 이 컴퓨터가 표시되는 이름입니다
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ 쌍곡선 함수와 그 역함수 }
@@ -1689,6 +1699,8 @@ LastLengthIncrease=마지막 길이 증가
 ;Last length increase
 LastPass=\s· 마지막 패스 {}
 ;\s· last pass {}
+Layer=층:
+;Layer:
 LeftclickGoIntoMouseModeView=왼쪽 클릭:  마우스 모드로 진입.. 마우스로 시점 이동, +오른쪽 버튼.. 롤링\n(마우스 모드를 종료하려면 다시 왼쪽 클릭 또는 ESC)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=왼쪽 클릭:   Ymid+Zmid 값에서 시점의 X축을 중심으로 벌브를 회전합니다\n오른쪽 클릭: 0에서 물체의 X축을 중심으로 벌브를 회전합니다
@@ -2409,10 +2421,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG 투명 배경 (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=구름 그리기
+;Paint clouds
+PaintNow=지금 그리기
+;Paint now
 PaintOnImage=이미지에 그리기
 ;Paint on image
 PaintingAPreview=미리보기 그리는 중
 ;painting a preview
+PaintsThePictureAgainWithThe=여기서 설정한 구름으로 그림을 다시 그립니다
+;Paints the picture again with the clouds as set here
 Pano=파노
 ;pano.
 PanoramaModeTheFOVIsChoosen=파노라마 모드:\n- FOV는 자동으로 선택됩니다\n- 주변 그림자에는 24bit SSAO 또는 DEAO를 사용하십시오\n- 2:1 화면 비율을 권장하지만 필수는 아닙니다.
@@ -3017,6 +3035,8 @@ SingleFilenumbering=단일 파일 번호
 ;Single filenumbering
 Size=크기
 ;Size
+Size2=크기:
+;Size:
 SizeFactor=크기 배율:
 ;Size factor:
 Sliding=슬라이딩
@@ -3183,6 +3203,8 @@ TheAnimationNeedsAtLeastTwo=애니메이션에는 키프레임이 2개 이상 �
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp 지점에서의 조리개이며, 카메라의 조리개가 아닙니다!\n이 값에 Zsharp 지점에서 카메라까지의 (자유롭게 정한) 거리를 곱하고\n카메라 렌즈의 초점 거리로 나누면\n카메라의 조리개가 됩니다.\n따라서 카메라가 그렇게 크지 않다고 보면 이 값을 줄이십시오.\n값이 클수록 블러가 강해집니다.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=구름층이 수직으로 놓인 축과 그 위의 두 높이
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=평면이 수직으로 놓인 축과 그 축 위의 위치 (절단면과 같음; 카메라에서 먼 쪽이 단단한 쪽)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=이 프로그램은 BTracer2 캐시 형식을 지원하지 않습니다.\n메시 형식(*.ply 또는 *.obj)을 선택하십시오.
@@ -3269,6 +3291,8 @@ TheSelectionMustBeBiggerThanLower=선택 영역은 너비와 높이가 2픽셀�
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=스웜의 공유 폴더
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=구름 모양의 크기 (프랙탈 단위) 와 색 (클릭)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=타일 크기
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=스테레오 양쪽 눈 이미지의 크기가 다릅니다.

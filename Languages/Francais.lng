@@ -580,6 +580,10 @@ CloseTheMeshAtTheBorders=Ferme le maillage sur les bords
 ;Close the mesh at the borders
 CloseWindow=Fermer la fenêtre
 ;Close window
+Clouds=Nuages
+;Clouds
+CloudsOverThePictureALayer=Des nuages sur l'image : une couche entre deux hauteurs le long de l'axe X, Y ou Z de la fractale, éclairée par la première lumière, devant et derrière la fractale (pas dans MB3D : gardée après la partie MB3D des paramètres ; pas dans les reflets ni Monte Carlo)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co :
 ;Co:
 Code=Code
@@ -708,6 +712,8 @@ CouldNotWrite=Impossible d'écrire {} : {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=Nombre d'images (tranches de l'objet) qui seront calculées.
 ;Count of images (object slices) that will be calculated.
+Cover=Couvert. :
+;Cover:
 CreateEditAJITCompiledFormula=Crée/modifie une formule compilée JIT
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=Créer le fichier de langue
@@ -852,6 +858,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=Supprimer tout ce que les rendus inac
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=Supprimer ce que le rendu sélectionné a conservé
 ;Delete what the selected render kept
+Density=Densité :
+;Density:
 Depth=Profondeur
 ;Depth
 DepthColon=Profondeur :
@@ -1414,6 +1422,8 @@ HowMuchThePlaneReflects0=Combien le plan réfléchit (0 à 1) : ses reflets bril
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Intensité du bruit à supprimer (1 à 30, comme le « Denoise DCT » de GIMP).\nPlus la valeur est élevée, plus le bruit est supprimé, ainsi que les détails fins.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=L'épaisseur des nuages (1 : une couche pleine laisse passer environ 2 % de la lumière) et la part du ciel qu'ils couvrent (0 à 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Le nom sous lequel cet ordinateur apparaît dans l'essaim
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ Fonctions hyperboliques et leurs inverses }
@@ -1688,6 +1698,8 @@ LastLengthIncrease=Dernier accroissement de longueur
 ;Last length increase
 LastPass=\s· dernière passe {}
 ;\s· last pass {}
+Layer=Couche :
+;Layer:
 LeftclickGoIntoMouseModeView=Clic gauche : passer en mode souris.. vue à la souris, +bouton droit.. roulis\n(Clic gauche à nouveau ou Échap pour quitter le mode souris)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=Clic gauche :   tourne le bulbe autour de l'axe X du spectateur aux valeurs Ymid+Zmid\nClic droit : tourne le bulbe autour de l'axe X de l'objet à 0
@@ -2408,10 +2420,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG arrière-plan transparent (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=Peindre les nuages
+;Paint clouds
+PaintNow=Peindre
+;Paint now
 PaintOnImage=Peindre sur l'image
 ;Paint on image
 PaintingAPreview=dessin d'un aperçu
 ;painting a preview
+PaintsThePictureAgainWithThe=Repeint l'image avec les nuages tels que réglés ici
+;Paints the picture again with the clouds as set here
 Pano=pano.
 ;pano.
 PanoramaModeTheFOVIsChoosen=Mode panorama :\n- Le FOV est choisi automatiquement\n- Utilisez le SSAO 24 bits ou le DEAO pour les ombres ambiantes\n- Un rapport 2:1 est recommandé, mais pas obligatoire.
@@ -3016,6 +3034,8 @@ SingleFilenumbering=Numérotation simple
 ;Single filenumbering
 Size=Taille
 ;Size
+Size2=Taille :
+;Size:
 SizeFactor=Facteur de taille :
 ;Size factor:
 Sliding=Glisser
@@ -3182,6 +3202,8 @@ TheAnimationNeedsAtLeastTwo=L'animation nécessite au moins deux images-clés.
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=L'ouverture au point Zsharp, ce n'est pas l'ouverture de la caméra !\nMultipliez cette valeur par la distance (choisie librement) du point Zsharp\nà la caméra et divisez-la par la focale de l'objectif pour obtenir\nl'ouverture de la caméra.\nRéduisez donc cette valeur si vous ne voulez pas une caméra aussi grande.\nDes valeurs plus grandes donnent plus de flou.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=L'axe auquel la couche de nuages est perpendiculaire, et ses deux hauteurs sur cet axe
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=L'axe auquel le plan est perpendiculaire et sa position sur cet axe (comme pour les plans de coupe ; son côté plein est celui opposé à la caméra)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Le format de cache BTracer2 n'est pas pris en charge par ce programme.\nVeuillez choisir un format de maillage (*.ply ou *.obj).
@@ -3268,6 +3290,8 @@ TheSelectionMustBeBiggerThanLower=la sélection doit dépasser 2 pixels en large
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=Le dossier partagé de l'essaim
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=La taille des formes des nuages en unités de la fractale, et leur couleur (cliquer)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=La taille des vignettes
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=Les images stéréo des deux yeux ont des tailles différentes.

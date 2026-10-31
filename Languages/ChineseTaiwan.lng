@@ -581,6 +581,10 @@ CloseTheMeshAtTheBorders=在邊界處封閉網格
 ;Close the mesh at the borders
 CloseWindow=關閉視窗
 ;Close window
+Clouds=雲
+;Clouds
+CloudsOverThePictureALayer=圖片上的雲：沿碎形 X、Y 或 Z 軸兩個高度之間的一層，由第一盞燈照亮，位於碎形的前方和後方（MB3D 中沒有：儲存在參數的 MB3D 部分之後；不出現在反射和蒙地卡羅中）
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=程式碼
@@ -709,6 +713,8 @@ CouldNotWrite=無法寫入 {}：{}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=要計算的影像（物體切片）數量。
 ;Count of images (object slices) that will be calculated.
+Cover=覆蓋：
+;Cover:
 CreateEditAJITCompiledFormula=建立/編輯 JIT 編譯的公式
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=建立語言檔案
@@ -853,6 +859,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=刪除所有未完成渲染所保留�
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=刪除所選渲染保留的內容
 ;Delete what the selected render kept
+Density=密度：
+;Density:
 Depth=深度
 ;Depth
 DepthColon=深度：
@@ -1415,6 +1423,8 @@ HowMuchThePlaneReflects0=平面的反射程度（0 到 1）：它的高光，以
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=要移除的雜訊強度（1 到 30，同 GIMP 的「Denoise DCT」）。\n越高移除的雜訊越多，但也會移除更多細節。
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=雲的濃度（1：整層約透過 2% 的光）以及覆蓋天空的比例（0 到 1）
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=這台電腦在 swarm 中顯示的名稱
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ 雙曲函式及其反函式 }
@@ -1689,6 +1699,8 @@ LastLengthIncrease=最後長度增量
 ;Last length increase
 LastPass=\s· 最後一輪 {}
 ;\s· last pass {}
+Layer=層：
+;Layer:
 LeftclickGoIntoMouseModeView=左鍵點擊：進入滑鼠模式…以滑鼠觀看，+右鍵…滾轉\n（再次左鍵點擊或按 ESC 離開滑鼠模式）
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=左鍵：   以 Ymid+Zmid 為中心，繞觀察者的 X 軸旋轉物件\n右鍵：以 0 為中心，繞物件自身的 X 軸旋轉
@@ -2409,10 +2421,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG 透明背景 (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=繪製雲
+;Paint clouds
+PaintNow=立即繪製
+;Paint now
 PaintOnImage=在影像上繪製
 ;Paint on image
 PaintingAPreview=正在繪製預覽
 ;painting a preview
+PaintsThePictureAgainWithThe=依這裡的設定重新繪製帶雲的圖片
+;Paints the picture again with the clouds as set here
 Pano=全景
 ;pano.
 PanoramaModeTheFOVIsChoosen=全景模式：\n- FOV 會自動選擇\n- 請使用 24bit SSAO 或 DEAO 作為環境陰影\n- 建議使用 2:1 的長寬比，但非必要。
@@ -3017,6 +3035,8 @@ SingleFilenumbering=單一檔案編號
 ;Single filenumbering
 Size=尺寸
 ;Size
+Size2=大小：
+;Size:
 SizeFactor=尺寸倍數：
 ;Size factor:
 Sliding=平移
@@ -3183,6 +3203,8 @@ TheAnimationNeedsAtLeastTwo=動畫至少需要兩個關鍵影格。
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=位於 Zsharp 點的光圈，並非相機的光圈！\n將此值乘以（自由選定的）Zsharp 點到相機的距離，\n再除以相機鏡頭的焦距，即可得到\n相機的光圈。\n因此若不希望相機尺寸那麼大，請縮小此值。\n值越大越模糊。
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=雲層所垂直的軸，以及它在該軸上的兩個高度
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=平面所垂直的軸，以及它在該軸上的位置（與切割平面相同；遠離相機的一側是實心的一側）
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=本程式不支援 BTracer2 快取格式。\n請選擇網格格式（*.ply 或 *.obj）。
@@ -3269,6 +3291,8 @@ TheSelectionMustBeBiggerThanLower=選取範圍的寬度與高度必須大於 2 �
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=swarm 的共用資料夾
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=雲形狀的大小（碎形單位）及其顏色（點擊）
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=圖塊的大小
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=立體雙眼影像的大小不同。

@@ -581,6 +581,10 @@ CloseTheMeshAtTheBorders=境界でメッシュを閉じます。
 ;Close the mesh at the borders
 CloseWindow=ウィンドウを閉じる
 ;Close window
+Clouds=雲
+;Clouds
+CloudsOverThePictureALayer=画像の上の雲: フラクタルの X、Y、Z 軸に沿った 2 つの高さの間の層で、最初のライトに照らされ、フラクタルの手前にも奥にも描かれます (MB3D にはありません: パラメーターの MB3D の部分の後に保存。反射とモンテカルロには入りません)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
 Co=Co:
 ;Co:
 Code=コード
@@ -709,6 +713,8 @@ CouldNotWrite={} を書き込めませんでした: {}
 ;Could not write {}: {}
 CountOfImagesObjectSlicesThat=計算する画像(オブジェクトのスライス)の枚数です。
 ;Count of images (object slices) that will be calculated.
+Cover=被覆:
+;Cover:
 CreateEditAJITCompiledFormula=JIT コンパイル数式を作成/編集します
 ;Create/edit a JIT-compiled formula
 CreateLanguageFile=言語ファイルを作成
@@ -853,6 +859,8 @@ DeleteWhatAllUnfinishedRendersKeptQuestion=未完了のレンダリングで保�
 ;Delete what all unfinished renders kept?
 DeleteWhatTheSelectedRenderKept=選択したレンダリングが保持しているデータを削除します
 ;Delete what the selected render kept
+Density=密度:
+;Density:
 Depth=深度
 ;Depth
 DepthColon=深度:
@@ -1415,6 +1423,8 @@ HowMuchThePlaneReflects0=平面の反射の強さ (0 から 1): ハイライト�
 ;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=除去するノイズの強さです (1 ~ 30、GIMP の「Denoise DCT」と同じ)。\n高いほど多くのノイズを除去しますが、細部も失われます。
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowThickTheCloudsAre1=雲の濃さ (1: 層全体で光の約 2 % を通す) と空を覆う割合 (0 から 1)
+;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=スウォーム内でのこのコンピュータの表示名です
 ;How this computer is listed in the swarm
 HyperbolicFunctionsAndInverses={ 双曲線関数とその逆関数 }
@@ -1689,6 +1699,8 @@ LastLengthIncrease=最後の長さの増加
 ;Last length increase
 LastPass=\s· 前回のパス {}
 ;\s· last pass {}
+Layer=層:
+;Layer:
 LeftclickGoIntoMouseModeView=左クリック: マウスモードに入ります。マウスで視点を動かし、右ボタンも押すとロールします。\n(もう一度左クリックするか ESC でマウスモードを終了します)
 ;Leftclick:  go into mouse-mode.. view by mouse, +right mousebutton.. rolling\n(Leftclick again or ESC to exit the mouse-mode)
 LeftclickRotateTheBulbAroundThe=左クリック:   視点の X 軸を中心に Y 中心+Z 中心の値でバルブを回転\n右クリック: オブジェクトの X 軸を中心に 0 で回転
@@ -2409,10 +2421,16 @@ PNGPng=PNG (*.png)
 ;PNG (*.png)
 PNGTransparentBackgroundPng=PNG 透明背景 (*.png)
 ;PNG transparent background (*.png)
+PaintClouds=雲を描く
+;Paint clouds
+PaintNow=今すぐ描く
+;Paint now
 PaintOnImage=画像に描画
 ;Paint on image
 PaintingAPreview=プレビューを描画中
 ;painting a preview
+PaintsThePictureAgainWithThe=ここで設定した雲で画像を描き直します
+;Paints the picture again with the clouds as set here
 Pano=パノラマ
 ;pano.
 PanoramaModeTheFOVIsChoosen=パノラマモード:\n- FOV は自動的に選ばれます\n- 環境シャドウには 24bit SSAO または DEAO を使ってください\n- 2:1 のアスペクト比を推奨しますが、必須ではありません。
@@ -3017,6 +3035,8 @@ SingleFilenumbering=単一のファイル番号
 ;Single filenumbering
 Size=サイズ
 ;Size
+Size2=大きさ:
+;Size:
 SizeFactor=サイズ倍率:
 ;Size factor:
 Sliding=スライド
@@ -3183,6 +3203,8 @@ TheAnimationNeedsAtLeastTwo=アニメーションには少なくとも 2 つの�
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp 点での絞りであり、カメラの絞りではありません!\nこの値に Zsharp 点からカメラまでの (自由に選んだ) 距離を掛け、\nカメラレンズの焦点距離で割るとカメラの絞りが\n得られます。\nカメラがそれほど大きくないと想定する場合は、この値を小さくしてください。\n値が大きいほどぼかしが強くなります。
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisTheCloudLayerLies=雲の層が垂直に交わる軸と、その上の 2 つの高さ
+;The axis the cloud layer lies across, and its two heights on it
 TheAxisThePlaneLiesAcross=平面が垂直に交わる軸と、その軸上の位置 (切断面と同様。カメラから遠い側が中身のある側です)
 ;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=BTracer2 キャッシュ形式はこのプログラムではサポートされていません。\nメッシュ形式 (*.ply または *.obj) を選んでください。
@@ -3269,6 +3291,8 @@ TheSelectionMustBeBiggerThanLower=選択範囲は幅と高さが 2 ピクセル�
 ;the selection must be bigger than 2 pixels in width and height
 TheSharedFolderOfTheSwarm=スウォームの共有フォルダ
 ;The shared folder of the swarm
+TheSizeOfTheCloudsFeatures=雲の形の大きさ (フラクタル単位) と色 (クリック)
+;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=タイルのサイズ
 ;The size of the tiles
 TheStereoEyeImagesHaveDifferent=ステレオの左右の画像のサイズが異なります。

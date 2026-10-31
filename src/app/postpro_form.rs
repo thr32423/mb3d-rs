@@ -28,6 +28,8 @@ pub struct State {
     pub running: Option<(String, std::time::Instant)>,
     /// its running stage's pace, for the time left
     pub pace: Pace,
+    /// the clouds' colour (Clouds section)
+    pub cloud_color: [u8; 3],
 }
 
 /// The pace of a post processing's running stage (the engine names it
@@ -67,7 +69,7 @@ impl Pace {
     }
 }
 
-const PANELS: [(&str, &str, &str); 7] = [
+const PANELS: [(&str, &str, &str); 8] = [
     ("RecalcSectionBtn", "RecalcSectionPnl", "CheckBox21"),
     ("NormalsOnZBufferBtn", "NormalsOnZBufferPnl", "CheckBox23"),
     ("HardShadowsBtn", "HardShadowsPnl", "CheckBox9"),
@@ -75,6 +77,7 @@ const PANELS: [(&str, &str, &str); 7] = [
     ("ReflTransparencyBtn", "ReflTransparencyPnl", "CheckBox24"),
     ("DepthOfFieldBtn", "DepthOfFieldPnl", "CheckBox1"),
     ("NoiseFilterBtn", "NoiseFilterPnl", "NoiseAutoCbx"),
+    ("CloudsBtn", "CloudsPnl", "CloudsCbx"),
 ];
 
 /// The strength of the noise filter (Noise Filter section), 0 when off.
@@ -119,6 +122,19 @@ fn dof_params(ui: &Ui) -> DofParams {
 pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
     let st = &app.post;
     let sc = &mut app.scene;
+    let num = |e: &str| super::util::ptf(&ui.text(F, e));
+    // (the noise's offset is kept: it only comes from scene files and animations)
+    let offset = sc.clouds.map_or([0.0; 3], |c| c.offset);
+    sc.clouds = ui.checked(F, "CloudsCbx").then(|| crate::clouds::Clouds {
+        axis: ui.item_index(F, "CloudAxisCB").clamp(0, 2) as u8,
+        from: num("CloudFromEdit"),
+        to: num("CloudToEdit"),
+        density: (num("CloudDensityEdit") as f32).max(0.0),
+        coverage: (num("CloudCoverEdit") as f32).clamp(0.0, 1.0),
+        size: num("CloudSizeEdit").max(1e-9),
+        color: st.cloud_color,
+        offset,
+    });
     sc.shadows = (ui.checked(F, "CheckBox9") || st.hs_now).then(|| shadow_params(ui));
     let tab = ui.c(F, "TabControl1").tab_index;
     let ao_on = ui.checked(F, "CheckBox11") || st.ao_now;
@@ -154,6 +170,14 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
 pub fn set_from_header(app: &mut Mb3d, ui: &mut Ui) {
     app.post = State::default();
     let sc = app.scene.clone();
+    let c = sc.clouds.unwrap_or_default();
+    ui.set_checked(F, "CloudsCbx", sc.clouds.is_some());
+    ui.set_item_index(F, "CloudAxisCB", c.axis as i32);
+    for (e, v) in [("CloudFromEdit", c.from), ("CloudToEdit", c.to), ("CloudDensityEdit", c.density as f64), ("CloudCoverEdit", c.coverage as f64), ("CloudSizeEdit", c.size)] {
+        ui.set_text(F, e, &super::util::fts(v));
+    }
+    app.post.cloud_color = c.color;
+    cloud_swatch(app, ui);
     ui.set_checked(F, "CheckBox1", sc.dof.is_some());
     let d = sc.dof.unwrap_or_default();
     ui.set_item_index(F, "RadioGroup2", d.forward as i32);
@@ -273,6 +297,21 @@ fn toggle(ui: &mut Ui, btn: &str, pnl: &str) {
     update_captions(ui);
 }
 
+/// The clouds' colour on their button.
+fn cloud_swatch(app: &Mb3d, ui: &mut Ui) {
+    let b = ui.cm(F, "CloudColBtn");
+    b.glyph = Some(super::light_form::swatch(app.post.cloud_color));
+    b.num_glyphs = 1;
+}
+
+/// The colour dialog of the Clouds section.
+pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &crate::vcl::DialogResult) {
+    if let ("cloudcolor", crate::vcl::DialogResult::Color(Some(c))) = (what, r) {
+        app.post.cloud_color = super::util::rgb_of(*c);
+        cloud_swatch(app, ui);
+    }
+}
+
 /// The image is repainted with the post processing of the parameters;
 /// `stage` is shown in the main window while it runs.
 pub fn repaint(app: &mut Mb3d, ui: &mut Ui, stage: &str) {
@@ -342,7 +381,12 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
     }
     match h {
         "NoiseFilterNowBtnClick" => super::main_form::denoise_picture(app, ui, noise_sigma(ui)),
-        "NoiseAutoCbxClick" => update_captions(ui),
+        "NoiseAutoCbxClick" | "CloudsCbxClick" => update_captions(ui),
+        "CloudColBtnClick" => ui.pick_color("post:cloudcolor", super::util::argb(app.post.cloud_color)),
+        "CloudsNowBtnClick" => {
+            app.make_scene(ui);
+            repaint(app, ui, "clouds");
+        }
         "FormShow" => {
             super::main_form::place_sticky(app, ui, Some(F), true);
             ui.cm(F, "Edit11").hint = tr("@MB:DepthOfReflections1ToSee");

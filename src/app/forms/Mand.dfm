@@ -1142,6 +1142,122 @@ object Mand3DForm: TMand3DForm
           TabOrder = 7
           OnClick = Button16Click
         end
+        object GroundCBx: TCheckBox
+          Left = 9
+          Top = 150
+          Width = 84
+          Height = 17
+          Hint = '@MB:AGroundOrWaterSurfaceAcross'
+          Caption = '@MB:GroundPlane'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 8
+          OnClick = GroundChange
+        end
+        object GroundAxisCB: TComboBox
+          Left = 95
+          Top = 148
+          Width = 42
+          Height = 21
+          Hint = '@MB:TheAxisThePlaneLiesAcross'
+          Style = csDropDownList
+          ItemIndex = 1
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 9
+          Text = 'Y'
+          OnChange = GroundChange
+          Items.Strings = (
+            'X'
+            'Y'
+            'Z')
+        end
+        object GroundPosEdit: TEdit
+          Left = 9
+          Top = 173
+          Width = 62
+          Height = 21
+          Hint = '@MB:TheAxisThePlaneLiesAcross'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'MS Serif'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 10
+          Text = '0'
+        end
+        object GroundColBtn: TSpeedButton
+          Left = 74
+          Top = 172
+          Width = 23
+          Height = 23
+          Hint = '@MB:ThePlaneSColourClickTo'
+          Flat = True
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = GroundColBtnClick
+        end
+        object GroundReflEdit: TEdit
+          Left = 100
+          Top = 173
+          Width = 37
+          Height = 21
+          Hint = '@MB:HowMuchThePlaneReflects0'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'MS Serif'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 11
+          Text = '0'
+        end
+        object Label91: TLabel
+          Left = 9
+          Top = 200
+          Width = 30
+          Height = 13
+          Caption = '@MB:Waves'
+        end
+        object GroundWaveEdit: TEdit
+          Left = 50
+          Top = 197
+          Width = 42
+          Height = 21
+          Hint = '@MB:WavesOnThePlaneTheirHeight'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'MS Serif'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 12
+          Text = '0'
+        end
+        object GroundWaveLenEdit: TEdit
+          Left = 95
+          Top = 197
+          Width = 42
+          Height = 21
+          Hint = '@MB:WavesOnThePlaneTheirHeight'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'MS Serif'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 13
+          Text = '1'
+        end
       end
       object TabSheet9: TTabSheet
         Caption = '@MB:JuliaOff'

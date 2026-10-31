@@ -36,6 +36,8 @@ AFewSecondsLeft=tersisa beberapa detik
 ;a few seconds left
 AFolderEveryComputerOfThe=Folder yang dapat dilihat oleh setiap komputer swarm: share NAS, share Windows atau Samba, folder sinkronisasi
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=Permukaan tanah atau air yang melintang sumbu X, Y, atau Z fraktal, dihitung bersama fraktal: bayangan, oklusi, pantulan, dan cahaya Monte Carlo-nya (tidak ada di MB3D: disimpan setelah bagian parameter MB3D, yang diabaikan MB3D)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=Nilai yang lebih tinggi berarti kualitas lebih baik, bahkan 100% tetap lossy.
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1356,6 +1358,8 @@ GoneLastSeenSAgo=hilang (terakhir terlihat {} d lalu)
 ;gone (last seen {} s ago)
 GraphicsCard=Kartu grafis
 ;Graphics card
+GroundPlane=Bidang tanah
+;Ground plane
 GroupByDay=Kelompokkan per hari
 ;Group by day
 GuessParams=Tebak param
@@ -1402,6 +1406,8 @@ HoldShiftKeyForFinerSteps=(Tahan tombol Shift untuk langkah lebih halus)
 ;(Hold Shift key for finer steps)
 Hotkeys=Tombol pintas
 ;Hotkeys
+HowMuchThePlaneReflects0=Seberapa kuat bidang memantul (0 sampai 1): kilaunya, dan cerminnya bila pantulan dihitung (Pasca-proses)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Seberapa kuat derau yang dihapus (1 sampai 30, seperti "Denoise DCT" GIMP).\nNilai lebih tinggi menghapus lebih banyak derau, dan lebih banyak detail halus.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=Nama komputer ini di daftar swarm
@@ -3172,6 +3178,8 @@ TheAnimationNeedsAtLeastTwo=Animasi memerlukan setidaknya dua keyframe.
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Apertur pada titik Zsharp, ini bukan apertur kamera!\nKalikan nilai ini dengan jarak (bebas dipilih) dari titik Zsharp\nke kamera dan bagi dengan panjang fokus lensa kamera untuk mendapatkan\napertur kamera.\nJadi kecilkan nilai ini jika Anda tidak mengharapkan ukuran kamera sebesar itu.\nNilai lebih besar berarti blur lebih banyak.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=Sumbu yang dilintangi bidang ini dan posisinya pada sumbu itu (seperti bidang potong; sisi padatnya adalah sisi yang menjauhi kamera)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Format cache BTracer2 tidak didukung oleh program ini.\nPilih format mesh (*.ply atau *.obj).
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=Format cache BTracer2 tidak didukung, mesh tidak disimpan.
@@ -3244,6 +3252,8 @@ TheParametersDoNotMatchThe=Parameter tidak lagi cocok dengan perhitungan yang be
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=Gambar tidak cocok dengan perhitungannya: hitung lagi.
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=Warna bidang (klik untuk mengubah)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=Rotasi dilakukan di sekitar Titik tengah (Xmid, Ymid, Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Rotasi dilakukan berurutan, pertama bidang XW, terakhir bidang ZW.
@@ -3504,6 +3514,10 @@ WarningsAndErrors=Peringatan dan galat
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=Ombak:
+;Waves:
+WavesOnThePlaneTheirHeight=Ombak pada bidang: tinggi dan panjangnya dalam satuan fraktal (tinggi 0: bidang datar)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=Bobot
 ;Weight
 WeightColon=Bobot:

@@ -88,6 +88,8 @@ impl Sampler {
     pub fn new(sc: &Scene, mp: &MeshParams) -> Result<Sampler, String> {
         // VHeader: CalcImageSize makes it ZSlices x ZSlices pixels
         let mut s = sc.clone();
+        // (the fractal alone, without the ground plane)
+        s.ground = None;
         s.width = GRID as i32;
         s.height = GRID as i32;
         s.tiling = None;

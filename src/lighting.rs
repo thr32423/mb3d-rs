@@ -619,6 +619,9 @@ pub struct LightVals {
     pub(crate) vol_light: bool,
     /// background picture (`bBackBMP`) and its options
     pub(crate) bg: Option<PaintMap>,
+    /// the ground plane's diffuse and specular colours (`gbuffer::GROUND`
+    /// pixels), set by [`LightVals::set_ground`]
+    pub(crate) ground: Option<(SVec, SVec)>,
     pub(crate) bg_direct: bool,
     pub(crate) bg_add_light: bool,
     /// light map lights
@@ -1144,6 +1147,7 @@ impl LightVals {
             icol_pos,
             s_ic_div,
             vol_light: false,
+            ground: None,
             bg: if l.bg_image.is_empty() {
                 None
             } else {
@@ -1195,6 +1199,22 @@ impl LightVals {
             },
             mid: [0.0; 3],
         }
+    }
+
+    /// The ground plane's colours: its colour as diffuse, its reflection
+    /// amount as a grey specular colour (the reflections' mirror).
+    pub fn set_ground(&mut self, g: Option<&crate::scene::Ground>) {
+        let col = |c: [u8; 3]| -> SVec {
+            if self.sqr {
+                c.map(|v| v as f32 * v as f32 * 0.0000153787)
+            } else {
+                c.map(|v| v as f32 / 255.0)
+            }
+        };
+        self.ground = g.map(|g| {
+            let r = (g.reflect.clamp(0.0, 1.0) * 255.0).round() as u8;
+            (col(g.color), col([r; 3]))
+        });
     }
 
     /// Volumetric light: the shadow word holds the light amount
@@ -1472,6 +1492,11 @@ impl LightVals {
     /// `CalcColors` with the alpha of the specular colour (`iSpe[3]`, the
     /// transparency of the Monte Carlo renderer).
     pub(crate) fn calc_colors_alpha(&self, si: &SiLight, idif0: f32) -> (SVec, SVec, f32) {
+        if si.is_ground() {
+            if let Some((d, s)) = self.ground {
+                return (d, s, 0.0);
+            }
+        }
         let ir = if self.col_on_otrap { (si.otrap & 0x7FFF) as f32 } else { si.si_gradient as f32 };
         let mut ir = (((ir - self.s_c_start) * self.s_c_mul + idif0) * 16384.0).clamp(-1e9, 1e9).round() as i32;
         if self.col_cycling {
@@ -1742,7 +1767,7 @@ impl LightVals {
                 sv_add_w(&mut li_dif, c, d_amb_sh);
             }
             let idif0 = self.s_col_zmul * plv_zpos;
-            let (mut idif, ispe, ia) = if si.si_gradient > 32767 {
+            let (mut idif, ispe, ia) = if si.si_gradient > 32767 && !si.is_ground() {
                 let (d, s) = self.calc_colors_inside(si, idif0);
                 (d, s, s[0])
             } else {

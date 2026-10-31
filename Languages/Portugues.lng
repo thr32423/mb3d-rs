@@ -36,6 +36,8 @@ AFewSecondsLeft=faltam alguns segundos
 ;a few seconds left
 AFolderEveryComputerOfThe=Uma pasta que todos os computadores do enxame veem: um compartilhamento NAS, Windows ou Samba, uma pasta sincronizada
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=Uma superfície de chão ou de água perpendicular ao eixo X, Y ou Z do fractal, calculada com o fractal: suas sombras, oclusão, reflexos e luz Monte Carlo (não existe no MB3D: guardada após a parte do MB3D nos parâmetros, que o MB3D ignora)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=Um valor maior significa melhor qualidade; mesmo 100% tem perdas.
 ;A higher value means a better quality, even 100% is lossy.
 AI=IA
@@ -1356,6 +1358,8 @@ GoneLastSeenSAgo=saiu (visto há {} s)
 ;gone (last seen {} s ago)
 GraphicsCard=Placa de vídeo
 ;Graphics card
+GroundPlane=Plano de chão
+;Ground plane
 GroupByDay=Agrupar por dia
 ;Group by day
 GuessParams=Estimar parâm.
@@ -1402,6 +1406,8 @@ HoldShiftKeyForFinerSteps=(Segure Shift para passos mais finos)
 ;(Hold Shift key for finer steps)
 Hotkeys=Atalhos
 ;Hotkeys
+HowMuchThePlaneReflects0=Quanto o plano reflete (0 a 1): seus brilhos, e seu espelho quando os reflexos são calculados (Pós-processamento)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Intensidade do ruído removido (1 a 30, como o "Denoise DCT" do GIMP).\nValores maiores removem mais ruído, e mais detalhes finos.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=Como este computador aparece no enxame
@@ -3172,6 +3178,8 @@ TheAnimationNeedsAtLeastTwo=A animação precisa de pelo menos dois quadros-chav
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=A abertura no ponto Zsharp, não a abertura da câmera!\nMultiplique este valor pela distância (escolhida livremente) do ponto Zsharp\naté a câmera e divida pela distância focal da lente da câmera para obter\na abertura da câmera.\nPortanto, reduza este valor se não imagina a câmera tão grande.\nValores maiores significam mais desfoque.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=O eixo ao qual o plano é perpendicular e a sua posição nesse eixo (como nos planos de corte; o lado sólido é o que fica longe da câmera)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=O formato de cache do BTracer2 não é suportado por este programa.\nEscolha um formato de malha (*.ply ou *.obj).
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=O formato de cache do BTracer2 não é suportado; a malha não foi salva.
@@ -3244,6 +3252,8 @@ TheParametersDoNotMatchThe=Os parâmetros não correspondem mais ao cálculo ina
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=A imagem não corresponde ao seu cálculo: calcule-a de novo.
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=A cor do plano (clique para mudar)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=A rotação é feita em torno do ponto central (Xmid, Ymid, Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=As rotações são feitas em sequência, primeiro o plano XW, por último o ZW.
@@ -3504,6 +3514,10 @@ WarningsAndErrors=Avisos e erros
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=Ondas:
+;Waves:
+WavesOnThePlaneTheirHeight=Ondas no plano: sua altura e seu comprimento em unidades do fractal (altura 0: um plano liso)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=Peso
 ;Weight
 WeightColon=Peso:

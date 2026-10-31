@@ -37,6 +37,8 @@ AFewSecondsLeft=剩余几秒
 ;a few seconds left
 AFolderEveryComputerOfThe=集群中每台计算机都能访问的文件夹：NAS 共享、Windows 或 Samba 共享、同步文件夹
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=垂直于分形 X、Y 或 Z 轴的地面或水面，与分形一起计算：它的阴影、遮蔽、反射和蒙特卡罗光照（MB3D 中没有：保存在参数的 MB3D 部分之后，MB3D 会忽略它）
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=值越高质量越好，但即使 100% 也是有损的。
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1357,6 +1359,8 @@ GoneLastSeenSAgo=已离开（最后出现于 {} 秒前）
 ;gone (last seen {} s ago)
 GraphicsCard=显卡
 ;Graphics card
+GroundPlane=地平面
+;Ground plane
 GroupByDay=按日分组
 ;Group by day
 GuessParams=猜测参数
@@ -1403,6 +1407,8 @@ HoldShiftKeyForFinerSteps=（按住 Shift 键步进更细）
 ;(Hold Shift key for finer steps)
 Hotkeys=快捷键
 ;Hotkeys
+HowMuchThePlaneReflects0=平面的反射程度（0 到 1）：它的高光，以及计算反射时的镜面（后期处理）
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=要去除的噪点强度（1 到 30，同 GIMP 的“Denoise DCT”）。\n值越高去除的噪点越多，细节也损失越多。
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=本机在集群中显示的名称
@@ -3173,6 +3179,8 @@ TheAnimationNeedsAtLeastTwo=动画至少需要两个关键帧。
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=这是 Zsharp 点处的光圈，不是相机的光圈！\n将此值乘以（任意选定的）Zsharp 点到相机的距离，\n再除以相机镜头的焦距，即可得到\n相机的光圈。\n因此，若不希望相机尺寸那么大，请减小此值。\n值越大，模糊越强。
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=平面所垂直的轴，以及它在该轴上的位置（与切割平面相同；远离相机的一侧是实心的一侧）
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=本程序不支持 BTracer2 缓存格式。\n请选择网格格式（*.ply 或 *.obj）。
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=不支持 BTracer2 缓存格式，网格未保存。
@@ -3245,6 +3253,8 @@ TheParametersDoNotMatchThe=参数已与未完成的计算不再匹配：请按�
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=图像与其计算不匹配：请重新计算。
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=平面的颜色（点击更改）
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=旋转围绕中点 (Xmid, Ymid, Zmid) 进行
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=旋转依次进行，先 XW 平面，最后 ZW 平面。
@@ -3505,6 +3515,10 @@ WarningsAndErrors=警告和错误
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=波浪：
+;Waves:
+WavesOnThePlaneTheirHeight=平面上的波浪：以分形单位表示的高度和长度（高度 0：平坦的平面）
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=权重
 ;Weight
 WeightColon=权重：

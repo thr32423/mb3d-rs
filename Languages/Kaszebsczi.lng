@@ -36,6 +36,8 @@ AFewSecondsLeft=òstało pôrã sekùnd
 ;a few seconds left
 AFolderEveryComputerOfThe=Katalog, chtëren widzy kòżdi kòmpùtr roju: ùdzél NAS, ùdzél Windows abò Samba, synchronizowóny katalog
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=Pòwierzchniô zemi abò wòdë na sztót òsë X, Y abò Z fraktala, rechòwónô razã z fraktalã: ji cenie, òklùzjô, òdbicé ë swiatło Monte Carlo (nie je w MB3D: zapisóné za dzélã parametrów MB3D, chtërnégò MB3D nie czëtô)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=Wikszô wôrtnota òznôczô lepszą jakòsc, nawetka 100% je stratné.
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1356,6 +1358,8 @@ GoneLastSeenSAgo=felëje (slédno widzóny {} s temù)
 ;gone (last seen {} s ago)
 GraphicsCard=Graficznô karta
 ;Graphics card
+GroundPlane=Zemia
+;Ground plane
 GroupByDay=Grëpùjë pò dniach
 ;Group by day
 GuessParams=Zgadnij parametrë
@@ -1402,6 +1406,8 @@ HoldShiftKeyForFinerSteps=(Trzëmôj Shift dlô drobniészich kroków)
 ;(Hold Shift key for finer steps)
 Hotkeys=Skrótë
 ;Hotkeys
+HowMuchThePlaneReflects0=Jak mòckò płaszczëzna òdbijô (òd 0 do 1): ji pòłësczi ë zdrzadło, czej są rechòwóné òdbicé (Kùńcowô òbróbka)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Jak mòcny je szëm, chtëren je ùsëwóny (1 do 30, jak "Denoise DCT" w GIMP).\nWëższé ùsëwô wicy szëmù, a téż wicy drobnëch detalów.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=Jak nen kòmpùtr je wëpisóny w roju
@@ -3172,6 +3178,8 @@ TheAnimationNeedsAtLeastTwo=Animacjô pòtrzebùje nômni dwùch kluczowëch kla
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Apertura w pùnkce Zsharp, to nie je apertura kamerë!\nPòmnożë tã wôrtnosc przez (swòbódno wëbróną) òdległosc òd pùnktu Zsharp\ndo kamerë ë pòdzelë przez ògniskòwą dłużawã òbiektiwu kamerë, żebë dostac\naperturã kamerë.\nTej zmniészë tã wôrtnosc, jeżlë nie żdajesz tak wiôldżi kamerë.\nWikszé wôrtnoscë dôwają wicy rozmazaniô.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=Òsa, na sztót chtërny leżi płaszczëzna, ë ji pòłożenié na ti òsë (jak przë płaszczëznach cãcô; ji pełnô strona je ta dali òd kamerë)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Fòrmat cache BTracer2 nie je wspieróny przez nen program.\nWëbierzë fòrmat sécë (*.ply abò *.obj).
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=Fòrmat cache BTracer2 nie je wspieróny, séc nie òsta zapisónô.
@@ -3244,6 +3252,8 @@ TheParametersDoNotMatchThe=Parametrë ju nie pasëją do nieskùńczonégò rech
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=Òbrôzk nie pasëje do swòjégò rechòwaniô: wërechùj gò znowa.
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=Farwa płaszczëznë (klëknij, żebë zmienic)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=Òbrôcanié je wëkònywóné wkół strzódka (Xmid, Ymid, Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Òbrotë są wëkònywóné pò se, nôprzód w płaszczëznie XW, na kùńcu ZW.
@@ -3504,6 +3514,10 @@ WarningsAndErrors=Bôczënczi i felë
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=Fale:
+;Waves:
+WavesOnThePlaneTheirHeight=Fale na płaszczëznie: jich wiżawa ë długòsc w jednotkach fraktala (wiżawa 0: płaskô płaszczëzna)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=Wôga
 ;Weight
 WeightColon=Wôga:

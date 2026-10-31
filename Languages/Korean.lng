@@ -37,6 +37,8 @@ AFewSecondsLeft=몇 초 남음
 ;a few seconds left
 AFolderEveryComputerOfThe=스웜의 모든 컴퓨터가 볼 수 있는 폴더: NAS 공유, Windows 또는 Samba 공유, 동기화 폴더
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=프랙탈의 X, Y 또는 Z 축에 수직인 지면 또는 수면으로, 프랙탈과 함께 계산됩니다: 그림자, 차폐, 반사, 몬테카를로 빛 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장되며 MB3D는 무시함)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=값이 클수록 품질이 좋아지지만, 100%라도 손실 압축입니다.
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1357,6 +1359,8 @@ GoneLastSeenSAgo=사라짐(마지막 확인 {}초 전)
 ;gone (last seen {} s ago)
 GraphicsCard=그래픽 카드
 ;Graphics card
+GroundPlane=지면
+;Ground plane
 GroupByDay=날짜별로 묶기
 ;Group by day
 GuessParams=파라미터 추정
@@ -1403,6 +1407,8 @@ HoldShiftKeyForFinerSteps=(Shift 키를 누르면 더 미세한 단계)
 ;(Hold Shift key for finer steps)
 Hotkeys=단축키
 ;Hotkeys
+HowMuchThePlaneReflects0=평면의 반사 정도 (0에서 1): 하이라이트, 그리고 반사를 계산할 때의 거울 (후처리)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=제거할 노이즈의 강도입니다(1~30, GIMP의 "Denoise DCT"와 동일).\n높을수록 노이즈를 더 많이 제거하지만 미세한 디테일도 더 사라집니다.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=스웜에서 이 컴퓨터가 표시되는 이름입니다
@@ -3173,6 +3179,8 @@ TheAnimationNeedsAtLeastTwo=애니메이션에는 키프레임이 2개 이상 �
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp 지점에서의 조리개이며, 카메라의 조리개가 아닙니다!\n이 값에 Zsharp 지점에서 카메라까지의 (자유롭게 정한) 거리를 곱하고\n카메라 렌즈의 초점 거리로 나누면\n카메라의 조리개가 됩니다.\n따라서 카메라가 그렇게 크지 않다고 보면 이 값을 줄이십시오.\n값이 클수록 블러가 강해집니다.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=평면이 수직으로 놓인 축과 그 축 위의 위치 (절단면과 같음; 카메라에서 먼 쪽이 단단한 쪽)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=이 프로그램은 BTracer2 캐시 형식을 지원하지 않습니다.\n메시 형식(*.ply 또는 *.obj)을 선택하십시오.
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=BTracer2 캐시 형식은 지원되지 않아 메시를 저장하지 않았습니다.
@@ -3245,6 +3253,8 @@ TheParametersDoNotMatchThe=매개변수가 더 이상 완료되지 않은 계산
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=이미지가 계산 내용과 일치하지 않습니다. 다시 계산하십시오.
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=평면의 색 (클릭하여 변경)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=회전은 중심점(Xmid, Ymid, Zmid)을 기준으로 수행됩니다
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=회전은 XW 평면부터 ZW 평면까지 차례로 수행됩니다.
@@ -3505,6 +3515,10 @@ WarningsAndErrors=경고와 오류
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=물결:
+;Waves:
+WavesOnThePlaneTheirHeight=평면의 물결: 프랙탈 단위의 높이와 길이 (높이 0: 평평한 면)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=가중치
 ;Weight
 WeightColon=가중치:

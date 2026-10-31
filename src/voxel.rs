@@ -146,6 +146,8 @@ impl Grid {
 /// the DE threshold and the maximum iterations).
 pub fn export_scene(sc: &Scene, vp: &VoxelParams) -> Scene {
     let mut s = sc.clone();
+    // (the fractal alone, without the ground plane)
+    s.ground = None;
     let (w, h) = vp.size();
     s.width = w as i32;
     s.height = h as i32;

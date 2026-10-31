@@ -37,6 +37,66 @@ pub enum CameraOptic {
     Panorama = 2,
 }
 
+/// A ground plane or water surface (Mandelbulber's idea, not in MB3D):
+/// a plane across one of the fractal's axes that is calculated together
+/// with the fractal (shadows, occlusion, reflections, Monte Carlo), in its
+/// own colour, flat or with waves.  Saved in mb3d-rs's block after MB3D's
+/// parameters (see `m3p::extra`), which MB3D does not read.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Ground {
+    /// the axis it lies across: 0 = x, 1 = y, 2 = z
+    pub axis: u8,
+    /// its position on that axis
+    pub pos: f64,
+    /// the solid side: false = the smaller values, true = the larger ones;
+    /// set by the calculation to the side away from the camera
+    pub above: bool,
+    pub color: [u8; 3],
+    /// how much it reflects (0..1): its specular colour and, with the
+    /// reflections on, its mirror
+    pub reflect: f32,
+    /// the height of the waves (fractal units, 0 = flat)
+    pub wave_height: f64,
+    /// the length of the waves (fractal units)
+    pub wave_len: f64,
+}
+
+impl Default for Ground {
+    fn default() -> Self {
+        Ground { axis: 1, pos: 0.0, above: false, color: [128, 128, 128], reflect: 0.0, wave_height: 0.0, wave_len: 1.0 }
+    }
+}
+
+impl Ground {
+    /// The height of the waves at (u, v) on the plane, -1..1 times
+    /// `wave_height`: three crossing sine waves.
+    #[inline]
+    pub fn wave(&self, u: f64, v: f64) -> f64 {
+        use std::f64::consts::TAU;
+        let (x, y) = (u / self.wave_len, v / self.wave_len);
+        self.wave_height
+            * (0.5 * (TAU * (0.8 * x + 0.6 * y)).sin()
+                + 0.3 * (TAU * 1.7 * (-0.45 * x + 0.9 * y) + 1.3).sin()
+                + 0.2 * (TAU * 2.9 * (0.2 * x - 0.98 * y) + 2.1).sin())
+    }
+
+    /// The distance from `c` to the surface (fractal units; negative in
+    /// the solid side); with waves a lower bound (divided by the waves'
+    /// steepest slope).
+    #[inline]
+    pub fn distance(&self, c: &[f64; 3]) -> f64 {
+        let k = self.axis as usize % 3;
+        let s = if self.above { self.pos - c[k] } else { c[k] - self.pos };
+        if self.wave_height == 0.0 {
+            return s;
+        }
+        let (u, v) = (c[(k + 1) % 3], c[(k + 2) % 3]);
+        // the steepest slope: 2 pi height / length (0.5 + 0.3 * 1.7 + 0.2 * 2.9)
+        let g = std::f64::consts::TAU * 1.59 * self.wave_height / self.wave_len.max(1e-30);
+        (s - self.wave(u, v)) / (1.0 + g * g).sqrt()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Scene {
     pub width: i32,
@@ -119,6 +179,8 @@ pub struct Scene {
     pub cut_options: u8,
     /// Positions of the cutting planes (`dCutX`, `dCutY`, `dCutZ`)
     pub cut_pos: [f64; 3],
+    /// A ground plane or water surface (not in MB3D): None = none
+    pub ground: Option<Ground>,
     /// DE ambient occlusion instead of SSAO (used when `ao` is on)
     pub deao: Option<crate::deao::DeaoParams>,
     /// Inside rendering (`bOptions2` bits 1..2)
@@ -297,6 +359,7 @@ impl Default for Scene {
             inside: InsideMode::Outside,
             cut_options: 0,
             cut_pos: [0.0; 3],
+            ground: None,
             deao: None,
             threads: 0,
             tiling: None,
@@ -517,6 +580,7 @@ impl Scene {
                 let _ = writeln!(t, "{n} = {}", self.cut_pos[k]);
             }
         }
+        t.push_str(&self.extra_text());
         if let Some(d) = &self.deao {
             let _ = writeln!(
                 t,
@@ -694,6 +758,23 @@ impl Scene {
             }
             let _ = writeln!(t, "amplitude = {}\nspec_power = {}", li.amplitude, 2 << li.spec_func);
             let _ = writeln!(t, "diffuse_func = {}\nrelative_to_object = {}", li.diff_func, li.relative_to_object);
+        }
+        t
+    }
+
+    /// The settings MB3D's parameters have no place for (the ground plane)
+    /// as scene text lines, "" without any: mb3d-rs keeps them in a block
+    /// after MB3D's parameters (`m3p::write`).
+    pub fn extra_text(&self) -> String {
+        use std::fmt::Write;
+        let mut t = String::new();
+        if let Some(g) = &self.ground {
+            let c = g.color;
+            let _ = writeln!(t, "ground = {}, {}", ["x", "y", "z"][g.axis as usize % 3], g.pos);
+            let _ = writeln!(t, "ground_color = #{:02X}{:02X}{:02X}\nground_reflect = {}", c[0], c[1], c[2], g.reflect);
+            if g.wave_height != 0.0 {
+                let _ = writeln!(t, "ground_waves = {}, {}", g.wave_height, g.wave_len);
+            }
         }
         t
     }
@@ -1071,6 +1152,34 @@ impl Scene {
                                 })
                             }
                         }
+                    }
+                    "ground" => {
+                        if matches!(val.to_ascii_lowercase().as_str(), "off" | "none" | "no") {
+                            s.ground = None;
+                        } else {
+                            let (a, pos) = val.split_once(',').ok_or_else(|| err(format!("bad ground '{val}' (axis, position: y, -1.5)")))?;
+                            let axis = match a.trim().to_ascii_lowercase().as_str() {
+                                "x" => 0,
+                                "y" => 1,
+                                "z" => 2,
+                                _ => return Err(err(format!("bad ground axis '{a}' (x, y or z)"))),
+                            };
+                            let pos = pos.trim().parse::<f64>().map_err(|_| err(format!("bad ground position '{pos}'")))?;
+                            let g = s.ground.get_or_insert_with(Ground::default);
+                            g.axis = axis;
+                            g.pos = pos;
+                        }
+                    }
+                    "ground_color" => {
+                        let c = parse_color(val).ok_or_else(|| err(format!("bad colour '{val}' (#RRGGBB)")))?;
+                        s.ground.get_or_insert_with(Ground::default).color = c;
+                    }
+                    "ground_reflect" => s.ground.get_or_insert_with(Ground::default).reflect = num()?.clamp(0.0, 1.0) as f32,
+                    "ground_waves" => {
+                        let p = vec_n(2)?;
+                        let g = s.ground.get_or_insert_with(Ground::default);
+                        g.wave_height = p[0].max(0.0);
+                        g.wave_len = if p[1] > 0.0 { p[1] } else { 1.0 };
                     }
                     "cut_x" | "cut_y" | "cut_z" => {
                         let k = (key.as_bytes()[4] - b'x') as usize;

@@ -37,6 +37,8 @@ AFewSecondsLeft=कुछ सेकंड शेष
 ;a few seconds left
 AFolderEveryComputerOfThe=एक फ़ोल्डर जिसे स्वार्म का हर कंप्यूटर देख सके: NAS शेयर, Windows या Samba शेयर, या सिंक फ़ोल्डर
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=फ़्रैक्टल के X, Y या Z अक्ष के आर-पार ज़मीन या पानी की सतह, फ़्रैक्टल के साथ गणना की जाती है: इसकी छायाएँ, ऑक्लूज़न, परावर्तन और मोंटे कार्लो प्रकाश (MB3D में नहीं: पैरामीटरों में MB3D के भाग के बाद सहेजा जाता है, जिसे MB3D अनदेखा करता है)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=अधिक मान का अर्थ है बेहतर गुणवत्ता, 100% भी हानिपूर्ण है।
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1357,6 +1359,8 @@ GoneLastSeenSAgo=चला गया (अंतिम बार {} से. प�
 ;gone (last seen {} s ago)
 GraphicsCard=ग्राफ़िक्स कार्ड
 ;Graphics card
+GroundPlane=ज़मीनी तल
+;Ground plane
 GroupByDay=दिन के अनुसार समूहित करें
 ;Group by day
 GuessParams=पैरामीटर अनुमानित करें
@@ -1403,6 +1407,8 @@ HoldShiftKeyForFinerSteps=(बारीक कदमों के लिए Shif
 ;(Hold Shift key for finer steps)
 Hotkeys=हॉटकी
 ;Hotkeys
+HowMuchThePlaneReflects0=तल कितना परावर्तित करता है (0 से 1): इसकी चमक, और परावर्तन गणना होने पर इसका दर्पण (पोस्ट प्रोसेसिंग)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=हटाया जाने वाला शोर कितना प्रबल है (1 से 30, जैसे GIMP का "Denoise DCT")।\nअधिक मान अधिक शोर हटाता है, और अधिक बारीक विवरण भी।
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=स्वार्म में यह कंप्यूटर किस नाम से दिखेगा
@@ -3173,6 +3179,8 @@ TheAnimationNeedsAtLeastTwo=एनिमेशन के लिए कम से
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp बिंदु पर एपर्चर, यह कैमरे का एपर्चर नहीं है!\nकैमरे का एपर्चर पाने के लिए इस मान को Zsharp बिंदु से कैमरे तक की\n(स्वतंत्र रूप से चुनी गई) दूरी से गुणा करें और कैमरे के लेंस की\nफ़ोकल लंबाई से भाग दें।\nइसलिए यदि आप कैमरे का आकार इतना बड़ा नहीं मानते, तो यह मान कम करें।\nबड़े मान का अर्थ अधिक धुंधलापन।
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=वह अक्ष जिसके आर-पार तल है, और उस अक्ष पर इसकी स्थिति (कटिंग तलों की तरह; इसका ठोस पक्ष कैमरे से दूर वाला है)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=यह प्रोग्राम BTracer2 कैश फ़ॉर्मेट का समर्थन नहीं करता।\nकृपया एक मेश फ़ॉर्मेट चुनें (*.ply या *.obj)।
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=BTracer2 कैश फ़ॉर्मेट समर्थित नहीं है, मेश सहेजा नहीं गया।
@@ -3245,6 +3253,8 @@ TheParametersDoNotMatchThe=पैरामीटर अब अधूरी ग�
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=चित्र अपनी गणना से मेल नहीं खाता: इसकी फिर से गणना करें।
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=तल का रंग (बदलने के लिए क्लिक करें)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=घुमाव मध्य बिंदु (Xmid, Ymid, Zmid) के चारों ओर किया जाता है
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=घुमाव क्रम से किए जाते हैं, पहले XW, अंत में ZW-तल।
@@ -3505,6 +3515,10 @@ WarningsAndErrors=चेतावनियाँ और त्रुटिया
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=लहरें:
+;Waves:
+WavesOnThePlaneTheirHeight=तल पर लहरें: फ़्रैक्टल इकाइयों में उनकी ऊँचाई और लंबाई (ऊँचाई 0: समतल तल)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=भार
 ;Weight
 WeightColon=भार:

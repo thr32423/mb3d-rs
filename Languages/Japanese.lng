@@ -37,6 +37,8 @@ AFewSecondsLeft=残り数秒
 ;a few seconds left
 AFolderEveryComputerOfThe=スウォームのすべてのコンピュータから見えるフォルダ: NAS共有、WindowsまたはSamba共有、同期フォルダなど
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=フラクタルの X、Y、Z 軸に垂直な地面または水面。フラクタルと一緒に計算されます: 影、オクルージョン、反射、モンテカルロの光 (MB3D にはありません: パラメーターの MB3D の部分の後に保存され、MB3D は無視します)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=値が高いほど品質が良くなります。100%でも非可逆です。
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1357,6 +1359,8 @@ GoneLastSeenSAgo=離脱 (最終確認 {} 秒前)
 ;gone (last seen {} s ago)
 GraphicsCard=グラフィックカード
 ;Graphics card
+GroundPlane=地面
+;Ground plane
 GroupByDay=日ごとにまとめる
 ;Group by day
 GuessParams=パラメータを推定
@@ -1403,6 +1407,8 @@ HoldShiftKeyForFinerSteps=(Shiftキーを押すと細かく動きます)
 ;(Hold Shift key for finer steps)
 Hotkeys=ホットキー
 ;Hotkeys
+HowMuchThePlaneReflects0=平面の反射の強さ (0 から 1): ハイライトと、反射を計算するときの鏡面 (ポストプロセス)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=除去するノイズの強さです (1 ~ 30、GIMP の「Denoise DCT」と同じ)。\n高いほど多くのノイズを除去しますが、細部も失われます。
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=スウォーム内でのこのコンピュータの表示名です
@@ -3173,6 +3179,8 @@ TheAnimationNeedsAtLeastTwo=アニメーションには少なくとも 2 つの�
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp 点での絞りであり、カメラの絞りではありません!\nこの値に Zsharp 点からカメラまでの (自由に選んだ) 距離を掛け、\nカメラレンズの焦点距離で割るとカメラの絞りが\n得られます。\nカメラがそれほど大きくないと想定する場合は、この値を小さくしてください。\n値が大きいほどぼかしが強くなります。
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=平面が垂直に交わる軸と、その軸上の位置 (切断面と同様。カメラから遠い側が中身のある側です)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=BTracer2 キャッシュ形式はこのプログラムではサポートされていません。\nメッシュ形式 (*.ply または *.obj) を選んでください。
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=BTracer2 キャッシュ形式はサポートされていないため、メッシュは保存されませんでした。
@@ -3245,6 +3253,8 @@ TheParametersDoNotMatchThe=パラメータが未完了の計算と一致しな�
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=画像が計算内容と一致しません。もう一度計算してください。
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=平面の色 (クリックで変更)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=回転は中心点 (X 中心、Y 中心、Z 中心) の周りで行われます
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=回転は順に行われます。最初が XW、最後が ZW 平面です。
@@ -3505,6 +3515,10 @@ WarningsAndErrors=警告とエラー
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=波:
+;Waves:
+WavesOnThePlaneTheirHeight=平面の波: フラクタル単位での高さと長さ (高さ 0: 平らな面)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=重み
 ;Weight
 WeightColon=重み:

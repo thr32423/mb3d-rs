@@ -87,6 +87,9 @@ pub struct CalcParams {
     pub in_and_outside: bool,
     /// `dCOX`, `dCOY`, `dCOZ`
     pub cut_pos: Vec3,
+    /// the ground plane or water (not in MB3D; None for the voxel and mesh
+    /// exports, which are the fractal alone)
+    pub ground: Option<crate::scene::Ground>,
     /// DE combination (second hybrid part), if any
     pub decomb: Option<DeComb>,
     /// Volumetric light map (`DFogOnIt = 65535`), built before the main pass.
@@ -788,6 +791,13 @@ impl CalcParams {
                 0
             },
             cut_pos: sc.cut_pos,
+            // the solid side of the ground: away from the camera (the middle
+            // of the start plane)
+            ground: sc.ground.filter(|_| sc.inside == InsideMode::Outside).map(|mut g| {
+                let k = g.axis as usize % 3;
+                g.above = mid[k] + z1 * vgrads[2][k] < g.pos;
+                g
+            }),
             decomb,
             inside_rendering: sc.inside != InsideMode::Outside,
             in_and_outside: sc.inside == InsideMode::Both,
@@ -1021,6 +1031,8 @@ pub struct Marcher<'a> {
     pub calc_inside: bool,
     /// the last DE came from a dIFS part
     pub(crate) last_difs: bool,
+    /// the last DE was the ground plane's
+    pub(crate) on_ground: bool,
 }
 
 thread_local! {
@@ -1063,6 +1075,7 @@ impl<'a> Marcher<'a> {
             inside: p.inside_rendering,
             calc_inside: p.inside_rendering,
             last_difs: false,
+            on_ground: false,
         }
     }
 
@@ -1121,8 +1134,25 @@ impl<'a> Marcher<'a> {
         (si.si_gradient, si.otrap)
     }
 
-    /// `CalcDEanalytic` / `CalcDEnoADE`
+    /// `CalcDEanalytic` / `CalcDEnoADE`, and the ground plane: the
+    /// smaller of their distances (in steps).
     pub fn calc_de(&mut self) -> f64 {
+        let r = self.calc_de_fractal();
+        let Some(g) = &self.p.ground else { return r };
+        let d = g.distance(&self.it.c) / self.p.step_width;
+        if d >= r {
+            self.on_ground = false;
+            return r;
+        }
+        self.on_ground = true;
+        // (the minimum iterations are the fractal's)
+        self.it.it_result = self.it.it_result.max(self.p.min_it);
+        d
+    }
+
+    /// `CalcDEanalytic` / `CalcDEnoADE`: the fractal's distance.
+    #[inline(always)]
+    fn calc_de_fractal(&mut self) -> f64 {
         let p = self.p;
         let part1 = HybridPart {
             start: 0,
@@ -1879,6 +1909,15 @@ impl<'a> Marcher<'a> {
             self.inside = !p.inside_rendering;
             dtmp = self.calc_de();
         }
+        if self.on_ground && dtmp < self.ms_de_stop as f64 {
+            // the start plane in the ground: its surface at the start, cut
+            // (as MB3D's cutting planes: no shadows or occlusion there)
+            self.calculate_normals(&mut si);
+            si.si_gradient = 32768;
+            si.otrap = crate::gbuffer::GROUND;
+            self.calc_zpos_and_rough(&mut si);
+            return si;
+        }
         if self.it.it_result >= self.max_its_result || dtmp < self.ms_de_stop as f64 {
             // already inside the set at the start plane (or the cutting plane)
             if p.color_on_it != 0 {
@@ -1958,6 +1997,14 @@ impl<'a> Marcher<'a> {
                 let (s, k, m) = c.get();
                 c.set((s + n as u64, k + 1, m.max(n)));
             });
+        }
+        if self.on_ground {
+            // the ground's normal from its distance, its own colour (lighting::GROUND)
+            self.calculate_normals(si);
+            si.si_gradient = 0;
+            si.otrap = crate::gbuffer::GROUND;
+            self.calc_zpos_and_rough(si);
+            return;
         }
         let nn = if p.normals_on_de { self.calculate_normals(si) } else { self.calculate_normals_on_smooth_it(si) };
         let v = if de_limited {

@@ -570,7 +570,8 @@ impl<'a, 'c> McMarch<'a, 'c> {
     /// the smoothed iteration count and the normal
     fn normals(&mut self, raydir: &Vec3, seed: &mut i32) -> (f32, Vec3) {
         let p = self.c.p;
-        let on_de = p.normals_on_de;
+        // (the ground's normal always from its distance)
+        let on_de = p.normals_on_de || self.m.on_ground;
         let m = &mut self.m;
         let mut sca: f32 = if *seed & 128 == 0 { 0.15 } else { -0.15 };
         m.it.calc_sit = true;
@@ -711,6 +712,19 @@ impl<'a, 'c> McMarch<'a, 'c> {
         let zzplus = r.zzplus;
         self.update_de_stop(zz);
         let mut dtmp = self.m.calc_de();
+        if r.probe && self.m.on_ground && dtmp < self.m.ms_de_stop as f64 {
+            // the start plane in the ground: its surface there, cut (as in
+            // Marcher::march_pixel), with the ground's normal
+            self.m.mzz = zz;
+            let (_, normals) = self.normals(&dir, &mut seed);
+            o.kind = 2;
+            o.pos = self.m.it.c;
+            o.si_grad = 32768;
+            o.otrap = crate::gbuffer::GROUND;
+            o.normals = normals;
+            o.seed = seed;
+            return o;
+        }
         if r.probe && (self.m.it.it_result >= self.m.max_its_result || dtmp < self.m.ms_de_stop as f64) {
             // the start is inside the set (cutting plane or start plane)
             if p.in_and_outside {
@@ -875,9 +889,10 @@ impl<'a, 'c> McMarch<'a, 'c> {
             zz += (ds - zz) * zzplus;
         }
         self.m.mzz = zz.abs();
+        let ground = self.m.on_ground;
         let (nn, normals) = self.normals(&dir, &mut seed);
         o.pos = self.m.it.c;
-        (o.si_grad, o.otrap) = self.surface_colour(nn, de_limited);
+        (o.si_grad, o.otrap) = if ground { (0, crate::gbuffer::GROUND) } else { self.surface_colour(nn, de_limited) };
         o.kind = 1;
         o.zz = zz;
         o.de_limited = de_limited;
@@ -963,11 +978,12 @@ impl<'a, 'c> McMarch<'a, 'c> {
             zz2 += (d - zz2) * zz2mul;
         }
         self.m.mzz = zz2.abs();
+        let ground = self.m.on_ground;
         let (nn, normals) = self.normals(&v, &mut seed);
         o.pos = self.m.it.c;
         // the iteration count after the normals, as in MB3D's CalcHSMC
         let de_limited = self.m.it.it_result < self.m.max_its_result;
-        (o.si_grad, o.otrap) = self.surface_colour(nn, de_limited);
+        (o.si_grad, o.otrap) = if ground { (0, crate::gbuffer::GROUND) } else { self.surface_colour(nn, de_limited) };
         o.kind = 1;
         o.zz2 = zz2;
         o.normals = normals;
@@ -1245,7 +1261,7 @@ impl<'a, 'c> Tracer<'a, 'c> {
     fn calc_color(&self, si: &SiLight, z_pos: f32) -> [S4; 2] {
         let lv = self.c.lv;
         let idif0 = lv.s_col_zmul * z_pos;
-        let (mut dif, spe, a) = if si.si_gradient > 32767 {
+        let (mut dif, spe, a) = if si.si_gradient > 32767 && !si.is_ground() {
             let (d, s) = lv.calc_colors_inside(si, idif0);
             (d, s, s[0])
         } else {
@@ -2162,7 +2178,11 @@ impl<'a, 'c> Tracer<'a, 'c> {
         let mut si = self.main_si;
         si.si_gradient = h.si_grad;
         si.otrap = h.otrap;
-        self.normals_on_cut(cut_plane);
+        if si.is_ground() {
+            self.normals = h.normals;
+        } else {
+            self.normals_on_cut(cut_plane);
+        }
         self.mzz = zz;
         let lsd = self.calc_color(&si, zz as f32);
         si.zpos_fine = zpos_of(p, zz);

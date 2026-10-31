@@ -37,6 +37,8 @@ AFewSecondsLeft=چند سیکنڈ باقی
 ;a few seconds left
 AFolderEveryComputerOfThe=ایسا فولڈر جسے سوارم کا ہر کمپیوٹر دیکھ سکے: NAS شیئر، Windows یا Samba شیئر، یا سنک فولڈر
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=فریکٹل کے X، Y یا Z محور کے آر پار زمین یا پانی کی سطح، جو فریکٹل کے ساتھ حساب ہوتی ہے: اس کے سائے، اوکلوژن، عکس اور مونٹی کارلو روشنی (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ، جسے MB3D نظرانداز کرتا ہے)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=زیادہ قدر کا مطلب بہتر معیار ہے، 100% بھی نقصان دہ (lossy) ہے۔
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1357,6 +1359,8 @@ GoneLastSeenSAgo=غائب (آخری بار {} s پہلے دیکھا گیا)
 ;gone (last seen {} s ago)
 GraphicsCard=گرافکس کارڈ
 ;Graphics card
+GroundPlane=زمینی سطح
+;Ground plane
 GroupByDay=دن کے لحاظ سے گروپ کریں
 ;Group by day
 GuessParams=پیرامیٹرز کا اندازہ
@@ -1403,6 +1407,8 @@ HoldShiftKeyForFinerSteps=(باریک قدموں کے لیے Shift دبائے ر
 ;(Hold Shift key for finer steps)
 Hotkeys=ہاٹ کیز
 ;Hotkeys
+HowMuchThePlaneReflects0=سطح کتنا منعکس کرتی ہے (0 سے 1): اس کی چمک، اور عکس جب انعکاسات کا حساب ہو (پوسٹ پروسیسنگ)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=ہٹائے جانے والے شور کی شدت (1 سے 30، GIMP کے "Denoise DCT" کی طرح)۔\nزیادہ قدر زیادہ شور ہٹاتی ہے، اور زیادہ باریک تفصیل بھی۔
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=سوارم میں یہ کمپیوٹر کس نام سے درج ہے
@@ -3173,6 +3179,8 @@ TheAnimationNeedsAtLeastTwo=اینیمیشن کے لیے کم از کم دو ک�
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Zsharp نقطے پر اپرچر، یہ کیمرے کا اپرچر نہیں ہے!\nکیمرے کا اپرچر حاصل کرنے کے لیے اس قدر کو Zsharp نقطے سے کیمرے تک کے\n(آزادانہ منتخب) فاصلے سے ضرب دیں اور کیمرے کے لینز کی فوکل لمبائی سے\nتقسیم کریں۔\nاس لیے اگر کیمرا اتنا بڑا نہیں چاہیے تو یہ قدر کم کریں۔\nبڑی قدروں کا مطلب زیادہ دھندلاپن ہے۔
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=وہ محور جس کے آر پار سطح ہے، اور اس محور پر اس کا مقام (کٹنگ سطحوں کی طرح؛ اس کی ٹھوس طرف کیمرے سے دور والی ہے)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=BTracer2 کیش فارمیٹ اس پروگرام میں معاون نہیں۔\nبراہ کرم میش فارمیٹ منتخب کریں (*.ply یا *.obj)۔
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=BTracer2 کیش فارمیٹ معاون نہیں، میش محفوظ نہیں ہوئی۔
@@ -3245,6 +3253,8 @@ TheParametersDoNotMatchThe=پیرامیٹرز اب نامکمل حساب سے م
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=تصویر اپنے حساب سے میل نہیں کھاتی: اس کا دوبارہ حساب کریں۔
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=سطح کا رنگ (بدلنے کے لیے کلک کریں)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=گردش درمیانی نقطے (Xmid, Ymid, Zmid) کے گرد ہوتی ہے
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=گردشیں ترتیب سے ہوتی ہیں، پہلے XW، آخر میں ZW سطح۔
@@ -3505,6 +3515,10 @@ WarningsAndErrors=تنبیہات اور خرابیاں
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=لہریں:
+;Waves:
+WavesOnThePlaneTheirHeight=سطح پر لہریں: ان کی اونچائی اور لمبائی فریکٹل اکائیوں میں (اونچائی 0: ہموار سطح)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=وزن
 ;Weight
 WeightColon=وزن:

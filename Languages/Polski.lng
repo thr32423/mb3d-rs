@@ -36,6 +36,8 @@ AFewSecondsLeft=zostało kilka sekund
 ;a few seconds left
 AFolderEveryComputerOfThe=Folder widoczny dla każdego komputera roju: udział NAS, udział Windows lub Samba, folder synchronizowany
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=Powierzchnia podłoża lub wody prostopadła do osi X, Y lub Z fraktala, liczona razem z fraktalem: jej cienie, okluzja, odbicia i światło Monte Carlo (nie ma tego w MB3D: zapisywane za częścią parametrów MB3D, którą MB3D pomija)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=Wyższa wartość oznacza lepszą jakość; nawet 100% jest stratne.
 ;A higher value means a better quality, even 100% is lossy.
 AI=AI
@@ -1356,6 +1358,8 @@ GoneLastSeenSAgo=zniknął (ostatnio widziany {} s temu)
 ;gone (last seen {} s ago)
 GraphicsCard=Karta graficzna
 ;Graphics card
+GroundPlane=Podłoże
+;Ground plane
 GroupByDay=Grupuj według dni
 ;Group by day
 GuessParams=Zgadnij parametry
@@ -1402,6 +1406,8 @@ HoldShiftKeyForFinerSteps=(Shift: drobniejsze kroki)
 ;(Hold Shift key for finer steps)
 Hotkeys=Skróty
 ;Hotkeys
+HowMuchThePlaneReflects0=Jak mocno płaszczyzna odbija (od 0 do 1): jej połyski i lustro, gdy liczone są odbicia (Obróbka końcowa)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=Jak silny szum jest usuwany (1 do 30, jak „Denoise DCT” w GIMP-ie).\nWyższa wartość usuwa więcej szumu, ale i więcej drobnych szczegółów.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=Jak ten komputer jest wyświetlany w roju
@@ -3172,6 +3178,8 @@ TheAnimationNeedsAtLeastTwo=Animacja wymaga co najmniej dwóch klatek kluczowych
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=Przysłona w punkcie ostrości Z; to nie jest przysłona kamery!\nPomnóż tę wartość przez (dowolnie wybraną) odległość punktu ostrości Z\nod kamery i podziel przez ogniskową obiektywu kamery, aby otrzymać\nprzysłonę kamery.\nZmniejsz więc tę wartość, jeśli nie zakładasz tak dużej kamery.\nWiększe wartości oznaczają większe rozmycie.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=Oś, do której płaszczyzna jest prostopadła, i jej położenie na tej osi (jak przy płaszczyznach cięcia; jej pełna strona to ta dalej od kamery)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=Ten program nie obsługuje formatu pamięci podręcznej BTracer2.\nWybierz format siatki (*.ply lub *.obj).
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=Format pamięci podręcznej BTracer2 nie jest obsługiwany, siatki nie zapisano.
@@ -3244,6 +3252,8 @@ TheParametersDoNotMatchThe=Parametry nie pasują już do niedokończonego oblicz
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=Obraz nie pasuje do swojego obliczenia: oblicz go ponownie.
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=Kolor płaszczyzny (kliknij, aby zmienić)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=Obrót jest wykonywany wokół punktu środkowego (Xmid, Ymid, Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Obroty są wykonywane kolejno: najpierw w płaszczyźnie XW, na końcu ZW.
@@ -3504,6 +3514,10 @@ WarningsAndErrors=Ostrzeżenia i błędy
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=Fale:
+;Waves:
+WavesOnThePlaneTheirHeight=Fale na płaszczyźnie: ich wysokość i długość w jednostkach fraktala (wysokość 0: płaska powierzchnia)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=Waga
 ;Weight
 WeightColon=Waga:

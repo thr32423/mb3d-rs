@@ -103,9 +103,13 @@ pub fn raw_from_bytes(data: Vec<u8>, is_m3i: bool) -> Result<(Vec<u8>, Option<St
     } else if data.len() >= 4 && i32::from_le_bytes(data[0..4].try_into().unwrap()) < 20 {
         Ok((crate::m3p_old::raw_from_old_file(&data)?, None))
     } else {
+        let extra = extra_at(&data, HEADER_SIZE + ADDON_SIZE);
         let mut raw = data;
         raw.resize(raw.len().max(HEADER_SIZE + ADDON_SIZE), 0);
         raw.truncate(HEADER_SIZE + ADDON_SIZE);
+        if let Some(t) = extra {
+            raw.extend(extra_block(&t));
+        }
         Ok((raw, None))
     }
 }
@@ -204,6 +208,11 @@ pub fn raw_from_text(text: &str) -> Result<(Vec<u8>, String), String> {
             r[..r.find(['}', '\n', '\r']).unwrap_or(r.len())].chars().take(48).collect::<String>()
         })
         .unwrap_or_else(|| "Mandelbulb3D".to_string());
+    if let Some(i) = rest.find("{mb3d-rs:") {
+        let r = &rest[i + 9..];
+        let t = r[..r.find('}').unwrap_or(r.len())].split(';').map(str::trim).filter(|l| !l.is_empty()).collect::<Vec<_>>().join("\n");
+        raw.extend(extra_block(&t));
+    }
     Ok((raw, title))
 }
 
@@ -211,6 +220,7 @@ pub fn raw_from_text(text: &str) -> Result<(Vec<u8>, String), String> {
 /// Formulas with negative iterations count as used (MB3D looks for > 0
 /// here only, dropping a last one that its own files and renders keep).
 pub fn raw_to_text(raw: &[u8], title: &str) -> String {
+    let extra = extra_at(raw, HEADER_SIZE + ADDON_SIZE);
     let mut raw = raw.to_vec();
     raw.resize(HEADER_SIZE + ADDON_SIZE, 0);
     let a = HEADER_SIZE;
@@ -243,7 +253,37 @@ pub fn raw_to_text(raw: &[u8], title: &str) -> String {
         push(&g, &mut out, &mut k);
     }
     out.push_str(&format!("}}\r\n{{Titel: {title}}}\r\n"));
+    if let Some(t) = extra {
+        // (MB3D reads only up to the title)
+        out.push_str(&format!("{{mb3d-rs: {}}}\r\n", t.lines().map(str::trim).filter(|l| !l.is_empty()).collect::<Vec<_>>().join("; ")));
+    }
     out
+}
+
+/// The start of mb3d-rs's block after MB3D's parameters (in a `.m3p`
+/// after the formulas, in a `.m3i` after the formulas at its end): the
+/// settings MB3D has no place for ([`Scene::extra_text`]), as scene text.
+/// MB3D reads its parameters at their fixed size and leaves the block
+/// alone.  Followed by the length of the text (u32) and the text (UTF-8).
+const EXTRA_MAGIC: &[u8; 8] = b"MB3D-RS\0";
+
+/// The block of the scene text `t`.
+fn extra_block(t: &str) -> Vec<u8> {
+    let mut b = EXTRA_MAGIC.to_vec();
+    b.extend((t.len() as u32).to_le_bytes());
+    b.extend(t.as_bytes());
+    b
+}
+
+/// The text of the block at `at` in `data`, if there is one.
+fn extra_at(data: &[u8], at: usize) -> Option<String> {
+    let d = data.get(at..)?;
+    if !d.starts_with(EXTRA_MAGIC) || d.len() < 12 {
+        return None;
+    }
+    let n = u32::from_le_bytes(d[8..12].try_into().unwrap()) as usize;
+    let t = d.get(12..12 + n)?;
+    String::from_utf8(t.to_vec()).ok()
 }
 
 /// `.m3i` image files: header, G-buffer (`TsiLight5`, 18 bytes per pixel of
@@ -273,6 +313,9 @@ pub fn raw_from_m3i(data: &[u8]) -> Result<Vec<u8>, String> {
         raw.extend_from_slice(&data[off..data.len().min(off + ADDON_SIZE)]);
     }
     raw.resize(HEADER_SIZE + ADDON_SIZE, 0);
+    if let Some(t) = extra_at(data, off + ADDON_SIZE) {
+        raw.extend(extra_block(&t));
+    }
     Ok(raw)
 }
 
@@ -749,6 +792,13 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
             a.border_mirror = 0.0;
         }
         s.step_sub_de_stop = false;
+    }
+    // mb3d-rs's own settings
+    if let Some(t) = extra_at(data, HEADER_SIZE + ADDON_SIZE) {
+        match s.clone().apply(&t) {
+            Ok(sc) => s = sc,
+            Err(e) => w.push(format!("mb3d-rs settings: {e}")),
+        }
     }
     Ok(M3pFile { scene: s, warnings: w, mand_id })
 }
@@ -1297,12 +1347,52 @@ pub fn write(sc: &Scene) -> Vec<u8> {
             pf64(&mut d, o + 60 + 8 * k, *v);
         }
     }
+    let t = sc.extra_text();
+    if !t.is_empty() {
+        d.extend(extra_block(&t));
+    }
     d
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ground_plane_in_the_mb3d_rs_block() {
+        let plain = Scene::preset("Integer Power").unwrap();
+        // without a ground the parameters are MB3D's alone
+        assert_eq!(write(&plain).len(), HEADER_SIZE + ADDON_SIZE);
+        assert!(!raw_to_text(&write(&plain), "t").contains("mb3d-rs"));
+        let mut sc = plain.clone();
+        sc.ground = Some(crate::scene::Ground {
+            axis: 2,
+            pos: -1.25,
+            above: false,
+            color: [10, 200, 30],
+            reflect: 0.75,
+            wave_height: 0.02,
+            wave_len: 0.5,
+        });
+        let raw = write(&sc);
+        // MB3D's part is the same as without
+        assert_eq!(&raw[..HEADER_SIZE + ADDON_SIZE], &write(&plain)[..]);
+        let check = |s: &Scene| assert_eq!(s.ground, sc.ground);
+        check(&parse(&raw).unwrap().scene);
+        let (r, _) = raw_from_bytes(raw.clone(), false).unwrap();
+        check(&parse(&r).unwrap().scene);
+        // text parameters
+        let text = raw_to_text(&raw, "title");
+        assert!(text.contains("{mb3d-rs: ground = z, -1.25; "), "{text}");
+        let (r, title) = raw_from_text(&text).unwrap();
+        assert_eq!(title, "title");
+        check(&parse(&r).unwrap().scene);
+        // .m3i: after the formulas at the end
+        let gbuf = vec![crate::gbuffer::SiLight::default(); (sc.width * sc.height) as usize];
+        let m = write_m3i(&sc, &gbuf);
+        check(&parse(&raw_from_m3i(&m).unwrap()).unwrap().scene);
+        assert!(parse(&raw_from_m3i(&write_m3i(&plain, &gbuf)).unwrap()).unwrap().scene.ground.is_none());
+    }
 
     #[test]
     fn m3i_round_trip() {

@@ -473,7 +473,7 @@ fn set_preset(app: &mut Mb3d, ui: &mut Ui, nr: usize, keep_lights: bool) {
 // header <-> controls
 // ---------------------------------------------------------------------------
 
-fn swatch(c: [u8; 3]) -> Bitmap {
+pub(crate) fn swatch(c: [u8; 3]) -> Bitmap {
     let (w, h) = (15, 13);
     let mut b = Bitmap::new(w, h, 0xFFFF_00FF);
     for y in 0..13 {

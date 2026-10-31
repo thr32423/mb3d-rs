@@ -439,6 +439,9 @@ pub fn unsupported(p: &CalcParams) -> Option<String> {
     if p.slice_2d != 0 {
         return r("2D calculation (not on the GPU yet)");
     }
+    if p.ground.is_some() {
+        return r("the ground plane (not on the GPU yet)");
+    }
     if p.is_custom_de && !p.difs && ![2, 5, 6, 11].contains(&p.de_option) {
         return r("this analytic DE option (not on the GPU yet)");
     }

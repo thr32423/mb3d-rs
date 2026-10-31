@@ -2233,6 +2233,7 @@ pub(crate) fn light_vals(sc: &Scene, l: &crate::lighting::Lighting, cam: &PaintC
     lv.rotate_object_lights(l, &normalise_matrix_to(1.0, &sc.vgrads));
     let vz = normalise_matrix_to(1.0, &sc.vgrads)[2];
     lv.place_lights(l, sc.stereo_mid(), cam, z_range, vz);
+    lv.set_ground(sc.ground.as_ref().filter(|_| sc.inside == crate::scene::InsideMode::Outside));
     lv
 }
 
@@ -2579,7 +2580,7 @@ fn paint_with<S: crate::lighting::Sample>(
 pub fn auto_color_range(sc: &mut Scene, gbuf: &[SiLight]) {
     let mut v: Vec<f64> = gbuf
         .iter()
-        .filter(|s| !s.is_background() && s.si_gradient < 32768)
+        .filter(|s| !s.is_background() && s.si_gradient < 32768 && !s.is_ground())
         .map(|s| s.si_gradient as f64)
         .collect();
     if v.len() < 16 {

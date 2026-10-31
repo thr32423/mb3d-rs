@@ -36,6 +36,8 @@ AFewSecondsLeft=a few seconds left
 ;the program
 AFolderEveryComputerOfThe=A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
 ;SwarmFrm.Edit1.Hint
+AGroundOrWaterSurfaceAcross=A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
+;Mand3DForm.GroundCBx.Hint
 AHigherValueMeansABetter=A higher value means a better quality, even 100% is lossy.
 ;TilingForm.Edit7.Hint
 AI=AI
@@ -1356,6 +1358,8 @@ GoneLastSeenSAgo=gone (last seen {} s ago)
 ;the program
 GraphicsCard=Graphics card
 ;Mand3DForm.CalcOnCombo.Items, SwarmFrm.Caption
+GroundPlane=Ground plane
+;Mand3DForm.GroundCBx.Caption
 GroupByDay=Group by day
 ;HistoryFrm.CheckBox2.Caption
 GuessParams=Guess params
@@ -1402,6 +1406,8 @@ HoldShiftKeyForFinerSteps=(Hold Shift key for finer steps)
 ;FNavigator.Label14.Caption
 Hotkeys=Hotkeys
 ;HotkeysFrm.Caption, Mand3DForm.HotkeysBtn.Caption
+HowMuchThePlaneReflects0=How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
+;Mand3DForm.GroundReflEdit.Hint
 HowStrongTheNoiseIsThat=How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 ;PostProForm.NoiseSigmaEdit.Hint
 HowThisComputerIsListedIn=How this computer is listed in the swarm
@@ -2855,7 +2861,7 @@ Saved2=Saved {}
 SavedLower=saved
 ;the program
 SavedOpenEXRFloatingPointColoursAnd=Saved {} (OpenEXR, floating point colours and layers)
-;not used
+;the program
 SavedTransparentBackground=Saved {} (transparent background)
 ;the program
 Saving=Saving:
@@ -3172,6 +3178,8 @@ TheAnimationNeedsAtLeastTwo=The animation needs at least two keyframes.
 ;the program
 TheApertureOnTheZsharpPoint=The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
 ;PostProForm.Edit3.Hint
+TheAxisThePlaneLiesAcross=The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
+;Mand3DForm.GroundAxisCB.Hint, Mand3DForm.GroundPosEdit.Hint
 TheBTracer2CacheFormatIsNot=The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 ;the program
 TheBTracer2CacheFormatIsNot2=The BTracer2 cache format is not supported, the mesh was not saved.
@@ -3244,6 +3252,8 @@ TheParametersDoNotMatchThe=The parameters do not match the unfinished calculatio
 ;the program
 ThePictureDoesNotMatchIts=The picture does not match its calculation: calculate it again.
 ;the program
+ThePlaneSColourClickTo=The plane's colour (click to change)
+;Mand3DForm.GroundColBtn.Hint
 TheRotationIsPerformedAroundThe=The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 ;Mand3DForm.Button7.Hint
 TheRotationsArePerformedInA=The rotations are performed in a row, first the XW, last the ZW-plane.
@@ -3504,6 +3514,10 @@ WarningsAndErrors=Warnings and errors
 ;LogFrm.ComboBox1.Items
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;the program
+Waves=Waves:
+;Mand3DForm.Label91.Caption
+WavesOnThePlaneTheirHeight=Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
+;Mand3DForm.GroundWaveEdit.Hint, Mand3DForm.GroundWaveLenEdit.Hint
 Weight=Weight
 ;the program
 WeightColon=Weight:

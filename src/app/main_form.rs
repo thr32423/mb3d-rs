@@ -179,6 +179,9 @@ pub struct State {
     /// the next Calculate 3D continues the unfinished calculation of this
     /// key without asking (the Unfinished renders window's Continue)
     pub resume_key: Option<String>,
+    /// the ground plane's colour on the Cutting page (kept while the plane
+    /// is off)
+    pub ground_color: [u8; 3],
 }
 
 impl Default for State {
@@ -260,6 +263,7 @@ impl Default for State {
             resume_ask: None,
             memory_ask: false,
             resume_key: None,
+            ground_color: crate::scene::Ground::default().color,
         }
     }
 }
@@ -659,6 +663,15 @@ pub fn set_edits_from_header(app: &mut Mb3d, ui: &mut Ui) {
     ui.set_checked(F, "CheckBox4", sc.cut_options & 1 != 0);
     ui.set_checked(F, "CheckBox5", sc.cut_options & 2 != 0);
     ui.set_checked(F, "CheckBox6", sc.cut_options & 4 != 0);
+    let g = sc.ground.unwrap_or_default();
+    ui.set_checked(F, "GroundCBx", sc.ground.is_some());
+    ui.set_item_index(F, "GroundAxisCB", g.axis as i32);
+    set(ui, "GroundPosEdit", &fts(g.pos));
+    set(ui, "GroundReflEdit", &fts_single(g.reflect as f64));
+    set(ui, "GroundWaveEdit", &fts(g.wave_height));
+    set(ui, "GroundWaveLenEdit", &fts(g.wave_len));
+    app.main.ground_color = g.color;
+    ground_swatch(app, ui);
     ui.set_checked(F, "CheckBox9", sc.vary_de_stop_on_fov);
     ui.set_checked(F, "CheckBox7", sc.julia);
     ui.set_item_index(F, "RadioGroup2", sc.optic as i32);
@@ -701,6 +714,15 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
     sc.fov_y = ptf(&t(ui, "Edit14"));
     sc.cut_pos = [ptf(&t(ui, "Edit23")), ptf(&t(ui, "Edit24")), ptf(&t(ui, "Edit22"))];
     sc.cut_options = ui.checked(F, "CheckBox4") as u8 | (ui.checked(F, "CheckBox5") as u8) << 1 | (ui.checked(F, "CheckBox6") as u8) << 2;
+    sc.ground = ui.checked(F, "GroundCBx").then(|| crate::scene::Ground {
+        axis: ui.item_index(F, "GroundAxisCB").clamp(0, 2) as u8,
+        pos: ptf(&t(ui, "GroundPosEdit")),
+        above: false,
+        color: app.main.ground_color,
+        reflect: (ptf(&t(ui, "GroundReflEdit")) as f32).clamp(0.0, 1.0),
+        wave_height: ptf(&t(ui, "GroundWaveEdit")).max(0.0),
+        wave_len: Some(ptf(&t(ui, "GroundWaveLenEdit"))).filter(|v| *v > 0.0).unwrap_or(1.0),
+    });
     sc.de_stop = ptf(&t(ui, "Edit25")).max(0.001);
     sc.julia = ui.checked(F, "CheckBox7");
     sc.julia_c = [ptf(&t(ui, "Edit28")), ptf(&t(ui, "Edit29")), ptf(&t(ui, "Edit30")), ptf(&t(ui, "Edit7"))];
@@ -723,11 +745,18 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
     sc.threads = if n == std::thread::available_parallelism().map(|n| n.get()).unwrap_or(0) { 0 } else { n };
 }
 
+/// The ground plane's colour on its button.
+fn ground_swatch(app: &Mb3d, ui: &mut Ui) {
+    let b = ui.cm(F, "GroundColBtn");
+    b.glyph = Some(super::light_form::swatch(app.main.ground_color));
+    b.num_glyphs = 1;
+}
+
 /// `PageControl1Change`: tab captions show active options.
 pub fn page_control1_change(_app: &Mb3d, ui: &mut Ui) {
     let julia = ui.checked(F, "CheckBox7");
     ui.cm(F, "TabSheet9").caption = if julia { tr("@MB:JuliaOn") } else { tr("@MB:JuliaOff") };
-    let cut = ui.checked(F, "CheckBox4") || ui.checked(F, "CheckBox5") || ui.checked(F, "CheckBox6");
+    let cut = ui.checked(F, "CheckBox4") || ui.checked(F, "CheckBox5") || ui.checked(F, "CheckBox6") || ui.checked(F, "GroundCBx");
     ui.cm(F, "TabSheet8").caption = if cut { tr("@MB:Cutting2") } else { tr("@MB:Cutting") };
 }
 
@@ -2303,7 +2332,8 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             set(ui, "Edit24", &b);
             set(ui, "Edit22", &c);
         }
-        "CheckBox7Click" | "PageControl1Change" => page_control1_change(app, ui),
+        "CheckBox7Click" | "PageControl1Change" | "GroundChange" => page_control1_change(app, ui),
+        "GroundColBtnClick" => ui.pick_color("main:groundcolor", super::util::argb(app.main.ground_color)),
         "ButtonVolLightClick" => {
             if ui.caption(F, "ButtonVolLight") != tr("@MB:VolumeLightNr") {
                 app.scene.vol_light = Some(crate::vollight::VolLightParams { light: 0, map_size: 0 });
@@ -3091,6 +3121,10 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             }
         }
         (_, DialogResult::File(Some(p))) if what.starts_with("open") || what == "" => open_file(app, ui, p),
+        ("groundcolor", DialogResult::Color(Some(c))) => {
+            app.main.ground_color = super::util::rgb_of(*c);
+            ground_swatch(app, ui);
+        }
         ("savem3p", DialogResult::File(Some(p))) => {
             app.make_scene(ui);
             let p = p.with_extension("m3p");

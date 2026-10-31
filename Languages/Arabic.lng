@@ -37,6 +37,8 @@ AFewSecondsLeft=بقيت ثوانٍ قليلة
 ;a few seconds left
 AFolderEveryComputerOfThe=مجلد يراه كل حاسوب في السرب: مشاركة NAS، أو مشاركة Windows أو Samba، أو مجلد مزامنة
 ;A folder every computer of the swarm can see: a NAS share, a Windows or Samba share, a sync folder
+AGroundOrWaterSurfaceAcross=سطح أرض أو ماء عمودي على المحور X أو Y أو Z للكسورية، يُحسب مع الكسورية: ظلاله وانسداده وانعكاساته وضوء مونت كارلو (ليس في MB3D: يُحفظ بعد جزء MB3D من المعاملات، الذي يتجاهله MB3D)
+;A ground or water surface across the fractal's X, Y or Z axis, calculated with the fractal: its shadows, occlusion, reflections and Monte Carlo light (not in MB3D: kept after MB3D's part of the parameters, which MB3D ignores)
 AHigherValueMeansABetter=القيمة الأعلى تعني جودة أفضل، وحتى 100% تفقد شيئًا من الجودة.
 ;A higher value means a better quality, even 100% is lossy.
 AI=الذكاء الاصطناعي
@@ -1357,6 +1359,8 @@ GoneLastSeenSAgo=غائب (شوهد آخر مرة قبل {} ث)
 ;gone (last seen {} s ago)
 GraphicsCard=بطاقة الرسوميات
 ;Graphics card
+GroundPlane=مستوى الأرض
+;Ground plane
 GroupByDay=التجميع حسب اليوم
 ;Group by day
 GuessParams=تخمين المعاملات
@@ -1403,6 +1407,8 @@ HoldShiftKeyForFinerSteps=(اضغط مفتاح Shift لخطوات أدق)
 ;(Hold Shift key for finer steps)
 Hotkeys=مفاتيح الاختصار
 ;Hotkeys
+HowMuchThePlaneReflects0=مقدار انعكاس المستوى (من 0 إلى 1): لمعانه، ومرآته عند حساب الانعكاسات (المعالجة اللاحقة)
+;How much the plane reflects (0 to 1): its highlights, and its mirror when the reflections are calculated (Post processing)
 HowStrongTheNoiseIsThat=مدى قوة التشويش الذي يُزال (من 1 إلى 30، كما في "Denoise DCT" في GIMP).\nالأعلى يزيل تشويشًا أكثر، وتفاصيل دقيقة أكثر.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
 HowThisComputerIsListedIn=كيف يظهر هذا الحاسوب في السرب
@@ -3173,6 +3179,8 @@ TheAnimationNeedsAtLeastTwo=يحتاج التحريك إلى إطارين مفت
 ;The animation needs at least two keyframes.
 TheApertureOnTheZsharpPoint=فتحة العدسة عند نقطة Zsharp، وليست فتحة عدسة الكاميرا!\nاضرب هذه القيمة في المسافة (المختارة بحرية) من نقطة Zsharp\nإلى الكاميرا واقسمها على البعد البؤري لعدسة الكاميرا لتحصل على\nفتحة عدسة الكاميرا.\nلذا صغّر هذه القيمة إن لم تتوقع أن تكون الكاميرا بهذا الحجم.\nالقيم الأكبر تعني تمويهًا أكثر.
 ;The aperture on the Zsharp point, it is not the aperture from the camera!\nMultply this value with the (free choosen) distance from the Zsharp point\nto the camera and divide it by the focal length of the cameras lense to get\nthe cameras aperture.\nSo downscale this value if you don't expect the cameras size that big.\nLarger values means more blur.
+TheAxisThePlaneLiesAcross=المحور الذي يتعامد عليه المستوى، وموضعه على هذا المحور (كما في مستويات القطع؛ جانبه الصلب هو البعيد عن الكاميرا)
+;The axis the plane lies across, and its position on that axis (as for the cutting planes; its solid side is the one away from the camera)
 TheBTracer2CacheFormatIsNot=صيغة ذاكرة BTracer2 المؤقتة غير مدعومة في هذا البرنامج.\nيرجى اختيار صيغة شبكة (*.ply أو *.obj).
 ;The BTracer2 cache format is not supported by this program.\nPlease choose a mesh format (*.ply or *.obj).
 TheBTracer2CacheFormatIsNot2=صيغة ذاكرة BTracer2 المؤقتة غير مدعومة، ولم تُحفظ الشبكة.
@@ -3245,6 +3253,8 @@ TheParametersDoNotMatchThe=لم تعد المعاملات تطابق الحسا�
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ThePictureDoesNotMatchIts=الصورة لا تطابق حسابها: احسبها من جديد.
 ;The picture does not match its calculation: calculate it again.
+ThePlaneSColourClickTo=لون المستوى (انقر للتغيير)
+;The plane's colour (click to change)
 TheRotationIsPerformedAroundThe=يجري الدوران حول نقطة المنتصف (Xmid، Ymid، Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=تجري الدورانات بالتتابع، أولًا المستوى XW، وأخيرًا المستوى ZW.
@@ -3505,6 +3515,10 @@ WarningsAndErrors=التحذيرات والأخطاء
 ;Warnings and errors
 WavefrontOBJObj=Wavefront OBJ (*.obj)
 ;Wavefront OBJ (*.obj)
+Waves=الأمواج:
+;Waves:
+WavesOnThePlaneTheirHeight=أمواج على المستوى: ارتفاعها وطولها بوحدات الكسورية (الارتفاع 0: مستوٍ مسطح)
+;Waves on the plane: their height and their length in fractal units (height 0: a flat plane)
 Weight=الوزن
 ;Weight
 WeightColon=الوزن:

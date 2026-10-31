@@ -580,7 +580,7 @@ impl Scene {
                 let _ = writeln!(t, "{n} = {}", self.cut_pos[k]);
             }
         }
-        t.push_str(&self.extra_text());
+        t.push_str(&self.ground_text());
         if let Some(d) = &self.deao {
             let _ = writeln!(
                 t,
@@ -766,6 +766,16 @@ impl Scene {
     /// as scene text lines, "" without any: mb3d-rs keeps them in a block
     /// after MB3D's parameters (`m3p::write`).
     pub fn extra_text(&self) -> String {
+        let mut t = self.ground_text();
+        // MB3D keeps 23 characters of the background picture's name
+        if self.lighting.bg_image.len() > 23 {
+            t.push_str(&format!("background_image = {}\n", self.lighting.bg_image));
+        }
+        t
+    }
+
+    /// The ground plane's scene text lines ("" without one).
+    fn ground_text(&self) -> String {
         use std::fmt::Write;
         let mut t = String::new();
         if let Some(g) = &self.ground {

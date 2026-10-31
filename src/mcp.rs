@@ -86,6 +86,14 @@ Effects (calculated after the picture)
 - ao = off | ssao24 | ssao15 | deao: ambient occlusion type.
 - dof = off | sorted (depth of field); dof_focus (fraction of the width), dof_aperture.
 - mc_reflections = true/false, mc_reflection_amount 0..1: reflections.
+Ground plane / water (not in MB3D; global keys)
+- ground = y, 1.2 (axis x/y/z, position on it) or off: a plane calculated with the fractal, with
+  shadows, occlusion and reflections; its solid side is the one away from the camera. +y points
+  DOWN the screen in most views: try both signs and preview.
+- ground_color = #RRGGBB; ground_reflect 0..1 (a mirror when mc_reflections is on);
+  ground_waves = height, length (fractal units, e.g. 0.03, 0.4; height 0 = flat): water.
+HDR lighting: background_image = a .hdr picture (with background_direct = false) lights a
+  montecarlo render; its sun becomes a light with soft shadows.
 Formulas ([formula] sections, up to 6, an alternating hybrid)
 - name, iterations, and the formula's own values (formula_help NAME lists them). Small changes
   of a formula value can change the shape a lot; preview after each.

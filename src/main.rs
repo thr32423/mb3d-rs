@@ -462,8 +462,8 @@ fn run() -> Result<(), String> {
         }
     };
     let exr = output.to_ascii_lowercase().ends_with(".exr");
-    if exr && (stereo_pair.is_some() || scene.tiling.is_some() || transparent || bits16 || denoise > 0.0) {
-        return Err(usage_err("OpenEXR output is for single pictures (not with --stereo-pair, --tiles, --transparent, --bits or --denoise)"));
+    if exr && (stereo_pair.is_some() || scene.tiling.is_some_and(|t| t.pos.is_some()) || transparent || bits16 || denoise > 0.0) {
+        return Err(usage_err("OpenEXR output is for whole pictures (not with --stereo-pair, a single tile, --transparent, --bits or --denoise)"));
     }
     if bits16 && (stereo_pair.is_some() || scene.tiling.is_some()) {
         return Err(usage_err("--bits 16 is for single pictures (not with --stereo-pair or --tiles)"));
@@ -532,12 +532,15 @@ fn run() -> Result<(), String> {
             fs.tiling = None;
             let p = mb3d::calc::CalcParams::new(&fs)?;
             report("all tiles done, painting the picture");
-            let rgb = mb3d::render::paint(&fs, &p, &full);
             let (fw, fh) = (fs.width as usize, fs.height as usize);
+            // OpenEXR paints its own colours (floating point)
+            let rgb = if exr { Vec::new() } else { mb3d::render::paint(&fs, &p, &full) };
             if stats {
                 print_stats(&mb3d::RenderResult { width: fw, height: fh, gbuffer: full.clone(), rgb: Vec::new(), calc_seconds: 0.0, paint_seconds: 0.0 });
             }
-            if transparent {
+            if exr {
+                write_out(&output, &mb3d::exr::encode(&mb3d::exr::layers(&fs, &p, &full, fw, fh, aa)))?;
+            } else if transparent {
                 write_transparent(&output, &rgb, &full, fw, fh, aa, denoise)?;
             } else {
                 let (rgb, w, h) = if aa > 1 { mb3d::render::downsample(&rgb, fw, fh, aa) } else { (rgb, fw, fh) };
@@ -584,7 +587,7 @@ fn run() -> Result<(), String> {
         };
         let ck = mb3d::render::open_tiles_checkpoint(&scene, &ck_name(&output), resume_policy());
         resumed_note(ck.as_ref(), if tl.pos.is_some() { "rows" } else { "tiles" }, quiet);
-        let res = mb3d::render::render_tiled_with(&scene, stats || depth.is_some() || transparent, &progress, &tile_progress, &|| false, ck.as_ref(), resume_policy())?;
+        let res = mb3d::render::render_tiled_with(&scene, stats || depth.is_some() || transparent || exr, &progress, &tile_progress, &|| false, ck.as_ref(), resume_policy())?;
         if !quiet {
             mb3d::elog!("  done: calc {:.2}s, paint {:.2}s", res.calc_seconds, res.paint_seconds);
         }
@@ -598,7 +601,13 @@ fn run() -> Result<(), String> {
                 paint_seconds: 0.0,
             });
         }
-        if let (true, Some(g)) = (transparent, &res.gbuffer) {
+        if let (true, Some(g)) = (exr, &res.gbuffer) {
+            // the whole picture's floating point colours from the tiles' G-buffer
+            let mut fs = scene.clone();
+            fs.tiling = None;
+            let p = mb3d::calc::CalcParams::new(&fs)?;
+            write_out(&output, &mb3d::exr::encode(&mb3d::exr::layers(&fs, &p, g, res.width, res.height, down)))?;
+        } else if let (true, Some(g)) = (transparent, &res.gbuffer) {
             write_transparent(&output, &res.rgb, g, res.width, res.height, down, denoise)?;
         } else {
             let (rgb, ow, oh) = if down > 1 {

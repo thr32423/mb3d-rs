@@ -381,12 +381,15 @@ pub fn parse_m3k(text: &str, base_dir: &Path, name: &str) -> Result<AnimFile, St
                         t.push('\n');
                         t.push_str(l.trim());
                     }
-                    // an optional {Titel: ...} line belongs to the parameters
-                    if let Some((_, l)) = lines.peek() {
-                        if l.trim_start().starts_with("{Titel") {
-                            t.push('\n');
-                            t.push_str(lines.next().unwrap().1.trim());
+                    // the optional {Titel: ...} and {mb3d-rs: ...} lines belong to
+                    // the parameters
+                    while let Some((_, l)) = lines.peek() {
+                        let l = l.trim_start();
+                        if !(l.starts_with("{Titel") || l.starts_with("{mb3d-rs:")) {
+                            break;
                         }
+                        t.push('\n');
+                        t.push_str(lines.next().unwrap().1.trim());
                     }
                     let (raw, _) = crate::m3p::raw_from_text(&t).map_err(|e| err(e))?;
                     let m = crate::m3p::parse(&raw).map_err(|e| err(e))?;

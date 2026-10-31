@@ -799,6 +799,13 @@ pub fn parse(data: &[u8]) -> Result<M3pFile, String> {
             Ok(sc) => s = sc,
             Err(e) => w.push(format!("mb3d-rs settings: {e}")),
         }
+        // the full name of a background picture MB3D's 23 characters cut
+        if t.lines().any(|l| l.trim_start().starts_with("background_image")) {
+            w.retain(|x| !x.starts_with("background picture '"));
+            if crate::maps::by_name(&s.lighting.bg_image).is_none() {
+                w.push(format!("background picture '{}' not found (put it into M3Maps or use --maps DIR)", s.lighting.bg_image));
+            }
+        }
     }
     Ok(M3pFile { scene: s, warnings: w, mand_id })
 }
@@ -1392,6 +1399,14 @@ mod tests {
         let m = write_m3i(&sc, &gbuf);
         check(&parse(&raw_from_m3i(&m).unwrap()).unwrap().scene);
         assert!(parse(&raw_from_m3i(&write_m3i(&plain, &gbuf)).unwrap()).unwrap().scene.ground.is_none());
+        // a background picture's name longer than MB3D's 23 characters
+        let mut long = plain.clone();
+        long.lighting.bg_image = "a_long_environment_name_4k.hdr".into();
+        let raw = write(&long);
+        assert_eq!(&raw[HEADER_SIZE + ADDON_SIZE..HEADER_SIZE + ADDON_SIZE + 7], b"MB3D-RS");
+        assert_eq!(parse(&raw).unwrap().scene.lighting.bg_image, long.lighting.bg_image);
+        let short = { let mut s = plain.clone(); s.lighting.bg_image = "sky.hdr".into(); s };
+        assert_eq!(write(&short).len(), HEADER_SIZE + ADDON_SIZE);
     }
 
     #[test]

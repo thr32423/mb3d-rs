@@ -352,6 +352,22 @@ fn interpolate_header(base: &Scene, h: &[&Scene], w: &[f64], rot: Quat, bezier: 
     for i in 0..4 {
         s.julia_c[i] = lin(&|x| x.julia_c[i]);
     }
+    // the ground plane (mb3d-rs): blended when every keyframe has one
+    // across the same axis, else the base keyframe's
+    if let Some(g0) = base.ground {
+        if h.iter().all(|x| x.ground.is_some_and(|g| g.axis == g0.axis)) {
+            let g = |x: &Scene| x.ground.unwrap();
+            let mut ng = g0;
+            ng.pos = lin(&|x| g(x).pos);
+            ng.reflect = lin(&|x| g(x).reflect as f64).clamp(0.0, 1.0) as f32;
+            ng.wave_height = lin(&|x| g(x).wave_height).max(0.0);
+            ng.wave_len = lin(&|x| g(x).wave_len).max(1e-9);
+            for k in 0..3 {
+                ng.color[k] = lin(&|x| g(x).color[k] as f64).round().clamp(0.0, 255.0) as u8;
+            }
+            s.ground = Some(ng);
+        }
+    }
 
     // singles
     s.de_stop = lin_s(&|x| x.de_stop);
@@ -669,6 +685,23 @@ mod tests {
         a.width = 64;
         a.height = 48;
         a
+    }
+
+    #[test]
+    fn ground_plane_is_blended() {
+        let mut a = key(1.0, 0.0, 0.0, 10).scene;
+        let mut b = a.clone();
+        let g = crate::scene::Ground { axis: 1, pos: 1.0, color: [0, 100, 200], wave_height: 0.0, ..Default::default() };
+        a.ground = Some(g);
+        b.ground = Some(crate::scene::Ground { pos: 2.0, color: [200, 100, 0], wave_height: 0.04, ..g });
+        let m = interpolate_linear(&a, &b, 0.5).ground.unwrap();
+        assert!((m.pos - 1.5).abs() < 1e-9 && (m.wave_height - 0.02).abs() < 1e-9);
+        assert_eq!(m.color, [100, 100, 100]);
+        // another axis or no ground in a keyframe: the first keyframe's
+        b.ground.as_mut().unwrap().axis = 2;
+        assert_eq!(interpolate_linear(&a, &b, 0.5).ground, a.ground);
+        b.ground = None;
+        assert_eq!(interpolate_linear(&a, &b, 0.5).ground, a.ground);
     }
 
     #[test]

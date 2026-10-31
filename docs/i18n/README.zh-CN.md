@@ -370,6 +370,50 @@ mb3d-rs 就是 [Mandelbulb3D](https://github.com/thargor6/mb3d)（MB3D）这款
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="修改光照后的主窗口和光照窗口：图片已经变亮"></a>
 
   </details>
+* **地平面或水面**，位于分形下方 (或后方)，来自 Mandelbulber 的想法：一个
+  垂直于 X、Y 或 Z 轴的平面，与分形一起计算，带有阴影、环境光遮蔽、反射和
+  蒙特卡罗光照，使用自己的颜色，平坦或带波浪。
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="带有分形阴影的地面、带波浪的反射水面，以及绿色地面上的蒙特卡罗渲染"></a>
+
+  <details><summary>了解更多</summary>
+
+  主窗口的 *切割* 页面：勾选 *地平面*，选择轴和位置、颜色、反射程度 (0 到
+  1：计算反射时为镜面) 以及波浪的高度和长度。实心的一侧始终是远离相机的
+  一侧。它在显卡和处理器上都会计算，不会出现在体素和网格导出中。
+  Mandelbulb3D 的参数里没有它的位置：mb3d-rs 把它保存在参数之后的一个小块
+  中 (在 .m3p 和 .m3i 文件中，以及文本参数标题之后的 `{mb3d-rs: ...}`)，
+  Mandelbulb3D 不会读取。场景键 `ground`、`ground_color`、`ground_reflect`、
+  `ground_waves`；详见 [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field)。
+
+  </details>
+* **来自 HDR 图片的光照**：以 360° Radiance 图片 (`.hdr`) 作为背景，以其
+  全部亮度照亮蒙特卡罗渲染，图中的太阳成为带柔和阴影的光源 (来自
+  Mandelbulber 的想法)。
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="只用 HDR 天空照亮的蒙特卡罗渲染：左边是偶然找到太阳留下的亮斑，右边是作为光源的太阳"></a>
+
+  <details><summary>了解更多</summary>
+
+  在 *光照* 窗口中把 `.hdr` 文件选为背景图片 (不是“直接”)。蒙特卡罗随后用
+  天空照亮场景，图片中最亮的地方，也就是太阳，会被取出并作为带太阳大小阴影
+  的光源加入：如果只靠偶然找到，太阳会留下明亮的斑点 (左)。8 位或 16 位的
+  背景图片保持原样。
+
+  </details>
+* **OpenEXR 图片** 用于合成 (Blender、Nuke、DaVinci Resolve)：颜色为浮点数，
+  白色以上不截断，并带有不透明度、深度和法线图层。*保存图片* > *OpenEXR*，
+  或 `mb3d -o picture.exr` (也支持分块和集群)。
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="OpenEXR 图片的图层：保存的颜色、存储的颜色 (线性)、法线和深度"></a>
+
+  <details><summary>了解更多</summary>
+
+  颜色是线性的，符合 OpenEXR 的要求：用常规显示曲线查看时与 PNG 相同，高光
+  保留超过白色的亮度。图层：`A` (不透明度，与透明 PNG 相同)、`Z` (到相机的
+  距离，分形单位) 以及 `N.X`、`N.Y`、`N.Z` (表面法线)。详见 [TECHNICAL.md](../TECHNICAL.md)。
+
+  </details>
 
 <a id="download"></a>
 

@@ -560,6 +560,55 @@ GitHub 저장소에서 유해한 소프트웨어의 징후를 검사하는 독�
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="조명을 바꾼 직후의 메인 창과 조명 창: 그림이 이미 더 밝아짐"></a>
 
   </details>
+* **지면이나 물** 을 프랙탈 아래 (또는 뒤) 에. Mandelbulber 의 아이디어입니다:
+  X, Y 또는 Z 축에 수직인 평면을 프랙탈과 함께 계산하며, 그림자, 앰비언트
+  오클루전, 반사, 몬테카를로 빛이 함께 적용됩니다. 고유한 색으로, 평평하게
+  또는 물결과 함께.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="프랙탈의 그림자가 있는 바닥, 물결이 있는 반사하는 물, 초록 바닥 위의 몬테카를로 렌더"></a>
+
+  <details><summary>자세히 보기</summary>
+
+  메인 창의 *절단* 페이지에서 *지면* 을 체크하고 축과 위치, 색, 반사 정도
+  (0에서 1: 반사를 계산할 때는 거울), 물결의 높이와 길이를 고릅니다. 단단한
+  쪽은 항상 카메라에서 먼 쪽입니다. 그래픽 카드와 프로세서 모두에서 계산되며
+  복셀과 메시 내보내기에는 포함되지 않습니다. Mandelbulb3D 의 매개변수에는
+  이를 넣을 자리가 없어서, mb3d-rs 는 그 뒤의 작은 블록에 저장합니다 (.m3p
+  와 .m3i 파일, 그리고 텍스트 매개변수의 제목 뒤 `{mb3d-rs: ...}`).
+  Mandelbulb3D 는 이를 읽지 않습니다. 장면 키 `ground`, `ground_color`,
+  `ground_reflect`, `ground_waves`; 자세한 내용은 [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **HDR 그림의 빛**: 360° Radiance 그림 (`.hdr`) 을 배경으로 쓰면 그 밝기
+  그대로 몬테카를로 렌더를 비추고, 그 태양은 부드러운 그림자를 드리우는 빛이
+  됩니다 (Mandelbulber 의 아이디어).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="HDR 하늘로만 비춘 몬테카를로 렌더: 왼쪽은 우연히 찾은 태양의 밝은 반점, 오른쪽은 빛으로서의 태양"></a>
+
+  <details><summary>자세히 보기</summary>
+
+  *조명* 창에서 `.hdr` 파일을 배경 그림으로 고릅니다 ("직접" 이 아니라).
+  그러면 몬테카를로가 하늘로 장면을 비추고, 그림에서 가장 밝은 곳인 태양은
+  빼내어 태양 크기의 그림자를 드리우는 빛으로 더해집니다. 우연히만 찾아지면
+  태양은 밝은 반점을 남깁니다 (왼쪽). 8 비트나 16 비트 배경 그림은 그대로
+  입니다.
+
+  </details>
+* **OpenEXR 그림** 으로 합성 (Blender, Nuke, DaVinci Resolve) 에: 색은 부동
+  소수점이며 흰색 위에서 잘리지 않고, 불투명도, 깊이, 법선 레이어가 함께
+  있습니다. *그림 저장* > *OpenEXR*, 또는 `mb3d -o picture.exr` (타일과
+  스웜에서도).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="OpenEXR 그림의 레이어: 저장된 색, 보관된 색 (선형), 법선, 깊이"></a>
+
+  <details><summary>자세히 보기</summary>
+
+  색은 OpenEXR 이 기대하는 대로 선형입니다: 보통의 화면 곡선으로 보면 PNG
+  와 같아 보이고, 하이라이트는 흰색을 넘는 밝기를 유지합니다. 레이어: `A`
+  (불투명도, 투명 PNG 와 같음), `Z` (카메라로부터의 거리, 프랙탈 단위),
+  `N.X`, `N.Y`, `N.Z` (표면의 법선). 자세한 내용은 [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

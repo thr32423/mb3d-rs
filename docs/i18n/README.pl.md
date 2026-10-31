@@ -623,6 +623,56 @@ możesz sprawdzić sam:
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="Okno główne i okno Oświetlenie tuż po zmianie oświetlenia: obraz już jaśniejszy"></a>
 
   </details>
+* **Podłoże lub woda** pod (albo za) fraktalem, pomysł z Mandelbulbera:
+  płaszczyzna prostopadła do osi X, Y lub Z, liczona razem z fraktalem, z jej
+  cieniami, okluzją otoczenia, odbiciami i światłem Monte Carlo, we własnym
+  kolorze, gładka albo z falami.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="Podłoga z cieniem fraktala, odbijająca woda z falami i render Monte Carlo na zielonej podłodze"></a>
+
+  <details><summary>Więcej</summary>
+
+  Okno główne, strona *Cięcie*: zaznacz *Podłoże*, wybierz oś i położenie,
+  kolor, jak mocno odbija (od 0 do 1: lustro, gdy liczone są odbicia) oraz
+  wysokość i długość fal. Pełna strona jest zawsze ta dalej od kamery. Liczy
+  się na karcie graficznej i na procesorze, a eksporty wokseli i siatek jej
+  nie zawierają. Mandelbulb3D nie ma na nią miejsca w swoich parametrach:
+  mb3d-rs zapisuje ją w małym bloku za nimi (w plikach .m3p i .m3i oraz jako
+  `{mb3d-rs: ...}` za tytułem parametrów tekstowych), którego Mandelbulb3D nie
+  czyta. Klucze sceny `ground`, `ground_color`, `ground_reflect`,
+  `ground_waves`; szczegóły w [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **Światło z obrazu HDR**: obraz Radiance 360° (`.hdr`) jako tło oświetla
+  render Monte Carlo pełną jasnością, a jego słońce staje się światłem z
+  miękkimi cieniami (pomysł z Mandelbulbera).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="Render Monte Carlo oświetlony tylko niebem HDR: po lewej słońce znalezione przypadkiem z jasnymi plamkami, po prawej słońce jako światło"></a>
+
+  <details><summary>Więcej</summary>
+
+  Wybierz plik `.hdr` jako obraz tła w oknie *Oświetlenie* (nie
+  „bezpośrednio”). Monte Carlo oświetla wtedy scenę niebem, a najjaśniejsze
+  miejsce obrazu, jego słońce, zostaje wyjęte i dodane jako światło z cieniami
+  wielkości słońca: znalezione tylko przypadkiem, słońce zostawiałoby jasne
+  plamki (po lewej). Obrazy tła 8- i 16-bitowe zostają takie jak były.
+
+  </details>
+* **Obrazy OpenEXR** do compositingu (Blender, Nuke, DaVinci Resolve): kolory
+  zmiennoprzecinkowe, nieobcięte powyżej bieli, z warstwami krycia, głębi i
+  normalnych. *Zapisz obraz* > *OpenEXR* albo `mb3d -o obraz.exr` (także z
+  kafelkami i rojem).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="Warstwy obrazu OpenEXR: kolory jak zapisane, kolory jak przechowywane (liniowe), normalne i głębia"></a>
+
+  <details><summary>Więcej</summary>
+
+  Kolory są liniowe, jak oczekuje OpenEXR: pokazane ze zwykłą krzywą ekranu
+  wyglądają jak PNG, a połyski zachowują jasność powyżej bieli. Warstwy: `A`
+  (krycie, jak w przezroczystym PNG), `Z` (odległość od kamery w jednostkach
+  fraktala) oraz `N.X`, `N.Y`, `N.Z` (normalne powierzchni). Szczegóły w [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

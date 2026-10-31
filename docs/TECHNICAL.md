@@ -738,6 +738,10 @@ itself per light.
 | `vol_light` | `off` or light number 1-6 | volumetric light of that light (shown with the dynamic fog colours, `dyn_fog` sets the amount) |
 | `vol_light_map_size` | -7..7 | size of the light's shadow map in 20 % steps |
 | `cut_x`, `cut_y`, `cut_z` | position or `off` | cutting planes; the side away from the camera is kept |
+| `ground` | axis, position (`y, 1.2`) or `off` | ground plane or water (not in MB3D): calculated with the fractal, the side away from the camera solid |
+| `ground_color` | `#RRGGBB` | its colour |
+| `ground_reflect` | 0..1 | its highlights, and its mirror with `mc_reflections` |
+| `ground_waves` | height, length | waves in fractal units (height 0 = flat) |
 | `dof` | `off`, `sorted`, `forward` | depth of field |
 | `dof_focus`, `dof_focus2` | distance as fraction of the image width | sharp range (`--stats` prints the value for the image centre) |
 | `dof_aperture` | 0.0001..2 | aperture |
@@ -747,6 +751,7 @@ itself per light.
 ```sh
 ./mb3d examples/mandelbulb.m3s -s dof=sorted -s dof_focus=0.61 -s dof_aperture=0.3 -o dof.png
 ./mb3d examples/mandelbulb.m3s -s cut_y=-0.2 -o cut.png
+./mb3d examples/mandelbulb.m3s -s "ground=y, 1.15" -s ground_color=#203848 -s ground_reflect=0.8 -s "ground_waves=0.03, 0.4" -s mc_reflections=1 -o water.png
 ```
 
 The volumetric light map is calculated before the image, with a ray march
@@ -802,7 +807,7 @@ specular colours of the palette say how much light a surface reflects.
 | `decomb_end1`, `decomb_start2`, `decomb_end2`, `decomb_repeat2` | formula slots 1..6 | the two parts |
 | `decomb_iterations2`, `decomb_smooth`, `decomb_mix_pow`, `decomb_mix_color` | | part 2 iterations, smoothing, mix options |
 | `inside` | `outside`, `inside`, `both` | inside rendering, in-and-outside |
-| `background_image` | file name | background picture (sphere or `background_direct = true` image coordinates) |
+| `background_image` | file name | background picture (sphere or `background_direct = true` image coordinates); a Radiance `.hdr` keeps its light above white and lights Monte Carlo renders, its sun as a light with soft shadows |
 | `background_rotation`, `background_brightness`, `background_add_light`, `background_ambient` | | picture rotation (bytes, 128 = half turn), brightness 1.04^(v-40), add instead of fog, small blurred copy as ambient light |
 | `map`, `map_rotation` (in `[light]`) | map number, 3 bytes | light map: an image lighting from all directions |
 | `diffuse_map` | map number | diffuse colour map |
@@ -857,6 +862,16 @@ fog over the background) are dropped with the background. `mb3d
 `yuva420p` with alpha, MP4 has none), Save pic > PNG transparent
 background, the Animation maker's Transparent background (`AniTransparent`
 in the ini).
+
+OpenEXR pictures (`src/exr.rs`, written without a library): one part, scan
+lines, ZIP compression (the PNG writer's zlib), the colours as half floats,
+linear (the inverse sRGB curve of the shown picture, continued above white:
+the painting's `f32` sample type keeps the light above white), with the
+layers `A` (opacity as for transparent PNGs), `Z` (32 bit float: the depth
+from the camera's start plane in fractal units, 1e10 on the background) and
+`N.X`, `N.Y`, `N.Z` (the normals in camera space). `mb3d -o name.exr` (single
+pictures; `--aa` averages the colours, takes the nearest depth and the mean
+normal), Save pic > OpenEXR.
 
 The noise filter (`src/denoise.rs`) is the DCT image denoising of
 G. Yu and G. Sapiro (IPOL 2011, doi:10.5201/ipol.2011.ys-dct), the

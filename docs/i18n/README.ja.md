@@ -385,6 +385,56 @@ MB3D の数式とマップを使い、同じ画像を作ります。
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="ライティングを変更した直後のメインウィンドウとライティング ウィンドウ：画像はもう明るくなっている"></a>
 
   </details>
+* **地面や水面** をフラクタルの下 (または後ろ) に。Mandelbulber のアイデアです:
+  X、Y、Z 軸に垂直な平面をフラクタルと一緒に計算し、影、アンビエント
+  オクルージョン、反射、モンテカルロの光が付きます。独自の色で、平らにも
+  波立たせることもできます。
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="フラクタルの影が落ちた床、波のある反射する水面、緑の床の上のモンテカルロ画像"></a>
+
+  <details><summary>詳しく</summary>
+
+  メインウィンドウの *カット* ページで *地面* にチェックを入れ、軸と位置、
+  色、反射の強さ (0 から 1: 反射を計算するときは鏡)、波の高さと長さを選び
+  ます。中身のある側は常にカメラから遠い側です。グラフィックカードでも
+  プロセッサーでも計算され、ボクセルとメッシュの書き出しには含まれません。
+  Mandelbulb3D のパラメーターにはこれを入れる場所がないため、mb3d-rs は
+  その後ろの小さなブロックに保存します (.m3p と .m3i ファイル、テキスト
+  パラメーターではタイトルの後の `{mb3d-rs: ...}`)。Mandelbulb3D はこれを
+  読みません。シーンのキーは `ground`、`ground_color`、`ground_reflect`、
+  `ground_waves`。詳しくは [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field)。
+
+  </details>
+* **HDR 画像からの光**: 360° の Radiance 画像 (`.hdr`) を背景にすると、
+  その明るさのままモンテカルロ画像を照らし、太陽は柔らかい影を落とす光に
+  なります (Mandelbulber のアイデア)。
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="HDR の空だけで照らしたモンテカルロ画像: 左は偶然見つかった太陽による明るい斑点、右は光としての太陽"></a>
+
+  <details><summary>詳しく</summary>
+
+  *ライティング* ウィンドウで `.hdr` ファイルを背景画像に選びます
+  (「ダイレクト」ではなく)。するとモンテカルロは空でシーンを照らし、画像で
+  いちばん明るい所、つまり太陽は取り出されて、太陽の大きさの影を落とす光と
+  して加わります。偶然に見つかるだけだと、太陽は明るい斑点を残します (左)。
+  8 ビットや 16 ビットの背景画像はこれまでどおりです。
+
+  </details>
+* **OpenEXR 画像** でコンポジット (Blender、Nuke、DaVinci Resolve) に: 色は
+  浮動小数点で白を超えても切り捨てられず、不透明度、深度、法線のレイヤー
+  付きです。*画像保存* > *OpenEXR*、または `mb3d -o picture.exr` (タイルや
+  スウォームでも)。
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="OpenEXR 画像のレイヤー: 保存した色、格納された色 (リニア)、法線、深度"></a>
+
+  <details><summary>詳しく</summary>
+
+  色は OpenEXR の想定どおりリニアです: 通常の表示カーブで見ると PNG と同じ
+  に見え、ハイライトは白を超える明るさを保ちます。レイヤー: `A` (不透明度、
+  透明 PNG と同じ)、`Z` (カメラからの距離、フラクタル単位)、`N.X`、`N.Y`、
+  `N.Z` (面の法線)。詳しくは [TECHNICAL.md](../TECHNICAL.md)。
+
+  </details>
 
 <a id="download"></a>
 

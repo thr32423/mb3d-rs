@@ -619,6 +619,56 @@ sprawdzëc sóm:
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="Przédné òkno ë òkno Òswiecenié zarô pò zmianie òswieceniô: òbrôzk ju jasniészi"></a>
 
   </details>
+* **Zemia abò wòda** pòd (abò za) fraktalã, pòmësł z Mandelbulbera:
+  płaszczëzna na sztót òsë X, Y abò Z, rechòwónô razã z fraktalã, z ji
+  cyniama, òklùzją òtoczeniô, òdbiciama ë swiatłã Monte Carlo, w swòji farwie,
+  gładkô abò z falama.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="Pòdłoga z cyniã fraktala, òdbijającô wòda z falama ë render Monte Carlo na zelony pòdłodze"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Przédné òkno, starna *Òbcynanié*: zaznaczë *Zemia*, wëbierzë òsã ë
+  pòłożenié, farwã, jak mòckò òdbijô (òd 0 do 1: zdrzadło, czej są rechòwóné
+  òdbicé) ë wiżawã ë długòsc falów. Pełnô strona je wiedno ta dali òd kamerë.
+  Je rechòwónô na graficzny karce ë na procesorze, a ekspòrtë wòkselów ë
+  sécë ji nie mają. Mandelbulb3D ni mô na nią môla w swòjich parametrach:
+  mb3d-rs zapisywô ją w môłim blokù za nima (w lopkach .m3p ë .m3i ë jakno
+  `{mb3d-rs: ...}` za titlã tekstowëch parametrów), chtërnégò Mandelbulb3D nie
+  czëtô. Klucze sceny `ground`, `ground_color`, `ground_reflect`,
+  `ground_waves`; drobnotë w [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **Swiatło z òbrazu HDR**: òbrôz Radiance 360° (`.hdr`) jakno spódk òswiecywô
+  render Monte Carlo pełną jasnotą, a jegò słuńce stôwô sã swiatłã z miękczima
+  cyniama (pòmësł z Mandelbulbera).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="Render Monte Carlo òswiecony le niebã HDR: z lewi słuńce nalezoné przëtrôfkã z jasnyma plamkama, z prawi słuńce jakno swiatło"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Wëbierzë lopk `.hdr` jakno òbrôz spódkù w òknie *Òswiecenié* (nie
+  „prosto”). Monte Carlo òswiecywô tedë scenã niebã, a nôjjaśniészé môle
+  òbrazu, jegò słuńce, je wëjimóné ë dodóné jakno swiatło z cyniama wiôlgòscë
+  słuńca: nalezoné le przëtrôfkã, słuńce òstôwiałobë jasné plamczi (z
+  lewi). Òbrazë spódkù 8- ë 16-bitowé òstôwają taczé, jaczé bëłë.
+
+  </details>
+* **Òbrazë OpenEXR** do compositingù (Blender, Nuke, DaVinci Resolve): farwë
+  zmiennoprzecynkòwé, nie òbcãté nad białim, z warstwama krëcô, głãbiznë ë
+  normalnëch. *Zapiszë òbr.* > *OpenEXR* abò `mb3d -o òbrôz.exr` (téż z
+  kafelkama ë rojã).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="Warstwë òbrazu OpenEXR: farwë jak zapisóné, farwë jak trzëmóné (lëniowé), normalné ë głãbizna"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Farwë są lëniowé, jak żdaje OpenEXR: pòkôzóné z zwëczajną krzëwą ekranu
+  wëzdrzą jak PNG, a pòłësczi trzëmają jasnotã nad białim. Warstwë: `A`
+  (krëcé, jak w przezérnym PNG), `Z` (òdległosc òd kamerë w jednotkach
+  fraktala) ë `N.X`, `N.Y`, `N.Z` (normalné pòwierzchni). Drobnotë w [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

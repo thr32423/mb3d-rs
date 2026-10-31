@@ -651,6 +651,58 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="Jendela utama dan jendela Pencahayaan tepat setelah perubahan pencahayaan: gambar sudah lebih terang"></a>
 
   </details>
+* **Bidang tanah atau air** di bawah (atau di belakang) fraktal, ide dari
+  Mandelbulber: bidang yang melintang sumbu X, Y, atau Z, dihitung bersama
+  fraktal, dengan bayangan, oklusi ambien, pantulan, dan cahaya Monte Carlo,
+  dalam warnanya sendiri, datar atau berombak.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="Lantai dengan bayangan fraktal, air yang memantul dengan ombak, dan render Monte Carlo di atas lantai hijau"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Jendela utama, halaman *Pemotongan*: centang *Bidang tanah*, pilih sumbu dan
+  posisinya, warna, seberapa kuat ia memantul (0 sampai 1: cermin bila pantulan
+  dihitung), serta tinggi dan panjang ombak. Sisi padatnya selalu sisi yang
+  menjauhi kamera. Dihitung di kartu grafis dan di prosesor, dan tidak ikut
+  dalam ekspor voxel dan mesh. Mandelbulb3D tidak punya tempat untuknya di
+  parameternya: mb3d-rs menyimpannya dalam blok kecil di belakangnya (di file
+  .m3p dan .m3i, dan sebagai `{mb3d-rs: ...}` setelah judul parameter teks),
+  yang tidak dibaca Mandelbulb3D. Kunci adegan `ground`, `ground_color`,
+  `ground_reflect`, `ground_waves`; detail di [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **Cahaya dari gambar HDR**: gambar Radiance 360° (`.hdr`) sebagai latar
+  menerangi render Monte Carlo dengan kecerahan penuhnya, dan mataharinya
+  menjadi cahaya dengan bayangan lembut (ide dari Mandelbulber).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="Render Monte Carlo yang hanya diterangi langit HDR: kiri matahari yang ditemukan secara kebetulan dengan bintik terang, kanan matahari sebagai cahaya"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Pilih file `.hdr` sebagai gambar latar di jendela *Pencahayaan* (bukan
+  "langsung"). Monte Carlo lalu menerangi adegan dengan langit, dan titik
+  paling terang di gambar, mataharinya, diambil dan ditambahkan sebagai cahaya
+  dengan bayangan seukuran matahari: bila hanya ditemukan secara kebetulan,
+  matahari meninggalkan bintik terang (kiri). Gambar latar 8 atau 16 bit tetap
+  seperti semula.
+
+  </details>
+* **Gambar OpenEXR** untuk compositing (Blender, Nuke, DaVinci Resolve): warna
+  dalam floating point, tidak terpotong di atas putih, dengan lapisan
+  opasitas, kedalaman, dan normal. *Simpan gbr* > *OpenEXR*, atau
+  `mb3d -o gambar.exr` (juga dengan ubin dan swarm).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="Lapisan gambar OpenEXR: warna seperti disimpan, warna seperti tersimpan (linear), normal, dan kedalaman"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Warnanya linear, seperti yang diharapkan OpenEXR: ditampilkan dengan kurva
+  layar biasa, warnanya tampak seperti PNG, dan kilaunya tetap lebih terang
+  dari putih. Lapisannya: `A` (opasitas, seperti PNG transparan), `Z` (jarak
+  dari kamera dalam satuan fraktal) dan `N.X`, `N.Y`, `N.Z` (normal
+  permukaan). Detail di [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

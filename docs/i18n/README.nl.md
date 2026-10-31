@@ -610,6 +610,58 @@ kunt u zelf verder controleren:
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="Het hoofdvenster en het venster Belichting direct na een wijziging van de belichting: de afbeelding is al lichter"></a>
 
   </details>
+* **Een grondvlak of water** onder (of achter) de fractal, een idee uit
+  Mandelbulber: een vlak dwars op de X-, Y- of Z-as, samen met de fractal
+  berekend, met de schaduwen, omgevingsocclusie, reflecties en het Monte
+  Carlo-licht, in een eigen kleur, vlak of met golven.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="Een vloer met de schaduw van de fractal, spiegelend water met golven en een Monte Carlo-render op een groene vloer"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  Hoofdvenster, pagina *Snijden*: vink *Grondvlak* aan, kies de as en de
+  positie, de kleur, hoeveel het reflecteert (0 tot 1: een spiegel als de
+  reflecties berekend worden) en de hoogte en lengte van de golven. De massieve
+  kant is altijd die van de camera af. Het wordt op de grafische kaart en op
+  de processor berekend en zit niet in de voxel- en mesh-exports. Mandelbulb3D
+  heeft er in zijn parameters geen plaats voor: mb3d-rs bewaart het in een
+  klein blok erachter (in .m3p- en .m3i-bestanden, en als `{mb3d-rs: ...}` na
+  de titel van tekstparameters), dat Mandelbulb3D niet leest. Scènesleutels
+  `ground`, `ground_color`, `ground_reflect`, `ground_waves`; details in [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **Licht uit een HDR-afbeelding**: een 360°-Radiance-afbeelding (`.hdr`) als
+  achtergrond belicht een Monte Carlo-render met zijn volle helderheid, en de
+  zon erin wordt een licht met zachte schaduwen (een idee uit Mandelbulber).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="Een Monte Carlo-render alleen door een HDR-hemel belicht: links de zon bij toeval gevonden met heldere spikkels, rechts de zon als licht"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  Kies het `.hdr`-bestand als achtergrondafbeelding in het venster
+  *Belichting* (niet "direct"). Monte Carlo belicht de scène dan met de
+  hemel, en het helderste punt van de afbeelding, de zon, wordt eruit gehaald
+  en toegevoegd als licht met schaduwen ter grootte van de zon: alleen bij
+  toeval gevonden zou de zon heldere spikkels achterlaten (links).
+  Achtergrondafbeeldingen van 8 of 16 bits blijven zoals ze waren.
+
+  </details>
+* **OpenEXR-afbeeldingen** voor compositing (Blender, Nuke, DaVinci Resolve):
+  de kleuren in drijvende komma, boven wit niet afgekapt, met de lagen
+  dekking, diepte en normalen. *Afb. opslaan* > *OpenEXR*, of
+  `mb3d -o afbeelding.exr` (ook met tegels en de zwerm).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="De lagen van een OpenEXR-afbeelding: de kleuren zoals opgeslagen, de kleuren zoals bewaard (lineair), de normalen en de diepte"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  De kleuren zijn lineair, zoals OpenEXR verwacht: getoond met de gewone
+  schermcurve zien ze eruit als de PNG, en de glanzen houden hun helderheid
+  boven wit. De lagen: `A` (dekking, zoals bij een transparante PNG), `Z` (de
+  afstand tot de camera in fractaleenheden) en `N.X`, `N.Y`, `N.Z` (de
+  normalen van het oppervlak). Details in [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

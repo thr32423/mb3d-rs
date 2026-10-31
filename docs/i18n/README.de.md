@@ -638,6 +638,59 @@ können Sie selbst weiter prüfen:
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="Das Hauptfenster und das Fenster Beleuchtung direkt nach einer Änderung der Beleuchtung: das Bild schon heller"></a>
 
   </details>
+* **Eine Bodenebene oder Wasser** unter (oder hinter) dem Fraktal, eine Idee
+  aus Mandelbulber: eine Ebene quer zur X-, Y- oder Z-Achse, zusammen mit dem
+  Fraktal berechnet, mit ihren Schatten, Umgebungsverdeckung, Spiegelungen und
+  Monte-Carlo-Licht, in eigener Farbe, flach oder mit Wellen.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="Ein Boden mit dem Schatten des Fraktals, spiegelndes Wasser mit Wellen und ein Monte-Carlo-Bild auf grünem Boden"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Hauptfenster, Seite *Schnitt*: *Bodenebene* ankreuzen, Achse und Position
+  wählen, die Farbe, wie stark sie spiegelt (0 bis 1: ein Spiegel, wenn die
+  Spiegelungen berechnet werden) und Höhe und Länge der Wellen. Die feste
+  Seite ist immer die von der Kamera abgewandte. Sie wird auf der Grafikkarte
+  und auf dem Prozessor berechnet und fehlt in den Voxel- und Mesh-Exporten.
+  Mandelbulb3D hat in seinen Parametern keinen Platz dafür: mb3d-rs speichert
+  sie in einem kleinen Block dahinter (in .m3p- und .m3i-Dateien und als
+  `{mb3d-rs: ...}` nach dem Titel von Textparametern), den Mandelbulb3D nicht
+  liest. Szenenschlüssel `ground`, `ground_color`, `ground_reflect`,
+  `ground_waves`; Details in [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **Licht aus einem HDR-Bild**: ein 360°-Radiance-Bild (`.hdr`) als Hintergrund
+  beleuchtet ein Monte-Carlo-Bild mit seiner vollen Helligkeit, und seine
+  Sonne wird zu einem Licht mit weichen Schatten (eine Idee aus Mandelbulber).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="Ein Monte-Carlo-Bild, nur von einem HDR-Himmel beleuchtet: links die zufällig gefundene Sonne mit hellen Sprenkeln, rechts die Sonne als Licht"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Wählen Sie die `.hdr`-Datei im Fenster *Beleuchtung* als Hintergrundbild
+  (nicht „direkt“). Monte Carlo beleuchtet die Szene dann mit dem Himmel, und
+  die hellste Stelle des Bildes, seine Sonne, wird herausgenommen und als
+  Licht mit Schatten in der Größe der Sonne hinzugefügt: nur zufällig
+  gefunden, ließe die Sonne helle Sprenkel zurück (links). Hintergrundbilder
+  mit 8 oder 16 Bit bleiben, wie sie waren.
+
+  </details>
+* **OpenEXR-Bilder** für das Compositing (Blender, Nuke, DaVinci Resolve): die
+  Farben als Fließkommazahlen, über Weiß nicht abgeschnitten, mit den Ebenen
+  Deckkraft, Tiefe und Normalen. *Bild speichern* > *OpenEXR* oder
+  `mb3d -o bild.exr` (auch mit Kacheln und dem Schwarm).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="Die Ebenen eines OpenEXR-Bildes: die Farben wie gespeichert, die Farben wie abgelegt (linear), die Normalen und die Tiefe"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Die Farben sind linear, wie OpenEXR es erwartet: mit der üblichen
+  Anzeigekurve sehen sie aus wie das PNG, und die Glanzlichter behalten ihre
+  Helligkeit über Weiß. Die Ebenen: `A` (Deckkraft, wie bei einem
+  transparenten PNG), `Z` (der Abstand von der Kamera in Fraktaleinheiten) und
+  `N.X`, `N.Y`, `N.Z` (die Normalen der Oberfläche). Details in [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

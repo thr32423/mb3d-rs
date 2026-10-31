@@ -644,6 +644,59 @@ permettono di verificare ulteriormente da solo:
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="La finestra principale e la finestra Illuminazione subito dopo una modifica dell'illuminazione: l'immagine già più luminosa"></a>
 
   </details>
+* **Un piano del suolo o acqua** sotto (o dietro) il frattale, un'idea di
+  Mandelbulber: un piano perpendicolare all'asse X, Y o Z, calcolato insieme
+  al frattale, con le sue ombre, l'occlusione ambientale, i riflessi e la luce
+  Monte Carlo, nel suo colore, liscio o con onde.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="Un pavimento con l'ombra del frattale, acqua riflettente con onde e un render Monte Carlo su un pavimento verde"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  Finestra principale, pagina *Taglio*: spuntate *Suolo*, scegliete l'asse e la
+  posizione, il colore, quanto riflette (da 0 a 1: uno specchio quando i
+  riflessi vengono calcolati) e l'altezza e la lunghezza delle onde. Il lato
+  pieno è sempre quello lontano dalla fotocamera. Viene calcolato sulla scheda
+  grafica e sul processore, ed escluso dalle esportazioni voxel e mesh.
+  Mandelbulb3D non ha posto per lui nei suoi parametri: mb3d-rs lo salva in un
+  piccolo blocco dopo di essi (nei file .m3p e .m3i, e come `{mb3d-rs: ...}`
+  dopo il titolo dei parametri di testo), che Mandelbulb3D non legge. Chiavi
+  di scena `ground`, `ground_color`, `ground_reflect`, `ground_waves`;
+  dettagli in [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **Luce da un'immagine HDR**: un'immagine Radiance a 360° (`.hdr`) come
+  sfondo illumina un render Monte Carlo con tutta la sua luminosità, e il suo
+  sole diventa una luce con ombre morbide (un'idea di Mandelbulber).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="Un render Monte Carlo illuminato solo da un cielo HDR: a sinistra il sole trovato per caso con puntini luminosi, a destra il sole come luce"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  Scegliete il file `.hdr` come immagine di sfondo nella finestra
+  *Illuminazione* (non «diretta»). Monte Carlo illumina allora la scena con il
+  cielo, e il punto più luminoso dell'immagine, il suo sole, viene tolto e
+  aggiunto come luce con ombre della grandezza del sole: trovato solo per caso,
+  il sole lascerebbe puntini luminosi (a sinistra). Le immagini di sfondo a 8 o
+  16 bit restano come erano.
+
+  </details>
+* **Immagini OpenEXR** per il compositing (Blender, Nuke, DaVinci Resolve): i
+  colori in virgola mobile, non tagliati oltre il bianco, con i livelli
+  opacità, profondità e normali. *Salva img* > *OpenEXR*, oppure
+  `mb3d -o immagine.exr` (anche con le tessere e lo sciame).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="I livelli di un'immagine OpenEXR: i colori come salvati, i colori come memorizzati (lineari), le normali e la profondità"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  I colori sono lineari, come si aspetta OpenEXR: mostrati con la consueta
+  curva dello schermo appaiono come il PNG, e i riflessi mantengono la loro
+  luminosità oltre il bianco. I livelli: `A` (opacità, come per un PNG
+  trasparente), `Z` (la distanza dalla fotocamera in unità del frattale) e
+  `N.X`, `N.Y`, `N.Z` (le normali della superficie). Dettagli in [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

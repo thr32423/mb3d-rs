@@ -662,6 +662,59 @@ esto puede comprobar más por su cuenta:
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="La ventana principal y la ventana Iluminación justo después de un cambio de iluminación: la imagen ya más clara"></a>
 
   </details>
+* **Un plano de suelo o agua** bajo (o detrás de) el fractal, una idea de
+  Mandelbulber: un plano perpendicular al eje X, Y o Z, calculado junto con el
+  fractal, con sus sombras, oclusión ambiental, reflejos y luz Monte Carlo, en
+  su propio color, liso o con olas.
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="Un suelo con la sombra del fractal, agua que refleja con olas y un render Monte Carlo sobre un suelo verde"></a>
+
+  <details><summary>Más información</summary>
+
+  Ventana principal, página *Corte*: marque *Plano de suelo*, elija el eje y la
+  posición, el color, cuánto refleja (0 a 1: un espejo cuando se calculan los
+  reflejos) y la altura y longitud de las olas. El lado sólido es siempre el
+  que está lejos de la cámara. Se calcula en la tarjeta gráfica y en el
+  procesador, y no entra en las exportaciones de vóxeles y mallas.
+  Mandelbulb3D no tiene sitio para él en sus parámetros: mb3d-rs lo guarda en
+  un pequeño bloque detrás de ellos (en los archivos .m3p y .m3i, y como
+  `{mb3d-rs: ...}` tras el título de los parámetros de texto), que
+  Mandelbulb3D no lee. Claves de escena `ground`, `ground_color`,
+  `ground_reflect`, `ground_waves`; detalles en [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field).
+
+  </details>
+* **Luz de una imagen HDR**: una imagen Radiance de 360° (`.hdr`) como fondo
+  ilumina un render Monte Carlo con todo su brillo, y su sol se convierte en
+  una luz con sombras suaves (una idea de Mandelbulber).
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="Un render Monte Carlo iluminado solo por un cielo HDR: a la izquierda el sol hallado por azar con motas brillantes, a la derecha el sol como luz"></a>
+
+  <details><summary>Más información</summary>
+
+  Elija el archivo `.hdr` como imagen de fondo en la ventana *Iluminación* (no
+  «directa»). Monte Carlo ilumina entonces la escena con el cielo, y el punto
+  más brillante de la imagen, su sol, se saca y se añade como una luz con
+  sombras del tamaño del sol: encontrado solo por azar, el sol dejaría motas
+  brillantes (izquierda). Las imágenes de fondo de 8 o 16 bits quedan como
+  estaban.
+
+  </details>
+* **Imágenes OpenEXR** para composición (Blender, Nuke, DaVinci Resolve): los
+  colores en coma flotante, sin recortar por encima del blanco, con las capas
+  de opacidad, profundidad y normales. *Guardar imagen* > *OpenEXR*, o
+  `mb3d -o imagen.exr` (también con mosaicos y el enjambre).
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="Las capas de una imagen OpenEXR: los colores como se guardan, los colores como se almacenan (lineales), las normales y la profundidad"></a>
+
+  <details><summary>Más información</summary>
+
+  Los colores son lineales, como espera OpenEXR: mostrados con la curva de
+  pantalla habitual se ven como el PNG, y los brillos conservan su intensidad
+  por encima del blanco. Las capas: `A` (opacidad, como en un PNG
+  transparente), `Z` (la distancia a la cámara en unidades del fractal) y
+  `N.X`, `N.Y`, `N.Z` (las normales de la superficie). Detalles en [TECHNICAL.md](../TECHNICAL.md).
+
+  </details>
 
 <a id="download"></a>
 

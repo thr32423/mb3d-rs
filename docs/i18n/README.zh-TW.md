@@ -371,6 +371,50 @@ MB3D 當年只能使用處理器。它能開啟 MB3D 的參數檔（`.m3p`、`.m
   <a href="../img/lighting_live.png"><img src="../img/lighting_live.png" width="760" alt="變更光照後的主視窗與光照視窗：圖片已經變亮"></a>
 
   </details>
+* **地平面或水面**，位於碎形下方 (或後方)，來自 Mandelbulber 的構想：一個
+  垂直於 X、Y 或 Z 軸的平面，與碎形一起計算，帶有陰影、環境光遮蔽、反射和
+  蒙地卡羅光照，使用自己的顏色，平坦或帶波浪。
+
+  <a href="../img/ground_water.jpg"><img src="../img/ground_water.jpg" width="760" alt="帶有碎形陰影的地面、帶波浪的反射水面，以及綠色地面上的蒙地卡羅算圖"></a>
+
+  <details><summary>詳細說明</summary>
+
+  主視窗的 *切割* 頁面：勾選 *地平面*，選擇軸和位置、顏色、反射程度 (0 到
+  1：計算反射時為鏡面) 以及波浪的高度和長度。實心的一側始終是遠離相機的
+  一側。它在顯示卡和處理器上都會計算，不會出現在體素和網格匯出中。
+  Mandelbulb3D 的參數裡沒有它的位置：mb3d-rs 把它儲存在參數之後的一個小區塊
+  中 (在 .m3p 和 .m3i 檔案中，以及文字參數標題之後的 `{mb3d-rs: ...}`)，
+  Mandelbulb3D 不會讀取。場景鍵 `ground`、`ground_color`、`ground_reflect`、
+  `ground_waves`；詳見 [TECHNICAL.md](../TECHNICAL.md#lights-volumetric-light-cutting-planes-depth-of-field)。
+
+  </details>
+* **來自 HDR 圖片的光照**：以 360° Radiance 圖片 (`.hdr`) 作為背景，以其
+  全部亮度照亮蒙地卡羅算圖，圖中的太陽成為帶柔和陰影的光源 (來自
+  Mandelbulber 的構想)。
+
+  <a href="../img/hdr_sun.jpg"><img src="../img/hdr_sun.jpg" width="640" alt="只用 HDR 天空照亮的蒙地卡羅算圖：左邊是偶然找到太陽留下的亮斑，右邊是作為光源的太陽"></a>
+
+  <details><summary>詳細說明</summary>
+
+  在 *光照* 視窗中把 `.hdr` 檔案選為背景圖片 (不是「直接」)。蒙地卡羅隨後用
+  天空照亮場景，圖片中最亮的地方，也就是太陽，會被取出並作為帶太陽大小陰影
+  的光源加入：如果只靠偶然找到，太陽會留下明亮的斑點 (左)。8 位元或 16 位元
+  的背景圖片保持原樣。
+
+  </details>
+* **OpenEXR 圖片** 用於合成 (Blender、Nuke、DaVinci Resolve)：顏色為浮點數，
+  白色以上不截斷，並帶有不透明度、深度和法線圖層。*儲存圖片* > *OpenEXR*，
+  或 `mb3d -o picture.exr` (也支援分塊和集群)。
+
+  <a href="../img/exr_layers.jpg"><img src="../img/exr_layers.jpg" width="760" alt="OpenEXR 圖片的圖層：儲存的顏色、存放的顏色 (線性)、法線和深度"></a>
+
+  <details><summary>詳細說明</summary>
+
+  顏色是線性的，符合 OpenEXR 的要求：用一般顯示曲線檢視時與 PNG 相同，高光
+  保留超過白色的亮度。圖層：`A` (不透明度，與透明 PNG 相同)、`Z` (到相機的
+  距離，碎形單位) 以及 `N.X`、`N.Y`、`N.Z` (表面法線)。詳見 [TECHNICAL.md](../TECHNICAL.md)。
+
+  </details>
 
 <a id="download"></a>
 

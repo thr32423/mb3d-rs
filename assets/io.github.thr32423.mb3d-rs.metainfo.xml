@@ -88,6 +88,13 @@
   </recommends>
 
   <releases>
+    <release version="0.2.88" date="2026-10-31">
+      <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.2.88</url>
+      <description>
+        <p>Ideas from Mandelbulber: a ground plane or water under the fractal, volumetric clouds that cast shadows and show in reflections, surface materials (Fresnel, iridescence, glow), two fractals in one scene, a fisheye camera and 360 degree stereo panoramas for VR, OpenEXR pictures and HDR backgrounds that light Monte Carlo renders, animation curves to see and drag keyframes, and Catmull-Rom interpolation through every keyframe.</p>
+        <p>A swarm now calculates exactly the same picture as one computer. A crash is reported at the next start, and the Navigator can match the main window's lighting.</p>
+      </description>
+    </release>
     <release version="0.2.87" date="2026-10-30">
       <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.2.87</url>
       <description>

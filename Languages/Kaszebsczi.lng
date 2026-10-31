@@ -196,6 +196,8 @@ Animation=Animacje:
 ;Animation:
 Animation2=Animacjô: {}
 ;Animation: {}
+AnimationCurves=Krzëwé animacji
+;Animation curves
 AnimationLower=animacjô
 ;animation
 AnimationMaker=Twòrzenié animacje
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Zamikô séc na grańcach
 ;Close the mesh at the borders
 CloseWindow=Zamkni òkno
 ;Close window
+CloudDriftX=Dryft chmùrów X
+;Cloud drift X
+CloudDriftY=Dryft chmùrów Y
+;Cloud drift Y
+CloudDriftZ=Dryft chmùrów Z
+;Cloud drift Z
 Clouds=Chmùrë
 ;Clouds
 CloudsOverThePictureALayer=Chmùrë na òbrazu: warstwa midzë dwòma wiżawama wzdłuż òsë X, Y abò Z fraktala, òswiecónô pierszim swiatłã, przed fraktalã ë za nim (nie je w MB3D: zapisóné za dzélã parametrów MB3D; w Monte Carlo wzdłuż promieni widzeniô; nie w òdbiciach)
@@ -724,6 +732,8 @@ CrossEyedPreview=Pòdzérk na krziż
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 do Ctrl+7 w pòrządkù lëstë, Ctrl+W zamikô
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=Krzëwé
+;Curves
 CustomPreset1=włôsny preset 1
 ;custom preset 1
 CustomPreset10=włôsny preset 10
@@ -1380,6 +1390,8 @@ GraphicsCard=Graficznô karta
 ;Graphics card
 GroundPlane=Zemia
 ;Ground plane
+GroundPosition=Pòłożenié zemi
+;Ground position
 GroupByDay=Grëpùjë pò dniach
 ;Group by day
 GuessParams=Zgadnij parametrë
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Trzimô skrótë na nôslédny start
 ;Keeps the hotkeys for the next start
 Keyframe=kluczowô klatka:
 ;keyframe:
+Keyframe2=Kluczné ùjęcé {}
+;Keyframe {}
 KeyframeListM3k=Lësta kluczowëch klatków (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sKluczowô klatka\npòczątk:  kùńc:
@@ -2972,6 +2986,8 @@ SendingOut=Wësélanié:
 ;Sending out:
 SessionsAndCrashes=Sesje i awarie
 ;Sessions and crashes
+Set=Ùstawi
+;Set
 SetLightfuncToCosine=Nastôw fùnkcjã widu na kòsinus
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Nastôw òrientacjã mapë wzglãdno òbiektu.\nBrëkùj tegò w animacjach, żebë przëwiązac widë do scenerii.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=rechòwanié sã nie ùdało
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=Rechòwanié bãdze rozszérzoné bùten òbrôzka ò òdbité òbiektë.\nTo mòże dac mni artefaktów w animacjach, ale téż stojącé òbrôzczi mògą na tim zwëskac.\nWôrtnosc mô bëc w òbrëmienim òd 0 do 0.5 (maks 0.9), to je wiôlgòsc wzglãdno szérzë\në wësokòscë òbrôzka, jakô je maksymalno rechòwónô bùten.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=Wëbróné wôrtnota we wszëtczich klatkach animacji: przecygni kwadrat klucznégò ùjęcô w górã abò w dół, abò klëknij gò ë wpiszë wôrtnotã
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=Programa réżczi pòleceniów mb3d nie je kòle ti programë: zainstalëjë programã znowa.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=Domëslné numrowanié mô 2 lëczbë, òddzelno dlô X ë Y.\nCzej wëbierze sã tã òptacjã, numrowanié mô le jedną lëczbã,\nrosnącą w kòżdi kòlumnie ë jidącą dali w pòsobny rédze.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=Òbrôzczi òczów stereo mają różné wiôlg�
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=kachel ni mô bùfra òbrôzka
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=Wôrtnota wëbrónégò klucznégò ùjęcô
+;The value of the chosen keyframe
 Themes=Témë
 ;Themes
 ThereIsAFileAlready=Lopk {} ju je.

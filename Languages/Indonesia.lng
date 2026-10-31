@@ -196,6 +196,8 @@ Animation=Animasi:
 ;Animation:
 Animation2=Animasi: {}
 ;Animation: {}
+AnimationCurves=Kurva animasi
+;Animation curves
 AnimationLower=animasi
 ;animation
 AnimationMaker=Pembuat animasi
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Tutup mesh di tepinya
 ;Close the mesh at the borders
 CloseWindow=Tutup jendela
 ;Close window
+CloudDriftX=Geser awan X
+;Cloud drift X
+CloudDriftY=Geser awan Y
+;Cloud drift Y
+CloudDriftZ=Geser awan Z
+;Cloud drift Z
 Clouds=Awan
 ;Clouds
 CloudsOverThePictureALayer=Awan di atas gambar: lapisan di antara dua ketinggian sepanjang sumbu X, Y, atau Z fraktal, diterangi cahaya pertama, di depan dan di belakang fraktal (tidak ada di MB3D: disimpan setelah bagian parameter MB3D; di Monte Carlo sepanjang sinar pandang; tidak di pantulan)
@@ -724,6 +732,8 @@ CrossEyedPreview=Pratinjau cross-eyed
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 sampai Ctrl+7 sesuai urutan daftar, Ctrl+W untuk menutup
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=Kurva
+;Curves
 CustomPreset1=preset kustom 1
 ;custom preset 1
 CustomPreset10=preset kustom 10
@@ -1380,6 +1390,8 @@ GraphicsCard=Kartu grafis
 ;Graphics card
 GroundPlane=Bidang tanah
 ;Ground plane
+GroundPosition=Posisi tanah
+;Ground position
 GroupByDay=Kelompokkan per hari
 ;Group by day
 GuessParams=Tebak param
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Menyimpan tombol pintas untuk saat mulai berikutnya
 ;Keeps the hotkeys for the next start
 Keyframe=keyframe:
 ;keyframe:
+Keyframe2=Keyframe {}
+;Keyframe {}
 KeyframeListM3k=Daftar keyframe (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sKeyframe\nmulai:    henti:
@@ -2972,6 +2986,8 @@ SendingOut=Mengirim:
 ;Sending out:
 SessionsAndCrashes=Sesi dan crash
 ;Sessions and crashes
+Set=Atur
+;Set
 SetLightfuncToCosine=Atur fungsi cahaya ke kosinus
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Atur orientasi peta relatif terhadap objek.\nGunakan dalam animasi untuk menambatkan cahaya pada pemandangan.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=perhitungan gagal
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=Perhitungan akan diperluas ke luar gambar dengan objek yang dipantulkan.\nIni dapat mengurangi artefak dalam animasi, tetapi gambar diam juga bisa mendapat manfaat.\nNilainya sebaiknya dalam rentang 0 sampai 0.5 (maks 0.9), yaitu ukuran relatif terhadap lebar\ndan tinggi gambar yang dihitung maksimal di luar gambar.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=Nilai yang dipilih di semua frame animasi: seret kotak keyframe ke atas atau ke bawah, atau klik lalu ketik nilainya
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=Program baris perintah mb3d tidak ditemukan di samping program ini: pasang ulang program.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=Penomoran bawaan terdiri dari 2 angka, terpisah untuk X dan Y.\nJika Anda memilih opsi ini, penomoran hanya satu angka,\nbertambah di setiap kolom dan berlanjut ke baris berikutnya.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=Gambar mata stereo memiliki ukuran berbeda.
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=tile tidak memiliki buffer gambar
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=Nilai keyframe yang dipilih
+;The value of the chosen keyframe
 Themes=Tema
 ;Themes
 ThereIsAFileAlready=Sudah ada file {}.

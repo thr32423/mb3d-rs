@@ -196,6 +196,8 @@ Animation=Animaties:
 ;Animation:
 Animation2=Animatie: {}
 ;Animation: {}
+AnimationCurves=Animatiecurven
+;Animation curves
 AnimationLower=animatie
 ;animation
 AnimationMaker=Animatiemaker
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Sluit de mesh aan de randen
 ;Close the mesh at the borders
 CloseWindow=Venster sluiten
 ;Close window
+CloudDriftX=Wolkendrift X
+;Cloud drift X
+CloudDriftY=Wolkendrift Y
+;Cloud drift Y
+CloudDriftZ=Wolkendrift Z
+;Cloud drift Z
 Clouds=Wolken
 ;Clouds
 CloudsOverThePictureALayer=Wolken over de afbeelding: een laag tussen twee hoogten langs de X-, Y- of Z-as van de fractal, belicht door het eerste licht, voor en achter de fractal (niet in MB3D: bewaard na het MB3D-deel van de parameters; in Monte Carlo langs de kijkstralen; niet in reflecties)
@@ -724,6 +732,8 @@ CrossEyedPreview=Kruislings voorbeeld
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 tot Ctrl+7 in de volgorde van de lijst, Ctrl+W om te sluiten
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=Curven
+;Curves
 CustomPreset1=eigen voorinstelling 1
 ;custom preset 1
 CustomPreset10=eigen voorinstelling 10
@@ -1380,6 +1390,8 @@ GraphicsCard=Grafische kaart
 ;Graphics card
 GroundPlane=Grondvlak
 ;Ground plane
+GroundPosition=Grondvlakpositie
+;Ground position
 GroupByDay=Per dag groeperen
 ;Group by day
 GuessParams=Parameters schatten
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Bewaart de sneltoetsen voor de volgende start
 ;Keeps the hotkeys for the next start
 Keyframe=keyframe:
 ;keyframe:
+Keyframe2=Keyframe {}
+;Keyframe {}
 KeyframeListM3k=Keyframelijst (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sKeyframe\nstart:    stop:
@@ -2972,6 +2986,8 @@ SendingOut=Verzenden:
 ;Sending out:
 SessionsAndCrashes=Sessies en crashes
 ;Sessions and crashes
+Set=Zetten
+;Set
 SetLightfuncToCosine=Lichtfunctie op cosinus zetten
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Stelt de oriëntatie van de map in relatief t.o.v. het object.\nGebruik dit in animaties om de lichten aan de scène te koppelen.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=de berekening is mislukt
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=De berekening wordt uitgebreid tot buiten de afbeelding met gespiegelde objecten.\nDit kan tot minder artefacten in animaties leiden, maar ook stilstaande beelden profiteren ervan.\nDe waarde moet tussen 0 en 0,5 liggen (max. 0,9); het is de grootte ten opzichte van de breedte\nen hoogte van de afbeelding die maximaal buiten de afbeelding wordt berekend.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=De gekozen waarde over alle frames van de animatie: sleep het vierkantje van een keyframe omhoog of omlaag, of klik erop en typ de waarde
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=Het opdrachtregelprogramma mb3d staat niet naast dit programma: installeer het programma opnieuw.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=De standaardnummering bestaat uit 2 getallen, gescheiden in X en Y.\nMet deze optie bestaat de nummering uit één getal,\ndat in elke kolom oploopt en op de volgende rij doorgaat.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=De stereo-oogafbeeldingen hebben verschillende a
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=de tegel heeft geen beeldbuffer
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=De waarde van het gekozen keyframe
+;The value of the chosen keyframe
 Themes=Thema's
 ;Themes
 ThereIsAFileAlready=Er bestaat al een bestand {}.

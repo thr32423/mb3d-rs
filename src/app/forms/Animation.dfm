@@ -707,6 +707,18 @@ object AnimationForm: TAnimationForm
       TabOrder = 0
       OnClick = Button1Click
     end
+    object CurvesBtn: TButton
+      Left = 664
+      Top = 231
+      Width = 91
+      Height = 25
+      Hint = '@MB:TheChosenValueOverAllFrames'
+      Caption = '@MB:Curves'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 40
+      OnClick = CurvesBtnClick
+    end
     object Button2: TButton
       Left = 299
       Top = 200

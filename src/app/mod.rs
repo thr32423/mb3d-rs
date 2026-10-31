@@ -8,6 +8,7 @@
 pub mod ai_form;
 pub mod anim_form;
 pub mod bulbtracer_form;
+pub mod curves_form;
 pub mod engine;
 pub mod event_log;
 pub mod eta;
@@ -45,7 +46,7 @@ pub const FORMS: &[&str] = &[
     "Mand", "FormulaGUI", "LightAdjust", "PostProcessForm", "Navigator", "Animation", "AniPreviewWindow", "AniProcess",
     "BatchForm", "BRInfoWindow", "ColorOptionForm", "ColorPick", "FormulaParser", "IniDirsForm", "MapSequencesGUI",
     "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "AiConnect", "uMapCalcWindow", "VisualThemesGUI",
-    "VoxelExport", "ZBuf16BitGenUI", "BulbTracer2UI", "HeightMapGenUI", "JITFormulaEditGUI", "MeshPreviewUI", "LanguageGUI", "HotkeysGUI",
+    "VoxelExport", "ZBuf16BitGenUI", "Curves", "BulbTracer2UI", "HeightMapGenUI", "JITFormulaEditGUI", "MeshPreviewUI", "LanguageGUI", "HotkeysGUI",
 ];
 
 pub const MAIN: &str = "Mand3DForm";
@@ -71,6 +72,7 @@ pub struct Mb3d {
     pub swarm: swarm_form::State,
     pub unfinished: unfinished_form::State,
     pub history: history_form::State,
+    pub curves: curves_form::State,
     pub logview: log_form::State,
     pub voxel: voxel_form::State,
     pub btracer: bulbtracer_form::State,
@@ -206,6 +208,7 @@ impl App for Mb3d {
             "ZBuf16BitGenFrm" => small_forms::zbuf_event(self, ui, e),
             "FNavigator" => navi_form::event(self, ui, e),
             "AnimationForm" => anim_form::event(self, ui, e),
+            "CurvesFrm" => curves_form::event(self, ui, e),
             "ColorForm" => palette_form::event(self, ui, e),
             "AniPreviewForm" => anim_form::preview_event(self, ui, e),
             "AniProcessForm" => anim_form::process_event(self, ui, e),
@@ -364,6 +367,7 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         swarm,
         unfinished: Default::default(),
         history: Default::default(),
+        curves: Default::default(),
         logview: Default::default(),
         voxel: voxel_form::State::default(),
         btracer: bulbtracer_form::State::default(),

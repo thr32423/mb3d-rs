@@ -197,6 +197,8 @@ Animation=アニメーション:
 ;Animation:
 Animation2=アニメーション: {}
 ;Animation: {}
+AnimationCurves=アニメーションカーブ
+;Animation curves
 AnimationLower=アニメーション
 ;animation
 AnimationMaker=アニメーションメーカー
@@ -581,6 +583,12 @@ CloseTheMeshAtTheBorders=境界でメッシュを閉じます。
 ;Close the mesh at the borders
 CloseWindow=ウィンドウを閉じる
 ;Close window
+CloudDriftX=雲の流れ X
+;Cloud drift X
+CloudDriftY=雲の流れ Y
+;Cloud drift Y
+CloudDriftZ=雲の流れ Z
+;Cloud drift Z
 Clouds=雲
 ;Clouds
 CloudsOverThePictureALayer=画像の上の雲: フラクタルの X、Y、Z 軸に沿った 2 つの高さの間の層で、最初のライトに照らされ、フラクタルの手前にも奥にも描かれます (MB3D にはありません: パラメーターの MB3D の部分の後に保存。モンテカルロでは視線に沿って入り、反射には入りません)
@@ -725,6 +733,8 @@ CrossEyedPreview=交差法プレビュー
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 から Ctrl+7 はリストの順、Ctrl+W で閉じる
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=カーブ
+;Curves
 CustomPreset1=カスタムプリセット 1
 ;custom preset 1
 CustomPreset10=カスタムプリセット 10
@@ -1381,6 +1391,8 @@ GraphicsCard=グラフィックカード
 ;Graphics card
 GroundPlane=地面
 ;Ground plane
+GroundPosition=地面の位置
+;Ground position
 GroupByDay=日ごとにまとめる
 ;Group by day
 GuessParams=パラメータを推定
@@ -1693,6 +1705,8 @@ KeepsTheHotkeysForTheNext=次回の起動のためにホットキーを保存し
 ;Keeps the hotkeys for the next start
 Keyframe=キーフレーム:
 ;keyframe:
+Keyframe2=キーフレーム {}
+;Keyframe {}
 KeyframeListM3k=キーフレームリスト (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sキーフレーム\n開始:    終了:
@@ -2973,6 +2987,8 @@ SendingOut=送信:
 ;Sending out:
 SessionsAndCrashes=セッションとクラッシュ
 ;Sessions and crashes
+Set=設定
+;Set
 SetLightfuncToCosine=ライト関数をコサインに
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=マップの向きをオブジェクト基準にします。\nアニメーションでライトをシーンに固定するために使います。
@@ -3239,6 +3255,8 @@ TheCalculationFailedLower=計算に失敗しました
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=計算を画像の外側まで拡張し、そこにあるオブジェクトの反射も含めます。\nアニメーションでアーティファクトが減りますが、静止画にも有効です。\n値は 0 から 0.5 の範囲 (最大 0.9) にしてください。これは外側で最大限に計算される\n画像の幅と高さに対する相対サイズです。
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=アニメーション全フレームでの選んだ値: キーフレームの四角を上下にドラッグするか、クリックして値を入力します
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=コマンドラインプログラム mb3d がこのプログラムと同じ場所に見つかりません。プログラムを再インストールしてください。
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=既定の番号付けはXとYに分かれた2つの数字です。\nこのオプションを選ぶと番号は1つだけになり、\n各列で増えていき次の行へ続きます。
@@ -3319,6 +3337,8 @@ TheStereoEyeImagesHaveDifferent=ステレオの左右の画像のサイズが異
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=タイルに画像バッファがありません
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=選んだキーフレームの値
+;The value of the chosen keyframe
 Themes=テーマ
 ;Themes
 ThereIsAFileAlready=ファイル {} は既に存在します。

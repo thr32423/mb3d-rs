@@ -196,6 +196,8 @@ Animation=Animations :
 ;Animation:
 Animation2=Animation : {}
 ;Animation: {}
+AnimationCurves=Courbes d'animation
+;Animation curves
 AnimationLower=animation
 ;animation
 AnimationMaker=Créateur d'animation
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Ferme le maillage sur les bords
 ;Close the mesh at the borders
 CloseWindow=Fermer la fenêtre
 ;Close window
+CloudDriftX=Dérive des nuages X
+;Cloud drift X
+CloudDriftY=Dérive des nuages Y
+;Cloud drift Y
+CloudDriftZ=Dérive des nuages Z
+;Cloud drift Z
 Clouds=Nuages
 ;Clouds
 CloudsOverThePictureALayer=Des nuages sur l'image : une couche entre deux hauteurs le long de l'axe X, Y ou Z de la fractale, éclairée par la première lumière, devant et derrière la fractale (pas dans MB3D : gardée après la partie MB3D des paramètres ; dans Monte Carlo le long des rayons de vue ; pas dans les reflets)
@@ -724,6 +732,8 @@ CrossEyedPreview=Aperçu en vision croisée
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 à Ctrl+7 dans l'ordre de la liste, Ctrl+W pour fermer
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=Courbes
+;Curves
 CustomPreset1=préréglage personnalisé 1
 ;custom preset 1
 CustomPreset10=préréglage personnalisé 10
@@ -1380,6 +1390,8 @@ GraphicsCard=Carte graphique
 ;Graphics card
 GroundPlane=Plan de sol
 ;Ground plane
+GroundPosition=Position du sol
+;Ground position
 GroupByDay=Grouper par jour
 ;Group by day
 GuessParams=Deviner les paramètres
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Garde les raccourcis pour le prochain démarrage
 ;Keeps the hotkeys for the next start
 Keyframe=image-clé :
 ;keyframe:
+Keyframe2=Image clé {}
+;Keyframe {}
 KeyframeListM3k=Liste d'images-clés (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sImage-clé\ndébut :    fin :
@@ -2972,6 +2986,8 @@ SendingOut=Envoi :
 ;Sending out:
 SessionsAndCrashes=Sessions et plantages
 ;Sessions and crashes
+Set=Fixer
+;Set
 SetLightfuncToCosine=Fonction lumière en cosinus
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Oriente la carte relativement à l'objet.\nÀ utiliser dans les animations pour fixer les lumières au décor.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=le calcul a échoué
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=Le calcul sera étendu hors de l'image avec les objets réfléchis.\nCela peut réduire les artefacts dans les animations, mais les images fixes en profitent aussi.\nLa valeur doit être comprise entre 0 et 0,5 (max. 0,9) ; c'est la taille, relative à la largeur\net à la hauteur de l'image, calculée au maximum à l'extérieur.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=La valeur choisie sur toutes les images de l'animation : faites glisser le carré d'une image clé vers le haut ou le bas, ou cliquez dessus et tapez sa valeur
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=Le programme en ligne de commande mb3d est introuvable à côté de ce programme : réinstallez le programme.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=La numérotation par défaut comporte 2 nombres, séparés en X et Y.\nAvec cette option, la numérotation n'a qu'un seul nombre,\ncroissant dans chaque colonne et continuant sur la ligne suivante.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=Les images stéréo des deux yeux ont des taille
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=la tuile n'a pas de tampon d'image
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=La valeur de l'image clé choisie
+;The value of the chosen keyframe
 Themes=Thèmes
 ;Themes
 ThereIsAFileAlready=Un fichier {} existe déjà.

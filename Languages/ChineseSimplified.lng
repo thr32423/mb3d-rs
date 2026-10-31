@@ -197,6 +197,8 @@ Animation=动画:
 ;Animation:
 Animation2=动画：{}
 ;Animation: {}
+AnimationCurves=动画曲线
+;Animation curves
 AnimationLower=动画
 ;animation
 AnimationMaker=动画制作器
@@ -581,6 +583,12 @@ CloseTheMeshAtTheBorders=在边界处封闭网格
 ;Close the mesh at the borders
 CloseWindow=关闭窗口
 ;Close window
+CloudDriftX=云漂移 X
+;Cloud drift X
+CloudDriftY=云漂移 Y
+;Cloud drift Y
+CloudDriftZ=云漂移 Z
+;Cloud drift Z
 Clouds=云
 ;Clouds
 CloudsOverThePictureALayer=图片上的云：沿分形 X、Y 或 Z 轴两个高度之间的一层，由第一盏灯照亮，位于分形的前方和后方（MB3D 中没有：保存在参数的 MB3D 部分之后；在蒙特卡罗中沿视线出现；不出现在反射中）
@@ -725,6 +733,8 @@ CrossEyedPreview=交叉眼预览
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 到 Ctrl+7 按列表顺序，Ctrl+W 关闭
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=曲线
+;Curves
 CustomPreset1=自定义预设 1
 ;custom preset 1
 CustomPreset10=自定义预设 10
@@ -1381,6 +1391,8 @@ GraphicsCard=显卡
 ;Graphics card
 GroundPlane=地平面
 ;Ground plane
+GroundPosition=地面位置
+;Ground position
 GroupByDay=按日分组
 ;Group by day
 GuessParams=猜测参数
@@ -1693,6 +1705,8 @@ KeepsTheHotkeysForTheNext=保留快捷键供下次启动使用
 ;Keeps the hotkeys for the next start
 Keyframe=关键帧：
 ;keyframe:
+Keyframe2=关键帧 {}
+;Keyframe {}
 KeyframeListM3k=关键帧列表 (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\s关键帧\n起始：    结束：
@@ -2973,6 +2987,8 @@ SendingOut=发送：
 ;Sending out:
 SessionsAndCrashes=会话和崩溃
 ;Sessions and crashes
+Set=设置
+;Set
 SetLightfuncToCosine=光照函数设为余弦
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=将贴图方向设为相对于物体。\n在动画中使用，可将光源固定到场景上。
@@ -3239,6 +3255,8 @@ TheCalculationFailedLower=计算失败
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=计算范围将向图像外侧扩展，以包含被反射的物体。\n这能减少动画中的瑕疵，静态图像也能从中受益。\n取值应在 0 到 0.5 之间（最大 0.9），即图像外侧最大计算范围\n相对于图像宽高的比例。
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=所选数值在动画所有帧上的变化：上下拖动关键帧的方块，或点击它并输入数值
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=在本程序所在位置找不到命令行程序 mb3d：请重新安装本程序。
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=默认编号包含 2 个数字，分为 X 和 Y。\n选择此项后，编号只有一个数字，\n在每列中递增并延续到下一行。
@@ -3319,6 +3337,8 @@ TheStereoEyeImagesHaveDifferent=立体左右眼图像的尺寸不同。
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=该图块没有图像缓冲区
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=所选关键帧的数值
+;The value of the chosen keyframe
 Themes=主题
 ;Themes
 ThereIsAFileAlready=文件 {} 已存在。

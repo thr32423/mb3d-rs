@@ -196,6 +196,8 @@ Animation=Animação:
 ;Animation:
 Animation2=Animação: {}
 ;Animation: {}
+AnimationCurves=Curvas da animação
+;Animation curves
 AnimationLower=animação
 ;animation
 AnimationMaker=Criador de animações
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Fechar a malha nas bordas
 ;Close the mesh at the borders
 CloseWindow=Fechar janela
 ;Close window
+CloudDriftX=Deriva das nuvens X
+;Cloud drift X
+CloudDriftY=Deriva das nuvens Y
+;Cloud drift Y
+CloudDriftZ=Deriva das nuvens Z
+;Cloud drift Z
 Clouds=Nuvens
 ;Clouds
 CloudsOverThePictureALayer=Nuvens sobre a imagem: uma camada entre duas alturas ao longo do eixo X, Y ou Z do fractal, iluminada pela primeira luz, na frente e atrás do fractal (não existe no MB3D: guardada após a parte do MB3D nos parâmetros; no Monte Carlo ao longo dos raios de visão; não nos reflexos)
@@ -724,6 +732,8 @@ CrossEyedPreview=Prévia de olhos cruzados
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 a Ctrl+7 na ordem da lista, Ctrl+W para fechar
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=Curvas
+;Curves
 CustomPreset1=predefinição pessoal 1
 ;custom preset 1
 CustomPreset10=predefinição pessoal 10
@@ -1380,6 +1390,8 @@ GraphicsCard=Placa de vídeo
 ;Graphics card
 GroundPlane=Plano de chão
 ;Ground plane
+GroundPosition=Posição do chão
+;Ground position
 GroupByDay=Agrupar por dia
 ;Group by day
 GuessParams=Estimar parâm.
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Mantém os atalhos para o próximo início
 ;Keeps the hotkeys for the next start
 Keyframe=quadro-chave:
 ;keyframe:
+Keyframe2=Quadro-chave {}
+;Keyframe {}
 KeyframeListM3k=Lista de quadros-chave (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sQuadro-chave\ninício:    fim:
@@ -2972,6 +2986,8 @@ SendingOut=Enviando:
 ;Sending out:
 SessionsAndCrashes=Sessões e falhas
 ;Sessions and crashes
+Set=Definir
+;Set
 SetLightfuncToCosine=Função de luz para cosseno
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Define a orientação dos mapas relativa ao objeto.\nUse em animações para fixar as luzes ao cenário.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=o cálculo falhou
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=O cálculo será estendido para fora da imagem com objetos refletidos.\nIsso pode reduzir artefatos em animações, mas imagens fixas também podem se beneficiar.\nO valor deve ficar entre 0 e 0.5 (máx. 0.9); é o tamanho, relativo à largura\ne à altura da imagem, calculado no máximo do lado de fora.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=O valor escolhido em todos os quadros da animação: arraste o quadrado de um quadro-chave para cima ou para baixo, ou clique nele e digite o valor
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=O programa de linha de comando mb3d não foi encontrado ao lado deste programa: instale o programa de novo.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=A numeração padrão inclui 2 números, separados em X e Y.\nCom esta opção, a numeração é um único número,\nque aumenta em cada coluna e continua na linha seguinte.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=As imagens estéreo dos olhos têm tamanhos dife
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=o bloco não tem buffer de imagem
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=O valor do quadro-chave escolhido
+;The value of the chosen keyframe
 Themes=Temas
 ;Themes
 ThereIsAFileAlready=Já existe um arquivo {}.

@@ -197,6 +197,8 @@ Animation=التحريك:
 ;Animation:
 Animation2=التحريك: {}
 ;Animation: {}
+AnimationCurves=منحنيات الحركة
+;Animation curves
 AnimationLower=التحريك
 ;animation
 AnimationMaker=صانع التحريك
@@ -581,6 +583,12 @@ CloseTheMeshAtTheBorders=إغلاق الشبكة عند الحدود
 ;Close the mesh at the borders
 CloseWindow=إغلاق النافذة
 ;Close window
+CloudDriftX=انجراف السحب X
+;Cloud drift X
+CloudDriftY=انجراف السحب Y
+;Cloud drift Y
+CloudDriftZ=انجراف السحب Z
+;Cloud drift Z
 Clouds=السحب
 ;Clouds
 CloudsOverThePictureALayer=سحب فوق الصورة: طبقة بين ارتفاعين على المحور X أو Y أو Z للكسورية، يضيئها الضوء الأول، أمام الكسورية وخلفها (ليست في MB3D: تُحفظ بعد جزء MB3D من المعاملات؛ في مونت كارلو على أشعة النظر؛ ليست في الانعكاسات)
@@ -725,6 +733,8 @@ CrossEyedPreview=معاينة بالعينين المتقاطعتين
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=من Ctrl+1 إلى Ctrl+7 بترتيب القائمة، وCtrl+W للإغلاق
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=المنحنيات
+;Curves
 CustomPreset1=إعداد مسبق مخصص 1
 ;custom preset 1
 CustomPreset10=إعداد مسبق مخصص 10
@@ -1381,6 +1391,8 @@ GraphicsCard=بطاقة الرسوميات
 ;Graphics card
 GroundPlane=مستوى الأرض
 ;Ground plane
+GroundPosition=موضع الأرض
+;Ground position
 GroupByDay=التجميع حسب اليوم
 ;Group by day
 GuessParams=تخمين المعاملات
@@ -1693,6 +1705,8 @@ KeepsTheHotkeysForTheNext=يحتفظ بمفاتيح الاختصار للتشغ�
 ;Keeps the hotkeys for the next start
 Keyframe=الإطار المفتاحي:
 ;keyframe:
+Keyframe2=الإطار المفتاحي {}
+;Keyframe {}
 KeyframeListM3k=قائمة الإطارات المفتاحية (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sالإطار المفتاحي\nالبداية:    النهاية:
@@ -2973,6 +2987,8 @@ SendingOut=الإرسال:
 ;Sending out:
 SessionsAndCrashes=الجلسات والأعطال
 ;Sessions and crashes
+Set=تعيين
+;Set
 SetLightfuncToCosine=ضبط دالة الضوء على جيب التمام
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=ضبط اتجاه الخرائط نسبةً إلى الجسم.\nاستخدمه في التحريكات لتثبيت الأضواء على المشهد.
@@ -3239,6 +3255,8 @@ TheCalculationFailedLower=أخفق الحساب
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=يمتد الحساب إلى خارج الصورة مع الأجسام المنعكسة.\nقد يقلل هذا العيوب في التحريكات، لكن الصور الثابتة قد تستفيد منه أيضًا.\nيجب أن تكون القيمة بين 0 و0.5 (بحد أقصى 0.9)، وهي الحجم نسبةً إلى عرض الصورة\nوارتفاعها الذي يُحسب كحد أقصى خارجها.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=القيمة المختارة عبر كل إطارات الحركة: اسحب مربع إطار مفتاحي لأعلى أو لأسفل، أو انقره واكتب قيمته
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=لم يُعثر على برنامج سطر الأوامر mb3d بجوار هذا البرنامج: ثبّت البرنامج من جديد.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=الترقيم الافتراضي يتضمن رقمين، منفصلين في X وY.\nإن اخترت هذا الخيار، يصبح الترقيم رقمًا واحدًا\nيزداد في كل عمود ويستمر في الصف التالي.
@@ -3319,6 +3337,8 @@ TheStereoEyeImagesHaveDifferent=صورتا العينين المجسمتان ب�
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=البلاطة بلا مخزن صورة
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=قيمة الإطار المفتاحي المختار
+;The value of the chosen keyframe
 Themes=السمات
 ;Themes
 ThereIsAFileAlready=يوجد ملف {} مسبقًا.

@@ -224,6 +224,16 @@ fn show_project_name(app: &Mb3d, ui: &mut Ui) {
 }
 
 /// Renders the small keyframe image in the background (`RenderPrevBMP`).
+/// Keyframe `k` changed elsewhere (the Curves window): its picture and the
+/// times anew.
+pub fn keyframe_changed(app: &mut Mb3d, ui: &mut Ui, k: usize) {
+    if k < app.anim.anim.keyframes.len() {
+        render_thumb(app, ui, k);
+    }
+    paint_box(app, ui);
+    calc_time(app, ui);
+}
+
 fn render_thumb(app: &mut Mb3d, ui: &Ui, i: usize) {
     read_settings(app, ui);
     let a = app.anim.anim.clone();
@@ -997,9 +1007,19 @@ pub fn process_event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
 }
 
 pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
+    event_inner(app, ui, e);
+    // the curves follow the keyframes (added, removed, moved, their frames)
+    let h = e.handler.as_str();
+    if h.ends_with("Click") || h.ends_with("Change") || h.ends_with("MouseUp") {
+        super::curves_form::update(app, ui);
+    }
+}
+
+fn event_inner(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
     let h = e.handler.as_str();
     let n = count(app);
     match h {
+        "CurvesBtnClick" => super::curves_form::open(app, ui),
         "FormShow" => {
             if app.anim.first_show {
                 app.anim.first_show = false;

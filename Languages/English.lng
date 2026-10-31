@@ -196,6 +196,8 @@ Animation=Animation:
 ;HotkeysFrm.Label3.Caption
 Animation2=Animation: {}
 ;the program
+AnimationCurves=Animation curves
+;CurvesFrm.Caption
 AnimationLower=animation
 ;the program
 AnimationMaker=Animation maker
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Close the mesh at the borders
 ;BulbTracer2Frm.CloseMeshCheckbox.Hint
 CloseWindow=Close window
 ;AnimationForm.Button1.Caption, BatchForm1.Button2.Caption
+CloudDriftX=Cloud drift X
+;the program
+CloudDriftY=Cloud drift Y
+;the program
+CloudDriftZ=Cloud drift Z
+;the program
 Clouds=Clouds
 ;PostProForm.CloudsBtn.Caption
 CloudsOverThePictureALayer=Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
@@ -724,6 +732,8 @@ CrossEyedPreview=Cross-eyed preview
 ;Mand3DForm.StereoCrossCheck.Caption
 Ctrl1ToCtrl7In=Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 ;HotkeysFrm.DefaultsBtn.Hint
+Curves=Curves
+;AnimationForm.CurvesBtn.Caption
 CustomPreset1=custom preset 1
 ;LightAdjustForm.SpeedButton20.Hint
 CustomPreset10=custom preset 10
@@ -1093,7 +1103,7 @@ FFmpegCommand=FFmpeg command
 FNr=F.nr:
 ;FNavigator.Label45.Caption
 FOVy=FOVy:
-;Mand3DForm.Label21.Caption, FNavigator.Label8.Caption
+;Mand3DForm.Label21.Caption, FNavigator.Label8.Caption; the program
 FailedToImportFractalParametersAll=Failed to import fractal parameters. All other settings where imported?
 ;the program
 FarDepthFog=Far depth fog
@@ -1380,6 +1390,8 @@ GraphicsCard=Graphics card
 ;Mand3DForm.CalcOnCombo.Items, SwarmFrm.Caption
 GroundPlane=Ground plane
 ;Mand3DForm.GroundCBx.Caption
+GroundPosition=Ground position
+;the program
 GroupByDay=Group by day
 ;HistoryFrm.CheckBox2.Caption
 GuessParams=Guess params
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Keeps the hotkeys for the next start
 ;HotkeysFrm.SaveAndExitBtn.Hint
 Keyframe=keyframe:
 ;AnimationForm.CheckBox1.Caption
+Keyframe2=Keyframe {}
+;the program
 KeyframeListM3k=Keyframe list (*.m3k)
 ;the program
 KeyframeStartStop=\s\sKeyframe\nstart:    stop:
@@ -2505,11 +2519,11 @@ PortableNetworkGraphic=Portable Network Graphic
 Position=Position
 ;Mand3DForm.PositionBtn.Caption
 PositionX=Position X
-;MeshPreviewFrm.Label5.Caption
+;MeshPreviewFrm.Label5.Caption; the program
 PositionY=Position Y
-;MeshPreviewFrm.Label10.Caption
+;MeshPreviewFrm.Label10.Caption; the program
 PositionZ=Position Z
-;MeshPreviewFrm.Label11.Caption
+;MeshPreviewFrm.Label11.Caption; the program
 PositionalLight=Positional light
 ;LightAdjustForm.TabSheet2.Caption
 PostCalculations=post calculations
@@ -2972,6 +2986,8 @@ SendingOut=Sending out:
 ;FNavigator.Label32.Caption
 SessionsAndCrashes=Sessions and crashes
 ;LogFrm.ComboBox3.Items
+Set=Set
+;CurvesFrm.SetBtn.Caption
 SetLightfuncToCosine=Set lightfunc to cosine
 ;PostProForm.CheckBox10.Caption
 SetTheMapsOrientationRelativeTo=Set the maps orientation relative to the object.\nUse it in animations to fix the lights to the scenery.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=the calculation failed
 ;the program
 TheCalculationWillBeExtendedTowards=The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
 ;PostProForm.Edit9.Hint
+TheChosenValueOverAllFrames=The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+;AnimationForm.CurvesBtn.Hint, CurvesFrm.Image1.Hint
 TheCommandLineProgramMb3dWas=The command line program mb3d was not found next to this program: install the program again.
 ;the program
 TheDefaultNumberingIncludes2Numbers=The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=The stereo eye images have different sizes.
 ;the program
 TheTileHasNoImageBuffer=the tile has no image buffer
 ;the program
+TheValueOfTheChosenKeyframe=The value of the chosen keyframe
+;CurvesFrm.KeyValEdit.Hint
 Themes=Themes
 ;Mand3DForm.VisualThemesBtn.Caption
 ThereIsAFileAlready=There is a file {} already.
@@ -3687,7 +3707,7 @@ ZScale=Z scale:
 ZSlices=Z slices:
 ;FVoxelExport.Label10.Caption
 ZStart=Z start
-;Mand3DForm.SpeedButton33.Caption
+;Mand3DForm.SpeedButton33.Caption; the program
 ZW=ZW:
 ;FormulaGUIForm.Label26.Caption
 ZZCz=Z'  =  Z + Cz

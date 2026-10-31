@@ -196,6 +196,8 @@ Animation=Animazioni:
 ;Animation:
 Animation2=Animazione: {}
 ;Animation: {}
+AnimationCurves=Curve dell'animazione
+;Animation curves
 AnimationLower=animazione
 ;animation
 AnimationMaker=Creazione animazioni
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Chiude la mesh ai bordi
 ;Close the mesh at the borders
 CloseWindow=Chiudi finestra
 ;Close window
+CloudDriftX=Deriva nuvole X
+;Cloud drift X
+CloudDriftY=Deriva nuvole Y
+;Cloud drift Y
+CloudDriftZ=Deriva nuvole Z
+;Cloud drift Z
 Clouds=Nuvole
 ;Clouds
 CloudsOverThePictureALayer=Nuvole sull'immagine: uno strato tra due altezze lungo l'asse X, Y o Z del frattale, illuminato dalla prima luce, davanti e dietro il frattale (non in MB3D: salvato dopo la parte MB3D dei parametri; in Monte Carlo lungo i raggi di vista; non nei riflessi)
@@ -724,6 +732,8 @@ CrossEyedPreview=Anteprima a occhi incrociati
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Da Ctrl+1 a Ctrl+7 nell'ordine della lista, Ctrl+W per chiudere
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=Curve
+;Curves
 CustomPreset1=preset personalizzato 1
 ;custom preset 1
 CustomPreset10=preset personalizzato 10
@@ -1380,6 +1390,8 @@ GraphicsCard=Scheda grafica
 ;Graphics card
 GroundPlane=Suolo
 ;Ground plane
+GroundPosition=Posizione del suolo
+;Ground position
 GroupByDay=Raggruppa per giorno
 ;Group by day
 GuessParams=Stima parametri
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Mantiene le scorciatoie per il prossimo avvio
 ;Keeps the hotkeys for the next start
 Keyframe=keyframe:
 ;keyframe:
+Keyframe2=Fotogramma chiave {}
+;Keyframe {}
 KeyframeListM3k=Elenco keyframe (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sKeyframe\ninizio:   fine:
@@ -2972,6 +2986,8 @@ SendingOut=Invio:
 ;Sending out:
 SessionsAndCrashes=Sessioni e arresti anomali
 ;Sessions and crashes
+Set=Imposta
+;Set
 SetLightfuncToCosine=Funzione luce su coseno
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Imposta l'orientamento della mappa relativo all'oggetto.\nUsalo nelle animazioni per fissare le luci alla scena.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=il calcolo non è riuscito
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=Il calcolo viene esteso oltre il bordo dell'immagine con gli oggetti riflessi.\nQuesto può ridurre gli artefatti nelle animazioni, ma anche le immagini fisse ne traggono vantaggio.\nIl valore dovrebbe stare tra 0 e 0.5 (max 0.9); è la dimensione, relativa a larghezza\ne altezza dell'immagine, calcolata al massimo all'esterno.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=Il valore scelto su tutti i fotogrammi dell'animazione: trascinate il quadrato di un fotogramma chiave in su o in giù, oppure cliccatelo e scrivetene il valore
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=Il programma a riga di comando mb3d non si trova accanto a questo programma: reinstalla il programma.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=La numerazione predefinita usa 2 numeri, separati per X e Y.\nCon questa opzione la numerazione è un solo numero,\nche cresce lungo ogni colonna e prosegue nella riga successiva.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=Le immagini stereo dei due occhi hanno dimension
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=il riquadro non ha un buffer immagine
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=Il valore del fotogramma chiave scelto
+;The value of the chosen keyframe
 Themes=Temi
 ;Themes
 ThereIsAFileAlready=Esiste già un file {}.

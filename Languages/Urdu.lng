@@ -197,6 +197,8 @@ Animation=اینیمیشن:
 ;Animation:
 Animation2=اینیمیشن: {}
 ;Animation: {}
+AnimationCurves=اینیمیشن کے خم
+;Animation curves
 AnimationLower=اینیمیشن
 ;animation
 AnimationMaker=اینیمیشن ساز
@@ -581,6 +583,12 @@ CloseTheMeshAtTheBorders=کناروں پر میش بند کریں
 ;Close the mesh at the borders
 CloseWindow=ونڈو بند کریں
 ;Close window
+CloudDriftX=بادلوں کا بہاؤ X
+;Cloud drift X
+CloudDriftY=بادلوں کا بہاؤ Y
+;Cloud drift Y
+CloudDriftZ=بادلوں کا بہاؤ Z
+;Cloud drift Z
 Clouds=بادل
 ;Clouds
 CloudsOverThePictureALayer=تصویر پر بادل: فریکٹل کے X، Y یا Z محور پر دو اونچائیوں کے درمیان ایک تہ، پہلی روشنی سے روشن، فریکٹل کے آگے اور پیچھے (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ؛ مونٹی کارلو میں نظر کی شعاعوں کے ساتھ؛ عکسوں میں نہیں)
@@ -725,6 +733,8 @@ CrossEyedPreview=کراس آئیڈ پیش منظر
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=فہرست کی ترتیب میں Ctrl+1 سے Ctrl+7، بند کرنے کے لیے Ctrl+W
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=خم
+;Curves
 CustomPreset1=حسب ضرورت پری سیٹ 1
 ;custom preset 1
 CustomPreset10=حسب ضرورت پری سیٹ 10
@@ -1381,6 +1391,8 @@ GraphicsCard=گرافکس کارڈ
 ;Graphics card
 GroundPlane=زمینی سطح
 ;Ground plane
+GroundPosition=زمین کا مقام
+;Ground position
 GroupByDay=دن کے لحاظ سے گروپ کریں
 ;Group by day
 GuessParams=پیرامیٹرز کا اندازہ
@@ -1693,6 +1705,8 @@ KeepsTheHotkeysForTheNext=ہاٹ کیز اگلی بار شروع کرنے کے �
 ;Keeps the hotkeys for the next start
 Keyframe=کی فریم:
 ;keyframe:
+Keyframe2=کی فریم {}
+;Keyframe {}
 KeyframeListM3k=کی فریم فہرست (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sکی فریم\nآغاز:    اختتام:
@@ -2973,6 +2987,8 @@ SendingOut=بھیجنا:
 ;Sending out:
 SessionsAndCrashes=سیشن اور کریش
 ;Sessions and crashes
+Set=مقرر کریں
+;Set
 SetLightfuncToCosine=روشنی فنکشن کو cosine پر رکھیں
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=نقشوں کا رخ شے کے لحاظ سے طے کریں۔\nاینیمیشنز میں روشنیوں کو منظر کے ساتھ جمانے کے لیے استعمال کریں۔
@@ -3239,6 +3255,8 @@ TheCalculationFailedLower=حساب ناکام ہو گیا
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=حساب منعکس اشیاء کے ساتھ تصویر سے باہر کی طرف بڑھایا جائے گا۔\nاس سے اینیمیشنز میں کم نقائص ہو سکتے ہیں، لیکن ساکن تصاویر کو بھی فائدہ ہو سکتا ہے۔\nقدر 0 سے 0.5 (زیادہ سے زیادہ 0.9) کی حد میں ہونی چاہیے، یہ تصویر کی چوڑائی\nاور اونچائی کے لحاظ سے وہ سائز ہے جو باہر زیادہ سے زیادہ حساب ہوتا ہے۔
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=اینیمیشن کے تمام فریموں پر چنی گئی قدر: کسی کی فریم کا مربع اوپر یا نیچے گھسیٹیں، یا اس پر کلک کر کے قدر لکھیں
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=کمانڈ لائن پروگرام mb3d اس پروگرام کے ساتھ نہیں ملا: پروگرام دوبارہ انسٹال کریں۔
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=طے شدہ نمبرنگ میں 2 نمبر ہوتے ہیں، X اور Y میں الگ۔\nیہ اختیار منتخب کرنے پر نمبرنگ صرف ایک نمبر ہوتی ہے،\nجو ہر کالم میں بڑھتی ہے اور اگلی قطار میں جاری رہتی ہے۔
@@ -3319,6 +3337,8 @@ TheStereoEyeImagesHaveDifferent=اسٹیریو آنکھوں کی تصاویر ک
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=ٹائل کا کوئی تصویری بفر نہیں
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=چنے گئے کی فریم کی قدر
+;The value of the chosen keyframe
 Themes=تھیمز
 ;Themes
 ThereIsAFileAlready=فائل {} پہلے سے موجود ہے۔

@@ -196,6 +196,8 @@ Animation=Animacje:
 ;Animation:
 Animation2=Animacja: {}
 ;Animation: {}
+AnimationCurves=Krzywe animacji
+;Animation curves
 AnimationLower=animacja
 ;animation
 AnimationMaker=Kreator animacji
@@ -580,6 +582,12 @@ CloseTheMeshAtTheBorders=Zamyka siatkę na krawędziach
 ;Close the mesh at the borders
 CloseWindow=Zamknij okno
 ;Close window
+CloudDriftX=Dryf chmur X
+;Cloud drift X
+CloudDriftY=Dryf chmur Y
+;Cloud drift Y
+CloudDriftZ=Dryf chmur Z
+;Cloud drift Z
 Clouds=Chmury
 ;Clouds
 CloudsOverThePictureALayer=Chmury na obrazie: warstwa między dwiema wysokościami wzdłuż osi X, Y lub Z fraktala, oświetlona pierwszym światłem, przed fraktalem i za nim (nie ma w MB3D: zapisywane za częścią parametrów MB3D; w Monte Carlo wzdłuż promieni widzenia; nie w odbiciach)
@@ -724,6 +732,8 @@ CrossEyedPreview=Podgląd krzyżowy
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 do Ctrl+7 w kolejności listy, Ctrl+W zamyka
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Curves=Krzywe
+;Curves
 CustomPreset1=własny preset 1
 ;custom preset 1
 CustomPreset10=własny preset 10
@@ -1380,6 +1390,8 @@ GraphicsCard=Karta graficzna
 ;Graphics card
 GroundPlane=Podłoże
 ;Ground plane
+GroundPosition=Położenie podłoża
+;Ground position
 GroupByDay=Grupuj według dni
 ;Group by day
 GuessParams=Zgadnij parametry
@@ -1692,6 +1704,8 @@ KeepsTheHotkeysForTheNext=Zachowuje skróty na następne uruchomienie
 ;Keeps the hotkeys for the next start
 Keyframe=klatki kluczowej:
 ;keyframe:
+Keyframe2=Klatka kluczowa {}
+;Keyframe {}
 KeyframeListM3k=Lista klatek kluczowych (*.m3k)
 ;Keyframe list (*.m3k)
 KeyframeStartStop=\s\sKlatka kluczowa\nstart:    stop:
@@ -2972,6 +2986,8 @@ SendingOut=Wysyłanie:
 ;Sending out:
 SessionsAndCrashes=Sesje i awarie
 ;Sessions and crashes
+Set=Ustaw
+;Set
 SetLightfuncToCosine=Funkcja światła na cosinus
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Ustawia orientację mapy względem obiektu.\nUżyj w animacjach, aby przypiąć światła do scenerii.
@@ -3238,6 +3254,8 @@ TheCalculationFailedLower=obliczenie nie powiodło się
 ;the calculation failed
 TheCalculationWillBeExtendedTowards=Obliczenia zostaną rozszerzone poza obraz na odbite obiekty.\nMoże to zmniejszyć artefakty w animacjach, ale skorzystają też obrazy statyczne.\nWartość powinna mieścić się w zakresie 0 do 0.5 (maks. 0.9); to rozmiar względem szerokości\ni wysokości obrazu, maksymalnie obliczany na zewnątrz.
 ;The calculation will be extended towards the outside the image with reflected objects.\nThis might lead to less artifacts in animations, but stills can profit from it too.\nValue should be in the range of 0 to 0.5 (max 0.9), it is the size relative to the image\nwidth and height that is maximal calculated on the outside.
+TheChosenValueOverAllFrames=Wybrana wartość we wszystkich klatkach animacji: przeciągnij kwadrat klatki kluczowej w górę lub w dół albo kliknij go i wpisz wartość
+;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheCommandLineProgramMb3dWas=Nie znaleziono programu wiersza poleceń mb3d obok tego programu: zainstaluj program ponownie.
 ;The command line program mb3d was not found next to this program: install the program again.
 TheDefaultNumberingIncludes2Numbers=Domyślna numeracja zawiera 2 liczby, osobno dla X i Y.\nPo wybraniu tej opcji numeracja jest jedną liczbą,\nrosnącą w każdej kolumnie i kontynuowaną w następnym wierszu.
@@ -3318,6 +3336,8 @@ TheStereoEyeImagesHaveDifferent=Obrazy stereo dla obu oczu mają różne rozmiar
 ;The stereo eye images have different sizes.
 TheTileHasNoImageBuffer=kafelek nie ma bufora obrazu
 ;the tile has no image buffer
+TheValueOfTheChosenKeyframe=Wartość wybranej klatki kluczowej
+;The value of the chosen keyframe
 Themes=Motywy
 ;Themes
 ThereIsAFileAlready=Plik {} już istnieje.

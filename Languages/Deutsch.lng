@@ -1134,6 +1134,10 @@ FirstStepRandomColon=Erster Schritt zufällig:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=Erster Schritt zufällig:\nVermeidet fleckige Artefakte bei Formeln mit schlechter DE.\nFür weniger Rauschen zusammen mit Bildverkleinerung und/oder mehr Strahlen verwenden.\nKann auch zusammen mit Dithering verwendet werden.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=Fischauge
+;Fisheye
+FisheyeNotInMB3DTheField=Fischauge (nicht in MB3D): das Sichtfeld, bis 360 Grad, reicht über die Höhe des Bildes; ein quadratisches Bild zeigt eine runde Ansicht
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=Linken+rechten Rand angleichen
 ;Fit left+right borders
 FixedZoomAndSteps=Fester Zoom und Schritte

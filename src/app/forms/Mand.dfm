@@ -1450,13 +1450,14 @@ object Mand3DForm: TMand3DForm
           Left = 19
           Top = 41
           Width = 110
-          Height = 96
+          Height = 118
           Caption = '@MB:CameraLense'
           ItemIndex = 0
           Items.Strings = (
             '@MB:Common'
             '@MB:Rectilinear'
-            '@MB:N360Panorama')
+            '@MB:N360Panorama'
+            '@MB:Fisheye')
           ParentShowHint = False
           ShowHint = True
           TabOrder = 1

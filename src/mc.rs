@@ -1102,6 +1102,8 @@ struct Tracer<'a, 'c> {
     act_ray_nr: usize,
     normals: Vec3,
     hs6: Vec<S4>,
+    /// the horizontal angle of the ray (the eye of a stereo panorama)
+    ods_angle: f64,
     hs_vecs: Vec<Vec3>,
     /// `tmpObjCol`: [specular (+ alpha), diffuse] of the last surface
     tmp_obj_col: [S4; 2],
@@ -1168,6 +1170,7 @@ impl<'a, 'c> Tracer<'a, 'c> {
             act_ray_nr: 0,
             normals: [0.0, 0.0, -1.0],
             hs6: vec![[0.0; 4]; n],
+            ods_angle: 0.0,
             hs_vecs: c.hs_vecs.clone(),
             tmp_obj_col: [[0.0; 4]; 2],
             total_light: [0.0; 3],
@@ -1433,6 +1436,13 @@ impl<'a, 'c> Tracer<'a, 'c> {
                         CameraOptic::Panorama => {
                             y = arcsin_safe(t[1]) * fovy1d + 0.5;
                             x = t[0].atan2(t[2]) * (0.5 / PI) + 0.5;
+                        }
+                        CameraOptic::Fisheye => {
+                            // the angle from the axis along the direction on the screen
+                            let sn = (t[0] * t[0] + t[1] * t[1]).sqrt().max(1e-30);
+                            let a = t[2].clamp(-1.0, 1.0).acos() / sn;
+                            y = t[1] * a * fovy1d + 0.5;
+                            x = t[0] * a * dtmp2 + 0.5;
                         }
                         CameraOptic::Common => {
                             let d = (0.5 + (0.25 + (t[0] * t[1]).powi(2)).sqrt()).sqrt();
@@ -2059,8 +2069,10 @@ impl<'a, 'c> Tracer<'a, 'c> {
             CameraOptic::Planar => normalize([-cafx, cafy, p.pl_optic_z as f64]),
             CameraOptic::Panorama => build_view_vector_dsphere_fov(cafy, cafx),
             CameraOptic::Common => build_view_vector_dfov(cafy, cafx),
+            CameraOptic::Fisheye => build_view_vector_fisheye(cafy, cafx),
         };
         self.vfov = rotate_vector_reverse(&v, &p.vgrads);
+        self.ods_angle = cafx;
     }
 
     /// `DoDOF`: start the ray on the lens disc, aimed at the focus point
@@ -2133,6 +2145,12 @@ impl<'a, 'c> Tracer<'a, 'c> {
         self.calc_vgrads_fov(xx, yy);
         if p.optic == CameraOptic::Panorama {
             self.pos = p.ystart;
+            if p.ods != 0.0 {
+                // the eye to the right of the ray (Marcher::calc_start_pos)
+                let a = self.ods_angle;
+                let e = rotate_vector_reverse(&[a.cos(), 0.0, a.sin()], &p.vgrads);
+                add_weight(&mut self.pos, &e, p.ods);
+            }
         } else {
             for k in 0..3 {
                 self.pos[k] = p.ystart[k] + p.vgrads[1][k] * yy as f64 + p.vgrads[0][k] * xx as f64;

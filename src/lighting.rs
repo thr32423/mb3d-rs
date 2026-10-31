@@ -718,6 +718,10 @@ impl PaintCamera {
                 sv_scale(v, 1.0 / n)
             }
             2 => [-(cx.sin()) * cy.cos(), cy.sin(), cy.cos() * cx.cos()],
+            3 => {
+                let v = crate::math::build_view_vector_fisheye(cy as f64, cx as f64);
+                [v[0] as f32, v[1] as f32, v[2] as f32]
+            }
             _ => {
                 let v = [-(cx.sin()), cy.sin(), cy.cos() * cx.cos()];
                 let n = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt();

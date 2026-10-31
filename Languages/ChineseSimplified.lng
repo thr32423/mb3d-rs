@@ -1135,6 +1135,10 @@ FirstStepRandomColon=首步随机：
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=首步随机：\n用于避免 DE 不佳的公式产生斑点瑕疵。\n如需更低噪点，请配合图像缩小和/或更高的光线数使用。\n也可与抖动一起使用。
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=鱼眼
+;Fisheye
+FisheyeNotInMB3DTheField=鱼眼（MB3D 中没有）：视野最大 360 度，覆盖图片的高度；正方形图片显示圆形视图
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=拼合左右边缘
 ;Fit left+right borders
 FixedZoomAndSteps=固定缩放和步长

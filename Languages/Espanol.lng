@@ -1134,6 +1134,10 @@ FirstStepRandomColon=Primer paso aleatorio:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=Primer paso aleatorio:\nEvita artefactos de manchas en fórmulas con DE malos.\nPara menos ruido, úselo con reducción de imagen y/o más rayos.\nTambién puede usarse junto con el tramado.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=Ojo de pez
+;Fisheye
+FisheyeNotInMB3DTheField=Ojo de pez (no está en MB3D): el campo de visión, hasta 360 grados, abarca la altura de la imagen; una imagen cuadrada muestra una vista redonda
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=Ajustar bordes izq.+der.
 ;Fit left+right borders
 FixedZoomAndSteps=Zoom y pasos fijos

@@ -3032,6 +3032,9 @@ pub enum StereoLayout {
     Cross,
     /// red-cyan anaglyph (half colour: red from the left eye's luminance)
     Anaglyph,
+    /// left image above the right one (360 degree stereo panoramas for VR
+    /// headsets and players)
+    TopBottom,
 }
 
 impl StereoLayout {
@@ -3040,7 +3043,8 @@ impl StereoLayout {
             "parallel" | "side-by-side" | "sbs" => Ok(StereoLayout::Parallel),
             "cross" | "cross-eyed" | "crosseyed" => Ok(StereoLayout::Cross),
             "anaglyph" | "red-cyan" => Ok(StereoLayout::Anaglyph),
-            _ => Err(format!("bad stereo layout '{s}' (parallel, cross, anaglyph)")),
+            "top-bottom" | "tb" | "over-under" => Ok(StereoLayout::TopBottom),
+            _ => Err(format!("bad stereo layout '{s}' (parallel, cross, anaglyph, top-bottom)")),
         }
     }
 }
@@ -3056,6 +3060,7 @@ pub fn compose_stereo(left: &[u8], right: &[u8], w: usize, h: usize, layout: Ste
             }
             (out, w, h)
         }
+        StereoLayout::TopBottom => ([left, right].concat(), w, h * 2),
         _ => {
             let (a, b) = if layout == StereoLayout::Parallel { (left, right) } else { (right, left) };
             let mut out = vec![0u8; w * 2 * h * 3];

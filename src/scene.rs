@@ -35,6 +35,10 @@ pub enum CameraOptic {
     Planar = 1,
     /// 2: spherical panorama
     Panorama = 2,
+    /// 3: equidistant fisheye (not in MB3D: kept in the mb3d-rs block of
+    /// the parameters), the field of view up to 360 degrees across the
+    /// picture's height
+    Fisheye = 3,
 }
 
 /// A ground plane or water surface (Mandelbulber's idea, not in MB3D):
@@ -395,24 +399,39 @@ impl Scene {
     /// `StereoChange`: the middle moved sideways for the eye of
     /// `stereo_mode` (used for the calculation and the lights).
     pub fn stereo_mid(&self) -> [f64; 3] {
-        let [sw, sd, md] = self.stereo_screen.map(|v| v as f64);
-        let eyedist = 0.065 * self.width as f64 * sd / f64::max(1e-100, md * sw);
-        let k = (sd - md) / sd;
-        let xadd = match self.stereo_mode {
-            1 => -eyedist * k,
-            3 => 0.5 * eyedist * k,
-            4 => -0.5 * eyedist * k,
-            _ => return self.mid,
-        };
+        // (a panorama's eyes are placed per ray: stereo_eye_shift)
+        let xadd = self.stereo_eye_shift();
+        if xadd == 0.0 || self.optic == CameraOptic::Panorama {
+            return self.mid;
+        }
         let r = self.vgrads[0];
         let l = (r[0] * r[0] + r[1] * r[1] + r[2] * r[2]).sqrt().max(1e-300);
         let s = self.step_width() / l * xadd;
         [self.mid[0] + r[0] * s, self.mid[1] + r[1] * s, self.mid[2] + r[2] * s]
     }
 
+    /// The eye's shift from the middle to the right in steps (0 without
+    /// stereo); a panorama's eyes turn with each ray around the middle
+    /// (omni-directional stereo, the 360 degree pictures of VR headsets).
+    pub fn stereo_eye_shift(&self) -> f64 {
+        let [sw, sd, md] = self.stereo_screen.map(|v| v as f64);
+        let eyedist = 0.065 * self.width as f64 * sd / f64::max(1e-100, md * sw);
+        let k = (sd - md) / sd;
+        match self.stereo_mode {
+            1 => -eyedist * k,
+            3 => 0.5 * eyedist * k,
+            4 => -0.5 * eyedist * k,
+            _ => 0.0,
+        }
+    }
+
     /// `CalcXoff`: horizontal position of the view centre (0.5 = middle),
-    /// the off-axis projection of the stereo images.
+    /// the off-axis projection of the stereo images (none for a panorama:
+    /// its eyes turn with the rays).
     pub fn stereo_xoff(&self) -> f32 {
+        if self.optic == CameraOptic::Panorama {
+            return 0.5;
+        }
         let xoff = -0.065 / f64::max(1e-100, self.stereo_screen[0] as f64);
         let r = match self.stereo_mode {
             1 => 0.5 + xoff,
@@ -767,6 +786,10 @@ impl Scene {
     /// after MB3D's parameters (`m3p::write`).
     pub fn extra_text(&self) -> String {
         let mut t = self.ground_text();
+        // MB3D's parameters know three optics
+        if self.optic == CameraOptic::Fisheye {
+            t.push_str("optic = 3\n");
+        }
         // MB3D keeps 23 characters of the background picture's name
         if self.lighting.bg_image.len() > 23 {
             t.push_str(&format!("background_image = {}\n", self.lighting.bg_image));
@@ -1066,10 +1089,12 @@ impl Scene {
                     }
                     "fov" | "fov_y" => s.fov_y = num()?,
                     "optic" => {
-                        s.optic = match int()? {
-                            1 => CameraOptic::Planar,
-                            2 => CameraOptic::Panorama,
-                            _ => CameraOptic::Common,
+                        s.optic = match val.to_ascii_lowercase().as_str() {
+                            "1" | "planar" => CameraOptic::Planar,
+                            "2" | "panorama" => CameraOptic::Panorama,
+                            "3" | "fisheye" => CameraOptic::Fisheye,
+                            "0" | "common" => CameraOptic::Common,
+                            _ => return Err(err(format!("bad optic '{val}' (0 common, 1 planar, 2 panorama, 3 fisheye)"))),
                         }
                     }
                     "de_stop" | "destop" => s.de_stop = num()?,

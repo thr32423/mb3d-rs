@@ -1102,6 +1102,8 @@ pub fn write(sc: &Scene) -> Vec<u8> {
         CameraOptic::Common => 0,
         CameraOptic::Planar => 1,
         CameraOptic::Panorama => 2,
+        // (the mb3d-rs block keeps it: Scene::extra_text)
+        CameraOptic::Fisheye => 0,
     };
     if let Some(a) = &sc.ao {
         let kind: u8 = if sc.deao.is_some() {
@@ -1407,6 +1409,13 @@ mod tests {
         assert_eq!(parse(&raw).unwrap().scene.lighting.bg_image, long.lighting.bg_image);
         let short = { let mut s = plain.clone(); s.lighting.bg_image = "sky.hdr".into(); s };
         assert_eq!(write(&short).len(), HEADER_SIZE + ADDON_SIZE);
+        // the fisheye: common for MB3D, fisheye from the block
+        let mut fish = plain.clone();
+        fish.optic = crate::scene::CameraOptic::Fisheye;
+        let raw = write(&fish);
+        assert_eq!(&raw[..HEADER_SIZE + ADDON_SIZE], &write(&plain)[..]);
+        assert_eq!(parse(&raw).unwrap().scene.optic, crate::scene::CameraOptic::Fisheye);
+        assert_eq!(parse(&raw_from_text(&raw_to_text(&raw, "t")).unwrap().0).unwrap().scene.optic, crate::scene::CameraOptic::Fisheye);
     }
 
     #[test]

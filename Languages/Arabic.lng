@@ -1135,6 +1135,10 @@ FirstStepRandomColon=الخطوة الأولى عشوائية:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=الخطوة الأولى عشوائية:\nلتجنب العيوب المبقعة في الصيغ ذات قيم DE السيئة.\nلتشويش أقل، استخدمها مع تصغير الصورة و/أو عدد أشعة أعلى.\nيمكن استخدامها أيضًا مع التنقيط.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=عين السمكة
+;Fisheye
+FisheyeNotInMB3DTheField=عين السمكة (ليست في MB3D): مجال الرؤية، حتى 360 درجة، يمتد على ارتفاع الصورة؛ الصورة المربعة تُظهر منظرًا دائريًا
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=ملاءمة الحدين الأيسر والأيمن
 ;Fit left+right borders
 FixedZoomAndSteps=تكبير وخطوات ثابتة

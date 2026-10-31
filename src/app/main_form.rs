@@ -369,7 +369,7 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
         f.ctl[0].height = (h - 38).max(300);
     }
     // FirstShowUpdate
-    ui.cm(F, "RadioGroup2").hint = tr("@MB:PanoramaModeTheFOVIsChoosen");
+    ui.cm(F, "RadioGroup2").hint = format!("{}\n{}", tr("@MB:PanoramaModeTheFOVIsChoosen"), tr("@MB:FisheyeNotInMB3DTheField"));
     ui.cm(F, "Edit19").hint = tr("@MB:IfSetToAHigherValue");
     ui.cm(F, "Edit20").hint = tr("@MB:DefinesHowAccurateThePositionWith");
     ui.cm(F, "UpDown4").hint = tr("@MB:SharpenFactorOfTheSavedOutput");
@@ -700,6 +700,7 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
     sc.optic = match ui.item_index(F, "RadioGroup2") {
         1 => CameraOptic::Planar,
         2 => CameraOptic::Panorama,
+        3 => CameraOptic::Fisheye,
         _ => CameraOptic::Common,
     };
     sc.bin_search_steps = pti(&t(ui, "Edit20")).clamp(0, 50);

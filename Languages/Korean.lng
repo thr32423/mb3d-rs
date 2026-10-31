@@ -1135,6 +1135,10 @@ FirstStepRandomColon=첫 스텝 무작위:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=첫 스텝 무작위:\nDE가 좋지 않은 포뮬러에서 점박이 아티팩트를 피합니다.\n노이즈를 줄이려면 이미지 다운스케일링 및/또는 더 많은 광선 수와 함께 사용하십시오.\n디더링과 함께 사용할 수도 있습니다.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=어안
+;Fisheye
+FisheyeNotInMB3DTheField=어안 (MB3D에는 없음): 시야는 최대 360도까지 그림의 높이에 걸쳐 펼쳐지며, 정사각형 그림은 둥근 시야를 보여 줍니다
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=왼쪽+오른쪽 가장자리 맞추기
 ;Fit left+right borders
 FixedZoomAndSteps=고정 줌 및 단계

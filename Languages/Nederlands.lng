@@ -1134,6 +1134,10 @@ FirstStepRandomColon=Eerste stap willekeurig:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=Eerste stap willekeurig:\nvoorkomt vlekkerige artefacten bij formules met slechte DE's.\nGebruik het voor minder ruis samen met verkleining van de afbeelding en/of meer stralen.\nKan ook samen met dithering worden gebruikt.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=Visoog
+;Fisheye
+FisheyeNotInMB3DTheField=Visoog (niet in MB3D): het gezichtsveld, tot 360 graden, beslaat de hoogte van de afbeelding; een vierkante afbeelding toont een rond beeld
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=Linker+rechter rand aansluiten
 ;Fit left+right borders
 FixedZoomAndSteps=Vaste zoom en stappen

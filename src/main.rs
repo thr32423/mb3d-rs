@@ -66,7 +66,9 @@ OPTIONS:
         --render             Also render when converting with --save-scene/--save-text/--save-m3p
         --stereo-pair <LAYOUT>  Render the left and the right eye image (MB3D's stereo
                              modes, see -s stereo_screen=width,distance,min) and combine
-                             them: parallel, cross or anaglyph
+                             them: parallel, cross, anaglyph or top-bottom; with
+                             optic=2 (panorama) a 360 degree stereo panorama for VR
+                             (each ray's eye turned with it), usually top-bottom
     -q, --quiet              No progress output
         --fresh              Start again, also when an unfinished render of the same
                              picture was kept (by default it continues; mb3d resume)

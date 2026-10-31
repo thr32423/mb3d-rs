@@ -1589,6 +1589,7 @@ fn params(p: &CalcParams, row0: usize, rows: usize, scene: &SceneShader, mode: u
         CameraOptic::Common => 0,
         CameraOptic::Planar => 1,
         CameraOptic::Panorama => 2,
+        CameraOptic::Fisheye => 3,
     };
     let mut v: Vec<u32> = Vec::with_capacity(64);
     let i = |v: &mut Vec<u32>, x: i32| v.push(x as u32);
@@ -1863,6 +1864,8 @@ fn params(p: &CalcParams, row0: usize, rows: usize, scene: &SceneShader, mode: u
         v[414] = (g.wave_len as f32).to_bits();
         v[415] = ((1.0 / (1.0 + slope * slope).sqrt()) as f32).to_bits();
     }
+    // a stereo panorama's eye (ODS_SHIFT)
+    v[416] = (p.ods as f32).to_bits();
     v
 }
 
@@ -1903,7 +1906,7 @@ fn has_ipol(p: &CalcParams) -> bool {
 }
 
 /// The size of the parameter buffer.
-const PARAM_WORDS: usize = 416;
+const PARAM_WORDS: usize = 420;
 
 /// The parameter word of the coordinates as doubles (`DP` in the shader).
 const DOUBLE_WORD: usize = 296;

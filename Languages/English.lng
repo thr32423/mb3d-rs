@@ -1134,6 +1134,10 @@ FirstStepRandomColon=First Step Random:
 ;PostProForm.CheckBox22.Caption
 FirstStepRandomToAvoidSpotty=First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
 ;PostProForm.CheckBox22.Hint
+Fisheye=Fisheye
+;Mand3DForm.RadioGroup2.Items
+FisheyeNotInMB3DTheField=Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
+;the program
 FitLeftRightBorders=Fit left+right borders
 ;LightAdjustForm.CheckBox20.Caption
 FixedZoomAndSteps=Fixed zoom and steps

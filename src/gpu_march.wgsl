@@ -194,6 +194,9 @@ const GROUND_POS: u32 = 412u;
 const GROUND_WAVE: u32 = 413u;
 const GROUND_WLEN: u32 = 414u;
 const GROUND_LIP: u32 = 415u;
+// a stereo panorama's eye: its shift to the right in steps, turned with the
+// ray (CalcParams::ods)
+const ODS_SHIFT: u32 = 416u;
 
 const PI: R = 3.14159265358979;
 
@@ -1767,6 +1770,16 @@ fn pixel(x: i32, y: i32, mode: u32) {
         dv = normalize(vec3<R>(-cafx, cafy, pf(PL_OPTIC_Z)));
     } else if (optic == 2) {
         dv = vec3<R>(-r_sin(cafx) * r_cos(cafy), r_sin(cafy), r_cos(cafy) * r_cos(cafx));
+    } else if (optic == 3) {
+        // the equidistant fisheye (math::build_view_vector_fisheye)
+        let t = sqrt(cafx * cafx + cafy * cafy);
+        if (t < 1e-12) {
+            dv = vec3<R>(0.0, 0.0, 1.0);
+        } else {
+            let tc = min(t, PI);
+            let sn = r_sin(tc) / t;
+            dv = vec3<R>(-cafx * sn, cafy * sn, r_cos(tc));
+        }
     } else {
         dv = normalize(vec3<R>(-r_sin(cafx), r_sin(cafy), r_cos(cafy) * r_cos(cafx)));
     }
@@ -1774,6 +1787,10 @@ fn pixel(x: i32, y: i32, mode: u32) {
     // RMCalculateStartPos
     if (optic == 2) {
         base = p_ystart();
+        if (pf(ODS_SHIFT) != 0.0) {
+            // the eye to the right of the ray (Marcher::calc_start_pos)
+            base += rot_rev(vec3<R>(r_cos(cafx), 0.0, r_sin(cafx))) * pf(ODS_SHIFT);
+        }
     } else {
         base = p_ystart() + vg(0u) * R(x) + vg(1u) * R(y);
     }

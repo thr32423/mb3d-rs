@@ -1134,6 +1134,10 @@ FirstStepRandomColon=Losowy pierwszy krok:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=Losowy pierwszy krok:\nzapobiega plamistym artefaktom w formułach ze złym DE.\nDla mniejszego szumu używaj z pomniejszaniem obrazu i/lub większą liczbą promieni.\nMożna łączyć z ditheringiem.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=Rybie oko
+;Fisheye
+FisheyeNotInMB3DTheField=Rybie oko (nie ma w MB3D): pole widzenia, do 360 stopni, obejmuje wysokość obrazu; kwadratowy obraz pokazuje okrągły widok
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=Dopasuj lewą i prawą krawędź
 ;Fit left+right borders
 FixedZoomAndSteps=Stały zoom i kroki

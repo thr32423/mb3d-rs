@@ -1135,6 +1135,10 @@ FirstStepRandomColon=最初のステップをランダム:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=最初のステップをランダムにします:\nDE の悪い数式で起こる斑点状のアーティファクトを避けます。\nノイズを減らすには、画像の縮小や多めのレイ数と組み合わせてください。\nディザリングとも併用できます。
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=魚眼
+;Fisheye
+FisheyeNotInMB3DTheField=魚眼 (MB3D にはありません): 視野は最大 360 度で、画像の高さ全体に広がります。正方形の画像では円形の眺めになります
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=左右の端を合わせる
 ;Fit left+right borders
 FixedZoomAndSteps=ズームと歩幅を固定

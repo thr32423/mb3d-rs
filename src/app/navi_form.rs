@@ -193,7 +193,8 @@ fn transform_header(app: &mut Mb3d, ui: &mut Ui) {
     sc.bin_search_steps = sc.bin_search_steps.min(7);
     sc.de_stop = sc.de_stop.max(0.01);
     ui.set_text(F, "Edit3", &fts(sc.fov_y));
-    ui.set_item_index(F, "RadioGroup2", sc.optic as i32);
+    // (a fisheye shows as standard: the closest of the navigator's three)
+    ui.set_item_index(F, "RadioGroup2", if sc.optic == crate::scene::CameraOptic::Fisheye { 0 } else { sc.optic as i32 });
     let vz = normalize(sc.vgrads[2]);
     let d = sc.z_start - sc.mid[2];
     for k in 0..3 {
@@ -303,6 +304,8 @@ fn new_calc(app: &mut Mb3d, ui: &mut Ui) {
     sc.optic = match ui.item_index(F, "RadioGroup2") {
         1 => crate::scene::CameraOptic::Planar,
         2 => crate::scene::CameraOptic::Panorama,
+        // a fisheye stays one until another optic is chosen here
+        _ if st.scene.optic == crate::scene::CameraOptic::Fisheye => crate::scene::CameraOptic::Fisheye,
         _ => crate::scene::CameraOptic::Common,
     };
     st.scene.fov_y = sc.fov_y;

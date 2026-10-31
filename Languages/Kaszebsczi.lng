@@ -1134,6 +1134,10 @@ FirstStepRandomColon=Przëtrôfkòwi pierszi krok:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=Przëtrôfkòwi pierszi krok:\nŻebë ùniknąc plamiastëch artefaktów na fòrmùłach z lëchim DE.\nDlô mniészégò szëmù brëkùj tegò razã ze zmniészanim òbrôzka ë/abò wikszą lëczbą parmieniów.\nMòże bëc brëkòwóné téż razã z ditheringã.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=Rëbié òkò
+;Fisheye
+FisheyeNotInMB3DTheField=Rëbié òkò (nie je w MB3D): pòle widzeniô, do 360 gradów, òbjimô wiżawã òbrazu; kwadratowi òbrôz pòkazywô òkrągłi widok
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=Dopasuj lewi+prawi kréz
 ;Fit left+right borders
 FixedZoomAndSteps=Stałi zoom i kroczi

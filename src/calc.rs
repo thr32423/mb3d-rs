@@ -87,6 +87,10 @@ pub struct CalcParams {
     pub in_and_outside: bool,
     /// `dCOX`, `dCOY`, `dCOZ`
     pub cut_pos: Vec3,
+    /// a stereo panorama's eye: its shift to the right of the middle in steps,
+    /// turned with each ray's horizontal direction (omni-directional
+    /// stereo; 0 without)
+    pub ods: f64,
     /// the ground plane or water (not in MB3D; None for the voxel and mesh
     /// exports, which are the fractal alone)
     pub ground: Option<crate::scene::Ground>,
@@ -793,6 +797,7 @@ impl CalcParams {
             cut_pos: sc.cut_pos,
             // the solid side of the ground: away from the camera (the middle
             // of the start plane)
+            ods: if sc.optic == CameraOptic::Panorama { sc.stereo_eye_shift() } else { 0.0 },
             ground: sc.ground.filter(|_| sc.inside == InsideMode::Outside).map(|mut g| {
                 let k = g.axis as usize % 3;
                 g.above = mid[k] + z1 * vgrads[2][k] < g.pos;
@@ -1356,6 +1361,7 @@ impl<'a> Marcher<'a> {
             }
             CameraOptic::Panorama => build_view_vector_dsphere_fov(self.cafy, cafx),
             CameraOptic::Common => build_view_vector_dfov(self.cafy, cafx),
+            CameraOptic::Fisheye => build_view_vector_fisheye(self.cafy, cafx),
         };
         self.vfov = rotate_vector_reverse(&v, &p.vgrads);
     }
@@ -1366,6 +1372,12 @@ impl<'a> Marcher<'a> {
         let p = self.p;
         if p.optic == CameraOptic::Panorama {
             self.it.c = p.ystart;
+            if p.ods != 0.0 {
+                // the eye to the right of this ray's direction
+                let a = ((p.fovx_off - (ix + 1) as f32) * p.fovx_mul) as f64;
+                let e = rotate_vector_reverse(&[a.cos(), 0.0, a.sin()], &p.vgrads);
+                add_weight(&mut self.it.c, &e, p.ods);
+            }
         } else {
             let (x, y) = (ix as f64, iy as f64);
             for k in 0..3 {

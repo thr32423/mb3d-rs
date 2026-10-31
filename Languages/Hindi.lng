@@ -1135,6 +1135,10 @@ FirstStepRandomColon=पहला कदम यादृच्छिक:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=पहला कदम यादृच्छिक:\nखराब DE वाले फ़ॉर्मूलों पर धब्बेदार विकृतियों से बचने के लिए।\nकम शोर के लिए, इसे छवि डाउनस्केलिंग और/या अधिक किरणों के साथ उपयोग करें।\nडिथरिंग के साथ भी उपयोग किया जा सकता है।
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=फ़िशआई
+;Fisheye
+FisheyeNotInMB3DTheField=फ़िशआई (MB3D में नहीं): दृश्य क्षेत्र, 360 डिग्री तक, चित्र की ऊँचाई पर फैलता है; वर्गाकार चित्र गोल दृश्य दिखाता है
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=बाएँ+दाएँ किनारे मिलाएँ
 ;Fit left+right borders
 FixedZoomAndSteps=निश्चित ज़ूम और कदम

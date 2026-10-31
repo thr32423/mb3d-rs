@@ -1134,6 +1134,10 @@ FirstStepRandomColon=Langkah Pertama Acak:
 ;First Step Random:
 FirstStepRandomToAvoidSpotty=Langkah pertama acak:\nUntuk menghindari artefak berbintik pada formula dengan DE buruk.\nUntuk derau lebih rendah, gunakan dengan pengecilan gambar dan/atau jumlah sinar lebih tinggi.\nDapat juga digunakan bersama dithering.
 ;First step random:\nTo avoid spotty artifacts on fomulas with bad DE's.\nFor lower noise, use it with image downscaling and/or higher raycounts.\nCan be used also together with dithering.
+Fisheye=Mata ikan
+;Fisheye
+FisheyeNotInMB3DTheField=Mata ikan (tidak ada di MB3D): bidang pandang, hingga 360 derajat, mencakup tinggi gambar; gambar persegi menampilkan pandangan bundar
+;Fisheye (not in MB3D): the field of view, up to 360 degrees, spans the picture's height; a square picture shows a round view
 FitLeftRightBorders=Sesuaikan tepi kiri+kanan
 ;Fit left+right borders
 FixedZoomAndSteps=Zoom dan langkah tetap

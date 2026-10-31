@@ -1020,6 +1020,20 @@ object PostProForm: TPostProForm
     ShowHint = True
     OnClick = CloudsBtnClick
   end
+  object MaterialBtn: TSpeedButton
+    Left = 0
+    Top = 1353
+    Width = 255
+    Height = 21
+    Hint = '@MB:ClickToHideShow'
+    Align = alTop
+    AllowAllUp = True
+    GroupIndex = 9
+    Caption = '@MB:Material'
+    ParentShowHint = False
+    ShowHint = True
+    OnClick = MaterialBtnClick
+  end
   object DepthOfFieldPnl: TPanel
     Left = 0
     Top = 912
@@ -1786,6 +1800,105 @@ object PostProForm: TPostProForm
       ShowHint = True
       TabOrder = 7
       OnClick = CloudsNowBtnClick
+    end
+  end
+  object MaterialPnl: TPanel
+    Left = 0
+    Top = 1374
+    Width = 255
+    Height = 112
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 12
+    Visible = False
+    object MaterialCbx: TCheckBox
+      Left = 27
+      Top = 9
+      Width = 212
+      Height = 17
+      Hint = '@MB:TheFractalSSurfaceMaterialOn'
+      Caption = '@MB:SurfaceMaterial'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      OnClick = MaterialCbxClick
+    end
+    object FresnelLbl: TLabel
+      Left = 11
+      Top = 37
+      Width = 50
+      Height = 13
+      Caption = '@MB:Fresnel'
+    end
+    object FresnelEdit: TEdit
+      Left = 90
+      Top = 34
+      Width = 44
+      Height = 21
+      Hint = '@MB:Fresnel0To1MoreReflection'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      Text = '0'
+    end
+    object IridLbl: TLabel
+      Left = 11
+      Top = 63
+      Width = 50
+      Height = 13
+      Caption = '@MB:Iridescence'
+    end
+    object IridEdit: TEdit
+      Left = 90
+      Top = 60
+      Width = 44
+      Height = 21
+      Hint = '@MB:Iridescence0To1TheColours'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 2
+      Text = '0'
+    end
+    object IridShiftEdit: TEdit
+      Left = 140
+      Top = 60
+      Width = 44
+      Height = 21
+      Hint = '@MB:Iridescence0To1TheColours'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      Text = '0'
+    end
+    object GlowLbl: TLabel
+      Left = 11
+      Top = 89
+      Width = 50
+      Height = 13
+      Caption = '@MB:Glow'
+    end
+    object GlowEdit: TEdit
+      Left = 90
+      Top = 86
+      Width = 44
+      Height = 21
+      Hint = '@MB:Glow0AndUpTheSurface'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 4
+      Text = '0'
+    end
+    object MaterialNowBtn: TButton
+      Left = 140
+      Top = 86
+      Width = 98
+      Height = 21
+      Hint = '@MB:PaintsThePictureAgainWithThe'
+      Caption = '@MB:PaintNow'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 5
+      OnClick = MaterialNowBtnClick
     end
   end
 end

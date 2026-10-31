@@ -1215,6 +1215,10 @@ FramesPerSecond=فریمز فی سیکنڈ:
 ;Frames per second:
 FramesSec=فریمز/سیکنڈ:
 ;Frames/sec:
+Fresnel=فرینل:
+;Fresnel:
+Fresnel0To1MoreReflection=فرینل (0 سے 1): جہاں سطح نظر سے مڑتی ہے وہاں زیادہ عکس، جیسے شیشہ، پانی اور لاکھ (عکسوں کے ساتھ بہتر دکھتا ہے)
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=کلپ بورڈ سے
 ;From Clipboard
 FullM3IImageFiles=مکمل M3I تصویری فائلیں:
@@ -1363,6 +1367,10 @@ GetZ2=Z2 لیں
 ;Get Z2
 GlobalLight=عمومی روشنی
 ;Global light
+Glow=دمک:
+;Glow:
+Glow0AndUpTheSurface=دمک (0 اور اوپر): سطح روشنی کے بغیر اپنے رنگ میں چمکتی ہے
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=سلائیڈرز جوڑیں
 ;Glue sliders
 GoToNext=اگلے پر جائیں
@@ -1611,6 +1619,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=ZBuffer الٹیں
 ;Invert ZBuffer
+Iridescence=قوس قزح چمک:
+;Iridescence:
+Iridescence0To1TheColours=قوس قزح چمک (0 سے 1): پتلی جھلی کے رنگ جو دیکھنے کے زاویے سے بدلتے ہیں، اور ان کی تبدیلی (0 سے 1)
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint='{}' درست اعشاری قدر نہیں ہے
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' درست عدد صحیح قدر نہیں ہے
@@ -3171,6 +3183,8 @@ SurfaceColor=سطح کا رنگ
 ;Surface color
 SurfaceDetail=سطح کی تفصیل:
 ;Surface detail:
+SurfaceMaterial=سطح کا مادہ
+;Surface material
 Swarm=سوارم
 ;Swarm
 SwarmABlockOnEveryComputer=سوارم: ہر کمپیوٹر پر ایک بلاک، روکنے تک
@@ -3253,6 +3267,8 @@ TheFolderDoesNotExistOr=فولڈر موجود نہیں (یا قابل رسائی
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=فارمولے کا نام "JIT" سے شروع ہونا چاہیے تاکہ ان فارمولوں کو ASM پر مبنی فارمولوں سے الگ پہچانا جا سکے
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=پیلیٹ کے اوپر فریکٹل کی سطح کا مادہ (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ؛ مونٹی کارلو میں نہیں)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=فریمز فی سیکنڈ 0 سے بڑا عدد ہونا چاہیے (مثلاً 25)۔
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=تصویری بفر کا سائز غلط ہے

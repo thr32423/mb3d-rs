@@ -41,6 +41,62 @@ pub enum CameraOptic {
     Fisheye = 3,
 }
 
+/// The fractal's surface material (ideas from Mandelbulber, not in MB3D),
+/// on top of the palette's colours: all 0 is MB3D's look.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct Material {
+    /// Fresnel (0..1): the specular colour, and with it the reflections,
+    /// towards white where the surface turns away from the view
+    pub fresnel: f32,
+    /// iridescence (0..1): the specular colour as the colours of a thin
+    /// film, changing with the angle of view
+    pub iridescence: f32,
+    /// the thin film's colours shifted (0..1, a whole turn)
+    pub irid_shift: f32,
+    /// glow (0..): the surface shines in its own (diffuse) colour
+    pub glow: f32,
+}
+
+impl Material {
+    /// The diffuse colour `dif` with the thin film's sheen (half the
+    /// iridescence) where the view meets the surface at `cos`.
+    pub fn diffuse(&self, dif: [f32; 3], cos: f32) -> [f32; 3] {
+        if self.iridescence <= 0.0 {
+            return dif;
+        }
+        let rb = self.film(cos);
+        let l = 0.299 * dif[0] + 0.587 * dif[1] + 0.114 * dif[2];
+        let k = 0.5 * self.iridescence.min(1.0);
+        [0, 1, 2].map(|c| dif[c] + (rb[c] * l * 1.6 - dif[c]) * k)
+    }
+
+    /// The thin film's colour (0..1) at `cos`.
+    fn film(&self, cos: f32) -> [f32; 3] {
+        let t = self.irid_shift + 2.5 * (1.0 - cos.clamp(0.0, 1.0));
+        let tau = std::f32::consts::TAU;
+        [0.0, 1.0 / 3.0, 2.0 / 3.0].map(|o| 0.5 + 0.5 * (tau * (t + o)).cos())
+    }
+
+    /// The specular colour `spe` (0..1) where the view meets the surface
+    /// at `cos` (1 facing it, 0 grazing).
+    pub fn specular(&self, spe: [f32; 3], cos: f32) -> [f32; 3] {
+        let mut s = spe;
+        if self.fresnel > 0.0 {
+            // Schlick's term, with a third instead of a fifth power: visible
+            // from about 60 degrees on, not only at the very edge
+            let f = self.fresnel.min(1.0) * (1.0 - cos.clamp(0.0, 1.0)).powi(3);
+            s = s.map(|v| v + (1.0 - v) * f);
+        }
+        if self.iridescence > 0.0 {
+            let rb = self.film(cos);
+            let l = (0.299 * s[0] + 0.587 * s[1] + 0.114 * s[2]).max(0.5);
+            let k = self.iridescence.min(1.0);
+            s = [0, 1, 2].map(|c| s[c] + (rb[c] * l - s[c]) * k);
+        }
+        s
+    }
+}
+
 /// A ground plane or water surface (Mandelbulber's idea, not in MB3D):
 /// a plane across one of the fractal's axes that is calculated together
 /// with the fractal (shadows, occlusion, reflections, Monte Carlo), in its
@@ -187,6 +243,8 @@ pub struct Scene {
     pub ground: Option<Ground>,
     /// A layer of volumetric clouds (not in MB3D): None = none
     pub clouds: Option<crate::clouds::Clouds>,
+    /// The surface material (not in MB3D): None = MB3D's
+    pub material: Option<Material>,
     /// DE ambient occlusion instead of SSAO (used when `ao` is on)
     pub deao: Option<crate::deao::DeaoParams>,
     /// Inside rendering (`bOptions2` bits 1..2)
@@ -367,6 +425,7 @@ impl Default for Scene {
             cut_pos: [0.0; 3],
             ground: None,
             clouds: None,
+            material: None,
             deao: None,
             threads: 0,
             tiling: None,
@@ -815,6 +874,9 @@ impl Scene {
     fn ground_text(&self) -> String {
         use std::fmt::Write;
         let mut t = String::new();
+        if let Some(m) = &self.material {
+            let _ = writeln!(t, "material_fresnel = {}\nmaterial_iridescence = {}, {}\nmaterial_glow = {}", m.fresnel, m.iridescence, m.irid_shift, m.glow);
+        }
         if let Some(c) = &self.clouds {
             let k = c.color;
             let _ = writeln!(t, "clouds = {}, {}, {}", ["x", "y", "z"][c.axis as usize % 3], c.from, c.to);
@@ -1249,6 +1311,15 @@ impl Scene {
                             c.to = n(to)?;
                         }
                     }
+                    "material_fresnel" => s.material.get_or_insert_with(Default::default).fresnel = num()?.clamp(0.0, 1.0) as f32,
+                    "material_iridescence" => {
+                        let p: Vec<f64> = val.split(',').map(|v| v.trim().parse::<f64>()).collect::<Result<_, _>>().map_err(|_| err(format!("bad material_iridescence '{val}' (amount[, shift])")))?;
+                        let m = s.material.get_or_insert_with(Default::default);
+                        m.iridescence = p.first().copied().unwrap_or(0.0).clamp(0.0, 1.0) as f32;
+                        m.irid_shift = p.get(1).copied().unwrap_or(0.0) as f32;
+                    }
+                    "material_glow" => s.material.get_or_insert_with(Default::default).glow = num()?.max(0.0) as f32,
+                    "material" if matches!(val.to_ascii_lowercase().as_str(), "off" | "none" | "no") => s.material = None,
                     "cloud_density" => s.clouds.get_or_insert_with(Default::default).density = num()?.max(0.0) as f32,
                     "cloud_coverage" => s.clouds.get_or_insert_with(Default::default).coverage = num()?.clamp(0.0, 1.0) as f32,
                     "cloud_size" => s.clouds.get_or_insert_with(Default::default).size = num()?.max(1e-9),

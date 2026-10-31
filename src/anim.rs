@@ -352,6 +352,16 @@ fn interpolate_header(base: &Scene, h: &[&Scene], w: &[f64], rot: Quat, bezier: 
     for i in 0..4 {
         s.julia_c[i] = lin(&|x| x.julia_c[i]);
     }
+    // the surface material (mb3d-rs): blended, a keyframe without one as 0
+    if h.iter().any(|x| x.material.is_some()) {
+        let m = |x: &Scene| x.material.unwrap_or_default();
+        s.material = Some(crate::scene::Material {
+            fresnel: lin(&|x| m(x).fresnel as f64) as f32,
+            iridescence: lin(&|x| m(x).iridescence as f64) as f32,
+            irid_shift: lin(&|x| m(x).irid_shift as f64) as f32,
+            glow: lin(&|x| m(x).glow as f64) as f32,
+        });
+    }
     // the clouds (mb3d-rs): blended when every keyframe has them across
     // the same axis (an offset moving between keyframes: drifting clouds)
     if let Some(c0) = base.clouds {

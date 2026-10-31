@@ -1422,6 +1422,10 @@ mod tests {
         let raw = write(&cl);
         assert_eq!(parse(&raw).unwrap().scene.clouds, cl.clouds);
         assert_eq!(parse(&raw_from_text(&raw_to_text(&raw, "t")).unwrap().0).unwrap().scene.clouds, cl.clouds);
+        // the surface material
+        let mut m = plain.clone();
+        m.material = Some(crate::scene::Material { fresnel: 0.5, iridescence: 0.75, irid_shift: 0.25, glow: 1.5 });
+        assert_eq!(parse(&write(&m)).unwrap().scene.material, m.material);
     }
 
     #[test]

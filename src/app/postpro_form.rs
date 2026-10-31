@@ -69,7 +69,7 @@ impl Pace {
     }
 }
 
-const PANELS: [(&str, &str, &str); 8] = [
+const PANELS: [(&str, &str, &str); 9] = [
     ("RecalcSectionBtn", "RecalcSectionPnl", "CheckBox21"),
     ("NormalsOnZBufferBtn", "NormalsOnZBufferPnl", "CheckBox23"),
     ("HardShadowsBtn", "HardShadowsPnl", "CheckBox9"),
@@ -78,6 +78,7 @@ const PANELS: [(&str, &str, &str); 8] = [
     ("DepthOfFieldBtn", "DepthOfFieldPnl", "CheckBox1"),
     ("NoiseFilterBtn", "NoiseFilterPnl", "NoiseAutoCbx"),
     ("CloudsBtn", "CloudsPnl", "CloudsCbx"),
+    ("MaterialBtn", "MaterialPnl", "MaterialCbx"),
 ];
 
 /// The strength of the noise filter (Noise Filter section), 0 when off.
@@ -135,6 +136,12 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
         color: st.cloud_color,
         offset,
     });
+    sc.material = ui.checked(F, "MaterialCbx").then(|| crate::scene::Material {
+        fresnel: (num("FresnelEdit") as f32).clamp(0.0, 1.0),
+        iridescence: (num("IridEdit") as f32).clamp(0.0, 1.0),
+        irid_shift: num("IridShiftEdit") as f32,
+        glow: (num("GlowEdit") as f32).max(0.0),
+    });
     sc.shadows = (ui.checked(F, "CheckBox9") || st.hs_now).then(|| shadow_params(ui));
     let tab = ui.c(F, "TabControl1").tab_index;
     let ao_on = ui.checked(F, "CheckBox11") || st.ao_now;
@@ -178,6 +185,11 @@ pub fn set_from_header(app: &mut Mb3d, ui: &mut Ui) {
     }
     app.post.cloud_color = c.color;
     cloud_swatch(app, ui);
+    let m = sc.material.unwrap_or_default();
+    ui.set_checked(F, "MaterialCbx", sc.material.is_some());
+    for (e, v) in [("FresnelEdit", m.fresnel), ("IridEdit", m.iridescence), ("IridShiftEdit", m.irid_shift), ("GlowEdit", m.glow)] {
+        ui.set_text(F, e, &super::util::fts(v as f64));
+    }
     ui.set_checked(F, "CheckBox1", sc.dof.is_some());
     let d = sc.dof.unwrap_or_default();
     ui.set_item_index(F, "RadioGroup2", d.forward as i32);
@@ -381,7 +393,11 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
     }
     match h {
         "NoiseFilterNowBtnClick" => super::main_form::denoise_picture(app, ui, noise_sigma(ui)),
-        "NoiseAutoCbxClick" | "CloudsCbxClick" => update_captions(ui),
+        "NoiseAutoCbxClick" | "CloudsCbxClick" | "MaterialCbxClick" => update_captions(ui),
+        "MaterialNowBtnClick" => {
+            app.make_scene(ui);
+            repaint(app, ui, "material");
+        }
         "CloudColBtnClick" => ui.pick_color("post:cloudcolor", super::util::argb(app.post.cloud_color)),
         "CloudsNowBtnClick" => {
             app.make_scene(ui);

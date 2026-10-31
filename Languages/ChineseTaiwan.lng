@@ -1215,6 +1215,10 @@ FramesPerSecond=每秒影格數：
 ;Frames per second:
 FramesSec=影格/秒：
 ;Frames/sec:
+Fresnel=菲涅耳：
+;Fresnel:
+Fresnel0To1MoreReflection=菲涅耳（0 到 1）：表面越偏離視線，反射越多，如玻璃、水和漆面（與反射一起時最明顯）
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=從剪貼簿
 ;From Clipboard
 FullM3IImageFiles=完整 M3I 影像檔：
@@ -1363,6 +1367,10 @@ GetZ2=取得 Z2
 ;Get Z2
 GlobalLight=全域燈光
 ;Global light
+Glow=發光：
+;Glow:
+Glow0AndUpTheSurface=發光（0 及以上）：表面不靠光照，以自身顏色發光
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=黏合滑桿
 ;Glue sliders
 GoToNext=前往下一個
@@ -1611,6 +1619,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=反轉 Z-buffer
 ;Invert ZBuffer
+Iridescence=虹彩：
+;Iridescence:
+Iridescence0To1TheColours=虹彩（0 到 1）：隨視角變化的薄膜顏色，以及它的偏移（0 到 1）
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint=「{}」不是有效的浮點數值
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue=「{}」不是有效的整數值
@@ -3171,6 +3183,8 @@ SurfaceColor=表面顏色
 ;Surface color
 SurfaceDetail=表面細節：
 ;Surface detail:
+SurfaceMaterial=表面材質
+;Surface material
 Swarm=群集
 ;Swarm
 SwarmABlockOnEveryComputer=swarm：每台電腦各一個區塊，直到停止
@@ -3253,6 +3267,8 @@ TheFolderDoesNotExistOr=資料夾不存在（或無法存取）
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=公式名稱應以「JIT」開頭，以便與 ASM 公式區分
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=疊加在調色盤上的碎形表面材質（MB3D 中沒有：儲存在參數的 MB3D 部分之後；不在蒙地卡羅中）
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=每秒影格數必須是大於 0 的數字（例如 25）。
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=影像緩衝區大小錯誤

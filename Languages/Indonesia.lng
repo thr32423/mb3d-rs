@@ -1214,6 +1214,10 @@ FramesPerSecond=Frame per detik:
 ;Frames per second:
 FramesSec=Frame/dtk:
 ;Frames/sec:
+Fresnel=Fresnel:
+;Fresnel:
+Fresnel0To1MoreReflection=Fresnel (0 sampai 1): pantulan lebih kuat di tempat permukaan menjauh dari pandangan, seperti kaca, air, dan pernis (paling terlihat dengan pantulan)
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=Dari Clipboard
 ;From Clipboard
 FullM3IImageFiles=File gambar M3I lengkap:
@@ -1362,6 +1366,10 @@ GetZ2=Ambil Z2
 ;Get Z2
 GlobalLight=Cahaya global
 ;Global light
+Glow=Pendar:
+;Glow:
+Glow0AndUpTheSurface=Pendar (0 ke atas): permukaan bersinar dengan warnanya sendiri, tanpa cahaya
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=Rekatkan slider
 ;Glue sliders
 GoToNext=Ke berikutnya
@@ -1610,6 +1618,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=Balikkan ZBuffer
 ;Invert ZBuffer
+Iridescence=Iridesensi:
+;Iridescence:
+Iridescence0To1TheColours=Iridesensi (0 sampai 1): warna lapisan tipis yang berubah dengan sudut pandang, dan pergeserannya (0 sampai 1)
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint='{}' bukan nilai floating point yang valid
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' bukan nilai integer yang valid
@@ -3170,6 +3182,8 @@ SurfaceColor=Warna permukaan
 ;Surface color
 SurfaceDetail=Detail permukaan:
 ;Surface detail:
+SurfaceMaterial=Material permukaan
+;Surface material
 Swarm=Swarm
 ;Swarm
 SwarmABlockOnEveryComputer=swarm: satu blok di setiap komputer, sampai Hentikan
@@ -3252,6 +3266,8 @@ TheFolderDoesNotExistOr=folder tidak ada (atau tidak dapat dijangkau)
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=Nama formula sebaiknya diawali "JIT" untuk membedakan formula tersebut dari formula berbasis ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=Material permukaan fraktal di atas palet (tidak ada di MB3D: disimpan setelah bagian parameter MB3D; tidak di Monte Carlo)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=Frame per detik harus berupa angka di atas 0 (mis. 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=buffer gambar memiliki ukuran yang salah

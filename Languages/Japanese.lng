@@ -1215,6 +1215,10 @@ FramesPerSecond=フレーム/秒:
 ;Frames per second:
 FramesSec=フレーム/秒:
 ;Frames/sec:
+Fresnel=フレネル:
+;Fresnel:
+Fresnel0To1MoreReflection=フレネル (0 から 1): 表面が視線からそれる所ほど強く映り込みます。ガラス、水、ラッカーのように (反射と一緒だとよく見えます)
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=クリップボードから
 ;From Clipboard
 FullM3IImageFiles=M3I フル画像ファイル:
@@ -1363,6 +1367,10 @@ GetZ2=Z2取得
 ;Get Z2
 GlobalLight=グローバルライト
 ;Global light
+Glow=発光:
+;Glow:
+Glow0AndUpTheSurface=発光 (0 以上): 表面が光なしで自分の色に光ります
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=スライダーを連結
 ;Glue sliders
 GoToNext=次へ移動
@@ -1611,6 +1619,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=Zバッファを反転
 ;Invert ZBuffer
+Iridescence=虹色:
+;Iridescence:
+Iridescence0To1TheColours=虹色 (0 から 1): 見る角度で変わる薄膜の色と、そのずれ (0 から 1)
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint='{}' は有効な浮動小数点数ではありません
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' は有効な整数ではありません
@@ -3171,6 +3183,8 @@ SurfaceColor=表面の色
 ;Surface color
 SurfaceDetail=表面の細かさ:
 ;Surface detail:
+SurfaceMaterial=表面の素材
+;Surface material
 Swarm=Swarm
 ;Swarm
 SwarmABlockOnEveryComputer=スウォーム: 停止するまで各コンピュータに 1 ブロックずつ
@@ -3253,6 +3267,8 @@ TheFolderDoesNotExistOr=フォルダが存在しません (またはアクセス
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=ASM ベースの数式と区別するため、数式名は「JIT」で始めてください
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=パレットに重ねるフラクタル表面の素材 (MB3D にはありません: パラメーターの MB3D の部分の後に保存。モンテカルロには入りません)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=1 秒あたりのフレーム数は 0 より大きい数にしてください (例: 25)。
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=画像バッファのサイズが正しくありません

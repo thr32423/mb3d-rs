@@ -543,7 +543,7 @@ ClickToChooseTheOutputFolder=Click to choose the output folder
 ClickToChooseYourNameFor=Click to choose your name for automatic saving in parameters
 ;Mand3DForm.ButtonAuthor.Hint
 ClickToHideShow=Click to hide/show
-;Mand3DForm.PositionBtn.Hint, Mand3DForm.RotationBtn.Hint, FNavigator.Button2.Hint and 11 more
+;Mand3DForm.PositionBtn.Hint, Mand3DForm.RotationBtn.Hint, FNavigator.Button2.Hint and 12 more
 ClickToInsertYourNameBelow=Click to insert your name below
 ;Mand3DForm.ButtonInsertAuthor.Hint
 ClickToLoadABackgroundPicture=Click to load a background picture.
@@ -1214,6 +1214,10 @@ FramesPerSecond=Frames per second:
 ;AnimationForm.VideoFpsLbl.Caption
 FramesSec=Frames/sec:
 ;AniPreviewForm.CheckBox3.Caption
+Fresnel=Fresnel:
+;PostProForm.FresnelLbl.Caption
+Fresnel0To1MoreReflection=Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
+;PostProForm.FresnelEdit.Hint
 FromClipboard=From Clipboard
 ;Mand3DForm.SpeedButton8.Caption
 FullM3IImageFiles=Full M3I image files:
@@ -1362,6 +1366,10 @@ GetZ2=Get Z2
 ;PostProForm.Button18.Caption; the program
 GlobalLight=Global light
 ;LightAdjustForm.TabSheet1.Caption
+Glow=Glow:
+;PostProForm.GlowLbl.Caption
+Glow0AndUpTheSurface=Glow (0 and up): the surface shines in its own colour, without light
+;PostProForm.GlowEdit.Hint
 GlueSliders=Glue sliders
 ;ColorForm.CheckBox1.Caption
 GoToNext=Go to next
@@ -1610,6 +1618,10 @@ InvMax=Inv max
 ;FormulaGUIForm.DECombineCmb.Items
 InvertZBuffer=Invert ZBuffer
 ;ZBuf16BitGenFrm.InvertZBufferCBx.Caption
+Iridescence=Iridescence:
+;PostProForm.IridLbl.Caption
+Iridescence0To1TheColours=Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+;PostProForm.IridEdit.Hint, PostProForm.IridShiftEdit.Hint
 IsNotAValidFloatingPoint='{}' is not a valid floating point value
 ;the program
 IsNotAValidIntegerValue='{}' is not a valid integer value
@@ -1911,7 +1923,7 @@ MapSequences=Map Sequences
 MapType=Map Type:
 ;HeightMapGenFrm.Label19.Caption
 Material=Material
-;MeshPreviewFrm.MaterialSheet.Caption
+;MeshPreviewFrm.MaterialSheet.Caption, PostProForm.MaterialBtn.Caption
 Max=Max
 ;FormulaGUIForm.DECombineCmb.Items
 MaxIterat=Max. Iterat.:
@@ -2423,13 +2435,13 @@ PNGTransparentBackgroundPng=PNG transparent background (*.png)
 PaintClouds=Paint clouds
 ;PostProForm.CloudsCbx.Caption
 PaintNow=Paint now
-;PostProForm.CloudsNowBtn.Caption
+;PostProForm.CloudsNowBtn.Caption, PostProForm.MaterialNowBtn.Caption
 PaintOnImage=Paint on image
 ;ColorForm.CheckBox3.Caption
 PaintingAPreview=painting a preview
 ;the program
 PaintsThePictureAgainWithThe=Paints the picture again with the clouds as set here
-;PostProForm.CloudsNowBtn.Hint
+;PostProForm.CloudsNowBtn.Hint, PostProForm.MaterialNowBtn.Hint
 Pano=pano.
 ;FNavigator.RadioGroup2.Items
 PanoramaModeTheFOVIsChoosen=Panorama mode:\n- The FOV is choosen automatically\n- Use the 24bit SSAO or DEAO for ambient shadows\n- A 2:1 aspect ratio is recommended, but not necessary.
@@ -3170,6 +3182,8 @@ SurfaceColor=Surface color
 ;MeshPreviewFrm.Label17.Caption
 SurfaceDetail=Surface detail:
 ;BulbTracer2Frm.Label23.Caption
+SurfaceMaterial=Surface material
+;PostProForm.MaterialCbx.Caption
 Swarm=Swarm
 ;Mand3DForm.SwarmBtn.Caption
 SwarmABlockOnEveryComputer=swarm: a block on every computer, until Stop
@@ -3252,6 +3266,8 @@ TheFolderDoesNotExistOr=the folder does not exist (or is not reachable)
 ;the program
 TheFormulaNameShouldStartWith=The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
 ;the program
+TheFractalSSurfaceMaterialOn=The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+;PostProForm.MaterialCbx.Hint
 TheFramesPerSecondMustBe=The frames per second must be a number above 0 (e.g. 25).
 ;the program
 TheImageBufferHasTheWrong=the image buffer has the wrong size

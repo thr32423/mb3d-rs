@@ -1214,6 +1214,10 @@ FramesPerSecond=Klatków na sekùndã:
 ;Frames per second:
 FramesSec=Klatków/s:
 ;Frames/sec:
+Fresnel=Fresnel:
+;Fresnel:
+Fresnel0To1MoreReflection=Fresnel (òd 0 do 1): wicy òdbicô tam, dze pòwierzchniô òdwrôcô sã òd wzéraniô, jak szkło, wòda ë lakier (nôlepi widzec z òdbiciama)
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=Ze schówkù
 ;From Clipboard
 FullM3IImageFiles=Fùl lopczi òbrôzków M3I:
@@ -1362,6 +1366,10 @@ GetZ2=Wez Z2
 ;Get Z2
 GlobalLight=Globalny wid
 ;Global light
+Glow=Pòswiata:
+;Glow:
+Glow0AndUpTheSurface=Pòswiata (0 ë wicy): pòwierzchniô swiecy swòją farwą, bez swiatła
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=Sklej suwaczi
 ;Glue sliders
 GoToNext=Biéj do nastãpny
@@ -1610,6 +1618,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=Òdwrócë Z-bufor
 ;Invert ZBuffer
+Iridescence=Òpalizacjô:
+;Iridescence:
+Iridescence0To1TheColours=Òpalizacjô (òd 0 do 1): farwë cenczi warstwë, chtërné zmieniwają sã z kątã zdrzeniô, ë jich przesënienié (òd 0 do 1)
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint='{}' nie je bezzmiłkòwą wôrtnotą zmiennoprzecynkòwą
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' nie je bezzmiłkòwą wôrtnotą całkòwitą
@@ -3170,6 +3182,8 @@ SurfaceColor=Farwa pòwiérzchni
 ;Surface color
 SurfaceDetail=Detale pòwiérzchni:
 ;Surface detail:
+SurfaceMaterial=Materiał pòwierzchni
+;Surface material
 Swarm=Rój
 ;Swarm
 SwarmABlockOnEveryComputer=rój: blok na kòżdim kòmpùtrze, jaż do Stop
@@ -3252,6 +3266,8 @@ TheFolderDoesNotExistOr=katalog nie je (abò nie je przëstãpny)
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=Miono fòrmùłë pòwinno sã zaczënac òd "JIT", bë òdrozniwac te fòrmùłë òd fòrmùłów na spòdlim ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=Materiał pòwierzchni fraktala na paletce (nie je w MB3D: zapisóny za dzélã parametrów MB3D; nie je gò w Monte Carlo)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=Klatczi na sekùndã mùszą bëc lëczbą wikszą jak 0 (np. 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=bùfer òbrôzka mô lëchą wiôlgòsc

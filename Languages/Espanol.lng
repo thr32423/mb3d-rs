@@ -1214,6 +1214,10 @@ FramesPerSecond=Fotogramas por segundo:
 ;Frames per second:
 FramesSec=Fotogramas/s:
 ;Frames/sec:
+Fresnel=Fresnel:
+;Fresnel:
+Fresnel0To1MoreReflection=Fresnel (0 a 1): más reflejo donde la superficie se aparta de la vista, como en el vidrio, el agua y la laca (se ve mejor con los reflejos)
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=Del portapapeles
 ;From Clipboard
 FullM3IImageFiles=Archivos de imagen M3I completos:
@@ -1362,6 +1366,10 @@ GetZ2=Tomar Z2
 ;Get Z2
 GlobalLight=Luz global
 ;Global light
+Glow=Brillo:
+;Glow:
+Glow0AndUpTheSurface=Brillo (0 o más): la superficie brilla con su propio color, sin luz
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=Unir deslizadores
 ;Glue sliders
 GoToNext=Ir al siguiente
@@ -1610,6 +1618,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=Invertir búfer Z
 ;Invert ZBuffer
+Iridescence=Iridiscencia:
+;Iridescence:
+Iridescence0To1TheColours=Iridiscencia (0 a 1): los colores de una película fina, que cambian con el ángulo de visión, y su desplazamiento (0 a 1)
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint='{}' no es un valor de coma flotante válido
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' no es un valor entero válido
@@ -3170,6 +3182,8 @@ SurfaceColor=Color de superficie
 ;Surface color
 SurfaceDetail=Detalle de superficie:
 ;Surface detail:
+SurfaceMaterial=Material de superficie
+;Surface material
 Swarm=Enjambre
 ;Swarm
 SwarmABlockOnEveryComputer=enjambre: un bloque en cada equipo, hasta Detener
@@ -3252,6 +3266,8 @@ TheFolderDoesNotExistOr=la carpeta no existe (o no es accesible)
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=El nombre de la fórmula debe empezar por "JIT" para distinguir esas fórmulas de las basadas en ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=El material de la superficie del fractal sobre la paleta (no está en MB3D: se guarda tras la parte de MB3D de los parámetros; no en Monte Carlo)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=Los fotogramas por segundo deben ser un número mayor que 0 (p. ej. 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=el búfer de imagen tiene un tamaño incorrecto

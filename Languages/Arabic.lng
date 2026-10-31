@@ -1215,6 +1215,10 @@ FramesPerSecond=الإطارات في الثانية:
 ;Frames per second:
 FramesSec=إطار/ث:
 ;Frames/sec:
+Fresnel=فرينل:
+;Fresnel:
+Fresnel0To1MoreReflection=فرينل (من 0 إلى 1): انعكاس أكثر حيث يميل السطح عن النظر، كما في الزجاج والماء والطلاء اللامع (يظهر أفضل مع الانعكاسات)
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=من الحافظة
 ;From Clipboard
 FullM3IImageFiles=ملفات صور M3I الكاملة:
@@ -1363,6 +1367,10 @@ GetZ2=أخذ Z2
 ;Get Z2
 GlobalLight=الإضاءة العامة
 ;Global light
+Glow=التوهج:
+;Glow:
+Glow0AndUpTheSurface=التوهج (0 فأكثر): يتوهج السطح بلونه الخاص، دون ضوء
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=ربط المنزلقات
 ;Glue sliders
 GoToNext=الانتقال إلى التالي
@@ -1611,6 +1619,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=عكس مخزن Z
 ;Invert ZBuffer
+Iridescence=التقزح:
+;Iridescence:
+Iridescence0To1TheColours=التقزح (من 0 إلى 1): ألوان غشاء رقيق تتغير مع زاوية النظر، وإزاحتها (من 0 إلى 1)
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint='{}' ليست قيمة عشرية صالحة
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' ليست قيمة صحيحة صالحة
@@ -3171,6 +3183,8 @@ SurfaceColor=لون السطح
 ;Surface color
 SurfaceDetail=تفاصيل السطح:
 ;Surface detail:
+SurfaceMaterial=مادة السطح
+;Surface material
 Swarm=السرب
 ;Swarm
 SwarmABlockOnEveryComputer=السرب: كتلة على كل حاسوب، حتى الإيقاف
@@ -3253,6 +3267,8 @@ TheFolderDoesNotExistOr=المجلد غير موجود (أو يتعذر الوص
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=يجب أن يبدأ اسم الصيغة بـ "JIT" لتمييز هذه الصيغ من الصيغ المبنية على ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=مادة سطح الكسورية فوق لوحة الألوان (ليست في MB3D: تُحفظ بعد جزء MB3D من المعاملات؛ ليست في مونت كارلو)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=يجب أن يكون عدد الإطارات في الثانية عددًا أكبر من 0 (مثلًا 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=مخزن الصورة بحجم خاطئ

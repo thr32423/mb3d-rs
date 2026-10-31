@@ -2234,6 +2234,7 @@ pub(crate) fn light_vals(sc: &Scene, l: &crate::lighting::Lighting, cam: &PaintC
     let vz = normalise_matrix_to(1.0, &sc.vgrads)[2];
     lv.place_lights(l, sc.stereo_mid(), cam, z_range, vz);
     lv.set_ground(sc.ground.as_ref().filter(|_| sc.inside == crate::scene::InsideMode::Outside));
+    lv.material = sc.material.filter(|m| *m != crate::scene::Material::default());
     lv
 }
 

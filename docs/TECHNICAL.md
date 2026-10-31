@@ -745,6 +745,9 @@ itself per light.
 | `clouds` | axis, from, to (`y, -1.2, -2.2`) or `off` | a layer of volumetric clouds (not in MB3D), painted after the lighting and reflections, before the depth of field (`src/clouds.rs`: each pixel's ray through the layer up to its surface, 3D value noise, the first global light through the cloud) |
 | `cloud_density`, `cloud_coverage`, `cloud_size` | number, 0..1, fractal units | how thick, how much sky, how big |
 | `cloud_color`, `cloud_offset` | `#RRGGBB`, x, y, z | colour; the noise's shift (keyframes animate it) |
+| `material_fresnel` | 0..1 | the fractal's specular colour (and its reflections) towards white where the surface turns from the view (Schlick's term with a third power) |
+| `material_iridescence` | amount, shift | a thin film's colours on the specular colour (and half on the diffuse one), changing with the angle of view |
+| `material_glow` | 0.. | the surface's own light in its diffuse colour (not in Monte Carlo) |
 | `dof` | `off`, `sorted`, `forward` | depth of field |
 | `dof_focus`, `dof_focus2` | distance as fraction of the image width | sharp range (`--stats` prints the value for the image centre) |
 | `dof_aperture` | 0.0001..2 | aperture |

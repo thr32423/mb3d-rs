@@ -97,6 +97,9 @@ Clouds (not in MB3D; painted over the picture, cheap to change)
   cloud_coverage 0..1, cloud_size (features, fractal units), cloud_color = #RRGGBB,
   cloud_offset = x, y, z (moves the pattern; animate it for drifting clouds). -y is up in most
   views: place the layer above the fractal and preview.
+Surface material (not in MB3D; on top of the palette)
+- material_fresnel 0..1 (edges reflect more; with mc_reflections), material_iridescence =
+  amount, shift (0..1 each: a thin film's rainbow sheen), material_glow (0..: self-lit).
 HDR lighting: background_image = a .hdr picture (with background_direct = false) lights a
   montecarlo render; its sun becomes a light with soft shadows.
 Formulas ([formula] sections, up to 6, an alternating hybrid)

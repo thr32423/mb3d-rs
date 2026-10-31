@@ -1215,6 +1215,10 @@ FramesPerSecond=초당 프레임 수:
 ;Frames per second:
 FramesSec=프레임/초:
 ;Frames/sec:
+Fresnel=프레넬:
+;Fresnel:
+Fresnel0To1MoreReflection=프레넬 (0에서 1): 표면이 시선에서 비켜날수록 더 많이 비칩니다. 유리, 물, 래커처럼 (반사와 함께일 때 잘 보입니다)
+;Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 FromClipboard=클립보드에서
 ;From Clipboard
 FullM3IImageFiles=전체 M3I 이미지 파일:
@@ -1363,6 +1367,10 @@ GetZ2=Z2 가져오기
 ;Get Z2
 GlobalLight=전역 조명
 ;Global light
+Glow=발광:
+;Glow:
+Glow0AndUpTheSurface=발광 (0 이상): 표면이 빛 없이 자기 색으로 빛납니다
+;Glow (0 and up): the surface shines in its own colour, without light
 GlueSliders=슬라이더 결합
 ;Glue sliders
 GoToNext=다음으로 이동
@@ -1611,6 +1619,10 @@ InvMax=Inv max
 ;Inv max
 InvertZBuffer=Z 버퍼 반전
 ;Invert ZBuffer
+Iridescence=무지갯빛:
+;Iridescence:
+Iridescence0To1TheColours=무지갯빛 (0에서 1): 보는 각도에 따라 바뀌는 얇은 막의 색과 그 이동 (0에서 1)
+;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 IsNotAValidFloatingPoint='{}'은(는) 올바른 부동소수점 값이 아닙니다
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}'은(는) 올바른 정수 값이 아닙니다
@@ -3171,6 +3183,8 @@ SurfaceColor=표면 색상
 ;Surface color
 SurfaceDetail=표면 세부:
 ;Surface detail:
+SurfaceMaterial=표면 재질
+;Surface material
 Swarm=스웜
 ;Swarm
 SwarmABlockOnEveryComputer=스웜: 중지할 때까지 모든 컴퓨터에서 블록 하나씩
@@ -3253,6 +3267,8 @@ TheFolderDoesNotExistOr=폴더가 없거나 접근할 수 없습니다
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=JIT 공식을 ASM 기반 공식과 구별하기 위해 공식 이름은 "JIT"로 시작해야 합니다
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFractalSSurfaceMaterialOn=팔레트 위에 더하는 프랙탈 표면의 재질 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장; 몬테카를로에는 없음)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
 TheFramesPerSecondMustBe=초당 프레임 수는 0보다 큰 숫자여야 합니다(예: 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=이미지 버퍼 크기가 잘못되었습니다

@@ -622,6 +622,8 @@ pub struct LightVals {
     /// the ground plane's diffuse and specular colours (`gbuffer::GROUND`
     /// pixels), set by [`LightVals::set_ground`]
     pub(crate) ground: Option<(SVec, SVec)>,
+    /// the fractal's surface material (Fresnel, iridescence, glow)
+    pub(crate) material: Option<crate::scene::Material>,
     pub(crate) bg_direct: bool,
     pub(crate) bg_add_light: bool,
     /// light map lights
@@ -1152,6 +1154,7 @@ impl LightVals {
             s_ic_div,
             vol_light: false,
             ground: None,
+            material: None,
             bg: if l.bg_image.is_empty() {
                 None
             } else {
@@ -1784,6 +1787,13 @@ impl LightVals {
                     idif = sv_scale(pal, luma(idif) / (0.01 + luma(pal)));
                 }
             }
+            let mut ispe = ispe;
+            if let Some(m) = self.material.as_ref().filter(|_| !si.is_ground()) {
+                // how much the surface turns away from the view: 0 facing it, 1 grazing
+                let g = (1.0 + lns[0] * plv.view[0] + lns[1] * plv.view[1] + lns[2] * plv.view[2]).clamp(0.0, 1.0);
+                ispe = m.specular(ispe, 1.0 - g);
+                idif = m.diffuse(idif, 1.0 - g);
+            }
             spe_out = ispe;
             spe_a = ia;
             dif_out = idif;
@@ -1828,6 +1838,9 @@ impl LightVals {
                     idif[2] * st2 * self.s_ind_light_reflect + (st - st2),
                 ];
                 out = sv_add(total, sv_mul(l3, sv_mul(idif, refl)));
+                if let Some(m) = self.material.as_ref().filter(|m| m.glow > 0.0 && !si.is_ground()) {
+                    sv_add_w(&mut out, idif, m.glow * 255.0);
+                }
             } else {
                 // CalcTotalLight2
                 let st = (1.0 - d_amb_sh).max(0.0);
@@ -1835,6 +1848,9 @@ impl LightVals {
                 let st2 = luma(total) + 4.0;
                 out = sv_add(total, sv_scale(sv_mul(total, idif), st));
                 out = sv_scale(out, (st2 + (st2 + 128.0) * (st + 0.11) * 0.04) / (luma(out).max(0.0) + 3.0));
+                if let Some(m) = self.material.as_ref().filter(|m| m.glow > 0.0 && !si.is_ground()) {
+                    sv_add_w(&mut out, idif, m.glow * 255.0);
+                }
             }
             dtmp = ((zpos_word as f32 - 28000.0) * self.s_depth + 1.0).max(0.0);
         } else {

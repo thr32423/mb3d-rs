@@ -582,8 +582,8 @@ CloseWindow=Cerrar ventana
 ;Close window
 Clouds=Nubes
 ;Clouds
-CloudsOverThePictureALayer=Nubes sobre la imagen: una capa entre dos alturas a lo largo del eje X, Y o Z del fractal, iluminada por la primera luz, delante y detrás del fractal (no está en MB3D: se guarda tras la parte de MB3D de los parámetros; no en reflejos ni en Monte Carlo)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=Nubes sobre la imagen: una capa entre dos alturas a lo largo del eje X, Y o Z del fractal, iluminada por la primera luz, delante y detrás del fractal (no está en MB3D: se guarda tras la parte de MB3D de los parámetros; en Monte Carlo a lo largo de los rayos de vista; no en reflejos)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=Código
@@ -3268,8 +3268,8 @@ TheFolderDoesNotExistOr=la carpeta no existe (o no es accesible)
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=El nombre de la fórmula debe empezar por "JIT" para distinguir esas fórmulas de las basadas en ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=El material de la superficie del fractal sobre la paleta (no está en MB3D: se guarda tras la parte de MB3D de los parámetros; no en Monte Carlo)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=El material de la superficie del fractal sobre la paleta (no está en MB3D: se guarda tras la parte de MB3D de los parámetros)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=Los fotogramas por segundo deben ser un número mayor que 0 (p. ej. 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=el búfer de imagen tiene un tamaño incorrecto

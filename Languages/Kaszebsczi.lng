@@ -582,8 +582,8 @@ CloseWindow=Zamkni òkno
 ;Close window
 Clouds=Chmùrë
 ;Clouds
-CloudsOverThePictureALayer=Chmùrë na òbrazu: warstwa midzë dwòma wiżawama wzdłuż òsë X, Y abò Z fraktala, òswiecónô pierszim swiatłã, przed fraktalã ë za nim (nie je w MB3D: zapisóné za dzélã parametrów MB3D; nie je jich w òdbiciach ë Monte Carlo)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=Chmùrë na òbrazu: warstwa midzë dwòma wiżawama wzdłuż òsë X, Y abò Z fraktala, òswiecónô pierszim swiatłã, przed fraktalã ë za nim (nie je w MB3D: zapisóné za dzélã parametrów MB3D; w Monte Carlo wzdłuż promieni widzeniô; nie w òdbiciach)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=Kòd
@@ -3268,8 +3268,8 @@ TheFolderDoesNotExistOr=katalog nie je (abò nie je przëstãpny)
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=Miono fòrmùłë pòwinno sã zaczënac òd "JIT", bë òdrozniwac te fòrmùłë òd fòrmùłów na spòdlim ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=Materiał pòwierzchni fraktala na paletce (nie je w MB3D: zapisóny za dzélã parametrów MB3D; nie je gò w Monte Carlo)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=Materiał pòwierzchni fraktala na paletce (nie je w MB3D: zapisóny za dzélã parametrów MB3D)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=Klatczi na sekùndã mùszą bëc lëczbą wikszą jak 0 (np. 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=bùfer òbrôzka mô lëchą wiôlgòsc

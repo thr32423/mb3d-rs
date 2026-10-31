@@ -583,8 +583,8 @@ CloseWindow=창 닫기
 ;Close window
 Clouds=구름
 ;Clouds
-CloudsOverThePictureALayer=그림 위의 구름: 프랙탈의 X, Y 또는 Z 축을 따라 두 높이 사이의 층으로, 첫 번째 빛으로 비추며 프랙탈 앞과 뒤에 그려집니다 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장; 반사와 몬테카를로에는 없음)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=그림 위의 구름: 프랙탈의 X, Y 또는 Z 축을 따라 두 높이 사이의 층으로, 첫 번째 빛으로 비추며 프랙탈 앞과 뒤에 그려집니다 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장; 몬테카를로에서는 시선을 따라 보이며, 반사에는 없음)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=코드
@@ -3269,8 +3269,8 @@ TheFolderDoesNotExistOr=폴더가 없거나 접근할 수 없습니다
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=JIT 공식을 ASM 기반 공식과 구별하기 위해 공식 이름은 "JIT"로 시작해야 합니다
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=팔레트 위에 더하는 프랙탈 표면의 재질 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장; 몬테카를로에는 없음)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=팔레트 위에 더하는 프랙탈 표면의 재질 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=초당 프레임 수는 0보다 큰 숫자여야 합니다(예: 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=이미지 버퍼 크기가 잘못되었습니다

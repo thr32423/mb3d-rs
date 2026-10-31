@@ -736,8 +736,7 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   bentuk dan warnanya, lalu *Lukis sekarang*. Awan dilukis di atas gambar jadi
   dalam sepersekian detik, jadi mencoba pengaturan itu cepat; setiap piksel
   melihat menembus lapisan sampai permukaan yang dikenainya. Animasi dapat
-  menggerakkannya (`cloud_offset` antar keyframe). Tidak ada di pantulan dan
-  Monte Carlo; Mandelbulb3D tidak memilikinya (blok mb3d-rs di parameter
+  menggerakkannya (`cloud_offset` antar keyframe). Di Monte Carlo sepanjang sinar pandang, tidak di pantulan; Mandelbulb3D tidak memilikinya (blok mb3d-rs di parameter
   menyimpannya).
 
   </details>
@@ -753,7 +752,7 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   Fresnel (0 sampai 1), iridesensi (0 sampai 1 dan pergeseran warnanya) dan
   pendar, lalu *Lukis sekarang*. Fresnel paling terlihat dengan pantulan yang
   dihitung. Bila mati, gambarnya persis seperti Mandelbulb3D; bidang tanah tetap
-  dengan warna dan pantulannya sendiri. Belum ada di Monte Carlo.
+  dengan warna dan pantulannya sendiri. Juga di Monte Carlo.
 
   </details>
 * **Dua fraktal dalam satu adegan** (ide dari Mandelbulber): dengan kombinasi DE,

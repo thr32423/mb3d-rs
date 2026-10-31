@@ -694,8 +694,7 @@ kunt u zelf verder controleren:
   grootte van de vormen en de kleur, dan *Nu schilderen*. Ze worden in een
   fractie van een seconde over de klare afbeelding geschilderd, instellingen
   proberen gaat dus snel; elke pixel kijkt door de laag tot het oppervlak dat hij
-  raakte. Een animatie kan ze bewegen (`cloud_offset` tussen keyframes). Niet in
-  reflecties en Monte Carlo; Mandelbulb3D heeft ze niet (het mb3d-rs-blok van de
+  raakte. Een animatie kan ze bewegen (`cloud_offset` tussen keyframes). In Monte Carlo langs de kijkstralen, niet in reflecties; Mandelbulb3D heeft ze niet (het mb3d-rs-blok van de
   parameters bewaart ze).
 
   </details>
@@ -711,7 +710,7 @@ kunt u zelf verder controleren:
   stel Fresnel (0 tot 1), iriseren (0 tot 1 en een verschuiving van de kleuren)
   en gloed in, dan *Nu schilderen*. Fresnel is het best te zien met berekende
   reflecties. Uit zijn de afbeeldingen precies die van Mandelbulb3D; het
-  grondvlak houdt zijn eigen kleur en reflectie. Nog niet in Monte Carlo.
+  grondvlak houdt zijn eigen kleur en reflectie. Ook in Monte Carlo.
 
   </details>
 * **Twee fractals in één scène** (een idee uit Mandelbulber): met een

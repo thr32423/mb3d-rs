@@ -736,8 +736,7 @@ pontos permitem que você confira mais por conta própria:
   das formas e a cor, depois *Pintar agora*. São pintadas sobre a imagem pronta
   numa fração de segundo, então testar ajustes é rápido; cada pixel olha através
   da camada até a superfície que atingiu. Uma animação pode movê-las
-  (`cloud_offset` entre quadros-chave). Não aparecem nos reflexos nem no Monte
-  Carlo; o Mandelbulb3D não as tem (o bloco mb3d-rs dos parâmetros as guarda).
+  (`cloud_offset` entre quadros-chave). No Monte Carlo ao longo dos raios de visão, não nos reflexos; o Mandelbulb3D não as tem (o bloco mb3d-rs dos parâmetros as guarda).
 
   </details>
 * **Materiais de superfície** (ideias do Mandelbulber) sobre a paleta: Fresnel
@@ -752,7 +751,7 @@ pontos permitem que você confira mais por conta própria:
   ajuste Fresnel (0 a 1), iridescência (0 a 1 e um deslocamento das suas cores) e
   brilho, depois *Pintar agora*. O Fresnel aparece melhor com os reflexos
   calculados. Desligados, as imagens são exatamente as do Mandelbulb3D; o plano de
-  chão mantém a sua cor e reflexo. Ainda não no Monte Carlo.
+  chão mantém a sua cor e reflexo. Também no Monte Carlo.
 
   </details>
 * **Dois fractais numa cena** (uma ideia do Mandelbulber): com uma combinação DE,

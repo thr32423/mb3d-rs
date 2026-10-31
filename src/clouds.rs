@@ -6,7 +6,8 @@
 //! to the surface it hit (or the end of the layer), so the fractal hides
 //! the clouds behind it and the clouds in front veil the fractal.  The
 //! clouds are not part of the ray march: they cast no shadows on the
-//! fractal and do not show in reflections or Monte Carlo renders.
+//! fractal and do not show in reflections; Monte Carlo sees them along its
+//! view rays (`mc::Tracer::with_clouds`).
 
 use crate::gbuffer::SiLight;
 use crate::lighting::{LightVals, PaintCamera, Sample};
@@ -115,10 +116,89 @@ impl Clouds {
 }
 
 /// The light at the clouds: the first global light's direction (towards
-/// it, in scene coordinates) and colour (0..1).
-struct Sun {
-    dir: [f64; 3],
-    col: [f32; 3],
+/// it, in scene coordinates) and colour (0..1), and the ambient colours
+/// from above and below.
+pub(crate) struct CloudLight {
+    sun: Option<([f64; 3], [f32; 3])>,
+    amb_top: [f32; 3],
+    amb_bottom: [f32; 3],
+}
+
+impl Clouds {
+    /// The light of the scene at the clouds.
+    pub(crate) fn light(&self, l: &crate::lighting::Lighting, lv: &LightVals, cam: &PaintCamera) -> CloudLight {
+        let sun = lv.lights.iter().find(|v| v.on && !v.positional).map(|v| {
+            let a = cam.to_abs(v.ln);
+            let n = (a[0] * a[0] + a[1] * a[1] + a[2] * a[2]).sqrt().max(1e-30);
+            (a.map(|x| (x / n) as f64), l.lights[v.idx].color.map(|x| x as f32 / 255.0))
+        });
+        CloudLight { sun, amb_top: l.amb_top.map(|x| x as f32 / 255.0), amb_bottom: l.amb_bottom.map(|x| x as f32 / 255.0) }
+    }
+
+    /// How far a ray that hits nothing looks into the layer: through it at
+    /// a slant.
+    pub(crate) fn far(&self) -> f64 {
+        let (lo, hi) = self.bounds();
+        (hi - lo).max(1e-30) * 20.0 + self.size * 40.0
+    }
+
+    /// The ray `o + d t` (`d` of length 1) through the layer up to `tmax`:
+    /// the part of the light behind that gets through and the light of the
+    /// clouds (0..1); None when it misses the layer.  `jitter` (0..1)
+    /// shifts the steps against bands.
+    pub(crate) fn ray(&self, o: [f64; 3], d: [f64; 3], tmax: f64, cl: &CloudLight, jitter: f64) -> Option<(f32, [f32; 3])> {
+        let (t0, t1) = self.span(o, d, tmax)?;
+        let (lo, hi) = self.bounds();
+        let thick = (hi - lo).max(1e-30);
+        let col = self.color.map(|x| x as f32 / 255.0);
+        // steps of about a third of the features' size, 8 to 96
+        let n = ((t1 - t0) / (self.size * 0.3)).clamp(8.0, 96.0) as usize;
+        let dt = (t1 - t0) / n as f64;
+        let (mut tr, mut acc) = (1f32, [0f32; 3]);
+        for i in 0..n {
+            let t = t0 + (i as f64 + jitter) * dt;
+            let p = [0, 1, 2].map(|k| o[k] + d[k] * t);
+            let sigma = self.density_at(p);
+            if sigma <= 0.0 {
+                continue;
+            }
+            // the light reaching this point through the cloud
+            let mut light = [0f32; 3];
+            if let Some((sd, sc)) = &cl.sun {
+                let ls = thick * 0.15;
+                let mut od = 0f32;
+                for k in 1..=5 {
+                    let q = [0, 1, 2].map(|m| p[m] + sd[m] * ls * k as f64);
+                    od += self.density_at(q) * ls as f32;
+                }
+                let tl = (-od).exp();
+                // a little brighter towards the sun (forward scattering)
+                let cosv = (sd[0] * d[0] + sd[1] * d[1] + sd[2] * d[2]) as f32;
+                let phase = 0.8 + 0.6 * cosv.max(0.0).powi(4);
+                for c in 0..3 {
+                    light[c] = sc[c] * tl * phase;
+                }
+            }
+            // ambient: the top colour from above, the bottom one from below
+            let k = self.axis as usize % 3;
+            let up = ((p[k] - lo) / thick).clamp(0.0, 1.0) as f32;
+            let a = (1.0 - (-sigma * dt as f32).exp()) * tr;
+            for c in 0..3 {
+                let amb = cl.amb_bottom[c] + (cl.amb_top[c] - cl.amb_bottom[c]) * up;
+                acc[c] += a * col[c] * (light[c] + 0.35 * amb);
+            }
+            tr *= (-sigma * dt as f32).exp();
+            if tr < 0.01 {
+                break;
+            }
+        }
+        Some((tr, acc))
+    }
+}
+
+/// The jitter of a pixel's cloud steps (0..1).
+pub(crate) fn jitter(x: i64, y: i64) -> f64 {
+    (lattice(x, y, 7) * 0.5 + 0.5) as f64
 }
 
 /// Paints the clouds over `rgb` (the picture of the G-buffer `gbuf`,
@@ -138,24 +218,14 @@ pub fn apply<S: Sample>(
     threads: usize,
     cancel: &(dyn Fn() -> bool + Sync),
 ) {
-    let sun = lv.lights.iter().find(|v| v.on && !v.positional).map(|v| {
-        let a = cam.to_abs(v.ln);
-        let n = (a[0] * a[0] + a[1] * a[1] + a[2] * a[2]).sqrt().max(1e-30);
-        let c = l.lights[v.idx].color;
-        Sun { dir: a.map(|x| (x / n) as f64), col: c.map(|x| x as f32 / 255.0) }
-    });
-    let col = cl.color.map(|x| x as f32 / 255.0);
-    let (amb_top, amb_bottom) = (l.amb_top.map(|x| x as f32 / 255.0), l.amb_bottom.map(|x| x as f32 / 255.0));
-    let (lo, hi) = cl.bounds();
-    let thick = (hi - lo).max(1e-30);
-    // the far end of rays that hit nothing: through the layer at a slant
-    let far = thick * 20.0 + cl.size * 40.0;
+    let light = cl.light(l, lv, cam);
+    let far = cl.far();
     let rows = gbuf.len() / w.max(1);
     let threads = threads.clamp(1, rows.max(1));
     let per = rows.div_ceil(threads);
     std::thread::scope(|s| {
         for (ci, (gc, oc)) in gbuf.chunks(per * w).zip(rgb.chunks_mut(per * w * 3)).enumerate() {
-            let sun = &sun;
+            let light = &light;
             s.spawn(move || {
                 for (ry, (grow, orow)) in gc.chunks(w).zip(oc.chunks_mut(w * 3)).enumerate() {
                     if cancel() {
@@ -175,50 +245,7 @@ pub fn apply<S: Sample>(
                         } else {
                             (((8388352 - (si.zpos_fine >> 8) as i64) as f64 / cam.zc_mul + 1.0).powi(2) - 1.0) * cam.step_width / cam.zcorr
                         };
-                        let Some((t0, t1)) = cl.span(o, d, tmax) else { continue };
-                        // steps of about a third of the features' size, 8 to 96
-                        let n = ((t1 - t0) / (cl.size * 0.3)).clamp(8.0, 96.0) as usize;
-                        let dt = (t1 - t0) / n as f64;
-                        // a jitter per pixel against bands
-                        let j = (lattice(x as i64, y as i64, 7) * 0.5 + 0.5) as f64;
-                        let (mut tr, mut acc) = (1f32, [0f32; 3]);
-                        for i in 0..n {
-                            let t = t0 + (i as f64 + j) * dt;
-                            let p = [0, 1, 2].map(|k| o[k] + d[k] * t);
-                            let sigma = cl.density_at(p);
-                            if sigma <= 0.0 {
-                                continue;
-                            }
-                            // the light reaching this point through the cloud
-                            let mut light = [0f32; 3];
-                            if let Some(sn) = sun {
-                                let ls = thick * 0.15;
-                                let mut od = 0f32;
-                                for k in 1..=5 {
-                                    let q = [0, 1, 2].map(|m| p[m] + sn.dir[m] * ls * k as f64);
-                                    od += cl.density_at(q) * ls as f32;
-                                }
-                                let tl = (-od).exp();
-                                // a little brighter towards the sun (forward scattering)
-                                let cosv = (sn.dir[0] * d[0] + sn.dir[1] * d[1] + sn.dir[2] * d[2]) as f32;
-                                let phase = 0.8 + 0.6 * cosv.max(0.0).powi(4);
-                                for c in 0..3 {
-                                    light[c] = sn.col[c] * tl * phase;
-                                }
-                            }
-                            // ambient: the top colour from above, the bottom one from below
-                            let k = cl.axis as usize % 3;
-                            let up = ((p[k] - lo) / thick).clamp(0.0, 1.0) as f32;
-                            let a = (1.0 - (-sigma * dt as f32).exp()) * tr;
-                            for c in 0..3 {
-                                let amb = amb_bottom[c] + (amb_top[c] - amb_bottom[c]) * up;
-                                acc[c] += a * col[c] * (light[c] + 0.35 * amb);
-                            }
-                            tr *= (-sigma * dt as f32).exp();
-                            if tr < 0.01 {
-                                break;
-                            }
-                        }
+                        let Some((tr, acc)) = cl.ray(o, d, tmax, light, jitter(x as i64, y as i64)) else { continue };
                         let px = &mut orow[xi * 3..xi * 3 + 3];
                         for c in 0..3 {
                             let v = px[c].to_255() * tr + acc[c] * 255.0;

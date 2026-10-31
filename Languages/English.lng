@@ -582,7 +582,7 @@ CloseWindow=Close window
 ;AnimationForm.Button1.Caption, BatchForm1.Button2.Caption
 Clouds=Clouds
 ;PostProForm.CloudsBtn.Caption
-CloudsOverThePictureALayer=Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 ;PostProForm.CloudsCbx.Hint
 Co=Co:
 ;the program
@@ -3268,7 +3268,7 @@ TheFolderDoesNotExistOr=the folder does not exist (or is not reachable)
 ;the program
 TheFormulaNameShouldStartWith=The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
 ;the program
-TheFractalSSurfaceMaterialOn=The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 ;PostProForm.MaterialCbx.Hint
 TheFramesPerSecondMustBe=The frames per second must be a number above 0 (e.g. 25).
 ;the program

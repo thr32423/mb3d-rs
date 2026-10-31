@@ -582,8 +582,8 @@ CloseWindow=Zamknij okno
 ;Close window
 Clouds=Chmury
 ;Clouds
-CloudsOverThePictureALayer=Chmury na obrazie: warstwa między dwiema wysokościami wzdłuż osi X, Y lub Z fraktala, oświetlona pierwszym światłem, przed fraktalem i za nim (nie ma w MB3D: zapisywane za częścią parametrów MB3D; nie ma ich w odbiciach ani w Monte Carlo)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=Chmury na obrazie: warstwa między dwiema wysokościami wzdłuż osi X, Y lub Z fraktala, oświetlona pierwszym światłem, przed fraktalem i za nim (nie ma w MB3D: zapisywane za częścią parametrów MB3D; w Monte Carlo wzdłuż promieni widzenia; nie w odbiciach)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=Kod
@@ -3268,8 +3268,8 @@ TheFolderDoesNotExistOr=folder nie istnieje (lub jest niedostępny)
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=Nazwa formuły powinna zaczynać się od „JIT”, aby odróżnić te formuły od formuł opartych na ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=Materiał powierzchni fraktala na palecie (nie ma w MB3D: zapisywany za częścią parametrów MB3D; nie ma go w Monte Carlo)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=Materiał powierzchni fraktala na palecie (nie ma w MB3D: zapisywany za częścią parametrów MB3D)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=Liczba klatek na sekundę musi być większa od 0 (np. 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=bufor obrazu ma niewłaściwy rozmiar

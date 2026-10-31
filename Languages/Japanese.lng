@@ -583,8 +583,8 @@ CloseWindow=ウィンドウを閉じる
 ;Close window
 Clouds=雲
 ;Clouds
-CloudsOverThePictureALayer=画像の上の雲: フラクタルの X、Y、Z 軸に沿った 2 つの高さの間の層で、最初のライトに照らされ、フラクタルの手前にも奥にも描かれます (MB3D にはありません: パラメーターの MB3D の部分の後に保存。反射とモンテカルロには入りません)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=画像の上の雲: フラクタルの X、Y、Z 軸に沿った 2 つの高さの間の層で、最初のライトに照らされ、フラクタルの手前にも奥にも描かれます (MB3D にはありません: パラメーターの MB3D の部分の後に保存。モンテカルロでは視線に沿って入り、反射には入りません)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=コード
@@ -3269,8 +3269,8 @@ TheFolderDoesNotExistOr=フォルダが存在しません (またはアクセス
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=ASM ベースの数式と区別するため、数式名は「JIT」で始めてください
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=パレットに重ねるフラクタル表面の素材 (MB3D にはありません: パラメーターの MB3D の部分の後に保存。モンテカルロには入りません)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=パレットに重ねるフラクタル表面の素材 (MB3D にはありません: パラメーターの MB3D の部分の後に保存)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=1 秒あたりのフレーム数は 0 より大きい数にしてください (例: 25)。
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=画像バッファのサイズが正しくありません

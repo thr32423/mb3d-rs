@@ -749,8 +749,7 @@ esto puede comprobar más por su cuenta:
   sus formas y su color, y pulse *Pintar ahora*. Se pintan sobre la imagen
   terminada en una fracción de segundo, así que probar ajustes es rápido; cada
   píxel mira a través de la capa hasta la superficie que alcanzó. Una animación
-  puede moverlas (`cloud_offset` entre fotogramas clave). No aparecen en reflejos
-  ni en Monte Carlo; Mandelbulb3D no las tiene (el bloque mb3d-rs de los
+  puede moverlas (`cloud_offset` entre fotogramas clave). En Monte Carlo se ven a lo largo de los rayos de vista, no en reflejos; Mandelbulb3D no las tiene (el bloque mb3d-rs de los
   parámetros las guarda).
 
   </details>
@@ -766,7 +765,7 @@ esto puede comprobar más por su cuenta:
   ajuste Fresnel (0 a 1), iridiscencia (0 a 1 y un desplazamiento de sus colores)
   y brillo, y pulse *Pintar ahora*. Fresnel se ve mejor con los reflejos
   calculados. Apagado, las imágenes son exactamente las de Mandelbulb3D; el plano
-  de suelo conserva su color y reflejo. Aún no en Monte Carlo.
+  de suelo conserva su color y reflejo. También en Monte Carlo.
 
   </details>
 * **Dos fractales en una escena** (una idea de Mandelbulber): con una combinación

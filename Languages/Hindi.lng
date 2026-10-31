@@ -583,8 +583,8 @@ CloseWindow=विंडो बंद करें
 ;Close window
 Clouds=बादल
 ;Clouds
-CloudsOverThePictureALayer=चित्र पर बादल: फ़्रैक्टल के X, Y या Z अक्ष पर दो ऊँचाइयों के बीच एक परत, पहले प्रकाश से रोशन, फ़्रैक्टल के आगे और पीछे (MB3D में नहीं: पैरामीटरों में MB3D के भाग के बाद सहेजा जाता है; परावर्तनों और मोंटे कार्लो में नहीं)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=चित्र पर बादल: फ़्रैक्टल के X, Y या Z अक्ष पर दो ऊँचाइयों के बीच एक परत, पहले प्रकाश से रोशन, फ़्रैक्टल के आगे और पीछे (MB3D में नहीं: पैरामीटरों में MB3D के भाग के बाद सहेजा जाता है; मोंटे कार्लो में दृष्टि किरणों के साथ; परावर्तनों में नहीं)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=कोड
@@ -3269,8 +3269,8 @@ TheFolderDoesNotExistOr=फ़ोल्डर मौजूद नहीं ह�
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=फ़ॉर्मूले का नाम "JIT" से शुरू होना चाहिए, ताकि इन फ़ॉर्मूलों को ASM-आधारित फ़ॉर्मूलों से अलग पहचाना जा सके
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=पैलेट के ऊपर फ़्रैक्टल की सतह सामग्री (MB3D में नहीं: पैरामीटरों में MB3D के भाग के बाद सहेजी जाती है; मोंटे कार्लो में नहीं)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=पैलेट के ऊपर फ़्रैक्टल की सतह सामग्री (MB3D में नहीं: पैरामीटरों में MB3D के भाग के बाद सहेजी जाती है)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=फ़्रेम प्रति सेकंड 0 से बड़ी संख्या होनी चाहिए (जैसे 25)।
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=छवि बफ़र का आकार गलत है

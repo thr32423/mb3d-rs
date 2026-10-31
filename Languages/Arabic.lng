@@ -583,8 +583,8 @@ CloseWindow=إغلاق النافذة
 ;Close window
 Clouds=السحب
 ;Clouds
-CloudsOverThePictureALayer=سحب فوق الصورة: طبقة بين ارتفاعين على المحور X أو Y أو Z للكسورية، يضيئها الضوء الأول، أمام الكسورية وخلفها (ليست في MB3D: تُحفظ بعد جزء MB3D من المعاملات؛ ليست في الانعكاسات ولا في مونت كارلو)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=سحب فوق الصورة: طبقة بين ارتفاعين على المحور X أو Y أو Z للكسورية، يضيئها الضوء الأول، أمام الكسورية وخلفها (ليست في MB3D: تُحفظ بعد جزء MB3D من المعاملات؛ في مونت كارلو على أشعة النظر؛ ليست في الانعكاسات)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=الشيفرة
@@ -3269,8 +3269,8 @@ TheFolderDoesNotExistOr=المجلد غير موجود (أو يتعذر الوص
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=يجب أن يبدأ اسم الصيغة بـ "JIT" لتمييز هذه الصيغ من الصيغ المبنية على ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=مادة سطح الكسورية فوق لوحة الألوان (ليست في MB3D: تُحفظ بعد جزء MB3D من المعاملات؛ ليست في مونت كارلو)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=مادة سطح الكسورية فوق لوحة الألوان (ليست في MB3D: تُحفظ بعد جزء MB3D من المعاملات)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=يجب أن يكون عدد الإطارات في الثانية عددًا أكبر من 0 (مثلًا 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=مخزن الصورة بحجم خاطئ

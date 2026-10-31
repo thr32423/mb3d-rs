@@ -583,8 +583,8 @@ CloseWindow=關閉視窗
 ;Close window
 Clouds=雲
 ;Clouds
-CloudsOverThePictureALayer=圖片上的雲：沿碎形 X、Y 或 Z 軸兩個高度之間的一層，由第一盞燈照亮，位於碎形的前方和後方（MB3D 中沒有：儲存在參數的 MB3D 部分之後；不出現在反射和蒙地卡羅中）
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=圖片上的雲：沿碎形 X、Y 或 Z 軸兩個高度之間的一層，由第一盞燈照亮，位於碎形的前方和後方（MB3D 中沒有：儲存在參數的 MB3D 部分之後；在蒙地卡羅中沿視線出現；不出現在反射中）
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=程式碼
@@ -3269,8 +3269,8 @@ TheFolderDoesNotExistOr=資料夾不存在（或無法存取）
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=公式名稱應以「JIT」開頭，以便與 ASM 公式區分
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=疊加在調色盤上的碎形表面材質（MB3D 中沒有：儲存在參數的 MB3D 部分之後；不在蒙地卡羅中）
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=疊加在調色盤上的碎形表面材質（MB3D 中沒有：儲存在參數的 MB3D 部分之後）
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=每秒影格數必須是大於 0 的數字（例如 25）。
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=影像緩衝區大小錯誤

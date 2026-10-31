@@ -582,8 +582,8 @@ CloseWindow=Tutup jendela
 ;Close window
 Clouds=Awan
 ;Clouds
-CloudsOverThePictureALayer=Awan di atas gambar: lapisan di antara dua ketinggian sepanjang sumbu X, Y, atau Z fraktal, diterangi cahaya pertama, di depan dan di belakang fraktal (tidak ada di MB3D: disimpan setelah bagian parameter MB3D; tidak ada di pantulan dan Monte Carlo)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=Awan di atas gambar: lapisan di antara dua ketinggian sepanjang sumbu X, Y, atau Z fraktal, diterangi cahaya pertama, di depan dan di belakang fraktal (tidak ada di MB3D: disimpan setelah bagian parameter MB3D; di Monte Carlo sepanjang sinar pandang; tidak di pantulan)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=Kode
@@ -3268,8 +3268,8 @@ TheFolderDoesNotExistOr=folder tidak ada (atau tidak dapat dijangkau)
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=Nama formula sebaiknya diawali "JIT" untuk membedakan formula tersebut dari formula berbasis ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=Material permukaan fraktal di atas palet (tidak ada di MB3D: disimpan setelah bagian parameter MB3D; tidak di Monte Carlo)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=Material permukaan fraktal di atas palet (tidak ada di MB3D: disimpan setelah bagian parameter MB3D)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=Frame per detik harus berupa angka di atas 0 (mis. 25).
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=buffer gambar memiliki ukuran yang salah

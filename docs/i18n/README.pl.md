@@ -704,7 +704,7 @@ możesz sprawdzić sam:
   kolor, potem *Maluj teraz*. Są malowane na gotowym obrazie w ułamku sekundy,
   więc szybko można próbować ustawień; każdy piksel patrzy przez warstwę aż do
   trafionej powierzchni. Animacja może je przesuwać (`cloud_offset` między
-  klatkami kluczowymi). Nie ma ich w odbiciach ani w Monte Carlo; Mandelbulb3D
+  klatkami kluczowymi). W Monte Carlo wzdłuż promieni widzenia, nie w odbiciach; Mandelbulb3D
   ich nie ma (blok mb3d-rs parametrów je przechowuje).
 
   </details>
@@ -720,7 +720,7 @@ możesz sprawdzić sam:
   Fresnel (od 0 do 1), opalizację (od 0 do 1 i przesunięcie jej kolorów) i
   poświatę, potem *Maluj teraz*. Fresnel najlepiej widać z liczonymi odbiciami.
   Wyłączone dają dokładnie obrazy Mandelbulb3D; podłoże zachowuje własny kolor i
-  odbicie. Jeszcze nie w Monte Carlo.
+  odbicie. Także w Monte Carlo.
 
   </details>
 * **Dwa fraktale w jednej scenie** (pomysł z Mandelbulbera): przy kombinacji DE

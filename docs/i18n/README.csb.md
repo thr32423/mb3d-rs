@@ -700,7 +700,7 @@ sprawdzëc sóm:
   pòtemù *Malëjë terô*. Są malowóné na gòtowim òbrazu w dzélu sekùndë, tak że
   sprôwdzanié ùstawów je chùtczé; kòżdi piksel zdrzi przez warstwã do trafiony
   pòwierzchni. Animacjô mòże je rëszac (`cloud_offset` midzë klucznyma
-  klatkama). Nie je jich w òdbiciach ë Monte Carlo; Mandelbulb3D jich ni mô
+  klatkama). W Monte Carlo wzdłuż promieni widzeniô, nie w òdbiciach; Mandelbulb3D jich ni mô
   (blok mb3d-rs parametrów je trzëmô).
 
   </details>
@@ -716,7 +716,7 @@ sprawdzëc sóm:
   Fresnel (òd 0 do 1), òpalizacjã (òd 0 do 1 ë przesënienié ji farwów) ë
   pòswiatã, pòtemù *Malëjë terô*. Fresnel nôlepi widzec z rechòwónyma
   òdbiciama. Wëłączoné dają akùratno òbrazë Mandelbulb3D; zemia trzëmô swòjã
-  farwã ë òdbicé. Jesz nie w Monte Carlo.
+  farwã ë òdbicé. Téż w Monte Carlo.
 
   </details>
 * **Dwa fraktale w jedny scenie** (pòmësł z Mandelbulbera): przë kòmbinacji DE

@@ -583,8 +583,8 @@ CloseWindow=ونڈو بند کریں
 ;Close window
 Clouds=بادل
 ;Clouds
-CloudsOverThePictureALayer=تصویر پر بادل: فریکٹل کے X، Y یا Z محور پر دو اونچائیوں کے درمیان ایک تہ، پہلی روشنی سے روشن، فریکٹل کے آگے اور پیچھے (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ؛ عکسوں اور مونٹی کارلو میں نہیں)
-;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; not in reflections and Monte Carlo)
+CloudsOverThePictureALayer=تصویر پر بادل: فریکٹل کے X، Y یا Z محور پر دو اونچائیوں کے درمیان ایک تہ، پہلی روشنی سے روشن، فریکٹل کے آگے اور پیچھے (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ؛ مونٹی کارلو میں نظر کی شعاعوں کے ساتھ؛ عکسوں میں نہیں)
+;Clouds over the picture: a layer between two heights along the fractal's X, Y or Z axis, lit by the first light, in front of and behind the fractal (not in MB3D: kept after MB3D's part of the parameters; in Monte Carlo along the view rays; not in reflections)
 Co=Co:
 ;Co:
 Code=کوڈ
@@ -3269,8 +3269,8 @@ TheFolderDoesNotExistOr=فولڈر موجود نہیں (یا قابل رسائی
 ;the folder does not exist (or is not reachable)
 TheFormulaNameShouldStartWith=فارمولے کا نام "JIT" سے شروع ہونا چاہیے تاکہ ان فارمولوں کو ASM پر مبنی فارمولوں سے الگ پہچانا جا سکے
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
-TheFractalSSurfaceMaterialOn=پیلیٹ کے اوپر فریکٹل کی سطح کا مادہ (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ؛ مونٹی کارلو میں نہیں)
-;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters; not in Monte Carlo)
+TheFractalSSurfaceMaterialOn=پیلیٹ کے اوپر فریکٹل کی سطح کا مادہ (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ)
+;The fractal's surface material on top of the palette (not in MB3D: kept after MB3D's part of the parameters)
 TheFramesPerSecondMustBe=فریمز فی سیکنڈ 0 سے بڑا عدد ہونا چاہیے (مثلاً 25)۔
 ;The frames per second must be a number above 0 (e.g. 25).
 TheImageBufferHasTheWrong=تصویری بفر کا سائز غلط ہے

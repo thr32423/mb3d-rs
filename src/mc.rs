@@ -415,6 +415,8 @@ struct McCtx<'a> {
     p: &'a CalcParams,
     lv: &'a LightVals,
     cam: &'a PaintCamera,
+    /// the clouds and their light (seen along the view rays)
+    clouds: Option<(crate::clouds::Clouds, crate::clouds::CloudLight)>,
     mid: Vec3,
     /// `HSvecs`: direction towards global lights (-StepWidth * light) or the
     /// absolute position of positional lights, per entry of `lv.lights`
@@ -1104,6 +1106,8 @@ struct Tracer<'a, 'c> {
     hs6: Vec<S4>,
     /// the horizontal angle of the ray (the eye of a stereo panorama)
     ods_angle: f64,
+    /// the view ray's start and direction (the clouds along it)
+    ray0: (Vec3, Vec3),
     hs_vecs: Vec<Vec3>,
     /// `tmpObjCol`: [specular (+ alpha), diffuse] of the last surface
     tmp_obj_col: [S4; 2],
@@ -1171,6 +1175,7 @@ impl<'a, 'c> Tracer<'a, 'c> {
             normals: [0.0, 0.0, -1.0],
             hs6: vec![[0.0; 4]; n],
             ods_angle: 0.0,
+            ray0: ([0.0; 3], [0.0; 3]),
             hs_vecs: c.hs_vecs.clone(),
             tmp_obj_col: [[0.0; 4]; 2],
             total_light: [0.0; 3],
@@ -1844,7 +1849,19 @@ impl<'a, 'c> Tracer<'a, 'c> {
             if rit1 {
                 self.main_si = cr;
             }
-            obj = self.calc_color(&cr, (self.mzz * sw + p.zz_stmit_dif) as f32);
+            let mut o = self.calc_color(&cr, (self.mzz * sw + p.zz_stmit_dif) as f32);
+            if let Some(m) = lv.material.filter(|_| !cr.is_ground()) {
+                // the surface material (LightVals::shade's): by the angle of view
+                let cosv = (-dot(&self.normals, &normalize(dir))).clamp(0.0, 1.0) as f32;
+                let (sp, df) = (m.specular(first3(o[0]), cosv), m.diffuse(first3(o[1]), cosv));
+                o[0] = [sp[0], sp[1], sp[2], o[0][3]];
+                o[1] = [df[0], df[1], df[2], o[1][3]];
+                if m.glow > 0.0 {
+                    // the surface's own light
+                    self.total_light = add3(self.total_light, mul3(sc3(df, m.glow), t_absorb));
+                }
+            }
+            obj = o;
             self.zpos_dyn_fog = (zz2 * sw + p.zz_stmit_dif) as f32;
             let sv = self.calc_vis_lights(vpos, &dir, &cr, &mut bg_dec, &mut d1);
             self.total_light = add3(self.total_light, mul3(sv, t_absorb));
@@ -2038,6 +2055,28 @@ impl<'a, 'c> Tracer<'a, 'c> {
         None
     }
 
+    /// The light `l` of a view ray seen through the clouds in front of its
+    /// first surface (`clouds::apply` of the painting, here per ray and in
+    /// linear light; the clouds cast no shadows and are not in the bounces).
+    fn with_clouds(&mut self, l: S3) -> S3 {
+        let Some((cl, light)) = &self.c.clouds else { return l };
+        let p = self.c.p;
+        let (o, v) = self.ray0;
+        let n = sqr_len(&v).sqrt().max(1e-300);
+        let d = scale(v, 1.0 / n);
+        let si = self.main_si;
+        let tmax = if si.is_background() {
+            cl.far()
+        } else {
+            (((8388352 - (si.zpos_fine >> 8) as i64) as f64 / p.zc_mul + 1.0).powi(2) - 1.0) * p.step_width / p.zcorr
+        };
+        let j = self.rand();
+        match cl.ray(o, d, tmax, light, j) {
+            Some((tr, acc)) => [l[0] * tr + acc[0], l[1] * tr + acc[1], l[2] * tr + acc[2]],
+            None => l,
+        }
+    }
+
     /// `GetSubPixelShift`: -0.5..0.5 (box) or gaussian
     fn sub_pixel_shift(&mut self) -> (f32, f32) {
         if !self.c.gauss_aa {
@@ -2162,6 +2201,7 @@ impl<'a, 'c> Tracer<'a, 'c> {
             self.disc_x = frac_s(h.hdx as f32 * D1D65535 + sx);
             self.disc_y = frac_s(h.hdy as f32 * D1D65535 + sy);
         }
+        self.ray0 = (self.pos, self.vfov);
         self.total_light = [0.0; 3];
         self.calc_amb_shadow = false;
         self.rit1 = true;
@@ -2395,7 +2435,7 @@ impl<'a, 'c> Tracer<'a, 'c> {
                     let mut t = self.fork();
                     Some(Box::pin(async move {
                         let l = t.ray(x1, y, rc, i).await;
-                        (l, t.hit)
+                        (t.with_clouds(l), t.hit)
                     }) as Pin<Box<dyn Future<Output = (S3, bool)> + 'c>>)
                 })
                 .collect::<Vec<_>>();
@@ -2797,6 +2837,7 @@ fn pass_inner(
         p: &p,
         lv: &lv,
         cam: &cam,
+        clouds: sc.clouds.filter(|_| p.slice_2d == 0).map(|c| (c, c.light(&l, &lv, &cam))),
         mid,
         hs_vecs,
         max_amb_depth: mc.depth as i32,

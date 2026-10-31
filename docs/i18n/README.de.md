@@ -725,7 +725,7 @@ können Sie selbst weiter prüfen:
   Sie werden in Sekundenbruchteilen über das fertige Bild gemalt, Einstellungen
   lassen sich also schnell ausprobieren; jeder Bildpunkt blickt durch die Schicht
   bis zur getroffenen Oberfläche. Eine Animation kann sie bewegen (`cloud_offset`
-  zwischen Keyframes). Nicht in Spiegelungen und Monte-Carlo-Bildern;
+  zwischen Keyframes). In Monte Carlo entlang der Sichtstrahlen, nicht in Spiegelungen;
   Mandelbulb3D hat sie nicht (der mb3d-rs-Block der Parameter bewahrt sie).
 
   </details>
@@ -741,8 +741,7 @@ können Sie selbst weiter prüfen:
   ankreuzen, Fresnel (0 bis 1), Schillern (0 bis 1 und eine Verschiebung seiner
   Farben) und Leuchten einstellen, dann *Jetzt malen*. Fresnel zeigt sich am
   besten mit berechneten Spiegelungen. Ausgeschaltet sind die Bilder genau die
-  von Mandelbulb3D; die Bodenebene behält ihre eigene Farbe und Spiegelung. Noch
-  nicht in Monte-Carlo-Bildern.
+  von Mandelbulb3D; die Bodenebene behält ihre eigene Farbe und Spiegelung. Auch in Monte Carlo.
 
   </details>
 * **Zwei Fraktale in einer Szene** (eine Idee aus Mandelbulber): mit einer

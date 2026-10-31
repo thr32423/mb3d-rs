@@ -709,8 +709,7 @@ you check further on your own:
   *Paint now*. They are painted over the finished picture in a fraction of
   a second, so trying out settings is quick; each pixel looks through the
   layer up to the surface it hit. An animation can move them
-  (`cloud_offset` between keyframes). They are not in reflections or Monte
-  Carlo renders; Mandelbulb3D does not have them (the mb3d-rs block of the
+  (`cloud_offset` between keyframes). Monte Carlo shows them along the view rays, the reflections do not; Mandelbulb3D does not have them (the mb3d-rs block of the
   parameters keeps them).
 
   </details>
@@ -726,7 +725,7 @@ you check further on your own:
   Fresnel (0 to 1), iridescence (0 to 1, and a shift of its colours) and glow,
   then *Paint now*. Fresnel shows best with the reflections calculated. Off,
   the pictures are exactly Mandelbulb3D's; the ground plane keeps its own
-  colour and reflection. Not in Monte Carlo renders yet.
+  colour and reflection. Also in Monte Carlo.
 
   </details>
 * **Two fractals in one scene** (an idea from Mandelbulber): with a DE

@@ -731,8 +731,7 @@ permettono di verificare ulteriormente da solo:
   la grandezza delle forme e il colore, poi *Dipingi ora*. Vengono dipinte
   sull'immagine finita in una frazione di secondo, quindi provare le impostazioni
   è rapido; ogni pixel guarda attraverso lo strato fino alla superficie colpita.
-  Un'animazione può muoverle (`cloud_offset` tra i fotogrammi chiave). Non nei
-  riflessi né nei render Monte Carlo; Mandelbulb3D non le ha (il blocco mb3d-rs
+  Un'animazione può muoverle (`cloud_offset` tra i fotogrammi chiave). In Monte Carlo lungo i raggi di vista, non nei riflessi; Mandelbulb3D non le ha (il blocco mb3d-rs
   dei parametri le conserva).
 
   </details>
@@ -748,7 +747,7 @@ permettono di verificare ulteriormente da solo:
   impostate Fresnel (da 0 a 1), iridescenza (da 0 a 1 e uno spostamento dei suoi
   colori) e bagliore, poi *Dipingi ora*. Fresnel si vede meglio con i riflessi
   calcolati. Spente, le immagini sono esattamente quelle di Mandelbulb3D; il piano
-  del suolo mantiene il suo colore e riflesso. Non ancora in Monte Carlo.
+  del suolo mantiene il suo colore e riflesso. Anche in Monte Carlo.
 
   </details>
 * **Due frattali in una scena** (un'idea di Mandelbulber): con una combinazione

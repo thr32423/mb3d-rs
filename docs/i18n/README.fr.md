@@ -748,8 +748,7 @@ Voici de quoi vérifier plus loin par vous-même :
   couverte, la taille des formes et la couleur, puis *Peindre*. Ils sont peints
   sur l'image terminée en une fraction de seconde, on essaie donc vite des
   réglages ; chaque pixel regarde à travers la couche jusqu'à la surface touchée.
-  Une animation peut les déplacer (`cloud_offset` entre images clés). Pas dans les
-  reflets ni les rendus Monte Carlo ; Mandelbulb3D ne les a pas (le bloc mb3d-rs
+  Une animation peut les déplacer (`cloud_offset` entre images clés). Dans Monte Carlo le long des rayons de vue, pas dans les reflets ; Mandelbulb3D ne les a pas (le bloc mb3d-rs
   des paramètres les garde).
 
   </details>
@@ -765,7 +764,7 @@ Voici de quoi vérifier plus loin par vous-même :
   réglez Fresnel (0 à 1), l'irisation (0 à 1 et un décalage de ses couleurs) et
   la lueur, puis *Peindre*. Fresnel se voit le mieux avec les reflets calculés.
   Désactivées, les images sont exactement celles de Mandelbulb3D ; le plan de sol
-  garde sa couleur et son reflet. Pas encore dans Monte Carlo.
+  garde sa couleur et son reflet. Aussi dans Monte Carlo.
 
   </details>
 * **Deux fractales dans une scène** (une idée de Mandelbulber) : avec une

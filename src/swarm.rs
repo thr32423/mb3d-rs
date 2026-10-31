@@ -1880,9 +1880,16 @@ pub fn run_tiles(swarm: &Path, scene: &Scene, cols: u32, rows: u32, opts: &RunOp
         Ok(())
     };
     run_tiles_job(swarm, scene, cols, rows, None, false, opts, report, preview, &collect)?;
-    // (each tile's buffer has its shadows and ambient occlusion already,
-    // calculated with the tile's border as MB3D's big-render tiles are)
-    Ok(full.into_inner().unwrap_or_else(|e| e.into_inner()))
+    // (the tiles come with their shadows and DE occlusion; the passes over
+    // the whole picture as after a local tiled render)
+    let mut full = full.into_inner().unwrap_or_else(|e| e.into_inner());
+    let mut fs = scene.clone();
+    fs.tiling = None;
+    fs.calc_rect = None;
+    let p = crate::calc::CalcParams::new(&fs)?;
+    let cancel = || opts.cancel.as_ref().is_some_and(|c| c());
+    crate::render::finish_tiles(&fs, &p, &mut full, w, h, &|_, _| {}, &cancel)?;
+    Ok(full)
 }
 
 /// The tiles job behind [`run_tiles`]: `subset`, if given, is the tiles

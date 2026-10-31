@@ -1951,9 +1951,13 @@ fn finish_calculation(
         post_process_reporting(sc, &p, &mut gbuf, threads, progress, stage, cancel)?;
     } else if sc.shadows.is_some() || sc.deao.is_some() {
         // (a tile: the normals on the Z-buffer need the neighbour tiles,
-        // they run on the whole picture)
+        // they run on the whole picture, and the shadows after them there,
+        // as they use the normals: finish_tiles)
         let mut s2 = sc.clone();
         s2.normals_on_zbuf = false;
+        if sc.normals_on_zbuf {
+            s2.shadows = None;
+        }
         if s2.deao.is_none() {
             s2.ao = None;
         }
@@ -2929,20 +2933,7 @@ pub fn render_tiled_with(
     let mut fs = sc.clone();
     fs.calc_rect = None;
     let p = CalcParams::new(&fs)?;
-    // (in the order of post_process: the normals, the shadows (per tile),
-    // the occlusion)
-    if sc.normals_on_zbuf && p.slice_2d == 0 {
-        crate::reflect::normals_on_zbuf(&fs, &p, &mut full);
-        if let (Some(_), Some(d)) = (&sc.ao, &sc.deao) {
-            crate::deao::deao(&p, &mut full, wu, hu, d, thread_count(sc), progress, cancel);
-            if cancel() {
-                return Err("cancelled".into());
-            }
-        }
-    }
-    if let (Some(ao), None) = (&sc.ao, &sc.deao) {
-        ssao(&mut full, wu, hu, &p, ao, thread_count(sc), &|_, _| {});
-    }
+    finish_tiles(&fs, &p, &mut full, wu, hu, progress, cancel)?;
     let t1 = Instant::now();
     let rgb = paint(&fs, &p, &full);
     Ok(TiledResult {
@@ -2954,6 +2945,47 @@ pub fn render_tiled_with(
         paint_seconds: t1.elapsed().as_secs_f64(),
         params: Some(p),
     })
+}
+
+/// The post calculations of tiles calculated in the tile mode (`post` 1 of
+/// [`calculate_inner`]: their shadows and DE occlusion done) that need the
+/// whole picture, on the assembled G-buffer `full` (`w` x `h`) with the
+/// whole picture's parameters `p`: the normals on the Z-buffer (and the DE
+/// occlusion after them), the screen space occlusion.  Local tiled renders
+/// and the swarm's assembled tiles: the same picture as a render in one
+/// piece.
+pub fn finish_tiles(
+    fs: &Scene,
+    p: &CalcParams,
+    full: &mut [SiLight],
+    w: usize,
+    h: usize,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+) -> Result<(), String> {
+    // (in the order of post_process: the normals, the shadows (per tile),
+    // the occlusion)
+    if fs.normals_on_zbuf && p.slice_2d == 0 {
+        crate::reflect::normals_on_zbuf(fs, p, full);
+        // the hard shadows with these normals (the tiles left them out)
+        if fs.shadows.is_some() {
+            let mut s3 = fs.clone();
+            s3.normals_on_zbuf = false;
+            s3.ao = None;
+            s3.deao = None;
+            post_process_cancellable(&s3, p, full, thread_count(fs), cancel)?;
+        }
+        if let (Some(_), Some(d)) = (&fs.ao, &fs.deao) {
+            crate::deao::deao(p, full, w, h, d, thread_count(fs), progress, cancel);
+            if cancel() {
+                return Err("cancelled".into());
+            }
+        }
+    }
+    if let (Some(ao), None) = (&fs.ao, &fs.deao) {
+        ssao(full, w, h, p, ao, thread_count(fs), &|_, _| {});
+    }
+    Ok(())
 }
 
 /// One tile of `sc.tiling` (its `pos` set) as [`render_tiled`] calculates
@@ -2987,8 +3019,15 @@ pub fn render_tile_staged(
     let mut ts = sc.clone();
     ts.calc_rect = Some([x0, y0, x1 - x0, y1 - y0]);
     let t0 = Instant::now();
-    let (p, mut gbuf) = calculate_inner(&ts, progress, &no_stage, cancel, 0, None, ck)?;
-    if post_pending(&ts, &p) {
+    // a tile of a picture the owner assembles and paints (not `full`):
+    // calculated as the tiles of a local tiled render, the passes over the
+    // whole picture follow there (finish_tiles), so the assembled picture
+    // is the same as one calculated in one piece
+    if !full && sc.normals_on_zbuf {
+        ts.deao = None;
+    }
+    let (p, mut gbuf) = calculate_inner(&ts, progress, &no_stage, cancel, if full { 0 } else { 1 }, None, ck)?;
+    if full && post_pending(&ts, &p) {
         stage(match (ts.shadows.is_some(), ts.ao.is_some()) {
             (true, true) => "hard shadows and ambient occlusion",
             (true, false) => "hard shadows",

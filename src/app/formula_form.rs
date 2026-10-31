@@ -107,6 +107,18 @@ pub fn update_from_header(app: &mut Mb3d, ui: &mut Ui) {
         _ => 2,
     });
     ui.set_item_index(F, "DECombineCmb", st.decomb_kind.clamp(0, 5));
+    let pl = app.scene.part2_place.unwrap_or_default();
+    for (e, v) in [
+        ("Part2XEdit", pl.offset[0]),
+        ("Part2YEdit", pl.offset[1]),
+        ("Part2ZEdit", pl.offset[2]),
+        ("Part2RxEdit", pl.rotation[0]),
+        ("Part2RyEdit", pl.rotation[1]),
+        ("Part2RzEdit", pl.rotation[2]),
+        ("Part2SizeEdit", pl.scale),
+    ] {
+        ui.set_text(F, e, &fts(v));
+    }
     ui.cm(F, "TabControl2").tab_index = st.hybrid;
     tab_control2_update(app, ui);
     app.formula.user_change = true;
@@ -155,6 +167,19 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
             d.mix_pow = if p == 0.0 { 1e-6 } else { p };
         }
         Some(d)
+    } else {
+        None
+    };
+    // the second part's place (not in MB3D)
+    sc.part2_place = if st.hybrid == 2 {
+        let n = |e: &str| ptf(&ui.text(F, e));
+        let size = n("Part2SizeEdit");
+        let p = crate::scene::Placement {
+            offset: [n("Part2XEdit"), n("Part2YEdit"), n("Part2ZEdit")],
+            rotation: [n("Part2RxEdit"), n("Part2RyEdit"), n("Part2RzEdit")],
+            scale: if size > 0.0 { size } else { 1.0 },
+        };
+        (p != crate::scene::Placement::default()).then_some(p)
     } else {
         None
     };

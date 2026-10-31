@@ -2465,6 +2465,8 @@ ParametersLower=पैरामीटर
 ;parameters
 ParametersMandId=पैरामीटर: MandId {}
 ;Parameters: MandId {}
+Part2At=भाग 2 पर:
+;Part 2 at:
 Pass=पास {}
 ;pass {}
 Passes=पास
@@ -3301,6 +3303,8 @@ TheRotationIsPerformedAroundThe=घुमाव मध्य बिंदु (Xm
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=घुमाव क्रम से किए जाते हैं, पहले XW, अंत में ZW-तल।
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=दूसरा भाग अलग वस्तु के रूप में (MB3D में नहीं: पैरामीटरों में MB3D के भाग के बाद सहेजा जाता है): इसका केंद्र (x, y, z), x, y, z के चारों ओर इसका घुमाव डिग्री में और इसका आकार (1 = जैसा गणना हुआ)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=चयन की चौड़ाई और ऊँचाई 2 पिक्सेल से अधिक होनी चाहिए।
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=चयन की चौड़ाई और ऊँचाई 2 पिक्सेल से अधिक होनी चाहिए
@@ -3427,6 +3431,8 @@ TuneTheSizeOfTheVolumetric=वॉल्यूमेट्रिक मैप क
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=Julia मोड चालू/बंद करें
 ;Turn on/off the julia mode
+Turned=घुमाया:
+;Turned:
 Type=प्रकार:
 ;Type:
 Type2=प्रकार

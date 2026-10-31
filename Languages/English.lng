@@ -2464,6 +2464,8 @@ ParametersLower=parameters
 ;the program
 ParametersMandId=Parameters: MandId {}
 ;the program
+Part2At=Part 2 at:
+;FormulaGUIForm.Part2AtLbl.Caption
 Pass=pass {}
 ;the program
 Passes=Passes
@@ -3047,7 +3049,7 @@ SingleFilenumbering=Single filenumbering
 Size=Size
 ;HistoryFrm.Caption, UnfinishedFrm.Caption; the program
 Size2=Size:
-;PostProForm.CloudSizeLbl.Caption
+;FormulaGUIForm.Part2SizeLbl.Caption, PostProForm.CloudSizeLbl.Caption
 SizeFactor=Size factor:
 ;TilingForm.Label4.Caption
 Sliding=Sliding
@@ -3300,6 +3302,8 @@ TheRotationIsPerformedAroundThe=The rotation is performed around the Midpoint (X
 ;Mand3DForm.Button7.Hint
 TheRotationsArePerformedInA=The rotations are performed in a row, first the XW, last the ZW-plane.
 ;FormulaGUIForm.XWEdit.Hint, FormulaGUIForm.YWEdit.Hint, FormulaGUIForm.ZWEdit.Hint
+TheSecondPartAsAnObject=The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
+;FormulaGUIForm.Part2XEdit.Hint, FormulaGUIForm.Part2YEdit.Hint, FormulaGUIForm.Part2ZEdit.Hint and 4 more
 TheSelectionMustBeBiggerThan=The selection must be bigger than 2 pixels in width and height.
 ;the program
 TheSelectionMustBeBiggerThanLower=the selection must be bigger than 2 pixels in width and height
@@ -3426,6 +3430,8 @@ TuneTheSizeOfTheVolumetric=Tune the size of the volumetric map in 20% steps
 ;Mand3DForm.UpDown5.Hint
 TurnOnOffTheJuliaMode=Turn on/off the julia mode
 ;FNavigator.CheckBox7.Hint
+Turned=Turned:
+;FormulaGUIForm.Part2TurnLbl.Caption
 Type=Type:
 ;ParamValueEditFrm.Label1.Caption
 Type2=Type

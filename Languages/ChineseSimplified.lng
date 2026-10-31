@@ -2465,6 +2465,8 @@ ParametersLower=参数
 ;parameters
 ParametersMandId=参数：MandId {}
 ;Parameters: MandId {}
+Part2At=第 2 部分位于：
+;Part 2 at:
 Pass=第 {} 遍
 ;pass {}
 Passes=遍数
@@ -3301,6 +3303,8 @@ TheRotationIsPerformedAroundThe=旋转围绕中点 (Xmid, Ymid, Zmid) 进行
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=旋转依次进行，先 XW 平面，最后 ZW 平面。
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=把第二部分作为独立物体（MB3D 中没有：保存在参数的 MB3D 部分之后）：它的中心 (x, y, z)、绕 x, y, z 轴的旋转（度）以及大小（1 = 按计算）
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=选区的宽度和高度都必须大于 2 像素。
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=选区的宽度和高度都必须大于 2 像素
@@ -3427,6 +3431,8 @@ TuneTheSizeOfTheVolumetric=以 20% 为步长调整体积映射的大小
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=打开/关闭 Julia 模式
 ;Turn on/off the julia mode
+Turned=旋转：
+;Turned:
 Type=类型：
 ;Type:
 Type2=类型

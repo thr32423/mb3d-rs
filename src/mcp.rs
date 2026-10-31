@@ -100,6 +100,9 @@ Clouds (not in MB3D; painted over the picture, cheap to change)
 Surface material (not in MB3D; on top of the palette)
 - material_fresnel 0..1 (edges reflect more; with mc_reflections), material_iridescence =
   amount, shift (0..1 each: a thin film's rainbow sheen), material_glow (0..: self-lit).
+Two objects (not in MB3D): with de_combination (min = union, max = intersection, ...), the
+  second hybrid part placed apart: part2_position = x, y, z; part2_rotation = degrees x, y, z;
+  part2_scale (1 = as is).
 HDR lighting: background_image = a .hdr picture (with background_direct = false) lights a
   montecarlo render; its sun becomes a light with soft shadows.
 Formulas ([formula] sections, up to 6, an alternating hybrid)

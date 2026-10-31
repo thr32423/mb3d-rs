@@ -2465,6 +2465,8 @@ ParametersLower=パラメータ
 ;parameters
 ParametersMandId=パラメータ: MandId {}
 ;Parameters: MandId {}
+Part2At=パート 2 の位置:
+;Part 2 at:
 Pass=パス {}
 ;pass {}
 Passes=パス数
@@ -3301,6 +3303,8 @@ TheRotationIsPerformedAroundThe=回転は中心点 (X 中心、Y 中心、Z 中�
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=回転は順に行われます。最初が XW、最後が ZW 平面です。
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=2 番目のパートを独立した物体として (MB3D にはありません: パラメーターの MB3D の部分の後に保存): その中心 (x, y, z)、x, y, z 軸まわりの回転 (度)、大きさ (1 = 計算どおり)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=選択範囲は幅と高さが 2 ピクセルより大きくなければなりません。
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=選択範囲は幅と高さが 2 ピクセルより大きくなければなりません
@@ -3427,6 +3431,8 @@ TuneTheSizeOfTheVolumetric=ボリュームマップのサイズを 20% 刻みで
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=Juliaモードをオン/オフします。
 ;Turn on/off the julia mode
+Turned=回転:
+;Turned:
 Type=型:
 ;Type:
 Type2=種類

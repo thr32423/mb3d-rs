@@ -748,6 +748,7 @@ itself per light.
 | `material_fresnel` | 0..1 | the fractal's specular colour (and its reflections) towards white where the surface turns from the view (Schlick's term with a third power) |
 | `material_iridescence` | amount, shift | a thin film's colours on the specular colour (and half on the diffuse one), changing with the angle of view |
 | `material_glow` | 0.. | the surface's own light in its diffuse colour (not in Monte Carlo) |
+| `part2_position`, `part2_rotation`, `part2_scale` | x, y, z; degrees; size | with a DE combination (not the mix): the second hybrid part as an object of its own, its point `m (p - position)` (the rotation divided by the size), its distance times the size |
 | `dof` | `off`, `sorted`, `forward` | depth of field |
 | `dof_focus`, `dof_focus2` | distance as fraction of the image width | sharp range (`--stats` prints the value for the image centre) |
 | `dof_aperture` | 0.0001..2 | aperture |

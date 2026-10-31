@@ -1866,6 +1866,17 @@ fn params(p: &CalcParams, row0: usize, rows: usize, scene: &SceneShader, mode: u
     }
     // a stereo panorama's eye (ODS_SHIFT)
     v[416] = (p.ods as f32).to_bits();
+    // the second part's place (P2_PLACE ..)
+    if let Some(pl) = p.decomb.as_ref().and_then(|d| d.place.as_ref()) {
+        v[417] = 1;
+        for k in 0..3 {
+            v[418 + k] = (pl.offset[k] as f32).to_bits();
+            for j in 0..3 {
+                v[421 + k * 3 + j] = (pl.m[k][j] as f32).to_bits();
+            }
+        }
+        v[430] = (pl.scale as f32).to_bits();
+    }
     v
 }
 
@@ -1906,7 +1917,7 @@ fn has_ipol(p: &CalcParams) -> bool {
 }
 
 /// The size of the parameter buffer.
-const PARAM_WORDS: usize = 420;
+const PARAM_WORDS: usize = 432;
 
 /// The parameter word of the coordinates as doubles (`DP` in the shader).
 const DOUBLE_WORD: usize = 296;

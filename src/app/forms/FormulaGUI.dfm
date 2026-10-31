@@ -1464,7 +1464,7 @@ object FormulaGUIForm: TFormulaGUIForm
     Left = 0
     Top = 426
     Width = 319
-    Height = 28
+    Height = 80
     Align = alBottom
     BevelOuter = bvLowered
     TabOrder = 4
@@ -1538,6 +1538,104 @@ object FormulaGUIForm: TFormulaGUIForm
       TabOrder = 2
       Text = '2.0'
       Visible = False
+    end
+    object Part2AtLbl: TLabel
+      Left = 6
+      Top = 35
+      Width = 60
+      Height = 13
+      Caption = '@MB:Part2At'
+    end
+    object Part2XEdit: TEdit
+      Left = 70
+      Top = 32
+      Width = 48
+      Height = 21
+      Hint = '@MB:TheSecondPartAsAnObject'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 10
+      Text = '0'
+    end
+    object Part2YEdit: TEdit
+      Left = 121
+      Top = 32
+      Width = 48
+      Height = 21
+      Hint = '@MB:TheSecondPartAsAnObject'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 11
+      Text = '0'
+    end
+    object Part2ZEdit: TEdit
+      Left = 172
+      Top = 32
+      Width = 48
+      Height = 21
+      Hint = '@MB:TheSecondPartAsAnObject'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 12
+      Text = '0'
+    end
+    object Part2SizeLbl: TLabel
+      Left = 226
+      Top = 35
+      Width = 60
+      Height = 13
+      Caption = '@MB:Size2'
+    end
+    object Part2SizeEdit: TEdit
+      Left = 265
+      Top = 32
+      Width = 48
+      Height = 21
+      Hint = '@MB:TheSecondPartAsAnObject'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 13
+      Text = '1'
+    end
+    object Part2TurnLbl: TLabel
+      Left = 6
+      Top = 59
+      Width = 60
+      Height = 13
+      Caption = '@MB:Turned'
+    end
+    object Part2RxEdit: TEdit
+      Left = 70
+      Top = 56
+      Width = 48
+      Height = 21
+      Hint = '@MB:TheSecondPartAsAnObject'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 14
+      Text = '0'
+    end
+    object Part2RyEdit: TEdit
+      Left = 121
+      Top = 56
+      Width = 48
+      Height = 21
+      Hint = '@MB:TheSecondPartAsAnObject'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 15
+      Text = '0'
+    end
+    object Part2RzEdit: TEdit
+      Left = 172
+      Top = 56
+      Width = 48
+      Height = 21
+      Hint = '@MB:TheSecondPartAsAnObject'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 16
+      Text = '0'
     end
   end
   object OpenDialog3: TOpenDialog

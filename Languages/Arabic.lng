@@ -2465,6 +2465,8 @@ ParametersLower=معاملات
 ;parameters
 ParametersMandId=المعاملات: MandId {}
 ;Parameters: MandId {}
+Part2At=الجزء 2 عند:
+;Part 2 at:
 Pass=التمريرة {}
 ;pass {}
 Passes=التمريرات
@@ -3301,6 +3303,8 @@ TheRotationIsPerformedAroundThe=يجري الدوران حول نقطة المن
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=تجري الدورانات بالتتابع، أولًا المستوى XW، وأخيرًا المستوى ZW.
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=الجزء الثاني كجسم مستقل (ليس في MB3D: يُحفظ بعد جزء MB3D من المعاملات): مركزه (x، y، z)، ودورانه حول x، y، z بالدرجات، وحجمه (1 = كما حُسب)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=يجب أن يكون الجزء المحدد أكبر من 2 بكسل عرضًا وارتفاعًا.
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=يجب أن يكون الجزء المحدد أكبر من 2 بكسل عرضًا وارتفاعًا
@@ -3427,6 +3431,8 @@ TuneTheSizeOfTheVolumetric=ضبط حجم الخريطة الحجمية بخطو�
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=تشغيل/إيقاف وضع جوليا
 ;Turn on/off the julia mode
+Turned=مُدار:
+;Turned:
 Type=النوع:
 ;Type:
 Type2=النوع

@@ -197,6 +197,12 @@ const GROUND_LIP: u32 = 415u;
 // a stereo panorama's eye: its shift to the right in steps, turned with the
 // ray (CalcParams::ods)
 const ODS_SHIFT: u32 = 416u;
+// the DE combination's second part in a place of its own (calc::Place): on,
+// its middle (3), the rows of its rotation divided by its size (9), its size
+const P2_PLACE: u32 = 417u;
+const P2_OFFSET: u32 = 418u;
+const P2_M: u32 = 421u;
+const P2_SCALE: u32 = 430u;
 
 const PI: R = 3.14159265358979;
 
@@ -1060,6 +1066,8 @@ fn evaluate(on_de: bool) -> R {
     var buf_otrap = R(0.0);
     var buf_sit1 = R(0.0);
     var buf_mir = 0;
+    // the point before the second part's place (P2_PLACE)
+    var c_orig = c;
     for (var guard = 0u; guard < P[EVAL_TURNS]; guard++) {
         if (part_begin) {
             part_begin = false;
@@ -1067,6 +1075,11 @@ fn evaluate(on_de: bool) -> R {
             // max_it + 1, as the CPU, which switches only for part 2)
             if (part == 2u) {
                 set_part(2u);
+                if (P[P2_PLACE] != 0u) {
+                    c_orig = c;
+                    let d = c - pv(P2_OFFSET);
+                    c = vec3<R>(dot(pv(P2_M), d), dot(pv(P2_M + 3u), d), dot(pv(P2_M + 6u), d));
+                }
             }
             if (part == 2u) {
                 difs = pi(P2_DIFS) != 0;
@@ -1203,7 +1216,11 @@ fn evaluate(on_de: bool) -> R {
             continue;
         }
         // CalcDEfull with FormulaType > 0: the second part combined
-        let rst = result;
+        var rst = result;
+        if (P[P2_PLACE] != 0u) {
+            rst *= pf(P2_SCALE);
+            c = c_orig;
+        }
         dbg_rst = rst;
         dbg_it2 = it_result;
         result = r1;

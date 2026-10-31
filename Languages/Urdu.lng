@@ -2465,6 +2465,8 @@ ParametersLower=پیرامیٹرز
 ;parameters
 ParametersMandId=پیرامیٹرز: MandId {}
 ;Parameters: MandId {}
+Part2At=حصہ 2 پر:
+;Part 2 at:
 Pass=مرحلہ {}
 ;pass {}
 Passes=مراحل
@@ -3301,6 +3303,8 @@ TheRotationIsPerformedAroundThe=گردش درمیانی نقطے (Xmid, Ymid, Zm
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=گردشیں ترتیب سے ہوتی ہیں، پہلے XW، آخر میں ZW سطح۔
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=دوسرا حصہ الگ شے کے طور پر (MB3D میں نہیں: پیرامیٹرز میں MB3D کے حصے کے بعد محفوظ): اس کا مرکز (x، y، z)، x، y، z کے گرد اس کی گردش ڈگریوں میں اور اس کا سائز (1 = جیسا حساب ہوا)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=منتخب حصہ چوڑائی اور اونچائی میں 2 پکسلز سے بڑا ہونا چاہیے۔
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=منتخب حصہ چوڑائی اور اونچائی میں 2 پکسلز سے بڑا ہونا چاہیے
@@ -3427,6 +3431,8 @@ TuneTheSizeOfTheVolumetric=حجمی نقشے کا سائز 20% قدموں میں
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=جولیا موڈ چالو/بند کریں
 ;Turn on/off the julia mode
+Turned=گھمایا:
+;Turned:
 Type=قسم:
 ;Type:
 Type2=قسم

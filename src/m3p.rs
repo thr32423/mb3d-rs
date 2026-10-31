@@ -1426,6 +1426,10 @@ mod tests {
         let mut m = plain.clone();
         m.material = Some(crate::scene::Material { fresnel: 0.5, iridescence: 0.75, irid_shift: 0.25, glow: 1.5 });
         assert_eq!(parse(&write(&m)).unwrap().scene.material, m.material);
+        // the second part's place
+        let mut q = plain.clone();
+        q.part2_place = Some(crate::scene::Placement { offset: [2.5, -1.0, 0.25], rotation: [10.0, 20.0, 30.0], scale: 0.4 });
+        assert_eq!(parse(&write(&q)).unwrap().scene.part2_place, q.part2_place);
     }
 
     #[test]

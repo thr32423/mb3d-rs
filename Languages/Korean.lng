@@ -2465,6 +2465,8 @@ ParametersLower=파라미터
 ;parameters
 ParametersMandId=매개변수: MandId {}
 ;Parameters: MandId {}
+Part2At=파트 2 위치:
+;Part 2 at:
 Pass=패스 {}
 ;pass {}
 Passes=패스
@@ -3301,6 +3303,8 @@ TheRotationIsPerformedAroundThe=회전은 중심점(Xmid, Ymid, Zmid)을 기준�
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=회전은 XW 평면부터 ZW 평면까지 차례로 수행됩니다.
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=두 번째 파트를 독립된 물체로 (MB3D에는 없음: 매개변수의 MB3D 부분 뒤에 저장): 그 중심 (x, y, z), x, y, z 축에 대한 회전 (도), 크기 (1 = 계산된 대로)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=선택 영역은 너비와 높이가 2픽셀보다 커야 합니다.
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=선택 영역은 너비와 높이가 2픽셀보다 커야 합니다
@@ -3427,6 +3431,8 @@ TuneTheSizeOfTheVolumetric=볼류메트릭 맵의 크기를 20% 단위로 조정
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=Julia 모드를 켜거나 끕니다
 ;Turn on/off the julia mode
+Turned=회전:
+;Turned:
 Type=유형:
 ;Type:
 Type2=유형

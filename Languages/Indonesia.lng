@@ -2464,6 +2464,8 @@ ParametersLower=parameter
 ;parameters
 ParametersMandId=Parameter: MandId {}
 ;Parameters: MandId {}
+Part2At=Bagian 2 di:
+;Part 2 at:
 Pass=lintasan {}
 ;pass {}
 Passes=Lintasan
@@ -3300,6 +3302,8 @@ TheRotationIsPerformedAroundThe=Rotasi dilakukan di sekitar Titik tengah (Xmid, 
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Rotasi dilakukan berurutan, pertama bidang XW, terakhir bidang ZW.
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=Bagian kedua sebagai objek tersendiri (tidak ada di MB3D: disimpan setelah bagian parameter MB3D): titik tengahnya (x, y, z), putarannya pada x, y, z dalam derajat, dan ukurannya (1 = seperti dihitung)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=Pilihan harus lebih besar dari 2 piksel dalam lebar dan tinggi.
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=pilihan harus lebih besar dari 2 piksel dalam lebar dan tinggi
@@ -3426,6 +3430,8 @@ TuneTheSizeOfTheVolumetric=Sesuaikan ukuran peta volumetrik dalam langkah 20%
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=Aktifkan/nonaktifkan mode julia
 ;Turn on/off the julia mode
+Turned=Diputar:
+;Turned:
 Type=Jenis:
 ;Type:
 Type2=Jenis

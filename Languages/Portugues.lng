@@ -2464,6 +2464,8 @@ ParametersLower=parâmetros
 ;parameters
 ParametersMandId=Parâmetros: MandId {}
 ;Parameters: MandId {}
+Part2At=Parte 2 em:
+;Part 2 at:
 Pass=passada {}
 ;pass {}
 Passes=Passadas
@@ -3300,6 +3302,8 @@ TheRotationIsPerformedAroundThe=A rotação é feita em torno do ponto central (
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=As rotações são feitas em sequência, primeiro o plano XW, por último o ZW.
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=A segunda parte como objeto próprio (não existe no MB3D: guardada após a parte do MB3D nos parâmetros): o seu centro (x, y, z), a sua rotação em torno de x, y, z em graus e o seu tamanho (1 = como calculado)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=A seleção deve ter mais de 2 pixels de largura e de altura.
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=a seleção deve ter mais de 2 pixels de largura e de altura
@@ -3426,6 +3430,8 @@ TuneTheSizeOfTheVolumetric=Ajustar o tamanho do mapa volumétrico em passos de 2
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=Ligar/desligar o modo Julia
 ;Turn on/off the julia mode
+Turned=Girada:
+;Turned:
 Type=Tipo:
 ;Type:
 Type2=Tipo

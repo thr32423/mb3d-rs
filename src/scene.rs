@@ -41,6 +41,26 @@ pub enum CameraOptic {
     Fisheye = 3,
 }
 
+/// Where the second hybrid part of a DE combination stands (Mandelbulber's
+/// separate objects, not in MB3D): moved, turned and scaled, the two parts
+/// are two objects, combined as the combination says (union, intersection,
+/// cut, smooth union).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Placement {
+    /// its middle (fractal units)
+    pub offset: [f64; 3],
+    /// its rotation about x, y, z (degrees)
+    pub rotation: [f64; 3],
+    /// its size (1 = as calculated)
+    pub scale: f64,
+}
+
+impl Default for Placement {
+    fn default() -> Self {
+        Placement { offset: [0.0; 3], rotation: [0.0; 3], scale: 1.0 }
+    }
+}
+
 /// The fractal's surface material (ideas from Mandelbulber, not in MB3D),
 /// on top of the palette's colours: all 0 is MB3D's look.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -245,6 +265,8 @@ pub struct Scene {
     pub clouds: Option<crate::clouds::Clouds>,
     /// The surface material (not in MB3D): None = MB3D's
     pub material: Option<Material>,
+    /// The place of the DE combination's second part (not in MB3D)
+    pub part2_place: Option<Placement>,
     /// DE ambient occlusion instead of SSAO (used when `ao` is on)
     pub deao: Option<crate::deao::DeaoParams>,
     /// Inside rendering (`bOptions2` bits 1..2)
@@ -426,6 +448,7 @@ impl Default for Scene {
             ground: None,
             clouds: None,
             material: None,
+            part2_place: None,
             deao: None,
             threads: 0,
             tiling: None,
@@ -874,6 +897,10 @@ impl Scene {
     fn ground_text(&self) -> String {
         use std::fmt::Write;
         let mut t = String::new();
+        if let Some(p) = self.part2_place.filter(|p| *p != Placement::default()) {
+            let (o, r) = (p.offset, p.rotation);
+            let _ = writeln!(t, "part2_position = {}, {}, {}\npart2_rotation = {}, {}, {}\npart2_scale = {}", o[0], o[1], o[2], r[0], r[1], r[2], p.scale);
+        }
         if let Some(m) = &self.material {
             let _ = writeln!(t, "material_fresnel = {}\nmaterial_iridescence = {}, {}\nmaterial_glow = {}", m.fresnel, m.iridescence, m.irid_shift, m.glow);
         }
@@ -1310,6 +1337,23 @@ impl Scene {
                             c.from = n(from)?;
                             c.to = n(to)?;
                         }
+                    }
+                    "part2_position" | "part2_rotation" => {
+                        let v = vec_n(3)?;
+                        let pl = s.part2_place.get_or_insert_with(Default::default);
+                        let t = [v[0], v[1], v[2]];
+                        if key == "part2_position" {
+                            pl.offset = t;
+                        } else {
+                            pl.rotation = t;
+                        }
+                    }
+                    "part2_scale" => {
+                        let v = num()?;
+                        if v <= 0.0 {
+                            return Err(err(format!("bad part2_scale '{val}' (above 0)")));
+                        }
+                        s.part2_place.get_or_insert_with(Default::default).scale = v;
                     }
                     "material_fresnel" => s.material.get_or_insert_with(Default::default).fresnel = num()?.clamp(0.0, 1.0) as f32,
                     "material_iridescence" => {

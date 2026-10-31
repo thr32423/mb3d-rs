@@ -203,6 +203,26 @@ pub struct DeComb {
     pub smooth: f64,
     pub fmix_pow: f64,
     pub mix_col: u8,
+    /// the second part as an object of its own (Scene::part2_place; not
+    /// for the mix, kind 6)
+    pub place: Option<Place>,
+}
+
+/// The second part's space: `m * (p - offset)`, the rotation divided by
+/// the size; its distances times `scale`.
+#[derive(Clone, Copy, Debug)]
+pub struct Place {
+    pub offset: Vec3,
+    pub m: Mat3,
+    pub scale: f64,
+}
+
+impl Place {
+    #[inline]
+    pub fn apply(&self, p: &Vec3) -> Vec3 {
+        let d = [p[0] - self.offset[0], p[1] - self.offset[1], p[2] - self.offset[2]];
+        rotate_vector(&d, &self.m)
+    }
 }
 
 /// `CheckDEoption(0, 1)` of an interpolation hybrid: the formulas with a
@@ -690,6 +710,11 @@ impl CalcParams {
                 smooth: (d.smooth.max(1e-30) as f64) / step_width,
                 fmix_pow: d.mix_pow as f64,
                 mix_col: d.mix_color,
+                place: sc.part2_place.filter(|q| *q != crate::scene::Placement::default() && d.kind != 6).map(|q| {
+                    let r = q.rotation.map(f64::to_radians);
+                    let m = normalise_matrix_to(1.0 / q.scale.max(1e-300), &build_rot_matrix(r[0], r[1], r[2]));
+                    Place { offset: q.offset, m, scale: q.scale }
+                }),
             }),
             _ => None,
         };
@@ -1180,7 +1205,16 @@ impl<'a> Marcher<'a> {
         // PrepareF1DEcomb
         let buf = (self.it.it_result, self.it.otrap, self.it.smooth_it, self.max_its_result);
         self.set_part(&dc.part2);
-        let rst = self.calc_de_part(&dc.part2, dc.kind == 3, dc.kind == 6);
+        // the second part in its own place
+        let c0 = self.it.c;
+        if let Some(pl) = &dc.place {
+            self.it.c = pl.apply(&c0);
+        }
+        let mut rst = self.calc_de_part(&dc.part2, dc.kind == 3, dc.kind == 6);
+        if let Some(pl) = &dc.place {
+            rst *= pl.scale;
+            self.it.c = c0;
+        }
         let ms = self.ms_de_stop as f64;
         let restore1 = |me: &mut Self| {
             me.it.it_result = buf.0;

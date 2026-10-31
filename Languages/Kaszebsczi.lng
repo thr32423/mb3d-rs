@@ -2464,6 +2464,8 @@ ParametersLower=parametrë
 ;parameters
 ParametersMandId=Parametrë: MandId {}
 ;Parameters: MandId {}
+Part2At=Dzél 2 w:
+;Part 2 at:
 Pass=przeńdzënk {}
 ;pass {}
 Passes=Przebiedżi
@@ -3300,6 +3302,8 @@ TheRotationIsPerformedAroundThe=Òbrôcanié je wëkònywóné wkół strzódka 
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Òbrotë są wëkònywóné pò se, nôprzód w płaszczëznie XW, na kùńcu ZW.
 ;The rotations are performed in a row, first the XW, last the ZW-plane.
+TheSecondPartAsAnObject=Drëdżi dzél jakno òsóbny òbiekt (nie je w MB3D: zapisóny za dzélã parametrów MB3D): jegò westrzódk (x, y, z), òbrócenié wkół x, y, z w gradach ë wiôlgòsc (1 = jak rechòwóny)
+;The second part as an object of its own (not in MB3D: kept after MB3D's part of the parameters): its middle (x, y, z), its rotation about x, y, z in degrees and its size (1 = as calculated)
 TheSelectionMustBeBiggerThan=Wëbiérk mùszi bëc wikszi jak 2 piksle w szérzi ë wësokòscë.
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=wëbiérk mùszi bëc wikszi jak 2 piksle w szérzi ë wësokòscë
@@ -3426,6 +3430,8 @@ TuneTheSizeOfTheVolumetric=Nastawi wiôlgòsc wòlumetriczny mapë w krokach pò
 ;Tune the size of the volumetric map in 20% steps
 TurnOnOffTheJuliaMode=Włączô/wëłączô trib Julia
 ;Turn on/off the julia mode
+Turned=Òbrócony:
+;Turned:
 Type=Ôrt:
 ;Type:
 Type2=Ôrt

@@ -747,7 +747,7 @@ sprawdzëc sóm:
   òbôczë gò w kòżdi klatce tak, jak animacjô gò interpòlëje. Kluczné ùjęca to
   kwadratë na swòjich klatkach: przecygni jeden w górã abò w dół, abò klëknij
   ë wpiszë wôrtnotã. Kwadratowô interpòlacjô Béziera mijô kluczné ùjęca, a
-  krzëwô pòkazywô to, nim cos òstanie wërenderowóné.
+  krzëwô pòkazywô to, nim cos òstanie wërenderowóné. Trzecô interpòlacjô, *Catmull-Rom* (nie je w MB3D), je gładkô ë przechôdô przez kòżdé kluczné ùjęcé (`mb3d animate --catmull-rom`).
 
   </details>
 

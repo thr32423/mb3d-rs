@@ -469,6 +469,8 @@ CannotWrite={}을(를) 쓸 수 없습니다: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=Y 각도가 90도 또는 -90도이면 오일러 각을 계산할 수 없습니다!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=주의:  아래의 처리는 위에서 아래 순서로\n계산해야 하며, 조명을 변경하면 이 계산들이\n초기화됩니다!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: X 이상의 가장 작은 정수, |X| < MaxInt }
@@ -1799,6 +1801,8 @@ LinearAttenuation=선형 감쇠
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=사이에 키프레임을 선형 보간
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=선형: 키프레임에서 키프레임으로 곧게. 2차 베지어 (MB3D): 부드럽고 키프레임 옆을 지나갑니다. Catmull-Rom (MB3D에는 없음): 부드럽고 모든 키프레임을 지나갑니다. 곡선 버튼이 차이를 보여 줍니다
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines=줄 {}개
 ;{} lines
 List=목록

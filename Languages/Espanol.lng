@@ -468,6 +468,8 @@ CannotWrite=No se puede escribir {}: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=¡Si el ángulo Y es 90 o -90 grados, no se pueden calcular los ángulos de Euler!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=Atención:  los procesos de abajo deben calcularse\nde arriba abajo, ¡y los cambios de luz reinician\nestos cálculos!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: menor entero >= X, |X| < MaxInt }
@@ -1798,6 +1800,8 @@ LinearAttenuation=Atenuación lineal
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=Interpolar linealmente un fotograma clave intermedio
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=Lineal: recta de fotograma clave a fotograma clave. Bezier cuadrática (MB3D): suave, pasa junto a los fotogramas clave. Catmull-Rom (no está en MB3D): suave y a través de cada fotograma clave. El botón Curvas muestra la diferencia
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines={} líneas
 ;{} lines
 List=Lista

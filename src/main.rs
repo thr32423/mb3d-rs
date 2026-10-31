@@ -1000,6 +1000,8 @@ OPTIONS:
                              with an animation file: for all keyframes)
         --linear             Linear interpolation (default: MB3D's quadratic bezier)
         --bezier             Quadratic bezier interpolation
+        --catmull-rom        Catmull-Rom interpolation: smooth and through every keyframe
+                             (not in MB3D; its animation files read it as bezier)
         --loop               Loop: after the last keyframe the first follows again
         --no-loop
         --start-index <N>    File index of the first frame (default 1)
@@ -1085,6 +1087,7 @@ fn animate(argv: &[String]) -> Result<(), String> {
             }
             "--linear" => ipol = Some(Interpolation::Linear),
             "--bezier" => ipol = Some(Interpolation::Bezier),
+            "--catmull-rom" => ipol = Some(Interpolation::CatmullRom),
             "--loop" => looped = Some(true),
             "--no-loop" => looped = Some(false),
             "--start-index" => start_index = Some(num(a, args.next())?),

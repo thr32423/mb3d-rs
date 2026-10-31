@@ -182,7 +182,11 @@ fn read_settings(app: &mut Mb3d, ui: &Ui) {
     a.width = pti(&ui.text(F, "Edit6")).max(8);
     a.height = pti(&ui.text(F, "Edit7")).max(8);
     a.scale = ui.position(F, "UpDown3").clamp(1, 3) as u32;
-    a.interpolation = if ui.item_index(F, "RadioGroup2") == 0 { Interpolation::Linear } else { Interpolation::Bezier };
+    a.interpolation = match ui.item_index(F, "RadioGroup2") {
+        0 => Interpolation::Linear,
+        2 => Interpolation::CatmullRom,
+        _ => Interpolation::Bezier,
+    };
     a.looped = ui.checked(F, "CheckBox2");
     a.format = match ui.item_index(F, "RadioGroup3") {
         0 => OutputFormat::Bmp,
@@ -205,7 +209,7 @@ fn write_settings(app: &Mb3d, ui: &mut Ui) {
     ui.set_text(F, "Edit7", &a.height.to_string());
     ui.set_position(F, "UpDown3", a.scale as i64);
     ui.set_text(F, "Edit21", &a.scale.to_string());
-    ui.set_item_index(F, "RadioGroup2", if a.interpolation == Interpolation::Linear { 0 } else { 1 });
+    ui.set_item_index(F, "RadioGroup2", a.interpolation as i32);
     ui.set_checked(F, "CheckBox2", a.looped);
     ui.set_item_index(F, "RadioGroup3", a.format as i32);
     ui.set_text(F, "Edit2", &a.output_folder);
@@ -1024,7 +1028,7 @@ fn event_inner(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             if app.anim.first_show {
                 app.anim.first_show = false;
                 ui.cm(F, "Edit21").hint = tr("@MB:N1None22x233x3");
-                ui.set_item_index(F, "RadioGroup2", app.ini.get("AniSmoothPar").parse::<i32>().unwrap_or(1).clamp(0, 1));
+                ui.set_item_index(F, "RadioGroup2", app.ini.get("AniSmoothPar").parse::<i32>().unwrap_or(1).clamp(0, 2));
                 let out = app.ini.dir(super::ini::DIR_ANIOUT).display().to_string();
                 ui.set_text(F, "Edit2", &out);
                 app.anim.anim.output_folder = out;

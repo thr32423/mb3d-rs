@@ -469,6 +469,8 @@ CannotWrite={} لکھا نہیں جا سکتا: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=اگر Y زاویہ 90 یا -90 درجے پر ہو تو euler زاویوں کا حساب نہیں ہو سکتا!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=احتیاط:  نیچے دی گئی پروسیسنگ اوپر سے نیچے\nترتیب سے حساب کی جانی چاہیے اور روشنی کی تبدیلیاں\nان حسابات کو ری سیٹ کر دیں گی!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: سب سے چھوٹا عدد صحیح >= X, |X| < MaxInt }
@@ -1799,6 +1801,8 @@ LinearAttenuation=خطی کمی
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=درمیان میں کی فریم خطی انٹرپولیٹ کریں
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=لکیری: ایک کی فریم سے دوسرے تک سیدھا۔ دو درجی بیزیئر (MB3D): ہموار، کی فریموں کے پاس سے گزرتا ہے۔ Catmull-Rom (MB3D میں نہیں): ہموار اور ہر کی فریم سے ہو کر۔ خم کا بٹن فرق دکھاتا ہے
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines={} سطریں
 ;{} lines
 List=فہرست

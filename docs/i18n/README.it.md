@@ -781,7 +781,7 @@ permettono di verificare ulteriormente da solo:
   l'animazione lo interpola. I fotogrammi chiave sono quadrati sui loro
   fotogrammi: trascinatene uno in su o in giù, oppure cliccatelo e scrivete un
   valore. L'interpolazione Bezier quadratica passa accanto ai fotogrammi
-  chiave, e la curva lo mostra prima di qualsiasi render.
+  chiave, e la curva lo mostra prima di qualsiasi render. Una terza interpolazione, *Catmull-Rom* (non in MB3D), è morbida e passa per ogni fotogramma chiave (`mb3d animate --catmull-rom`).
 
   </details>
 

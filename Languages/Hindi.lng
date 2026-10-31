@@ -469,6 +469,8 @@ CannotWrite={} नहीं लिख सके: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=यदि Y कोण 90 या -90 डिग्री पर है, तो यूलर कोणों की गणना नहीं की जा सकती!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=सावधान:  नीचे की प्रक्रियाओं की गणना ऊपर से नीचे\nके क्रम में होनी चाहिए, और प्रकाश बदलने से ये\nगणनाएँ रीसेट हो जाएँगी!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: सबसे छोटा पूर्णांक >= X, |X| < MaxInt }
@@ -1799,6 +1801,8 @@ LinearAttenuation=रैखिक क्षीणन
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=बीच में एक कीफ़्रेम रैखिक इंटरपोलेट करें
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=रैखिक: एक की-फ़्रेम से दूसरे तक सीधा। द्विघाती बेज़ियर (MB3D): सहज, की-फ़्रेमों के पास से गुज़रता है। Catmull-Rom (MB3D में नहीं): सहज और हर की-फ़्रेम से होकर। वक्र बटन अंतर दिखाता है
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines={} पंक्तियाँ
 ;{} lines
 List=सूची

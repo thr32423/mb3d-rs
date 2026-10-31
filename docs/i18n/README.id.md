@@ -783,7 +783,7 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   nilainya di setiap frame seperti diinterpolasi animasi. Keyframe berupa
   kotak di frame-nya: seret ke atas atau ke bawah, atau klik dan ketik nilai.
   Interpolasi bezier kuadratik lewat di samping keyframe, dan kurva
-  menunjukkannya sebelum apa pun dirender.
+  menunjukkannya sebelum apa pun dirender. Interpolasi ketiga, *Catmull-Rom* (tidak ada di MB3D), halus dan melewati setiap keyframe (`mb3d animate --catmull-rom`).
 
   </details>
 

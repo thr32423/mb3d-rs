@@ -1039,12 +1039,16 @@ object AnimationForm: TAnimationForm
       Top = 64
       Width = 122
       Height = 73
+      Hint = '@MB:LinearStraightFromKeyframeTo'
       Caption = '@MB:SubframeInterpolation'
       Ctl3D = True
       ItemIndex = 1
       Items.Strings = (
         '@MB:Linear'
-        '@MB:QuadraticBezier')
+        '@MB:QuadraticBezier'
+        '@MB:CatmullRom')
+      ParentShowHint = False
+      ShowHint = True
       ParentCtl3D = False
       TabOrder = 8
     end

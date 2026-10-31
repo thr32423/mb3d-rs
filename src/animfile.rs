@@ -28,6 +28,10 @@ pub struct Preview {
 }
 
 /// Size of a keyframe preview (`RenderPrevBMP`): 100 pixels wide or 80 high.
+/// The bit of the binary animation's options that marks mb3d-rs's
+/// Catmull-Rom interpolation (MB3D does not use it and reads Bezier).
+const CATMULL_ROM_BIT: i32 = 1 << 20;
+
 pub fn preview_size(width: i32, height: i32) -> (usize, usize) {
     let (w, h) = (width.max(1) as f64, height.max(1) as f64);
     let d = if w >= h * 1.25 { 100.0 / w } else { 80.0 / h };
@@ -135,6 +139,10 @@ pub fn read_m3a(data: &[u8], name: &str) -> Result<AnimFile, String> {
     if version == 5 {
         let opt = r.i32()?;
         ipol = opt & 3;
+        // mb3d-rs's Catmull-Rom: Bezier for MB3D, this flag for mb3d-rs
+        if opt & CATMULL_ROM_BIT != 0 {
+            ipol = 2;
+        }
         a.looped = opt & 4 != 0;
         a.format = match (opt >> 3) & 7 {
             0 => OutputFormat::Bmp,
@@ -157,7 +165,11 @@ pub fn read_m3a(data: &[u8], name: &str) -> Result<AnimFile, String> {
         a.overwrite = true;
         a.save_depth = false;
     }
-    a.interpolation = if ipol == 0 { Interpolation::Linear } else { Interpolation::Bezier };
+    a.interpolation = match ipol {
+        0 => Interpolation::Linear,
+        2 => Interpolation::CatmullRom,
+        _ => Interpolation::Bezier,
+    };
     let hc = r.i32()?;
     if !(1..=4095).contains(&hc) {
         return Err(format!("animation file: bad keyframe count {hc}"));
@@ -235,8 +247,12 @@ pub fn write_m3a(a: &Animation, previews: &[Option<Preview>]) -> Vec<u8> {
     s[0] = folder.len() as u8;
     s[1..1 + folder.len()].copy_from_slice(&folder);
     d.extend_from_slice(&s);
-    let opt = (a.interpolation as i32)
-        | (a.looped as i32) << 2
+    // (MB3D knows linear and Bezier: Catmull-Rom is Bezier there, with a
+    // flag of its own for mb3d-rs)
+    let opt = match a.interpolation {
+        Interpolation::CatmullRom => 1 | CATMULL_ROM_BIT,
+        i => i as i32,
+    } | (a.looped as i32) << 2
         | (a.format as i32) << 3
         | (a.stereo_bits & 0xC0) as i32
         | (!a.overwrite as i32) << 8
@@ -416,7 +432,8 @@ pub fn parse_m3k(text: &str, base_dir: &Path, name: &str) -> Result<AnimFile, St
                 a.interpolation = match plain(v).to_ascii_lowercase().as_str() {
                     "linear" => Interpolation::Linear,
                     "bezier" | "quadratic bezier" | "spline" => Interpolation::Bezier,
-                    o => return Err(err(format!("interpolation: '{o}' (linear or bezier)"))),
+                    "catmull-rom" | "catmull rom" | "catmullrom" => Interpolation::CatmullRom,
+                    o => return Err(err(format!("interpolation: '{o}' (linear, bezier or catmull-rom)"))),
                 }
             }
             "loop" => a.looped = boolean(v)?,
@@ -487,7 +504,11 @@ pub fn write_m3k(a: &Animation, dir: Option<&Path>) -> String {
     let _ = writeln!(
         t,
         "interpolation = {}\nloop = {}",
-        if a.interpolation == Interpolation::Linear { "linear" } else { "bezier" },
+        match a.interpolation {
+            Interpolation::Linear => "linear",
+            Interpolation::Bezier => "bezier",
+            Interpolation::CatmullRom => "catmull-rom",
+        },
         a.looped
     );
     if !a.output_folder.is_empty() {
@@ -601,6 +622,22 @@ mod tests {
             same_scene(&x.scene, &y.scene);
         }
         assert_eq!(f.previews, vec![Some(pv), None]);
+    }
+
+    #[test]
+    fn catmull_rom_in_both_formats() {
+        let mut a = sample();
+        a.interpolation = Interpolation::CatmullRom;
+        let data = write_m3a(&a, &[None, None]);
+        // MB3D reads Bezier (bits 0-1 = 1), mb3d-rs its flag
+        let f = read_m3a(&data, "t").unwrap();
+        assert_eq!(f.anim.interpolation, Interpolation::CatmullRom);
+        let text = write_m3k(&a, None);
+        assert!(text.contains("interpolation = catmull-rom"));
+        assert_eq!(parse_m3k(&text, Path::new("."), "x").unwrap().anim.interpolation, Interpolation::CatmullRom);
+        // Bezier stays plain Bezier
+        a.interpolation = Interpolation::Bezier;
+        assert_eq!(read_m3a(&write_m3a(&a, &[None, None]), "t").unwrap().anim.interpolation, Interpolation::Bezier);
     }
 
     #[test]

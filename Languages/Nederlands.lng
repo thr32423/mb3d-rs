@@ -468,6 +468,8 @@ CannotWrite=Kan {} niet schrijven: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=Als de Y-hoek 90 of -90 graden is, kunnen de Eulerhoeken niet worden berekend!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=Let op:  de bewerkingen hieronder moeten van boven\nnaar beneden worden berekend en lichtwijzigingen\nzetten deze berekeningen terug!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: kleinste geheel getal >= X, |X| < MaxInt }
@@ -1798,6 +1800,8 @@ LinearAttenuation=Lineaire verzwakking
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=Lineair een keyframe ertussen interpoleren
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=Lineair: recht van keyframe naar keyframe. Kwadratische bezier (MB3D): vloeiend, langs de keyframes. Catmull-Rom (niet in MB3D): vloeiend en door elk keyframe. De knop Curven toont het verschil
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines={} regels
 ;{} lines
 List=Lijst

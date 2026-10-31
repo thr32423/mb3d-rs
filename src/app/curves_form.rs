@@ -138,8 +138,9 @@ pub fn update(app: &mut Mb3d, ui: &mut Ui) {
     if st.sel.is_some_and(|s| s >= st.keys.len()) {
         st.sel = None;
     }
-    ui.set_caption(F, "MaxLbl", &fts(st.range.1));
-    ui.set_caption(F, "MinLbl", &fts(st.range.0));
+    let short = |v: f64| format!("{v:.4}").trim_end_matches('0').trim_end_matches('.').to_string();
+    ui.set_caption(F, "MaxLbl", &short(st.range.1));
+    ui.set_caption(F, "MinLbl", &short(st.range.0));
     show_key(app, ui);
     draw(app, ui);
 }

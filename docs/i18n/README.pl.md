@@ -751,7 +751,7 @@ możesz sprawdzić sam:
   zobacz go w każdej klatce tak, jak animacja go interpoluje. Klatki kluczowe
   to kwadraty na swoich klatkach: przeciągnij jeden w górę lub w dół albo
   kliknij i wpisz wartość. Kwadratowa interpolacja Béziera mija klatki
-  kluczowe, a krzywa pokazuje to, zanim cokolwiek zostanie wyrenderowane.
+  kluczowe, a krzywa pokazuje to, zanim cokolwiek zostanie wyrenderowane. Trzecia interpolacja, *Catmull-Rom* (nie ma w MB3D), jest gładka i przechodzi przez każdą klatkę kluczową (`mb3d animate --catmull-rom`).
 
   </details>
 

@@ -799,7 +799,7 @@ Voici de quoi vérifier plus loin par vous-même :
   l'animation l'interpole. Les images clés sont des carrés sur leurs images :
   faites-en glisser un vers le haut ou le bas, ou cliquez dessus et tapez une
   valeur. L'interpolation de Bézier quadratique passe à côté des images clés,
-  et la courbe le montre avant tout rendu.
+  et la courbe le montre avant tout rendu. Une troisième interpolation, *Catmull-Rom* (pas dans MB3D), est douce et passe par chaque image clé (`mb3d animate --catmull-rom`).
 
   </details>
 

@@ -468,6 +468,8 @@ CannotWrite=Tidak dapat menulis {}: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=Jika sudut Y bernilai 90 atau -90 derajat, sudut euler tidak dapat dihitung!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=Perhatian:  Pemrosesan di bawah harus dihitung\ndari atas ke bawah dan perubahan cahaya akan mengatur ulang\nperhitungan ini!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: Bilangan bulat terkecil >= X, |X| < MaxInt }
@@ -1798,6 +1800,8 @@ LinearAttenuation=Atenuasi Linear
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=Interpolasi linear keyframe di antaranya
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=Linear: lurus dari keyframe ke keyframe. Bezier kuadratik (MB3D): halus, lewat di samping keyframe. Catmull-Rom (tidak ada di MB3D): halus dan melalui setiap keyframe. Tombol Kurva menunjukkan perbedaannya
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines={} baris
 ;{} lines
 List=Daftar

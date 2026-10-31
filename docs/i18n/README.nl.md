@@ -742,7 +742,7 @@ kunt u zelf verder controleren:
   wolkendrift, en zie hem over elk frame zoals de animatie hem interpoleert.
   De keyframes zijn vierkantjes op hun frames: sleep er een omhoog of omlaag,
   of klik erop en typ een waarde. De kwadratische bezier-interpolatie loopt
-  langs de keyframes, en de curve laat dat zien voordat er iets gerenderd is.
+  langs de keyframes, en de curve laat dat zien voordat er iets gerenderd is. Een derde interpolatie, *Catmull-Rom* (niet in MB3D), is vloeiend en gaat door elk keyframe (`mb3d animate --catmull-rom`).
 
   </details>
 

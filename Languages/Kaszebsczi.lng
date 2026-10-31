@@ -468,6 +468,8 @@ CannotWrite=Nie dô sã zapisac {}: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=Czej nórt Y je 90 abò -90 stãpni, nórtów Eulera nie jidze wërechòwac!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=Bôczënk:  Niżi pòdóné òbrôbiania mùszą bëc rechòwóné\nòd górë do dołu, a zmianë widu wëzerëją\nte rechòwania!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: Nômniészô całownô lëczba >= X, |X| < MaxInt }
@@ -1798,6 +1800,8 @@ LinearAttenuation=Liniowé tłëmienié
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=Liniowò interpòlëjë kluczową klatkã westrzód
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=Lëniowô: prosto òd klucznégò ùjęcô do klucznégò ùjęcô. Kwadratowô Béziera (MB3D): gładkô, mijô kluczné ùjęca. Catmull-Rom (nie je w MB3D): gładkô ë przez kòżdé kluczné ùjęcé. Knąpa Krzëwé pòkazywô różnicã
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines={} régów
 ;{} lines
 List=Lësta

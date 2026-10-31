@@ -783,7 +783,7 @@ pontos permitem que você confira mais por conta própria:
   quadros-chave são quadrados nos seus quadros: arraste um para cima ou para
   baixo, ou clique nele e digite um valor. A interpolação bezier quadrática
   passa ao lado dos quadros-chave, e a curva mostra isso antes de qualquer
-  renderização.
+  renderização. Uma terceira interpolação, *Catmull-Rom* (não existe no MB3D), é suave e passa por cada quadro-chave (`mb3d animate --catmull-rom`).
 
   </details>
 

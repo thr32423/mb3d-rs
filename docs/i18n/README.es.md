@@ -798,7 +798,7 @@ esto puede comprobar más por su cuenta:
   interpola la animación. Los fotogramas clave son cuadrados en sus
   fotogramas: arrastre uno hacia arriba o abajo, o haga clic y escriba un
   valor. La interpolación bezier cuadrática pasa junto a los fotogramas clave,
-  y la curva lo muestra antes de renderizar nada.
+  y la curva lo muestra antes de renderizar nada. Una tercera interpolación, *Catmull-Rom* (no está en MB3D), es suave y pasa por cada fotograma clave (`mb3d animate --catmull-rom`).
 
   </details>
 

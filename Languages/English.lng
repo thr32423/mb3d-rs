@@ -468,6 +468,8 @@ CannotWrite=Cannot write {}: {}
 ;the program
 CaseYAngleIsAt90=Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
 ;Mand3DForm.Edit31.Hint
+CatmullRom=Catmull-Rom
+;AnimationForm.RadioGroup2.Items
 CautionTheProcessingsBelowMustBe=Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 ;PostProForm.Label3.Caption
 CeilSmallestIntegerXXMaxInt={ Ceil: Smallest integer >= X, |X| < MaxInt }
@@ -1798,6 +1800,8 @@ LinearAttenuation=Linear Attenuation
 ;MeshPreviewFrm.Label13.Caption
 LinearInterpolateAKeyframeInbetween=Linear interpolate a keyframe inbetween
 ;the program
+LinearStraightFromKeyframeToKeyframe=Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
+;not used
 Lines={} lines
 ;the program
 List=List

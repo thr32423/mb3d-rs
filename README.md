@@ -758,7 +758,7 @@ you check further on your own:
   interpolates it. The keyframes are squares on their frames: drag one up or
   down, or click it and type a value. The quadratic Bezier interpolation
   passes beside the keyframes, and the curve shows that before anything is
-  rendered.
+  rendered. A third interpolation, *Catmull-Rom* (not in MB3D), is smooth and passes through every keyframe (`mb3d animate --catmull-rom`).
 
   </details>
 

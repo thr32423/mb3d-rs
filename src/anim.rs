@@ -36,6 +36,8 @@ use std::sync::Arc;
 pub enum Interpolation {
     Linear = 0,
     Bezier = 1,
+    /// a Catmull-Rom spline (not in MB3D): smooth, through every keyframe
+    CatmullRom = 2,
 }
 
 /// Output of the frames (`RadioGroup3`).
@@ -292,6 +294,7 @@ impl Animation {
                 let scenes = [&k[i0].scene, &k[i1].scene, &k[i2].scene, &k[i3].scene];
                 interpolate_bezier(scenes, [count(i0), count(i1), count(i2), count(i3)], t)
             }
+            Interpolation::CatmullRom => interpolate_catmull_rom([&k[i0].scene, &k[i1].scene, &k[i2].scene, &k[i3].scene], t),
         };
         s.width = self.width.max(1);
         s.height = self.height.max(1);
@@ -603,6 +606,48 @@ pub fn interpolate_bezier(h: [&Scene; 4], counts: [f64; 4], t: f64) -> Scene {
     s
 }
 
+/// The Catmull-Rom weights of keyframes 0..3 at `t` (0..1) between
+/// keyframes 1 and 2: 1 at a keyframe, the curve's slope there that of its
+/// neighbours (the ends repeat their keyframe: no overshoot past them).
+pub fn catmull_rom_weights(t: f64) -> [f64; 4] {
+    let (t2, t3) = (t * t, t * t * t);
+    [
+        0.5 * (-t3 + 2.0 * t2 - t),
+        0.5 * (3.0 * t3 - 5.0 * t2 + 2.0),
+        0.5 * (-3.0 * t3 + 4.0 * t2 + t),
+        0.5 * (t3 - t2),
+    ]
+}
+
+/// Catmull-Rom (not in MB3D): sub-frame `t` between keyframes `h[1]` and
+/// `h[2]`, with their neighbours `h[0]` and `h[3]`, the curve through every
+/// keyframe; the rotation as the weighted quaternions (made the same sign
+/// as `h[1]`'s) normalised; everything not interpolated from `h[1]`.
+pub fn interpolate_catmull_rom(h: [&Scene; 4], t: f64) -> Scene {
+    let w = catmull_rom_weights(t);
+    let q: Vec<Quat> = h.iter().map(|x| matrix_to_quat(&x.vgrads)).collect();
+    let mut r = [0.0; 4];
+    for (qi, wi) in q.iter().zip(w) {
+        let sign = if qi.iter().zip(&q[1]).map(|(a, b)| a * b).sum::<f64>() < 0.0 { -1.0 } else { 1.0 };
+        for k in 0..4 {
+            r[k] += qi[k] * sign * wi;
+        }
+    }
+    let n = r.iter().map(|v| v * v).sum::<f64>().sqrt().max(1e-300);
+    let rot = r.map(|v| v / n);
+    // (the angles wrap around keyframe 1, as Bezier's around its middle one)
+    let order = [h[1], h[0], h[2], h[3]];
+    let wo = [w[1], w[0], w[2], w[3]];
+    let mut s = interpolate_header(h[1], &order, &wo, rot, false);
+    s.light_blend = Some(Arc::new(LightBlend {
+        keys: h.iter().map(|x| strip(x)).collect(),
+        weights: w.to_vec(),
+        t,
+        bezier: false,
+    }));
+    s
+}
+
 /// Writes the light blend of a frame into its light settings, so the frame
 /// can be saved as a parameter file: the light sliders, colours, palette and
 /// light angles/positions of the keyframes are interpolated with the frame's
@@ -713,6 +758,31 @@ mod tests {
         a.width = 64;
         a.height = 48;
         a
+    }
+
+    #[test]
+    fn catmull_rom_goes_through_the_keyframes() {
+        for t in [0.0, 0.25, 0.5, 0.9] {
+            let w = catmull_rom_weights(t);
+            assert!((w.iter().sum::<f64>() - 1.0).abs() < 1e-12);
+        }
+        assert_eq!(catmull_rom_weights(0.0), [0.0, 1.0, 0.0, 0.0]);
+        let keys = vec![key(1.0, 0.0, 0.0, 4), key(3.0, 2.0, 30.0, 4), key(1.5, -1.0, 10.0, 4), key(2.0, 0.5, 0.0, 4)];
+        let a = anim(keys.clone(), Interpolation::CatmullRom, false);
+        // every keyframe's frame is that keyframe's scene
+        for (i, k) in keys.iter().enumerate() {
+            let s = a.frame_scene(i * 4).unwrap();
+            assert!((s.zoom - k.scene.zoom).abs() < 1e-9, "keyframe {i}: zoom {}", s.zoom);
+            assert!((s.mid[0] - k.scene.mid[0]).abs() < 1e-9);
+            for r in 0..3 {
+                for c in 0..3 {
+                    assert!((s.vgrads[r][c] - k.scene.vgrads[r][c]).abs() < 1e-9);
+                }
+            }
+        }
+        // Bezier passes beside them
+        let b = anim(keys.clone(), Interpolation::Bezier, false);
+        assert!((b.frame_scene(4).unwrap().zoom - 3.0).abs() > 0.05);
     }
 
     #[test]

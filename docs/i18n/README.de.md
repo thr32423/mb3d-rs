@@ -774,7 +774,7 @@ können Sie selbst weiter prüfen:
   interpoliert. Die Keyframes sind Quadrate auf ihren Bildern: eines nach oben
   oder unten ziehen, oder anklicken und einen Wert eintippen. Die quadratische
   Bezier-Interpolation läuft an den Keyframes vorbei, und die Kurve zeigt das,
-  bevor etwas gerendert wird.
+  bevor etwas gerendert wird. Eine dritte Interpolation, *Catmull-Rom* (nicht in MB3D), ist weich und läuft durch jeden Keyframe (`mb3d animate --catmull-rom`).
 
   </details>
 

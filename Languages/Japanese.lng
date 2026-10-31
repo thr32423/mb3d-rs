@@ -469,6 +469,8 @@ CannotWrite={} に書き込めません: {}
 ;Cannot write {}: {}
 CaseYAngleIsAt90=Y 角が 90 または -90 度の場合、オイラー角は計算できません!
 ;Case Y angle is at 90 or -90 degrees, euler angles can't be calculated!
+CatmullRom=Catmull-Rom
+;Catmull-Rom
 CautionTheProcessingsBelowMustBe=注意:  以下の処理は上から下の順に計算する必要があり、\nライトを変更するとこれらの計算は\nリセットされます!
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: X 以上の最小の整数、|X| < MaxInt }
@@ -1799,6 +1801,8 @@ LinearAttenuation=線形減衰
 ;Linear Attenuation
 LinearInterpolateAKeyframeInbetween=間にキーフレームを線形補間
 ;Linear interpolate a keyframe inbetween
+LinearStraightFromKeyframeToKeyframe=リニア: キーフレームからキーフレームへ直線的に。2 次ベジェ (MB3D): なめらかで、キーフレームの脇を通ります。Catmull-Rom (MB3D にはありません): なめらかで、すべてのキーフレームを通ります。カーブ ボタンで違いが見えます
+;Linear: straight from keyframe to keyframe. Quadratic Bezier (MB3D): smooth, passing beside the keyframes. Catmull-Rom (not in MB3D): smooth and through every keyframe. The Curves button shows the difference
 Lines={} 行
 ;{} lines
 List=リスト

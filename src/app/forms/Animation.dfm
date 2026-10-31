@@ -1039,7 +1039,7 @@ object AnimationForm: TAnimationForm
       Top = 64
       Width = 122
       Height = 73
-      Hint = '@MB:LinearStraightFromKeyframeTo'
+      Hint = '@MB:LinearStraightFromKeyframeToKeyframe'
       Caption = '@MB:SubframeInterpolation'
       Ctl3D = True
       ItemIndex = 1

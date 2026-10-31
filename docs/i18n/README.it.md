@@ -732,7 +732,7 @@ permettono di verificare ulteriormente da solo:
   sull'immagine finita in una frazione di secondo, quindi provare le impostazioni
   è rapido; ogni pixel guarda attraverso lo strato fino alla superficie colpita.
   Un'animazione può muoverle (`cloud_offset` tra i fotogrammi chiave). In Monte Carlo lungo i raggi di vista, non nei riflessi; Mandelbulb3D non le ha (il blocco mb3d-rs
-  dei parametri le conserva).
+  dei parametri le conserva). Proiettano le loro ombre sul frattale e sul suolo, anche da fuori dell'immagine.
 
   </details>
 * **Materiali di superficie** (idee di Mandelbulber) sopra la tavolozza: Fresnel

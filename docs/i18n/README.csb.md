@@ -701,7 +701,7 @@ sprawdzëc sóm:
   sprôwdzanié ùstawów je chùtczé; kòżdi piksel zdrzi przez warstwã do trafiony
   pòwierzchni. Animacjô mòże je rëszac (`cloud_offset` midzë klucznyma
   klatkama). W Monte Carlo wzdłuż promieni widzeniô, nie w òdbiciach; Mandelbulb3D jich ni mô
-  (blok mb3d-rs parametrów je trzëmô).
+  (blok mb3d-rs parametrów je trzëmô). Rzucają cenie na fraktal ë zemiã, téż zza òbrazu.
 
   </details>
 * **Materiałë pòwierzchni** (pòmësłë z Mandelbulbera) na paletce: Fresnel (wicy

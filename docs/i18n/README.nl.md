@@ -695,7 +695,7 @@ kunt u zelf verder controleren:
   fractie van een seconde over de klare afbeelding geschilderd, instellingen
   proberen gaat dus snel; elke pixel kijkt door de laag tot het oppervlak dat hij
   raakte. Een animatie kan ze bewegen (`cloud_offset` tussen keyframes). In Monte Carlo langs de kijkstralen, niet in reflecties; Mandelbulb3D heeft ze niet (het mb3d-rs-blok van de
-  parameters bewaart ze).
+  parameters bewaart ze). Ze werpen hun schaduwen op de fractal en de grond, ook van buiten de afbeelding.
 
   </details>
 * **Oppervlaktematerialen** (ideeën uit Mandelbulber) bovenop het palet: Fresnel

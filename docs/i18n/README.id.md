@@ -737,7 +737,7 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   dalam sepersekian detik, jadi mencoba pengaturan itu cepat; setiap piksel
   melihat menembus lapisan sampai permukaan yang dikenainya. Animasi dapat
   menggerakkannya (`cloud_offset` antar keyframe). Di Monte Carlo sepanjang sinar pandang, tidak di pantulan; Mandelbulb3D tidak memilikinya (blok mb3d-rs di parameter
-  menyimpannya).
+  menyimpannya). Awan menjatuhkan bayangannya pada fraktal dan tanah, juga dari luar gambar.
 
   </details>
 * **Material permukaan** (ide dari Mandelbulber) di atas palet: Fresnel (pantulan

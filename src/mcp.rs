@@ -95,7 +95,8 @@ Ground plane / water (not in MB3D; global keys)
 Clouds (not in MB3D; painted over the picture, cheap to change)
 - clouds = y, -1.2, -2.2 (axis, the layer's two heights) or off; cloud_density (1 = thick),
   cloud_coverage 0..1, cloud_size (features, fractal units), cloud_color = #RRGGBB,
-  cloud_offset = x, y, z (moves the pattern; animate it for drifting clouds). -y is up in most
+  cloud_offset = x, y, z (moves the pattern; animate it for drifting clouds). They shade
+  what lies under them. -y is up in most
   views: place the layer above the fractal and preview.
 Surface material (not in MB3D; on top of the palette)
 - material_fresnel 0..1 (edges reflect more; with mc_reflections), material_iridescence =

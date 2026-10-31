@@ -710,7 +710,7 @@ you check further on your own:
   a second, so trying out settings is quick; each pixel looks through the
   layer up to the surface it hit. An animation can move them
   (`cloud_offset` between keyframes). Monte Carlo shows them along the view rays, the reflections do not; Mandelbulb3D does not have them (the mb3d-rs block of the
-  parameters keeps them).
+  parameters keeps them). They cast their shadows on the fractal and the ground, also from outside the picture.
 
   </details>
 * **Surface materials** (ideas from Mandelbulber) on top of the palette:

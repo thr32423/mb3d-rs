@@ -1675,10 +1675,15 @@ impl<'a, 'c> Tracer<'a, 'c> {
             }
         }
         self.calc_hs_mc().await;
+        // the clouds' shadow on the sun's light
+        let cloud = self.c.clouds.as_ref().and_then(|(cl, light)| light.sun_index.map(|si| (si, cl.sunlight(self.pos, light))));
         for (i, l) in lv.lights.iter().enumerate() {
             let hs = self.hs6[i];
             if hs[0] != 0.0 || hs[1] != 0.0 || hs[2] != 0.0 {
                 let mut l0 = l.col;
+                if let Some((_, t)) = cloud.filter(|c| c.0 == i) {
+                    l0 = sc3(l0, t);
+                }
                 let t = if l.positional {
                     let t = sub(self.pos, saved[i]);
                     l0 = sc3(l0, (1.0 / (sqr_len(&t) + 1e-26)) as f32);

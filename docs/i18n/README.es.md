@@ -750,7 +750,7 @@ esto puede comprobar más por su cuenta:
   terminada en una fracción de segundo, así que probar ajustes es rápido; cada
   píxel mira a través de la capa hasta la superficie que alcanzó. Una animación
   puede moverlas (`cloud_offset` entre fotogramas clave). En Monte Carlo se ven a lo largo de los rayos de vista, no en reflejos; Mandelbulb3D no las tiene (el bloque mb3d-rs de los
-  parámetros las guarda).
+  parámetros las guarda). Proyectan sus sombras sobre el fractal y el suelo, también desde fuera de la imagen.
 
   </details>
 * **Materiales de superficie** (ideas de Mandelbulber) sobre la paleta: Fresnel

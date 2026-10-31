@@ -5,9 +5,10 @@
 //! the depth of field): every pixel's view ray steps through the layer up
 //! to the surface it hit (or the end of the layer), so the fractal hides
 //! the clouds behind it and the clouds in front veil the fractal.  The
-//! clouds are not part of the ray march: they cast no shadows on the
-//! fractal and do not show in reflections; Monte Carlo sees them along its
-//! view rays (`mc::Tracer::with_clouds`).
+//! clouds are not part of the ray march: they shade the surfaces under them
+//! (the sunlight through them), do not show in reflections; Monte Carlo
+//! sees them along its view rays (`mc::Tracer::with_clouds`) and shades the
+//! sun's light at every hit with them.
 
 use crate::gbuffer::SiLight;
 use crate::lighting::{LightVals, PaintCamera, Sample};
@@ -120,6 +121,8 @@ impl Clouds {
 /// from above and below.
 pub(crate) struct CloudLight {
     sun: Option<([f64; 3], [f32; 3])>,
+    /// the sun's place in `LightVals::lights` (Monte Carlo shades it)
+    pub(crate) sun_index: Option<usize>,
     amb_top: [f32; 3],
     amb_bottom: [f32; 3],
 }
@@ -127,12 +130,32 @@ pub(crate) struct CloudLight {
 impl Clouds {
     /// The light of the scene at the clouds.
     pub(crate) fn light(&self, l: &crate::lighting::Lighting, lv: &LightVals, cam: &PaintCamera) -> CloudLight {
-        let sun = lv.lights.iter().find(|v| v.on && !v.positional).map(|v| {
+        let sun_index = lv.lights.iter().position(|v| v.on && !v.positional);
+        let sun = sun_index.map(|i| {
+            let v = &lv.lights[i];
             let a = cam.to_abs(v.ln);
             let n = (a[0] * a[0] + a[1] * a[1] + a[2] * a[2]).sqrt().max(1e-30);
             (a.map(|x| (x / n) as f64), l.lights[v.idx].color.map(|x| x as f32 / 255.0))
         });
-        CloudLight { sun, amb_top: l.amb_top.map(|x| x as f32 / 255.0), amb_bottom: l.amb_bottom.map(|x| x as f32 / 255.0) }
+        CloudLight { sun, sun_index, amb_top: l.amb_top.map(|x| x as f32 / 255.0), amb_bottom: l.amb_bottom.map(|x| x as f32 / 255.0) }
+    }
+
+    /// The part of the sunlight that reaches the point `p` through the
+    /// clouds (1 without a sun or clouds in its way).
+    pub(crate) fn sunlight(&self, p: [f64; 3], cl: &CloudLight) -> f32 {
+        let Some((sd, _)) = &cl.sun else { return 1.0 };
+        let Some((t0, t1)) = self.span(p, *sd, self.far()) else { return 1.0 };
+        let n = ((t1 - t0) / (self.size * 0.5)).clamp(6.0, 32.0) as usize;
+        let dt = (t1 - t0) / n as f64;
+        let mut od = 0f32;
+        for i in 0..n {
+            let t = t0 + (i as f64 + 0.5) * dt;
+            od += self.density_at([0, 1, 2].map(|k| p[k] + sd[k] * t)) * dt as f32;
+            if od > 6.0 {
+                break;
+            }
+        }
+        (-od).exp()
     }
 
     /// How far a ray that hits nothing looks into the layer: through it at
@@ -196,6 +219,10 @@ impl Clouds {
     }
 }
 
+/// The part of a painted surface's light that stays in a cloud's shadow
+/// (its ambient light; the painting has no separate sunlight to dim).
+const SHADE_AMBIENT: f32 = 0.35;
+
 /// The jitter of a pixel's cloud steps (0..1).
 pub(crate) fn jitter(x: i64, y: i64) -> f64 {
     (lattice(x, y, 7) * 0.5 + 0.5) as f64
@@ -245,8 +272,19 @@ pub fn apply<S: Sample>(
                         } else {
                             (((8388352 - (si.zpos_fine >> 8) as i64) as f64 / cam.zc_mul + 1.0).powi(2) - 1.0) * cam.step_width / cam.zcorr
                         };
-                        let Some((tr, acc)) = cl.ray(o, d, tmax, light, jitter(x as i64, y as i64)) else { continue };
                         let px = &mut orow[xi * 3..xi * 3 + 3];
+                        // the clouds' shadow on the surface: its sunlight
+                        // dimmed (the ambient light, about a third, stays)
+                        if !si.is_background() {
+                            let sl = cl.sunlight([0, 1, 2].map(|k| o[k] + d[k] * tmax), light);
+                            if sl < 1.0 {
+                                let f = SHADE_AMBIENT + (1.0 - SHADE_AMBIENT) * sl;
+                                for v in px.iter_mut() {
+                                    *v = S::from_dof(v.to_255() * f);
+                                }
+                            }
+                        }
+                        let Some((tr, acc)) = cl.ray(o, d, tmax, light, jitter(x as i64, y as i64)) else { continue };
                         for c in 0..3 {
                             let v = px[c].to_255() * tr + acc[c] * 255.0;
                             px[c] = S::from_dof(v);

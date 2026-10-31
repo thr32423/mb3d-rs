@@ -725,7 +725,7 @@ können Sie selbst weiter prüfen:
   Sie werden in Sekundenbruchteilen über das fertige Bild gemalt, Einstellungen
   lassen sich also schnell ausprobieren; jeder Bildpunkt blickt durch die Schicht
   bis zur getroffenen Oberfläche. Eine Animation kann sie bewegen (`cloud_offset`
-  zwischen Keyframes). In Monte Carlo entlang der Sichtstrahlen, nicht in Spiegelungen;
+  zwischen Keyframes). In Monte Carlo entlang der Sichtstrahlen und in Spiegelungen (nicht in denen des Malens);
   Mandelbulb3D hat sie nicht (der mb3d-rs-Block der Parameter bewahrt sie). Sie werfen ihre Schatten auf das Fraktal und den Boden, auch von außerhalb des Bildes.
 
   </details>

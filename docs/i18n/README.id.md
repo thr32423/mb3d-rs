@@ -736,7 +736,7 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   bentuk dan warnanya, lalu *Lukis sekarang*. Awan dilukis di atas gambar jadi
   dalam sepersekian detik, jadi mencoba pengaturan itu cepat; setiap piksel
   melihat menembus lapisan sampai permukaan yang dikenainya. Animasi dapat
-  menggerakkannya (`cloud_offset` antar keyframe). Di Monte Carlo sepanjang sinar pandang, tidak di pantulan; Mandelbulb3D tidak memilikinya (blok mb3d-rs di parameter
+  menggerakkannya (`cloud_offset` antar keyframe). Di Monte Carlo sepanjang sinar pandang dan di pantulan (tidak di pantulan lukisan); Mandelbulb3D tidak memilikinya (blok mb3d-rs di parameter
   menyimpannya). Awan menjatuhkan bayangannya pada fraktal dan tanah, juga dari luar gambar.
 
   </details>

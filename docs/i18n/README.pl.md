@@ -704,7 +704,7 @@ możesz sprawdzić sam:
   kolor, potem *Maluj teraz*. Są malowane na gotowym obrazie w ułamku sekundy,
   więc szybko można próbować ustawień; każdy piksel patrzy przez warstwę aż do
   trafionej powierzchni. Animacja może je przesuwać (`cloud_offset` między
-  klatkami kluczowymi). W Monte Carlo wzdłuż promieni widzenia, nie w odbiciach; Mandelbulb3D
+  klatkami kluczowymi). W Monte Carlo wzdłuż promieni widzenia i w odbiciach (nie w odbiciach malowania); Mandelbulb3D
   ich nie ma (blok mb3d-rs parametrów je przechowuje). Rzucają cienie na fraktal i podłoże, także spoza obrazu.
 
   </details>

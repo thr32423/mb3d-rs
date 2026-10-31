@@ -6,8 +6,9 @@
 //! to the surface it hit (or the end of the layer), so the fractal hides
 //! the clouds behind it and the clouds in front veil the fractal.  The
 //! clouds are not part of the ray march: they shade the surfaces under them
-//! (the sunlight through them), do not show in reflections; Monte Carlo
-//! sees them along its view rays (`mc::Tracer::with_clouds`) and shades the
+//! (the sunlight through them), do not show in the painting's reflections;
+//! Monte Carlo sees them along its view rays (`mc::Tracer::with_clouds`)
+//! and its reflected and refracted rays (`cloud_segment`) and shades the
 //! sun's light at every hit with them.
 
 use crate::gbuffer::SiLight;

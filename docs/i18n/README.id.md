@@ -771,6 +771,21 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   posisinya (Mandelbulb3D menampilkan kedua bagian di satu tempat).
 
   </details>
+* **Kurva animasi** (ide dari Mandelbulber): satu nilai adegan di semua frame
+  animasi, dengan keyframe sebagai pegangan untuk diseret.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="Jendela Kurva: zoom di semua frame, keyframe sebagai kotak, satu dipilih"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  *Pembuat animasi* > *Kurva*: pilih zoom, satu koordinat posisi, satu sudut
+  putaran, bidang pandang, Z awal, posisi tanah, atau geser awan, dan lihat
+  nilainya di setiap frame seperti diinterpolasi animasi. Keyframe berupa
+  kotak di frame-nya: seret ke atas atau ke bawah, atau klik dan ketik nilai.
+  Interpolasi bezier kuadratik lewat di samping keyframe, dan kurva
+  menunjukkannya sebelum apa pun dirender.
+
+  </details>
 
 <a id="download"></a>
 

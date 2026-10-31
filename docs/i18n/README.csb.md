@@ -735,6 +735,21 @@ sprawdzëc sóm:
   dzéle w jednym môlu).
 
   </details>
+* **Krzëwé animacji** (pòmësł z Mandelbulbera): wôrtnota scenë we wszëtczich
+  klatkach animacji, a kluczné ùjęca jakno ùchwëtë do przecygniãcô.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="Òkno Krzëwé: zoom we wszëtczich klatkach, kluczné ùjęca jakno kwadratë, jedno wëbróné"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  *Twòrzenié animacje* > *Krzëwé*: wëbierzë zoom, kòòrdinatã pòłożeniô, kąt
+  òbrócenia, pòle widzeniô, Z pòczątkòwé, pòłożenié zemi abò dryft chmùrów ë
+  òbôczë gò w kòżdi klatce tak, jak animacjô gò interpòlëje. Kluczné ùjęca to
+  kwadratë na swòjich klatkach: przecygni jeden w górã abò w dół, abò klëknij
+  ë wpiszë wôrtnotã. Kwadratowô interpòlacjô Béziera mijô kluczné ùjęca, a
+  krzëwô pòkazywô to, nim cos òstanie wërenderowóné.
+
+  </details>
 
 <a id="download"></a>
 

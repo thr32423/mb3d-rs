@@ -730,6 +730,21 @@ kunt u zelf verder controleren:
   toont beide delen op één plek).
 
   </details>
+* **Animatiecurven** (een idee uit Mandelbulber): een waarde van de scène over
+  alle frames van een animatie, de keyframes als grepen om te slepen.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="Het venster Curven: de zoom over alle frames, de keyframes als vierkantjes, één gekozen"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  *Animatiemaker* > *Curven*: kies de zoom, een coördinaat van de positie, een
+  draaihoek, het gezichtsveld, Z-start, de positie van het grondvlak of de
+  wolkendrift, en zie hem over elk frame zoals de animatie hem interpoleert.
+  De keyframes zijn vierkantjes op hun frames: sleep er een omhoog of omlaag,
+  of klik erop en typ een waarde. De kwadratische bezier-interpolatie loopt
+  langs de keyframes, en de curve laat dat zien voordat er iets gerenderd is.
+
+  </details>
 
 <a id="download"></a>
 

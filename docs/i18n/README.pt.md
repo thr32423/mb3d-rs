@@ -770,6 +770,22 @@ pontos permitem que você confira mais por conta própria:
   (o Mandelbulb3D mostra as duas partes no mesmo lugar).
 
   </details>
+* **Curvas da animação** (uma ideia do Mandelbulber): um valor da cena em todos
+  os quadros de uma animação, com os quadros-chave como alças para arrastar.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="A janela Curvas: o zoom em todos os quadros, os quadros-chave como quadrados, um escolhido"></a>
+
+  <details><summary>Saiba mais</summary>
+
+  *Criador de animações* > *Curvas*: escolha o zoom, uma coordenada da posição,
+  um ângulo de rotação, o campo de visão, o Z inicial, a posição do chão ou a
+  deriva das nuvens, e veja-o em cada quadro como a animação o interpola. Os
+  quadros-chave são quadrados nos seus quadros: arraste um para cima ou para
+  baixo, ou clique nele e digite um valor. A interpolação bezier quadrática
+  passa ao lado dos quadros-chave, e a curva mostra isso antes de qualquer
+  renderização.
+
+  </details>
 
 <a id="download"></a>
 

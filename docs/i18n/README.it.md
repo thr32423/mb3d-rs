@@ -767,6 +767,23 @@ permettono di verificare ulteriormente da solo:
   punto).
 
   </details>
+* **Curve dell'animazione** (un'idea di Mandelbulber): un valore della scena su
+  tutti i fotogrammi di un'animazione, i fotogrammi chiave come maniglie da
+  trascinare.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="La finestra Curve: lo zoom su tutti i fotogrammi, i fotogrammi chiave come quadrati, uno scelto"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  *Creazione animazioni* > *Curve*: scegliete lo zoom, una coordinata della
+  posizione, un angolo di rotazione, il campo visivo, Z iniziale, la posizione
+  del suolo o la deriva delle nuvole, e vedetelo su ogni fotogramma come
+  l'animazione lo interpola. I fotogrammi chiave sono quadrati sui loro
+  fotogrammi: trascinatene uno in su o in giù, oppure cliccatelo e scrivete un
+  valore. L'interpolazione Bezier quadratica passa accanto ai fotogrammi
+  chiave, e la curva lo mostra prima di qualsiasi render.
+
+  </details>
 
 <a id="download"></a>
 

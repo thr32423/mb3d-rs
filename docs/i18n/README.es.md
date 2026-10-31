@@ -784,6 +784,23 @@ esto puede comprobar más por su cuenta:
   guarda la posición (Mandelbulb3D muestra las dos partes en un mismo lugar).
 
   </details>
+* **Curvas de animación** (una idea de Mandelbulber): un valor de la escena en
+  todos los fotogramas de una animación, con sus fotogramas clave como
+  asideros para arrastrar.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="La ventana Curvas: el zoom en todos los fotogramas, los fotogramas clave como cuadrados, uno elegido"></a>
+
+  <details><summary>Más información</summary>
+
+  *Creador de animaciones* > *Curvas*: elija el zoom, una coordenada de la
+  posición, un ángulo de giro, el campo de visión, Z inicial, la posición del
+  suelo o la deriva de las nubes, y véalo en cada fotograma tal como lo
+  interpola la animación. Los fotogramas clave son cuadrados en sus
+  fotogramas: arrastre uno hacia arriba o abajo, o haga clic y escriba un
+  valor. La interpolación bezier cuadrática pasa junto a los fotogramas clave,
+  y la curva lo muestra antes de renderizar nada.
+
+  </details>
 
 <a id="download"></a>
 

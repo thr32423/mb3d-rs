@@ -785,6 +785,23 @@ Voici de quoi vérifier plus loin par vous-même :
   au même endroit).
 
   </details>
+* **Courbes d'animation** (une idée de Mandelbulber) : une valeur de la scène
+  sur toutes les images d'une animation, ses images clés comme poignées à
+  faire glisser.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="La fenêtre Courbes : le zoom sur toutes les images, les images clés en carrés, l'une choisie"></a>
+
+  <details><summary>En savoir plus</summary>
+
+  *Créateur d'animation* > *Courbes* : choisissez le zoom, une coordonnée de la
+  position, un angle de rotation, le champ de vision, le Z de départ, la
+  position du sol ou la dérive des nuages, et voyez-le sur chaque image tel que
+  l'animation l'interpole. Les images clés sont des carrés sur leurs images :
+  faites-en glisser un vers le haut ou le bas, ou cliquez dessus et tapez une
+  valeur. L'interpolation de Bézier quadratique passe à côté des images clés,
+  et la courbe le montre avant tout rendu.
+
+  </details>
 
 <a id="download"></a>
 

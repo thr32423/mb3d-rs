@@ -761,6 +761,22 @@ können Sie selbst weiter prüfen:
   einem Ort).
 
   </details>
+* **Animationskurven** (eine Idee aus Mandelbulber): ein Wert der Szene über
+  alle Bilder einer Animation, die Keyframes als Griffe zum Ziehen.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="Das Fenster Kurven: der Zoom über alle Bilder, die Keyframes als Quadrate, eines gewählt"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  *Animationseditor* > *Kurven*: den Zoom, eine Koordinate der Position, einen
+  Drehwinkel, das Sichtfeld, Z-Start, die Position der Bodenebene oder die
+  Wolkendrift wählen und über jedes Bild sehen, wie die Animation ihn
+  interpoliert. Die Keyframes sind Quadrate auf ihren Bildern: eines nach oben
+  oder unten ziehen, oder anklicken und einen Wert eintippen. Die quadratische
+  Bezier-Interpolation läuft an den Keyframes vorbei, und die Kurve zeigt das,
+  bevor etwas gerendert wird.
+
+  </details>
 
 <a id="download"></a>
 

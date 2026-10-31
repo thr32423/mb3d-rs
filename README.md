@@ -745,6 +745,22 @@ you check further on your own:
   in one place).
 
   </details>
+* **Animation curves** (an idea from Mandelbulber): a value of the scene
+  over all frames of an animation, and its keyframes as handles to drag.
+
+  <a href="docs/img/curves.png"><img src="docs/img/curves.png" width="560" alt="The Curves window: the zoom over all frames, the keyframes as squares, one chosen"></a>
+
+  <details><summary>Read more</summary>
+
+  *Animation maker* > *Curves*: choose the zoom, a coordinate of the position,
+  an angle of the rotation, the field of view, Z start, the ground's position
+  or the clouds' drift, and see it over every frame as the animation
+  interpolates it. The keyframes are squares on their frames: drag one up or
+  down, or click it and type a value. The quadratic Bezier interpolation
+  passes beside the keyframes, and the curve shows that before anything is
+  rendered.
+
+  </details>
 
 ## Download
 

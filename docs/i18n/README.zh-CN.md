@@ -469,6 +469,19 @@ mb3d-rs 就是 [Mandelbulb3D](https://github.com/thargor6/mb3d)（MB3D）这款
   中的 mb3d-rs 块保存位置 (Mandelbulb3D 把两部分显示在同一处)。
 
   </details>
+* **动画曲线** (来自 Mandelbulber 的想法)：场景中某个数值在动画所有帧上的变化，
+  关键帧是可拖动的手柄。
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="曲线窗口：所有帧上的缩放，方块形的关键帧，其中一个被选中"></a>
+
+  <details><summary>了解更多</summary>
+
+  *动画制作器* > *曲线*：选择缩放、位置的一个坐标、旋转的一个角度、视野、Z 起点、
+  地面位置或云漂移，按动画插值的方式查看它在每一帧上的值。关键帧是其所在帧上
+  的方块：上下拖动一个，或点击它并输入数值。二次贝塞尔插值从关键帧旁边经过，
+  曲线在渲染之前就显示出这一点。
+
+  </details>
 
 <a id="download"></a>
 

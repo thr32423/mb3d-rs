@@ -739,6 +739,21 @@ możesz sprawdzić sam:
   obie części w jednym miejscu).
 
   </details>
+* **Krzywe animacji** (pomysł z Mandelbulbera): wartość sceny we wszystkich
+  klatkach animacji, a klatki kluczowe jako uchwyty do przeciągania.
+
+  <a href="../img/curves.png"><img src="../img/curves.png" width="560" alt="Okno Krzywe: zoom we wszystkich klatkach, klatki kluczowe jako kwadraty, jedna wybrana"></a>
+
+  <details><summary>Więcej</summary>
+
+  *Kreator animacji* > *Krzywe*: wybierz zoom, współrzędną położenia, kąt
+  obrotu, pole widzenia, Z początkowe, położenie podłoża albo dryf chmur i
+  zobacz go w każdej klatce tak, jak animacja go interpoluje. Klatki kluczowe
+  to kwadraty na swoich klatkach: przeciągnij jeden w górę lub w dół albo
+  kliknij i wpisz wartość. Kwadratowa interpolacja Béziera mija klatki
+  kluczowe, a krzywa pokazuje to, zanim cokolwiek zostanie wyrenderowane.
+
+  </details>
 
 <a id="download"></a>
 

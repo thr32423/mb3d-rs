@@ -435,6 +435,24 @@ MB3D の数式とマップを使い、同じ画像を作ります。
   `N.Z` (面の法線)。詳しくは [TECHNICAL.md](../TECHNICAL.md)。
 
   </details>
+* **魚眼カメラと VR 用の 360° ステレオ** (Mandelbulber のアイデア): 最大 360° の
+  魚眼と、どの方向にも奥行きのある VR ヘッドセット用パノラマ。
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="120 度と 200 度の魚眼で見た水面上のフラクタル: 水平線が曲がります"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="360 度ステレオパノラマ、左目が右目の上"></a>
+
+  <details><summary>詳しく</summary>
+
+  メインウィンドウの *カメラ* ページで *魚眼* (視野 FOVy は最大 360° で画像の
+  高さ全体に広がり、正方形の画像では円形の眺めになります)。ステレオの 360°
+  パノラマでは、光線ごとに見る方向に合わせて回した目の位置を使うので、
+  奥行きが全周で正しくなります: `mb3d -s optic=2 --stereo-pair top-bottom`
+  は両目を書き出し、左目が上です (VR プレーヤーの想定どおり、片目ごとに
+  2:1 の画像)。両目の間隔は 6.5 cm、見ている点はステレオの視距離
+  (`stereo_screen` の 2 番目の値、2 m) の遠さです。Mandelbulb3D には魚眼が
+  ありません: パラメーターの mb3d-rs ブロックが保持します。
+
+  </details>
 
 <a id="download"></a>
 

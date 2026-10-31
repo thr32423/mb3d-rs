@@ -415,6 +415,22 @@ MB3D 當年只能使用處理器。它能開啟 MB3D 的參數檔（`.m3p`、`.m
   距離，碎形單位) 以及 `N.X`、`N.Y`、`N.Z` (表面法線)。詳見 [TECHNICAL.md](../TECHNICAL.md)。
 
   </details>
+* **魚眼相機和用於 VR 的 360° 立體** (來自 Mandelbulber 的構想)：最大 360°
+  的魚眼，以及在各個方向都有深度的 VR 頭戴裝置全景圖。
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="透過 120 度和 200 度魚眼看水面上的碎形：地平線彎曲"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="360 度立體全景，左眼在右眼上方"></a>
+
+  <details><summary>詳細說明</summary>
+
+  主視窗的 *相機* 頁面：*魚眼* (視野 FOVy 最大 360°，涵蓋圖片的高度；正方形
+  圖片顯示圓形視圖)。立體的 360° 全景為每條光線提供自己的眼睛位置，隨其觀看
+  方向旋轉，因此四周的深度都正確：`mb3d -s optic=2 --stereo-pair top-bottom`
+  寫出兩隻眼睛，左眼在上，正如 VR 播放器所期望的 (每隻眼睛一張 2:1 的圖片)。
+  兩眼相距 6.5 公分，所看的點與立體觀看距離 (`stereo_screen` 的第二個值，2
+  公尺) 一樣遠。Mandelbulb3D 沒有魚眼：參數中的 mb3d-rs 區塊會儲存它。
+
+  </details>
 
 <a id="download"></a>
 

@@ -675,6 +675,26 @@ you check further on your own:
   surface normals). Details in [TECHNICAL.md](docs/TECHNICAL.md).
 
   </details>
+* **A fisheye camera and 360° stereo for VR** (ideas from Mandelbulber):
+  a fisheye of up to 360°, and panoramas for VR headsets with depth in
+  every direction.
+
+  <a href="docs/img/fisheye_water.jpg"><img src="docs/img/fisheye_water.jpg" width="640" alt="A fractal on water through the fisheye at 120 and 200 degrees: the horizon curves"></a>
+  <a href="docs/img/vr_panorama.jpg"><img src="docs/img/vr_panorama.jpg" width="300" alt="A 360 degree stereo panorama, the left eye above the right"></a>
+
+  <details><summary>Read more</summary>
+
+  Main window, page *Camera*: *Fisheye* (the field of view, FOVy, up to
+  360°, spans the picture's height; a square picture shows a round view).
+  A 360° panorama with stereo gives each ray its own eye position, turned
+  with the direction it looks in, so the depth is right all around:
+  `mb3d -s optic=2 --stereo-pair top-bottom` writes both eyes, the left one
+  above, as VR players expect (a 2:1 picture per eye). The eyes are 6.5 cm
+  apart, the point looked at as far away as the stereo viewing distance
+  (`stereo_screen`'s second value, 2 m). Mandelbulb3D has no fisheye: the
+  mb3d-rs block of the parameters keeps it.
+
+  </details>
 
 ## Download
 

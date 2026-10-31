@@ -662,6 +662,25 @@ kunt u zelf verder controleren:
   normalen van het oppervlak). Details in [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **Een visoogcamera en 360°-stereo voor VR** (ideeën uit Mandelbulber): een
+  visoog tot 360° en panorama's voor VR-brillen met diepte in elke richting.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="Een fractal op water door het visoog met 120 en 200 graden: de horizon kromt"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="Een stereopanorama van 360 graden, het linkeroog boven het rechter"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  Hoofdvenster, pagina *Camera*: *Visoog* (het gezichtsveld, FOVy, tot 360°,
+  beslaat de hoogte van de afbeelding; een vierkante afbeelding toont een rond
+  beeld). Een 360°-panorama in stereo geeft elke straal een eigen oogpositie,
+  meegedraaid met de richting waarin hij kijkt, zodat de diepte rondom klopt:
+  `mb3d -s optic=2 --stereo-pair top-bottom` schrijft beide ogen, het linker
+  boven, zoals VR-spelers verwachten (een beeld van 2:1 per oog). De ogen staan
+  6,5 cm uit elkaar, het bekeken punt zo ver weg als de stereokijkafstand (de
+  tweede waarde van `stereo_screen`, 2 m). Mandelbulb3D heeft geen visoog: het
+  mb3d-rs-blok van de parameters bewaart het.
+
+  </details>
 
 <a id="download"></a>
 

@@ -609,6 +609,24 @@ GitHub 저장소에서 유해한 소프트웨어의 징후를 검사하는 독�
   `N.X`, `N.Y`, `N.Z` (표면의 법선). 자세한 내용은 [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **어안 카메라와 VR용 360° 스테레오** (Mandelbulber 의 아이디어): 최대 360° 의
+  어안과, 모든 방향으로 깊이가 있는 VR 헤드셋용 파노라마.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="120도와 200도 어안으로 본 물 위의 프랙탈: 수평선이 휩니다"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="360도 스테레오 파노라마, 왼쪽 눈이 오른쪽 눈 위"></a>
+
+  <details><summary>자세히 보기</summary>
+
+  메인 창의 *카메라* 페이지에서 *어안* (시야 FOVy 는 최대 360° 까지 그림의
+  높이에 걸쳐 펼쳐지며, 정사각형 그림은 둥근 시야를 보여 줍니다). 스테레오
+  360° 파노라마는 광선마다 보는 방향에 맞춰 돌린 눈의 위치를 주므로 깊이가
+  사방으로 정확합니다: `mb3d -s optic=2 --stereo-pair top-bottom` 은 두 눈을
+  모두 쓰며 왼쪽 눈이 위입니다 (VR 플레이어가 기대하는 대로, 눈마다 2:1
+  그림). 두 눈은 6.5 cm 떨어져 있고, 보는 점은 스테레오 시청 거리
+  (`stereo_screen` 의 두 번째 값, 2 m) 만큼 멉니다. Mandelbulb3D 에는 어안이
+  없습니다: 매개변수의 mb3d-rs 블록이 이를 보관합니다.
+
+  </details>
 
 <a id="download"></a>
 

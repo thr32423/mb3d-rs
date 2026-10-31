@@ -691,6 +691,26 @@ können Sie selbst weiter prüfen:
   `N.X`, `N.Y`, `N.Z` (die Normalen der Oberfläche). Details in [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **Eine Fischaugen-Kamera und 360°-Stereo für VR** (Ideen aus Mandelbulber):
+  ein Fischauge bis 360° und Panoramen für VR-Brillen mit Tiefe in jeder
+  Richtung.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="Ein Fraktal auf Wasser durch das Fischauge mit 120 und 200 Grad: der Horizont krümmt sich"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="Ein 360-Grad-Stereopanorama, das linke Auge über dem rechten"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Hauptfenster, Seite *Kamera*: *Fischauge* (das Sichtfeld, FOVy, bis 360°,
+  reicht über die Höhe des Bildes; ein quadratisches Bild zeigt eine runde
+  Ansicht). Ein 360°-Panorama mit Stereo gibt jedem Strahl seine eigene
+  Augenposition, gedreht mit der Richtung, in die er schaut, so stimmt die
+  Tiefe ringsum: `mb3d -s optic=2 --stereo-pair top-bottom` schreibt beide
+  Augen, das linke oben, wie VR-Player es erwarten (ein Bild 2:1 je Auge). Die
+  Augen sind 6,5 cm voneinander entfernt, der betrachtete Punkt so weit weg wie
+  der Stereo-Betrachtungsabstand (der zweite Wert von `stereo_screen`, 2 m).
+  Mandelbulb3D hat kein Fischauge: der mb3d-rs-Block der Parameter bewahrt es.
+
+  </details>
 
 <a id="download"></a>
 

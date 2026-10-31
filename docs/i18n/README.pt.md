@@ -702,6 +702,27 @@ pontos permitem que você confira mais por conta própria:
   normais da superfície). Detalhes em [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **Uma câmera olho de peixe e estéreo 360° para RV** (ideias do Mandelbulber):
+  um olho de peixe de até 360° e panoramas para óculos de RV com profundidade
+  em todas as direções.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="Um fractal sobre a água pelo olho de peixe de 120 e 200 graus: o horizonte se curva"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="Um panorama estéreo de 360 graus, o olho esquerdo acima do direito"></a>
+
+  <details><summary>Saiba mais</summary>
+
+  Janela principal, página *Câmera*: *Olho de peixe* (o campo de visão, FOVy,
+  até 360°, cobre a altura da imagem; uma imagem quadrada mostra uma vista
+  redonda). Um panorama de 360° em estéreo dá a cada raio a sua própria posição
+  do olho, girada com a direção para onde ele olha, de modo que a profundidade
+  fica certa em toda a volta: `mb3d -s optic=2 --stereo-pair top-bottom` grava
+  os dois olhos, o esquerdo em cima, como os players de RV esperam (uma imagem
+  2:1 por olho). Os olhos ficam a 6,5 cm um do outro, o ponto olhado tão longe
+  quanto a distância de visão estéreo (o segundo valor de `stereo_screen`,
+  2 m). O Mandelbulb3D não tem olho de peixe: o bloco mb3d-rs dos parâmetros o
+  guarda.
+
+  </details>
 
 <a id="download"></a>
 

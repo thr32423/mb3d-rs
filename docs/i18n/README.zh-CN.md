@@ -414,6 +414,22 @@ mb3d-rs 就是 [Mandelbulb3D](https://github.com/thargor6/mb3d)（MB3D）这款
   距离，分形单位) 以及 `N.X`、`N.Y`、`N.Z` (表面法线)。详见 [TECHNICAL.md](../TECHNICAL.md)。
 
   </details>
+* **鱼眼相机和用于 VR 的 360° 立体** (来自 Mandelbulber 的想法)：最大 360°
+  的鱼眼，以及在各个方向都有深度的 VR 头显全景图。
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="通过 120 度和 200 度鱼眼看水面上的分形：地平线弯曲"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="360 度立体全景，左眼在右眼上方"></a>
+
+  <details><summary>了解更多</summary>
+
+  主窗口的 *相机* 页面：*鱼眼* (视野 FOVy 最大 360°，覆盖图片的高度；正方形
+  图片显示圆形视图)。立体的 360° 全景为每条光线提供自己的眼睛位置，随其观看
+  方向旋转，因此四周的深度都正确：`mb3d -s optic=2 --stereo-pair top-bottom`
+  写出两只眼睛，左眼在上，正如 VR 播放器所期望的 (每只眼睛一张 2:1 的图片)。
+  两眼相距 6.5 厘米，所看的点与立体观看距离 (`stereo_screen` 的第二个值，2
+  米) 一样远。Mandelbulb3D 没有鱼眼：参数中的 mb3d-rs 块会保存它。
+
+  </details>
 
 <a id="download"></a>
 

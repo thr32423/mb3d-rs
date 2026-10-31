@@ -673,6 +673,25 @@ możesz sprawdzić sam:
   fraktala) oraz `N.X`, `N.Y`, `N.Z` (normalne powierzchni). Szczegóły w [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **Kamera rybie oko i stereo 360° dla VR** (pomysły z Mandelbulbera): rybie
+  oko do 360° i panoramy dla gogli VR z głębią w każdym kierunku.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="Fraktal na wodzie przez rybie oko 120 i 200 stopni: horyzont się wygina"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="Panorama stereo 360 stopni, lewe oko nad prawym"></a>
+
+  <details><summary>Więcej</summary>
+
+  Okno główne, strona *Kamera*: *Rybie oko* (pole widzenia, FOVy, do 360°,
+  obejmuje wysokość obrazu; kwadratowy obraz pokazuje okrągły widok). Panorama
+  360° w stereo daje każdemu promieniowi własne położenie oka, obrócone z
+  kierunkiem, w którym patrzy, więc głębia jest poprawna dookoła:
+  `mb3d -s optic=2 --stereo-pair top-bottom` zapisuje oba oczy, lewe na górze,
+  jak oczekują odtwarzacze VR (obraz 2:1 na oko). Oczy są 6,5 cm od siebie, a
+  oglądany punkt tak daleko jak odległość oglądania stereo (druga wartość
+  `stereo_screen`, 2 m). Mandelbulb3D nie ma rybiego oka: blok mb3d-rs
+  parametrów je przechowuje.
+
+  </details>
 
 <a id="download"></a>
 

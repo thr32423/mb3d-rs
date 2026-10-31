@@ -715,6 +715,27 @@ esto puede comprobar más por su cuenta:
   `N.X`, `N.Y`, `N.Z` (las normales de la superficie). Detalles en [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **Una cámara ojo de pez y estéreo 360° para RV** (ideas de Mandelbulber):
+  un ojo de pez de hasta 360° y panoramas para visores de RV con profundidad
+  en todas las direcciones.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="Un fractal sobre el agua a través del ojo de pez a 120 y 200 grados: el horizonte se curva"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="Un panorama estéreo de 360 grados, el ojo izquierdo encima del derecho"></a>
+
+  <details><summary>Más información</summary>
+
+  Ventana principal, página *Cámara*: *Ojo de pez* (el campo de visión, FOVy,
+  hasta 360°, abarca la altura de la imagen; una imagen cuadrada muestra una
+  vista redonda). Un panorama de 360° en estéreo da a cada rayo su propia
+  posición del ojo, girada con la dirección en que mira, así la profundidad es
+  correcta en todo el contorno: `mb3d -s optic=2 --stereo-pair top-bottom`
+  escribe ambos ojos, el izquierdo arriba, como esperan los reproductores de
+  RV (una imagen 2:1 por ojo). Los ojos están a 6,5 cm, el punto mirado tan
+  lejos como la distancia de visión estéreo (el segundo valor de
+  `stereo_screen`, 2 m). Mandelbulb3D no tiene ojo de pez: el bloque mb3d-rs de
+  los parámetros lo guarda.
+
+  </details>
 
 <a id="download"></a>
 

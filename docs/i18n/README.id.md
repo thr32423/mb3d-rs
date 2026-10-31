@@ -703,6 +703,26 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   permukaan). Detail di [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **Kamera mata ikan dan stereo 360° untuk VR** (ide dari Mandelbulber): mata
+  ikan hingga 360° dan panorama untuk headset VR dengan kedalaman ke segala
+  arah.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="Fraktal di atas air melalui mata ikan 120 dan 200 derajat: cakrawala melengkung"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="Panorama stereo 360 derajat, mata kiri di atas mata kanan"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Jendela utama, halaman *Kamera*: *Mata ikan* (bidang pandang, FOVy, hingga
+  360°, mencakup tinggi gambar; gambar persegi menampilkan pandangan bundar).
+  Panorama 360° dengan stereo memberi setiap sinar posisi matanya sendiri,
+  diputar sesuai arah pandangnya, sehingga kedalamannya benar ke segala arah:
+  `mb3d -s optic=2 --stereo-pair top-bottom` menulis kedua mata, kiri di atas,
+  seperti yang diharapkan pemutar VR (gambar 2:1 per mata). Jarak mata 6,5 cm,
+  titik yang dilihat sejauh jarak pandang stereo (nilai kedua `stereo_screen`,
+  2 m). Mandelbulb3D tidak punya mata ikan: blok mb3d-rs di parameter
+  menyimpannya.
+
+  </details>
 
 <a id="download"></a>
 

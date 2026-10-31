@@ -669,6 +669,25 @@ sprawdzëc sóm:
   fraktala) ë `N.X`, `N.Y`, `N.Z` (normalné pòwierzchni). Drobnotë w [TECHNICAL.md](../TECHNICAL.md).
 
   </details>
+* **Kamera rëbié òkò ë stereo 360° dlô VR** (pòmësłë z Mandelbulbera): rëbié
+  òkò do 360° ë panoramë dlô brël VR z głãbizną w kòżdim kierënkù.
+
+  <a href="../img/fisheye_water.jpg"><img src="../img/fisheye_water.jpg" width="640" alt="Fraktal na wòdze przez rëbié òkò 120 ë 200 gradów: horizont sã zgibô"></a>
+  <a href="../img/vr_panorama.jpg"><img src="../img/vr_panorama.jpg" width="300" alt="Panorama stereo 360 gradów, lewé òkò nad prawim"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Przédné òkno, starna *Kamera*: *Rëbié òkò* (pòle widzeniô, FOVy, do 360°,
+  òbjimô wiżawã òbrazu; kwadratowi òbrôz pòkazywô òkrągłi widok). Panorama
+  360° w stereo dôwô kòżdi promie swòjã pòzycjã òka, òbrócóną z kierënkã, w
+  chtërnym zdrzi, tak że głãbizna je pòprawnô wkół:
+  `mb3d -s optic=2 --stereo-pair top-bottom` zapisywô òbadwa òczë, lewé na
+  górze, jak żdają òdgrëwôcze VR (òbrôz 2:1 na òkò). Òczë są 6,5 cm òd se, a
+  òbzéróny pùnkt tak dalek jak òdległosc òbzéraniô stereo (drëgô wôrtnota
+  `stereo_screen`, 2 m). Mandelbulb3D ni mô rëbiégò òka: blok mb3d-rs
+  parametrów gò trzëmô.
+
+  </details>
 
 <a id="download"></a>
 

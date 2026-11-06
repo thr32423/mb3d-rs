@@ -163,6 +163,14 @@ pub struct State {
     pub image_text: bool,
     /// full size image (for saving)
     pub rgb: Option<(std::sync::Arc<Vec<u8>>, usize, usize)>,
+    /// a picture being encoded and written on a background thread, so the
+    /// interface stays live (MB3D's save never blocked it).  The thread
+    /// drops its result (the "Saved …" message, or an error) into
+    /// [`State::save_slot`] and wakes the event loop; [`idle`] shows it.
+    pub saving: bool,
+    pub save_slot: std::sync::Arc<std::sync::Mutex<Option<Result<String, String>>>>,
+    /// the file a finished save takes the window's name from
+    pub save_after: Option<std::path::PathBuf>,
     /// the parameter file History keeps of the running calculation: its
     /// thumbnail is written beside it when the calculation ends
     pub history_file: Option<std::path::PathBuf>,
@@ -276,6 +284,9 @@ impl Default for State {
             waker_set: false,
             image_text: false,
             rgb: None,
+            saving: false,
+            save_slot: Default::default(),
+            save_after: None,
             history_file: None,
             last_history: Instant::now(),
             sticky: [1, 1, 1],
@@ -1148,6 +1159,11 @@ fn store_undo(app: &mut Mb3d) {
 
 /// `CalcMand`: starts the calculation (3D or the 2D slice of `slice_calc`).
 pub fn calc_mand(app: &mut Mb3d, ui: &mut Ui, calc3d: bool) {
+    // not while a picture is being written (the g-buffer it reads must not
+    // change under it); the save buttons are greyed then too
+    if app.main.saving {
+        return;
+    }
     // a new calculation: only the automatic post processings
     app.post.new_calc();
     app.make_scene(ui);
@@ -1912,6 +1928,10 @@ fn stage_ended(app: &mut Mb3d, stage: &str, secs: f64, base: f64, next: Option<&
 
 /// Polls the engine (MB3D's Timer4 / WM_ThreadReady).
 pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
+    // a background save that finished: its message and the buttons back
+    if app.main.saving {
+        save_done(app, ui);
+    }
     let (ver, finished, running, stage, base, kept, err, stats, cancelled) = {
         let o = app.eng.0.out.lock().unwrap();
         (o.ver, o.finished, o.running, o.stage.clone(), o.stage_base, o.kept_secs, o.error.clone(), o.stats, o.cancelled)
@@ -3285,29 +3305,99 @@ fn saved_image(app: &Mb3d) -> Option<(Vec<u8>, usize, usize)> {
     Some(if s > 1 { crate::render::downsample(&rgb, w, h, s) } else { ((*rgb).clone(), w, h) })
 }
 
-fn save_image(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) -> bool {
-    let Some((rgb, w, h)) = saved_image(app) else { return false };
+/// The "text parameters in the picture" comment (`SavePNG`): the scene as
+/// MB3D text, when the box is ticked.  Read on the interface's thread, so
+/// the background save does not touch the forms.
+fn png_comment(app: &Mb3d, ui: &Ui) -> Option<String> {
+    if !ui.checked(F, "CheckBox13") {
+        return None;
+    }
+    let sc = app.eng.base().map(|b| b.scene.clone()).unwrap_or_else(|| app.scene.clone());
+    Some(crate::m3p::raw_to_text(&crate::m3p::write(&sc), ui.f(F).caption()))
+}
+
+/// Produces the bytes of the picture file (run on the background thread).
+type SaveEnc = Box<dyn FnOnce() -> Result<Vec<u8>, String> + Send>;
+
+/// The buttons that start a calculation or another save, greyed while a
+/// save runs so a second one cannot begin before it ends.
+const SAVE_LOCK: [&str; 6] = ["Button2", "Button3", "Button1", "Button6", "Button5", "StereoPairSaveButton"];
+
+/// Encodes and writes the picture on a background thread, so the interface
+/// stays live while it is written — MB3D's save did not block it, and a
+/// 16 bit or OpenEXR save of a big picture takes seconds.  The thread drops
+/// the "Saved …" message (`ok`), or the error, into [`State::save_slot`] and
+/// wakes the event loop; [`save_done`] (from [`idle`]) then shows it.
+fn spawn_save(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path, ok: String, enc: SaveEnc) {
+    if app.main.saving {
+        return;
+    }
+    let slot = app.main.save_slot.clone();
+    let waker = ui.waker();
+    let p = path.to_path_buf();
+    app.main.saving = true;
+    app.main.save_after = Some(p.clone());
+    for b in SAVE_LOCK {
+        ui.set_enabled(F, b, false);
+    }
+    ui.cm(F, "Image1").cursor = "crHourGlass".into();
+    app.message(ui, &format!("{} {}", tr("@MB:Saving"), p.display()));
+    std::thread::spawn(move || {
+        let res = enc().and_then(|data| std::fs::write(&p, data).map_err(|e| format!("{}: {e}", p.display())));
+        *slot.lock().unwrap() = Some(res.map(|()| ok));
+        if let Some(w) = waker {
+            w.wake();
+        }
+    });
+}
+
+/// A background save finished (its result is waiting in [`State::save_slot`]):
+/// its message, the buttons back, the window named after the file as a
+/// foreground save did (`SetSaveDialogNames`).  A no-op until it is done.
+pub fn save_done(app: &mut Mb3d, ui: &mut Ui) {
+    let Some(res) = app.main.save_slot.lock().unwrap().take() else { return };
+    app.main.saving = false;
+    for b in SAVE_LOCK {
+        ui.set_enabled(F, b, true);
+    }
+    set_image_cursor(app, ui);
+    let path = app.main.save_after.take();
+    match res {
+        Ok(m) => {
+            app.message(ui, &m);
+            if let Some(p) = path {
+                set_save_names(app, ui, &p);
+            }
+        }
+        Err(e) => app.message(ui, &e),
+    }
+}
+
+fn save_image(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
+    let Some((rgb, w, h)) = saved_image(app) else { return };
     let ext = path.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).unwrap_or_default();
-    let res: Result<(), String> = match ext.as_str() {
+    let ok = trf("@MB:Saved2", &[&path.display()]);
+    let enc: SaveEnc = match ext.as_str() {
         "jpg" | "jpeg" => {
             let q = pti(&t(ui, "Edit26")).clamp(1, 100) as u8;
             // a spherical panorama: a 360 photo (Photo Sphere XMP)
             let sc = app.eng.base().map(|b| b.scene.clone()).unwrap_or_else(|| app.scene.clone());
-            std::fs::write(path, crate::vr::encode_jpeg_for(&sc, w, h, &rgb, q)).map_err(|e| e.to_string())
+            Box::new(move || Ok(crate::vr::encode_jpeg_for(&sc, w, h, &rgb, q)))
         }
-        "bmp" => std::fs::write(path, crate::frames::encode_bmp(w, h, &rgb)).map_err(|e| e.to_string()),
+        "bmp" => Box::new(move || Ok(crate::frames::encode_bmp(w, h, &rgb))),
         _ => {
             // "png par": the text parameters as the PNG comment (SavePNG)
-            let mut data = crate::png::encode_rgb(w, h, &rgb);
-            if ui.checked(F, "CheckBox13") {
-                let sc = app.eng.base().map(|b| b.scene.clone()).unwrap_or_else(|| app.scene.clone());
-                let text = crate::m3p::raw_to_text(&crate::m3p::write(&sc), ui.f(F).caption());
-                data = crate::png::with_text(data, "Comment", &text);
-            }
-            std::fs::write(path, data).map_err(|e| e.to_string())
+            let text = png_comment(app, ui);
+            Box::new(move || {
+                let mut data = crate::png::encode_rgb(w, h, &rgb);
+                if let Some(t) = text {
+                    data = crate::png::with_text(data, "Comment", &t);
+                }
+                Ok(data)
+            })
         }
     };
-    saved(app, ui, res.map(|()| trf("@MB:Saved2", &[&path.display()])), path)
+    spawn_save(app, ui, path, ok, enc);
 }
 
 /// The message of a file saved (true) or not.
@@ -3327,57 +3417,66 @@ fn saved(app: &Mb3d, ui: &mut Ui, res: Result<String, String>, path: &std::path:
 /// "PNG 16 bit colour": the picture painted again from the kept G-buffer
 /// with the colours as calculated (before the rounding to 8 bit), reduced
 /// by the viewing scale as the 8 bit picture.
-fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) -> bool {
+fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
     let Some(b) = app.eng.base() else {
         app.message(ui, &tr("@MB:CalculateTheImageFirst"));
-        return false;
+        return;
     };
-    let rgb = crate::render::paint16(&b.scene, &b.params, &b.post);
     let s = app.main.image_scale.max(1) as usize;
-    let (rgb, w, h) = if s > 1 { crate::render::downsample(&rgb, b.w, b.h, s) } else { (rgb, b.w, b.h) };
-    let mut data = crate::png::encode_rgb16(w, h, &rgb);
-    if ui.checked(F, "CheckBox13") {
-        let text = crate::m3p::raw_to_text(&crate::m3p::write(&b.scene), ui.f(F).caption());
-        data = crate::png::with_text(data, "Comment", &text);
-    }
-    let res = std::fs::write(path, data).map(|()| trf("@MB:Saved16BitColour", &[&path.display()])).map_err(|e| e.to_string());
-    saved(app, ui, res, path)
+    let text = png_comment(app, ui);
+    let ok = trf("@MB:Saved16BitColour", &[&path.display()]);
+    let enc: SaveEnc = Box::new(move || {
+        let rgb = crate::render::paint16(&b.scene, &b.params, &b.post);
+        let (rgb, w, h) = if s > 1 { crate::render::downsample(&rgb, b.w, b.h, s) } else { (rgb, b.w, b.h) };
+        let mut data = crate::png::encode_rgb16(w, h, &rgb);
+        if let Some(t) = text {
+            data = crate::png::with_text(data, "Comment", &t);
+        }
+        Ok(data)
+    });
+    spawn_save(app, ui, path, ok, enc);
 }
 
 /// "OpenEXR": the colours in floating point (not clipped above white) with
 /// the opacity, depth and normal layers ([`crate::exr`]), reduced by the
 /// viewing scale.
-fn save_exr(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) -> bool {
+fn save_exr(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
     let Some(b) = app.eng.base() else {
         app.message(ui, &tr("@MB:CalculateTheImageFirst"));
-        return false;
+        return;
     };
     let s = app.main.image_scale.max(1) as usize;
-    let l = crate::exr::layers(&b.scene, &b.params, &b.post, b.w, b.h, s);
-    let res = std::fs::write(path, crate::exr::encode(&l)).map(|()| trf("@MB:SavedOpenEXRFloatingPointColoursAnd", &[&path.display()])).map_err(|e| e.to_string());
-    saved(app, ui, res, path)
+    let ok = trf("@MB:SavedOpenEXRFloatingPointColoursAnd", &[&path.display()]);
+    let enc: SaveEnc = Box::new(move || {
+        let l = crate::exr::layers(&b.scene, &b.params, &b.post, b.w, b.h, s);
+        Ok(crate::exr::encode(&l))
+    });
+    spawn_save(app, ui, path, ok, enc);
 }
 
 /// "PNG transparent background": the shown picture as RGBA, the background
 /// transparent ([`crate::frames::rgba_of`]), reduced by the viewing scale.
-fn save_transparent(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) -> bool {
+fn save_transparent(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
     let (Some((rgb, w, h)), Some(b)) = (app.main.rgb.clone(), app.eng.base()) else {
         app.message(ui, &tr("@MB:CalculateTheImageFirst"));
-        return false;
+        return;
     };
     if b.post.len() != w * h {
         app.message(ui, &tr("@MB:ThePictureDoesNotMatchIts"));
-        return false;
+        return;
     }
     let s = app.main.image_scale.max(1) as usize;
-    let (rgba, ow, oh) = crate::frames::rgba_of(&rgb, &b.post, w, h, s);
-    let mut data = crate::png::encode_rgba(ow, oh, &rgba);
-    if ui.checked(F, "CheckBox13") {
-        let text = crate::m3p::raw_to_text(&crate::m3p::write(&b.scene), ui.f(F).caption());
-        data = crate::png::with_text(data, "Comment", &text);
-    }
-    let res = std::fs::write(path, data).map(|()| trf("@MB:SavedTransparentBackground", &[&path.display()])).map_err(|e| e.to_string());
-    saved(app, ui, res, path)
+    let text = png_comment(app, ui);
+    let ok = trf("@MB:SavedTransparentBackground", &[&path.display()]);
+    let enc: SaveEnc = Box::new(move || {
+        let (rgba, ow, oh) = crate::frames::rgba_of(&rgb, &b.post, w, h, s);
+        let mut data = crate::png::encode_rgba(ow, oh, &rgba);
+        if let Some(t) = text {
+            data = crate::png::with_text(data, "Comment", &t);
+        }
+        Ok(data)
+    });
+    spawn_save(app, ui, path, ok, enc);
 }
 
 /// "Save Z-buffer" (`SaveZBuf`, FileHandling.pas:1331): `kind` 1 a Windows
@@ -3610,8 +3709,11 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             if what == "savepng" {
                 store_png_type(app, ui.filter_index);
             }
+            // the picture is written on a background thread; the window
+            // takes its name when it is done (SetSaveDialogNames,
+            // Mand.pas:3787, in save_done)
             let png = p.extension().is_some_and(|e| e.eq_ignore_ascii_case("png"));
-            let ok = if p.extension().is_some_and(|e| e.eq_ignore_ascii_case("exr")) {
+            if p.extension().is_some_and(|e| e.eq_ignore_ascii_case("exr")) {
                 save_exr(app, ui, p)
             } else if what == "savepng" && ui.filter_index == 2 && png {
                 save_image16(app, ui, p)
@@ -3619,19 +3721,15 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
                 save_transparent(app, ui, p)
             } else {
                 save_image(app, ui, p)
-            };
-            // the window takes the picture's name (SetSaveDialogNames, Mand.pas:3787)
-            if ok {
-                set_save_names(app, ui, p);
             }
         }
         ("savejpgp", DialogResult::File(Some(p))) => {
             dlg_used(app, what, p);
             app.make_scene(ui);
             let _ = std::fs::write(p.with_extension("m3p"), crate::m3p::write(&app.scene));
-            if save_image(app, ui, p) {
-                set_save_names(app, ui, p);
-            }
+            // (the picture follows on a background thread; the window takes
+            // its name when it is done, in save_done)
+            save_image(app, ui, p);
         }
         ("savezbuf", DialogResult::File(Some(p))) => {
             dlg_used(app, what, p);

@@ -88,6 +88,12 @@
   </recommends>
 
   <releases>
+    <release version="0.3.2" date="2026-11-06">
+      <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.2</url>
+      <description>
+        <p>Saving a picture no longer freezes the window. The picture file is now written on a background thread: a 16 bit colour or OpenEXR save of a big picture takes a few seconds, and the window stays live while it is written, showing "Saving" until the file is done, as the original Mandelbulb3D did.</p>
+      </description>
+    </release>
     <release version="0.3.1" date="2026-11-05">
       <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.1</url>
       <description>

@@ -5,6 +5,14 @@ Every release of mb3d-rs, newest first, with the time it was published
 description and code; the downloads of a release are on its page. Back to
 the [README](../README.md).
 
+## [v0.3.3](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.3) · 7 Nov 2026, 16:03 UTC
+
+| Commit | What it does |
+|---|---|
+| [`7f9f78d`](https://github.com/thr32423/mb3d-rs/commit/7f9f78d87161becb0c8b32277f523dc97fccdadc) | Version number and release notes of this release |
+| [`5b98668`](https://github.com/thr32423/mb3d-rs/commit/5b98668d0c22e06eeb04ed2a21b367fe0da0637d) | Both parts of a DE combination run through compiled loops: the machine keeps one loop per slot range and the iteration takes the one of the range it is switched to, so part 2 no longer calls its formulas one by one (the dIFS loop the same); the timing that decides whether a loop is kept runs the whole distance estimate for a DE combination (the iteration alone never ran part 2). Two objects side by side render up to 27 % faster on the CPU (the example files DEcomb1 14 %, julia on box 21 %, ExcludeBulbMeng 6 %), the pictures the same to the bit (80 example files, tools/jit_check.sh, and the 11 DE combinations against v0.3.2); a test renders a two-object scene through both loops against the formulas called one by one. README (17 languages) and TECHNICAL.md |
+| [`767c6ad`](https://github.com/thr32423/mb3d-rs/commit/767c6ad5212555522f2acb5e505f40a9925e1429) | README: Updates for v0.3.2 |
+
 ## [v0.3.2](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.2) · 6 Nov 2026, 19:55 UTC
 
 | Commit | What it does |

@@ -7,7 +7,7 @@
 <!-- languages:end -->
 
 <!-- latest:start -->
-**Latest release: [v0.3.2](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.2)** (6 Nov 2026, 19:55 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
+**Latest release: [v0.3.3](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.3)** (7 Nov 2026, 16:03 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
 <!-- latest:end -->
 
 mb3d-rs is [Mandelbulb3D](https://github.com/thargor6/mb3d) (MB3D), the
@@ -1454,6 +1454,14 @@ Each commit links to its full description and code on GitHub; the downloads
 of a release are on its page. Times are in UTC.
 
 <!-- updates:start -->
+### [v0.3.3](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.3) · 7 Nov 2026, 16:03 UTC
+
+| Commit | What it does |
+|---|---|
+| [`7f9f78d`](https://github.com/thr32423/mb3d-rs/commit/7f9f78d87161becb0c8b32277f523dc97fccdadc) | Version number and release notes of this release |
+| [`5b98668`](https://github.com/thr32423/mb3d-rs/commit/5b98668d0c22e06eeb04ed2a21b367fe0da0637d) | Both parts of a DE combination run through compiled loops: the machine keeps one loop per slot range and the iteration takes the one of the range it is switched to, so part 2 no longer calls its formulas one by one (the dIFS loop the same); the timing that decides whether a loop is kept runs the whole distance estimate for a DE combination (the iteration alone never ran part 2). Two objects side by side render up to 27 % faster on the CPU (the example files DEcomb1 14 %, julia on box 21 %, ExcludeBulbMeng 6 %), the pictures the same to the bit (80 example files, tools/jit_check.sh, and the 11 DE combinations against v0.3.2); a test renders a two-object scene through both loops against the formulas called one by one. README (17 languages) and TECHNICAL.md |
+| [`767c6ad`](https://github.com/thr32423/mb3d-rs/commit/767c6ad5212555522f2acb5e505f40a9925e1429) | README: Updates for v0.3.2 |
+
 ### [v0.3.2](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.2) · 6 Nov 2026, 19:55 UTC
 
 | Commit | What it does |
@@ -1481,23 +1489,7 @@ of a release are on its page. Times are in UTC.
 | [`ad677c9`](https://github.com/thr32423/mb3d-rs/commit/ad677c96780ed3f723288f9697d693341b5bb58b) | 360 videos: Spherical Video V1 metadata as well as V2 |
 | [`0f15c52`](https://github.com/thr32423/mb3d-rs/commit/0f15c52339e20c0c945bbe39164ebc16a2fc874d) | Animation templates (360 degree orbit around any axis, fly-through), 360 degree photos, 360 degree VR animations mono and stereo |
 
-### [v0.2.100](https://github.com/thr32423/mb3d-rs/releases/tag/v0.2.100) · 5 Nov 2026, 13:32 UTC
-
-| Commit | What it does |
-|---|---|
-| [`3be6271`](https://github.com/thr32423/mb3d-rs/commit/3be62714775187a31307c4822472d7d48e3aaeeb) | Version number and release notes of this release |
-| [`f92c32e`](https://github.com/thr32423/mb3d-rs/commit/f92c32e21fa7acb7ba91f9ca855aa29a1d277634) | docs/WATER_EXAMPLES.md: a fourth scene, sunset at sea: a calm mirror sea under the evening sun with clouds to the horizon, the sun's path of light on the waves and a Mandelbulb in the water lit softly from the front; picture, settings and the parameters for From Clipboard |
-| [`f208049`](https://github.com/thr32423/mb3d-rs/commit/f208049507d4f1e6a6f960cfb22ed93cd93b110d) | Doc pictures: the cloud and water scenes rendered again (water layer, waves along the wind, clouds to the horizon) |
-| [`20a540a`](https://github.com/thr32423/mb3d-rs/commit/20a540a42ea53f68daa2046ec18ece21a6ea098f) | The sea meets the sky at the horizon: water beyond the end of the march (traced to the horizon, its depth past what the G-buffer holds) has the clouds in front of it as far as the open air's (above the clouds the sea showed through them in a blue band) and its mirror rays start at the exact point (blocks); the clouds far away fade into the sky's colour evenly (a cloud far away hides as much, its light is the sky's) where they thinned out within one row of pixels over the horizon and left a dark line of the background; a reflected ray into the open air sees clouds as far beyond its point as the camera's view; a grazing mirror ray off the water that a wave tilts downwards goes up off the next wave |
-| [`abc86b7`](https://github.com/thr32423/mb3d-rs/commit/abc86b7df8e26e019597628cc275430c5c9a7ac0) | Waves along the wind, clouds to the horizon, no line at the horizon of a camera over open water: the 16 waves' directions keep within a narrow spread to both sides of the wind (8 degrees for the longest to 30 for the shortest; some crossed it at up to 90 degrees to one side and made a pattern of diamonds, waves coming from left and right), lengths, heights and phases as before; the cloud layer reaches the horizon (a view ray that hits nothing looks 20 times the old distance into it) and fades into the haze with the distance (its density over 1 + (t / the old distance)^2), where it ended a little above the horizon with a hard edge and a clear strip under it (the clouds' shadows on surfaces keep the old reach); a ray rising from the water counts as leaving it within twice the march's stop distance there too (far away the march stops that high above the waves: a black line at the horizon). CLOUDS_WATER.md |
-| [`44bb585`](https://github.com/thr32423/mb3d-rs/commit/44bb585bc4f567390b170f6de83ac23c7222022b) | The water's mirror rays on the card too, and the Monte Carlo horizon: a ray rising from the water (water_layer::leaves_water) leaves the ground plane out on the CPU and on the card (a flag per task: the reflection tasks' word 23 bit 16, the Monte Carlo tasks' flags bit 5; ground_on() is off for it), so the water pixels' reflections go to the card again; Monte Carlo puts a primary ray's water hit where the trace from the eye meets the water, with its normal there (far away its march stopped above the waves and its mirror ray ended on them: a dark line at the horizon) |
-| [`a313d5d`](https://github.com/thr32423/mb3d-rs/commit/a313d5df16bd33dac543af4ce60ba83fb7a1b4f2) | Monte Carlo: the water between the eye and the start plane: a primary ray that meets the water in front of the start plane, or starts closer to it than the march's stop distance, starts a little above it (clear by the waves' distance estimate), where its march meets it, instead of a flat cut surface (a bright band across the bottom with a camera low over the water, and a line at its edge); a primary ray that the trace from the eye finds meeting no water takes a water hit of its march (far away, above the waves) for the open air. The trace of the water for any ray of the camera is calc::water_hit_ray; it tries its limit as its last point (a step past it left the water just before it unseen) |
-| [`1015838`](https://github.com/thr32423/mb3d-rs/commit/1015838a2d233dc39f84bdab0e00fa4bea84db2c) | The water as a ray tracer sees it (water_layer): the fractal is marched as in MB3D, the water of the ground plane is traced from the eye. MB3D's rays start on the start plane, in front of the eye: with the camera low over the water, the water between the eye and that plane was a cut surface without reflections (a dark band across the bottom), the march stopped above the waves far away (its stop distance grows) and left a dark line between the water and the sky, and a seam between the two. After the march (CPU or card) each pixel's ray is followed from the eye to the analytic surface of the waves (sphere tracing, a jump to the crests' height, bisection); where that lies in front of what the march found the pixel is water (its normal and depth where the march would have stopped), where the march found water the ray does not meet it is sky. The reflection pass starts the water in front of the start plane at the exact point (with the fractal's shadows there), and a ray rising from the water is not stopped by it again (it still meets the fractal), as a ray tracer's mirror ray; the water's rays are marched on the CPU. Transparent water, absorption, scattering, light shafts, the fractal's shadows and its mirror image work as before (tests/water.rs); scenes without water are unchanged; the lagoon and golden-hour examples differ by under 1 %, the lagoon 5 % slower. MB3D_NO_WATER_LAYER=1 switches it off; test |
-| [`b0d3330`](https://github.com/thr32423/mb3d-rs/commit/b0d33305b7d8c348f4f198ef0985836532889167) | Pascal formulas: SinCos gives the same bits compiled and in the closures on macOS too: the closures called f64::sin_cos, which LLVM turns into one __sincos_stret call on macOS whose sine can differ from sin alone in the last bit, while the compiled code called sin and cos; both now call one shared function jit::sin_cos (not inlined), the compiled code through two helpers (the CI test on the Apple Silicon runner failed on JITRealPowermy's z by one bit) |
-| [`b235df5`](https://github.com/thr32423/mb3d-rs/commit/b235df5703556a615db2b089b0cd45e9f45da397) | README: Updates for v0.2.99 |
-| [`61ad74f`](https://github.com/thr32423/mb3d-rs/commit/61ad74f6bd0562b3ef0047092d4838831dd6e3c4) | The shader checks of the tests do not ask the card about doubles at all: the macOS runner has a card (Metal) without doubles, so the double precision shaders of shaders_validate_without_a_card were refused there; scene_shader keeps the check (make_scene_shader builds the shader, the test calls it) |
-
-All 113 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
+All 114 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
 <!-- updates:end -->
 
 ## For developers

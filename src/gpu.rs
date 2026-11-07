@@ -1201,17 +1201,25 @@ fn compiling_any() -> bool {
     PREPARING.lock().map(|l| !l.is_empty()).unwrap_or(false)
 }
 
-/// Waits until no shader is being compiled any more (at most `max`).  The
-/// command line program calls it before it ends: a compile its CPU threads
-/// overtook would die with the process and never reach the driver's cache,
-/// so the next run of the same scene would be just as cold.
-pub fn wait_compiles(max: std::time::Duration) {
+/// Waits until no shader is being compiled any more (at most `max`, None:
+/// as long as it takes).  The command line program calls it before it
+/// ends: a compile its CPU threads overtook would die with the process and
+/// never reach the driver's cache, so the next run of the same scene would
+/// be just as cold.  (A limit of 120 s once cut off the scenes whose
+/// compile takes about that long, Abominog-Ua's 115-120 s on a GTX 1650:
+/// every run of them compiled again and none was ever cached.)
+pub fn wait_compiles(max: Option<std::time::Duration>) {
     let t = std::time::Instant::now();
-    let mut said = false;
-    while compiling_any() && t.elapsed() < max {
-        if !said {
-            crate::elog!("  (waiting for the graphics card's shader compile, kept for the next time)");
-            said = true;
+    let mut said = 0u64;
+    while compiling_any() && max.is_none_or(|m| t.elapsed() < m) {
+        let secs = t.elapsed().as_secs();
+        if said == 0 || secs >= said + 30 {
+            if said == 0 {
+                crate::elog!("  (waiting for the graphics card's shader compile, kept for the next time)");
+            } else {
+                crate::elog!("  (still compiling after {secs} s; MB3D_COMPILE_WAIT_SECS=0 ends the program without waiting)");
+            }
+            said = secs.max(1);
         }
         std::thread::sleep(std::time::Duration::from_millis(50));
     }

@@ -112,9 +112,10 @@ fn main() -> ExitCode {
     mb3d::log::session_start("mb3d");
     let r = run();
     // a shader still compiling in the background is finished and cached
-    // before the program ends (see gpu::wait_compiles)
+    // before the program ends, however long it takes (see
+    // gpu::wait_compiles); MB3D_COMPILE_WAIT_SECS limits the wait
     #[cfg(feature = "gpu")]
-    mb3d::gpu::wait_compiles(std::time::Duration::from_secs(120));
+    mb3d::gpu::wait_compiles(std::env::var("MB3D_COMPILE_WAIT_SECS").ok().and_then(|v| v.trim().parse().ok()).map(std::time::Duration::from_secs));
     match r {
         Ok(()) => {
             mb3d::log::end("the run ended");

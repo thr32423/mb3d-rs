@@ -146,8 +146,9 @@ struct Resumer {
 /// (another scene starts with a new one: its turns may take much longer).
 static REFLECT_RESUMER: std::sync::Mutex<Vec<(usize, u64, Resumer)>> = std::sync::Mutex::new(Vec::new());
 
-/// Slots at most (about 1.3 KB of state each).
-const RESUME_SLOTS: usize = 1 << 15;
+/// Slots at most (about 1.3 KB of state each): the rays a card marches at
+/// once.
+pub const RESUME_SLOTS: usize = 1 << 15;
 
 /// The words of the marcher's state (`STATE_FIXED` in the shader).
 fn state_fixed() -> u32 {

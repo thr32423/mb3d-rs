@@ -2537,14 +2537,19 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
         } else {
             // the CPU starts with a few pieces per thread from the end
             let n = all.len();
-            // (the first round, no rate known yet: half the rays are kept
-            // from the card, so that the threads do not wait on it when it
-            // is the slower side; the card gets what they do not reach.
-            // Measured at a quarter size: ImpossibleWorld dIFS's first
-            // round held 68 % of the rays on the card at a third of the
-            // threads' rate, the threads idle; MB3D_REFLECT_CPU_PRIOR sets
-            // another share)
-            let prior: f64 = std::env::var("MB3D_REFLECT_CPU_PRIOR").ok().and_then(|v| v.parse().ok()).unwrap_or(0.5);
+            // (the first round, no rate known yet, when it is only a few
+            // slot-fulls of the card: half the rays are kept from the card,
+            // whose first claim of a slot-full is then a large part of the
+            // round, so that the threads do not wait on it when it is the
+            // slower side; the card gets what they do not reach.  Measured
+            // with ImpossibleWorld dIFS: at a quarter size (100k rays, three
+            // slot-fulls) the first round held 68 % of the rays on the card
+            // at a third of the threads' rate, the threads idle, and the
+            // share took the stage from 23.1 s to 17.5 s; at half size (400k
+            // rays) the rounds shared well by themselves and the share cost
+            // 7 %.  MB3D_REFLECT_CPU_PRIOR sets another share, 0 none)
+            let few = n < 4 * crate::gpu::RESUME_SLOTS;
+            let prior: f64 = std::env::var("MB3D_REFLECT_CPU_PRIOR").ok().and_then(|v| v.parse().ok()).unwrap_or(if few { 0.5 } else { 0.0 });
             let cap = cpu_part[round % 2].or(cpu_part[(round + 1) % 2]).or(Some(prior)).map_or(usize::MAX, |c| n - (n as f64 * c) as usize);
             let sh = crate::gpu::RaySharing { state: std::sync::Mutex::new((0, n)), done: std::sync::Arc::new(false.into()), tail: threads * 2, cap };
             busy_ns.store(0, std::sync::atomic::Ordering::Relaxed);
@@ -2593,7 +2598,8 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
         // (one round with the threads at three times the card's rate is a
         // clear enough sign: ImpossibleWorld dIFS at a quarter size, 73 %
         // after the first round, took 21.7 s against 14.8 s on the CPU alone)
-        if cpu_part.iter().all(|c| c.is_some_and(|c| c >= cpu_finish)) || cpu_part.iter().any(|c| c.is_some_and(|c| c >= CPU_FINISH_ONE)) {
+        let finish_one: f64 = std::env::var("MB3D_REFLECT_CPU_FINISH_ONE").ok().and_then(|v| v.parse().ok()).unwrap_or(CPU_FINISH_ONE);
+        if cpu_part.iter().all(|c| c.is_some_and(|c| c >= cpu_finish)) || cpu_part.iter().any(|c| c.is_some_and(|c| c >= finish_one)) {
             cpu_rest = true;
         }
         let n_cpu_done = all.len() - n_gpu;

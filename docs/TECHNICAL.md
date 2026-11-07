@@ -81,7 +81,19 @@ refracted and a reflected ray, marched in rounds over all pixels;
 cutting planes end the rays on the card, and deep zooms keep their
 positions in double precision. The CPU takes rays from the other end of
 each round and finishes the last few long ones the card would wait on
-(`MB3D_REFLECT_CPU_SHARE=0` leaves them all to the card); scenes with
+(`MB3D_REFLECT_CPU_SHARE=0` leaves them all to the card). A first round
+of only a few slot-fulls of the card (under four times its 32768 slots),
+before any rate is measured, keeps half the rays for the CPU threads
+(`MB3D_REFLECT_CPU_PRIOR` sets the share): the card's first claim of a
+slot-full was a third of such a round, the card held up to two thirds
+of the rays and the threads waited on it when it was the slower side;
+bigger rounds share well by the rates alone. The later rounds share by
+the rates measured, and one round with the threads at three times the
+card's rate sends the rest to the CPU (`MB3D_REFLECT_CPU_FINISH_ONE`).
+Measured against v0.3.3 (reflection stage, best of two): at a quarter
+size ImpossibleWorld dIFS 22.9 s → 17.6 s, ApolloBalloons 2.68 → 2.10,
+Melting spot bloxx 1.06 → 0.66, Hal-Tenny at half size 3.21 → 2.50; at
+half and three-quarter sizes otherwise the same within 1 %. Scenes with
 volumetric light keep the CPU pass. The painting stays on
 the CPU. The marcher calculates in single precision. The formulas reach it through the lifter: the x86 code
 of an `.m3f` formula is analysed (`src/x86/lift.rs`: every memory access
@@ -186,9 +198,13 @@ tenth). `MB3D_GPU_MIXED=0` keeps the card in double precision. Monte
 Carlo renders use the probe too (in double precision, as before) when
 the scene's march is compiled. `MB3D_GPU_NOPROBE=1` turns the probe off
 and `MB3D_PROBE_DEBUG=1` prints its result. The command line program waits for a shader still
-compiling before it ends (`gpu::wait_compiles`): a compile the CPU
-threads had overtaken used to die with the process and never reach the
-driver's cache, so a short scene's next run was just as cold.
+compiling before it ends (`gpu::wait_compiles`), as long as it takes
+(`MB3D_COMPILE_WAIT_SECS` limits the wait): a compile the CPU threads had
+overtaken used to die with the process and never reach the driver's
+cache, so a short scene's next run was just as cold; a limit of 120 s on
+the wait then cut off the scenes whose compile takes about that long
+(Abominog-Ua: 115 to 135 s a pipeline on an RTX 2060), so every run of
+them compiled again.
 `mb3d` prints which was used and why; errors of the graphics card or its
 driver also send the calculation to the CPU, and software renderers
 (llvmpipe, WARP) are not used. The first calculation of a scene compiles

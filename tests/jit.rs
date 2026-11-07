@@ -266,11 +266,11 @@ fn the_compiled_hybrid_loop_with_pascal_formulas_gives_the_formulas_results() {
         let mut fused = plain.clone();
         let mut m = plain.machine.clone().unwrap_or_else(|| mb3d::custom::build_machine(&[]));
         let h = mb3d::x86::clif_jit::compile_hybrid(&m, &fused.slots, 0, fused.end_to, fused.repeat_from, false).unwrap_or_else(|| panic!("{hybrid:?}: not compiled"));
-        m.jit = Some(std::sync::Arc::new(h));
+        m.jits.push(std::sync::Arc::new(h));
         fused.machine = Some(m);
         let mut plain = plain;
         if let Some(mm) = plain.machine.as_mut() {
-            mm.jit = None;
+            mm.jits.clear();
         }
         let (mut a, mut b) = (mb3d::calc::Marcher::new(&fused, 1), mb3d::calc::Marcher::new(&plain, 1));
         let same = |x: f64, y: f64| x.to_bits() == y.to_bits() || (x.is_nan() && y.is_nan());

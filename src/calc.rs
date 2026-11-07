@@ -875,9 +875,10 @@ impl CalcParams {
         Ok(p)
     }
 
-    /// The alternating hybrid compiled at run time (`clif_jit`), if it is
-    /// faster than the formulas called one by one (timed once per hybrid on
-    /// points of three rays of the view; the result is kept with the
+    /// The hybrid loops compiled at run time (`clif_jit`): the whole
+    /// hybrid, or both parts of a DE combination, each kept if it is
+    /// faster than the formulas called one by one (timed once per hybrid
+    /// on points of three rays of the view; the result is kept with the
     /// compiled code, see `clif_jit::cached`).  `MB3D_JIT=force`: without
     /// the timing.
     #[cfg(jit)]
@@ -886,37 +887,62 @@ impl CalcParams {
         if !clif_jit::enabled() {
             return;
         }
-        if self.difs {
-            // the dIFS loop
-            let Some(m) = self.machine.as_ref() else { return };
-            let key = clif_jit::hybrid_key(m, &self.slots, 0, self.end_to, self.repeat_from, false) ^ 0xD1F5;
-            let jit = match clif_jit::cached_difs(key) {
-                Some(j) => j,
-                None => {
-                    let h = clif_jit::compile_difs(m, &self.slots, 0, self.end_to, self.repeat_from).map(std::sync::Arc::new);
-                    let keep = h.filter(|h| {
-                        clif_jit::forced()
-                            || self.jit_is_faster(
-                                &|m: &mut crate::x86::Machine, on: bool| m.difs_jit = if on { Some(h.clone()) } else { None },
-                                false,
-                            )
-                    });
-                    clif_jit::cache_difs(key, keep.clone());
-                    keep
-                }
-            };
-            if let Some(m) = self.machine.as_mut() {
-                m.difs_jit = jit;
-            }
-            return;
-        }
-        if !matches!(self.mode, HybridMode::Alt3D | HybridMode::Alt4D) {
-            return;
-        }
+        // the slot ranges: (start, end, repeat, dIFS, mode)
+        let part1 = (0, self.end_to, self.repeat_from, self.difs, self.mode);
+        let part2 = self.decomb.as_ref().map(|d| (d.part2.start, d.part2.end, d.part2.repeat, d.part2.difs, d.part2.mode));
         // a hybrid of built-in formulas only has no machine: an empty one
-        // carries the compiled loop (kept only when it is used)
+        // carries the compiled loops (kept only when one is used)
         let builtin_only = self.machine.is_none();
-        if builtin_only {
+        for (start, end, repeat, difs, mode) in std::iter::once(part1).chain(part2) {
+            if difs {
+                self.attach_difs_jit(start, end, repeat);
+            } else if matches!(mode, HybridMode::Alt3D | HybridMode::Alt4D) {
+                self.attach_hybrid_jit(start, end, repeat, mode == HybridMode::Alt4D, builtin_only);
+            }
+        }
+        if builtin_only && self.machine.as_ref().is_some_and(|m| m.jits.is_empty()) {
+            self.machine = None;
+        }
+    }
+
+    /// The dIFS loop of the slots `start..=end` compiled and kept if faster.
+    #[cfg(jit)]
+    fn attach_difs_jit(&mut self, start: usize, end: usize, repeat: usize) {
+        use crate::x86::clif_jit;
+        let Some(m) = self.machine.as_ref() else { return };
+        let key = clif_jit::hybrid_key(m, &self.slots, start, end, repeat, false) ^ 0xD1F5;
+        let jit = match clif_jit::cached_difs(key) {
+            Some(j) => j,
+            None => {
+                let h = clif_jit::compile_difs(m, &self.slots, start, end, repeat).map(std::sync::Arc::new);
+                let keep = h.filter(|h| {
+                    clif_jit::forced()
+                        || self.jit_is_faster(
+                            &|m: &mut crate::x86::Machine, on: bool| {
+                                m.difs_jits.retain(|x| !std::sync::Arc::ptr_eq(x, h));
+                                if on {
+                                    m.difs_jits.push(h.clone());
+                                }
+                            },
+                            false,
+                        )
+                });
+                clif_jit::cache_difs(key, keep.clone());
+                keep
+            }
+        };
+        if let (Some(m), Some(j)) = (self.machine.as_mut(), jit) {
+            m.difs_jits.push(j);
+        }
+    }
+
+    /// The alternating loop of the slots `start..=end` compiled and kept
+    /// if faster.  `builtin_only`: the scene's formulas are all built in
+    /// (or Pascal), the machine exists for the compiled loops alone.
+    #[cfg(jit)]
+    fn attach_hybrid_jit(&mut self, start: usize, end: usize, repeat: usize, four_d: bool, builtin_only: bool) {
+        use crate::x86::clif_jit;
+        if builtin_only && self.machine.is_none() {
             // (Pascal formulas have no machine code: their hybrid goes the same way)
             if self.slots.iter().any(|s| matches!(&s.formula, crate::formulas::Formula::Custom(c) if c.def.jit.is_none())) {
                 return;
@@ -924,21 +950,32 @@ impl CalcParams {
             self.machine = Some(crate::custom::build_machine(&[]));
         }
         let Some(m) = self.machine.as_ref() else { return };
-        let four_d = self.mode == HybridMode::Alt4D;
-        let key = clif_jit::hybrid_key(m, &self.slots, 0, self.end_to, self.repeat_from, four_d);
+        // the timing without this loop runs without the machine when it
+        // carries no other loop (as a hybrid of built-in formulas would)
+        let take_machine = builtin_only && m.jits.is_empty();
+        let key = clif_jit::hybrid_key(m, &self.slots, start, end, repeat, four_d);
         let jit = match clif_jit::cached(key) {
             Some(j) => j,
             None => {
-                let h = clif_jit::compile_hybrid(m, &self.slots, 0, self.end_to, self.repeat_from, four_d).map(std::sync::Arc::new);
-                let keep = h.filter(|h| clif_jit::forced() || self.jit_is_faster(&|m: &mut crate::x86::Machine, on: bool| m.jit = if on { Some(h.clone()) } else { None }, builtin_only));
+                let h = clif_jit::compile_hybrid(m, &self.slots, start, end, repeat, four_d).map(std::sync::Arc::new);
+                let keep = h.filter(|h| {
+                    clif_jit::forced()
+                        || self.jit_is_faster(
+                            &|m: &mut crate::x86::Machine, on: bool| {
+                                m.jits.retain(|x| !std::sync::Arc::ptr_eq(x, h));
+                                if on {
+                                    m.jits.push(h.clone());
+                                }
+                            },
+                            take_machine,
+                        )
+                });
                 clif_jit::cache(key, keep.clone());
                 keep
             }
         };
-        if builtin_only && jit.is_none() {
-            self.machine = None;
-        } else if let Some(m) = self.machine.as_mut() {
-            m.jit = jit;
+        if let (Some(m), Some(j)) = (self.machine.as_mut(), jit) {
+            m.jits.push(j);
         }
     }
 
@@ -961,6 +998,7 @@ impl CalcParams {
                 c
             })
             .collect();
+        let decomb = self.decomb.is_some();
         // the loop without the compiled hybrid runs as it would: without
         // the machine for a hybrid of built-in formulas
         let time = |p: &mut CalcParams, on: bool| -> f64 {
@@ -971,8 +1009,16 @@ impl CalcParams {
             let saved = if without && builtin_only { p.machine.take() } else { None };
             let mut mr = Marcher::new(p, 1);
             let t = std::time::Instant::now();
-            for c in &pts {
-                mr.iterations_at(*c);
+            if decomb {
+                // both parts of a DE combination (the loop timed may be
+                // part 2's, which the iteration alone would not run)
+                for c in &pts {
+                    mr.de_at_point(*c, false);
+                }
+            } else {
+                for c in &pts {
+                    mr.iterations_at(*c);
+                }
             }
             let dt = t.elapsed().as_secs_f64();
             drop(mr);

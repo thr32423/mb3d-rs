@@ -1446,7 +1446,7 @@ animasi.
   perulangan yang lebih cepat atas formula-formula (di setiap sistem),
   render CPU dari 80 contoh file memakan waktu 20 % lebih sedikit daripada
   di v0.2.74 (hingga 60 % pada beberapa file), dengan gambar yang sama
-  hingga ke bit. Sebuah adegan hanya mempertahankan hybrid yang dikompilasi
+  hingga ke bit. Kedua bagian dari kombinasi DE dikompilasi, masing-masing sebagai fungsi sendiri (sebelumnya hanya yang pertama: dua objek berdampingan dirender hingga 27 % lebih cepat sejak v0.3.3). Sebuah adegan hanya mempertahankan hybrid yang dikompilasi
   jika hasil pengukurannya lebih cepat; `MB3D_NO_JIT=1` mematikannya. Di
   macOS fitur ini juga aktif, tetapi masih diuji di sana: `./jit_check.sh`
   di folder hasil ekstrak memeriksanya (skrip ini membandingkan

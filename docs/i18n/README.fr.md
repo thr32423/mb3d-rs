@@ -1488,7 +1488,7 @@ que plusieurs ordinateurs peuvent se partager la même.
   Avec une boucle plus rapide sur les formules (sur tous les systèmes), les
   rendus CPU des 80 fichiers d'exemple prennent 20 % de temps en moins qu'en
   v0.2.74 (jusqu'à 60 % pour certains), avec des images identiques au bit
-  près. Une scène ne garde l'hybride compilé que s'il
+  près. Les deux parties d'une combinaison DE sont compilées, chacune dans sa propre fonction (avant, seule la première : deux objets côte à côte se rendent jusqu'à 27 % plus vite depuis la v0.3.3). Une scène ne garde l'hybride compilé que s'il
   se mesure plus rapide ; `MB3D_NO_JIT=1` le désactive. Sous macOS, il est
   activé aussi, mais encore en test : `./jit_check.sh` dans le dossier
   décompressé le vérifie (il compare

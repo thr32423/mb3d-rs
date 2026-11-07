@@ -1411,7 +1411,10 @@ interrupted animation continues and several computers can share one.
   so that they hand their values on in the processor's registers.
   Together with a faster loop over the formulas (on every system), CPU
   renders of the 80 example files take 20 % less time than in v0.2.74
-  (up to 60 % in some), the pictures the same to the bit. A scene keeps the compiled hybrid only if it
+  (up to 60 % in some), the pictures the same to the bit. Both parts of a
+  DE combination are compiled, each as its own function (before only the
+  first: two objects side by side render up to 27 % faster since v0.3.3).
+  A scene keeps a compiled hybrid only if it
   measures faster; `MB3D_NO_JIT=1` switches it off. On macOS it is on
   too, but still being tested there: `./jit_check.sh` in the unpacked
   folder checks it (it compares

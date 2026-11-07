@@ -1,0 +1,44 @@
+# Two objects: a Mandelbulb and an Amazing Box side by side as a DE
+# combination (union), the box as part 2, moved, turned and scaled.
+de_combination = min
+decomb_end1 = 1
+decomb_start2 = 2
+decomb_end2 = 2
+decomb_repeat2 = 2
+decomb_iterations2 = 30
+part2_position = 3.2, 0, 0
+part2_scale = 0.4
+part2_rotation = 20, 30, 0
+mid = 1.6, 0, 0
+width = 160
+height = 120
+iterations = 30
+zoom = 0.55
+z_start = -10
+z_end = 30
+rotation = -30, 20, 0
+de_stop = 0.8
+raystep = 0.4
+smooth_normals = 3
+bin_search = 8
+color_start = 64
+color_end = 71
+diffuse = 80
+
+[formula]
+name = Integer Power
+power = 8
+z_multiplier = -1
+iterations = 1
+
+[formula]
+name = Amazing Box
+scale = 2
+min_r = 0.5
+fold = 1
+iterations = 1
+
+[light]
+color = #FFE8A0
+x_angle = 16
+y_angle = 57

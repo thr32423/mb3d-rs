@@ -1456,7 +1456,7 @@ condividerne una.
   Cranelift), così si passano i valori nei registri del processore. Insieme
   a un ciclo più veloce sulle formule (su ogni sistema), i render su CPU degli
   80 file di esempio richiedono il 20 % di tempo in meno rispetto alla
-  v0.2.74 (fino al 60 % in alcuni), con immagini identiche al bit. Una scena
+  v0.2.74 (fino al 60 % in alcuni), con immagini identiche al bit. Entrambe le parti di una combinazione DE vengono compilate, ciascuna come funzione a sé (prima solo la prima: due oggetti affiancati si renderizzano fino al 27 % più in fretta dalla v0.3.3). Una scena
   mantiene l'ibrido compilato solo se risulta più veloce alla misura;
   `MB3D_NO_JIT=1` lo disattiva. Su macOS è attivo anch'esso, ma è ancora in
   fase di test: `./jit_check.sh` nella cartella estratta lo verifica

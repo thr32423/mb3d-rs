@@ -1451,7 +1451,7 @@ sich mehrere Computer eine teilen können.
   Registern des Prozessors weiterreichen. Zusammen mit einer schnelleren
   Schleife über die Formeln (auf jedem System) brauchen CPU-Renderings der 80
   Beispieldateien 20 % weniger Zeit als in v0.2.74 (bei einigen bis zu 60 %),
-  mit bitgleichen Bildern. Eine Szene behält den kompilierten Hybrid nur, wenn
+  mit bitgleichen Bildern. Beide Teile einer DE-Kombination werden kompiliert, jeder als eigene Funktion (vorher nur der erste: zwei Objekte nebeneinander rendern seit v0.3.3 bis zu 27 % schneller). Eine Szene behält den kompilierten Hybrid nur, wenn
   er sich als schneller erweist; `MB3D_NO_JIT=1` schaltet ihn ab. Unter macOS
   ist er ebenfalls eingeschaltet, wird dort aber noch getestet:
   `./jit_check.sh` im entpackten Ordner prüft ihn (es vergleicht die

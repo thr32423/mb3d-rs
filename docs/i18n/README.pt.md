@@ -1455,7 +1455,7 @@ dividir uma.
   processador. Junto com um laço mais rápido sobre as fórmulas (em todos os
   sistemas), os renders na CPU dos 80 arquivos de exemplo levam 20 % menos
   tempo do que na v0.2.74 (até 60 % em alguns), com imagens idênticas até
-  o bit. Uma cena só mantém o híbrido compilado se ele medir mais rápido;
+  o bit. As duas partes de uma combinação DE são compiladas, cada uma como função própria (antes só a primeira: dois objetos lado a lado renderizam até 27 % mais rápido desde a v0.3.3). Uma cena só mantém o híbrido compilado se ele medir mais rápido;
   `MB3D_NO_JIT=1` o desliga. No macOS ele também está ativado, mas ainda
   em teste ali: `./jit_check.sh` na pasta descompactada o verifica (ele
   compara as fórmulas compiladas com as traduzidas e renderiza os arquivos

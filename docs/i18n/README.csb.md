@@ -1401,7 +1401,7 @@ animacjô jidze dali, a czile kòmpùtrów mòże sã nią pòdzelëc.
   swòje wôrtnotë w registrach procesora.
   Razã z chùtszą pãtlą pò fòrmùłach (na kòżdim systemie) renderë CPU
   80 przëkładowëch lopków trwają ò 20 % krócy jak w v0.2.74 (w niejednëch
-  do 60 %), a òbrôzczi są te same do bita. Scena trzimô skòmpilowóny hibrid leno, czej
+  do 60 %), a òbrôzczi są te same do bita. Òba dzéle kòmbinacji DE są skòmpilowóné, kòżdi jakno swòja fùnkcjô (rëchli leno pierszi: dwa òbiektë kòl se renderëją sã òd v0.3.3 do 27 % chùtczi). Scena trzimô skòmpilowóny hibrid leno, czej
   wëchôdô chùtszi; `MB3D_NO_JIT=1` gò wëłącziwô. Na macOS je téż
   włączony, ale tam jesz je testowóny: `./jit_check.sh` w rozpakòwónym
   katalogù gò sprawdzô (zestôwiô

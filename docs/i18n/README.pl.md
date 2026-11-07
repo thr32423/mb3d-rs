@@ -1406,7 +1406,7 @@ kontynuuje się, a kilka komputerów może dzielić jedną.
   rejestrach procesora. Razem z szybszą pętlą po formułach (w każdym
   systemie) rendery CPU 80 plików przykładowych zajmują o 20 % mniej czasu
   niż w v0.2.74 (w niektórych do 60 %), a obrazy są identyczne co do bitu.
-  Scena zachowuje skompilowaną hybrydę tylko wtedy, gdy pomiar wykaże, że
+  Obie części kombinacji DE są kompilowane, każda jako osobna funkcja (wcześniej tylko pierwsza: dwa obiekty obok siebie renderują się od v0.3.3 do 27 % szybciej). Scena zachowuje skompilowaną hybrydę tylko wtedy, gdy pomiar wykaże, że
   jest szybsza; `MB3D_NO_JIT=1` ją wyłącza. W macOS też jest włączona, ale
   wciąż tam testowana: `./jit_check.sh` w rozpakowanym folderze ją
   sprawdza (porównuje skompilowane formuły z przetłumaczonymi i renderuje

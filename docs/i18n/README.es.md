@@ -1476,7 +1476,7 @@ pueden compartir una.
   registros del procesador. Junto con un bucle más rápido sobre las
   fórmulas (en todos los sistemas), los renders en CPU de los 80 archivos de
   ejemplo tardan un 20 % menos que en la v0.2.74 (hasta un 60 % en algunos),
-  con imágenes idénticas bit a bit. Una escena conserva el híbrido compilado
+  con imágenes idénticas bit a bit. Las dos partes de una combinación DE se compilan, cada una como su propia función (antes solo la primera: dos objetos uno al lado del otro se renderizan hasta un 27 % más rápido desde la v0.3.3). Una escena conserva el híbrido compilado
   solo si resulta más rápido; `MB3D_NO_JIT=1` lo desactiva. En macOS también
   está activado, pero allí aún está en pruebas: `./jit_check.sh` en la
   carpeta descomprimida lo comprueba (compara las fórmulas compiladas con

@@ -9,10 +9,10 @@ fn main() {
     for f in &a[1..] {
         let (sc, _) = mb3d::animfile::load_scene(std::path::Path::new(f)).unwrap();
         let p = mb3d::calc::CalcParams::new(&sc).unwrap();
-        let fused = p.machine.as_ref().is_some_and(|m| m.jit.is_some());
+        let fused = p.machine.as_ref().is_some_and(|m| !m.jits.is_empty());
         let mut q = p.clone();
         if let Some(m) = q.machine.as_mut() {
-            m.jit = None;
+            m.jits.clear();
         }
         let (mut m1, mut m2) = (mb3d::calc::Marcher::new(&p, 1), mb3d::calc::Marcher::new(&q, 1));
         let ne = |x: f64, y: f64| x.to_bits() != y.to_bits() && !(x.is_nan() && y.is_nan());

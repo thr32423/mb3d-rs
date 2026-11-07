@@ -306,3 +306,48 @@ fn reflections_and_normals_on_zbuffer() {
     assert!(cnt > 500);
     assert!(sum / cnt as f64 > 0.8, "mean cosine {}", sum / cnt as f64);
 }
+
+/// Both parts of a DE combination run through their compiled loops
+/// (`clif_jit::compile_hybrid` for each slot range, found by the range the
+/// iteration is switched to), with the distances and colour values of the
+/// formulas called one by one.
+#[cfg(jit)]
+#[test]
+fn both_parts_of_a_de_combination_use_their_compiled_loops() {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/data/two_objects.m3s");
+    let (sc, _) = mb3d::animfile::load_scene(std::path::Path::new(path)).unwrap();
+    let plain = CalcParams::new(&sc).unwrap();
+    let part2 = plain.decomb.as_ref().expect("a DE combination").part2.clone();
+    let mut fused = plain.clone();
+    let mut m = plain.machine.clone().unwrap_or_else(|| mb3d::custom::build_machine(&[]));
+    m.jits.clear();
+    for (start, end, repeat) in [(0, plain.end_to, plain.repeat_from), (part2.start, part2.end, part2.repeat)] {
+        let h = mb3d::x86::clif_jit::compile_hybrid(&m, &plain.slots, start, end, repeat, false).unwrap_or_else(|| panic!("slots {start}..={end} did not compile"));
+        m.jits.push(std::sync::Arc::new(h));
+    }
+    assert_eq!(m.jits.len(), 2);
+    fused.machine = Some(m);
+    let mut plain = plain;
+    if let Some(mm) = plain.machine.as_mut() {
+        mm.jits.clear();
+    }
+    let (mut a, mut b) = (mb3d::calc::Marcher::new(&fused, 1), mb3d::calc::Marcher::new(&plain, 1));
+    let same = |x: f64, y: f64| x.to_bits() == y.to_bits() || (x.is_nan() && y.is_nan());
+    let (mut near_part2, mut deep) = (0, [0, 0]);
+    for i in 0..8000u64 {
+        // a grid over both objects (the box stands at x = 3.2, size 0.4)
+        let c = [(i % 20) as f64 * 0.25 - 1.3, ((i / 20) % 20) as f64 * 0.14 - 1.3, (i / 400) as f64 * 0.14 - 1.3];
+        let (da, db) = (a.de_at_point(c, true), b.de_at_point(c, true));
+        assert!(same(da, db), "at {c:?}: {da} {db}");
+        let (x, y) = (&a.it, &b.it);
+        assert!(x.it_result == y.it_result && same(x.otrap, y.otrap) && same(x.smooth_it as f64, y.smooth_it as f64), "at {c:?}: colour values differ");
+        if c[0] > 2.5 {
+            near_part2 += 1;
+        }
+        // both loops iterated deep into their object
+        if x.it_result >= 10 {
+            deep[(c[0] > 2.5) as usize] += 1;
+        }
+    }
+    assert!(near_part2 > 1000 && deep[0] > 100 && deep[1] > 100, "{near_part2} {deep:?}");
+}

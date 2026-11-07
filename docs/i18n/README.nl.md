@@ -1401,7 +1401,7 @@ onderbroken animatie verdergaat en meerdere computers er één kunnen delen.
   zodat ze hun waarden doorgeven in de registers van de processor.
   Samen met een snellere lus over de formules (op elk systeem) kosten CPU-renders
   van de 80 voorbeeldbestanden 20 % minder tijd dan in v0.2.74
-  (bij sommige tot 60 %), met afbeeldingen die bit voor bit gelijk zijn. Een scène houdt de gecompileerde hybride alleen als die
+  (bij sommige tot 60 %), met afbeeldingen die bit voor bit gelijk zijn. Beide delen van een DE-combinatie worden gecompileerd, elk als eigen functie (eerder alleen het eerste: twee objecten naast elkaar renderen sinds v0.3.3 tot 27 % sneller). Een scène houdt de gecompileerde hybride alleen als die
   sneller blijkt; `MB3D_NO_JIT=1` schakelt het uit. Op macOS staat het
   ook aan, maar wordt het daar nog getest: `./jit_check.sh` in de uitgepakte
   map controleert het (het vergelijkt

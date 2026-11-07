@@ -1140,13 +1140,15 @@ pub struct Machine {
     /// the instruction cap of a formula call ([`crate::custom::MAX_STEPS`];
     /// [`crate::custom::STEPS_AFTER_LOOP`] once a call exceeded it)
     pub step_cap: u64,
-    /// the alternating hybrid of the scene compiled at run time (set on the
-    /// prototype machine of a scene, see `clif_jit::compile_hybrid`)
+    /// the alternating hybrids of the scene compiled at run time (set on
+    /// the prototype machine of a scene, see `clif_jit::compile_hybrid`):
+    /// one per slot range, the whole hybrid or a part of a DE combination
     #[cfg(jit)]
-    pub jit: Option<std::sync::Arc<clif_jit::HybridJit>>,
-    /// the dIFS hybrid of the scene compiled at run time
+    pub jits: Vec<std::sync::Arc<clif_jit::HybridJit>>,
+    /// the dIFS hybrids of the scene compiled at run time, one per slot
+    /// range
     #[cfg(jit)]
-    pub difs_jit: Option<std::sync::Arc<clif_jit::DifsJit>>,
+    pub difs_jits: Vec<std::sync::Arc<clif_jit::DifsJit>>,
 }
 
 const TRIG_SLOTS: usize = 256;
@@ -1223,9 +1225,9 @@ impl Machine {
             steps: 0,
             step_cap: crate::custom::MAX_STEPS,
             #[cfg(jit)]
-            jit: None,
+            jits: Vec::new(),
             #[cfg(jit)]
-            difs_jit: None,
+            difs_jits: Vec::new(),
         }
     }
 

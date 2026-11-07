@@ -224,10 +224,14 @@ impl Iteration {
         if self.jit_off {
             return None;
         }
-        let h = self.emu.as_deref()?.jit.as_deref()?;
-        if h.four_d != four_d || h.start != self.start_from || h.end != self.end_to || h.repeat != self.repeat_from || h.slots != slots.len() || !crate::x86::NATIVE_ENABLED.load(Ordering::Relaxed) {
+        if !crate::x86::NATIVE_ENABLED.load(Ordering::Relaxed) {
             return None;
         }
+        // the loop of this slot range (the whole hybrid, or the part of a
+        // DE combination the iteration is switched to)
+        let h = self.emu.as_deref()?.jits.iter().find(|h| {
+            h.four_d == four_d && h.start == self.start_from && h.end == self.end_to && h.repeat == self.repeat_from && h.slots == slots.len()
+        })?;
         let f = h.f;
         let mut m = self.emu.take()?;
         let mut errs = 0u64;
@@ -598,8 +602,14 @@ impl Iteration {
         // below (having changed nothing) when a formula sends it where the
         // compiled code does not go
         #[cfg(jit)]
-        let done = match m.difs_jit.as_deref() {
-            Some(h) if !self.jit_off && h.start == self.start_from && h.end == self.end_to && h.repeat == self.repeat_from && h.slots == slots.len() && crate::x86::NATIVE_ENABLED.load(Ordering::Relaxed) => {
+        let difs_jit = if self.jit_off || !crate::x86::NATIVE_ENABLED.load(Ordering::Relaxed) {
+            None
+        } else {
+            m.difs_jits.iter().find(|h| h.start == self.start_from && h.end == self.end_to && h.repeat == self.repeat_from && h.slots == slots.len()).cloned()
+        };
+        #[cfg(jit)]
+        let done = match difs_jit {
+            Some(h) => {
                 let f = h.f;
                 let mut out = crate::x86::clif_jit::DifsOut::default();
                 let cap = m.step_cap;

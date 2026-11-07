@@ -603,7 +603,11 @@ generators work from it:
   formulas of MB3D's and the community's folders; a test does the same).
   A formula runs as a function of its own, or inline in the compiled
   hybrid loop (`clif_jit::compile_hybrid`), also mixed with machine-code
-  formulas. CPU renders: JIT_RealPower 3.2 times, JIT_EM_Fld_StandartBulb
+  formulas. Every slot range of a scene gets a compiled loop of its own,
+  the whole hybrid or each part of a DE combination (the machine keeps a
+  list of them, the iteration takes the one of the range it is switched
+  to; before v0.3.3 only the first part had one, the second ran its
+  formulas one by one). CPU renders: JIT_RealPower 3.2 times, JIT_EM_Fld_StandartBulb
   4.4 times faster than the closures, as fast as the built-in Real Power;
 * WGSL (`jit_wgsl.rs`): a shader function with the interface of the lifted
   machine-code formulas (the record cells, the option values in the

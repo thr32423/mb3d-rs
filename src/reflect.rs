@@ -2532,7 +2532,15 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
         } else {
             // the CPU starts with a few pieces per thread from the end
             let n = all.len();
-            let cap = cpu_part[round % 2].or(cpu_part[(round + 1) % 2]).map_or(usize::MAX, |c| n - (n as f64 * c) as usize);
+            // (the first round, no rate known yet: half the rays are kept
+            // from the card, so that the threads do not wait on it when it
+            // is the slower side; the card gets what they do not reach.
+            // Measured at a quarter size: ImpossibleWorld dIFS's first
+            // round held 68 % of the rays on the card at a third of the
+            // threads' rate, the threads idle; MB3D_REFLECT_CPU_PRIOR sets
+            // another share)
+            let prior: f64 = std::env::var("MB3D_REFLECT_CPU_PRIOR").ok().and_then(|v| v.parse().ok()).unwrap_or(0.5);
+            let cap = cpu_part[round % 2].or(cpu_part[(round + 1) % 2]).or(Some(prior)).map_or(usize::MAX, |c| n - (n as f64 * c) as usize);
             let sh = crate::gpu::RaySharing { state: std::sync::Mutex::new((0, n)), done: std::sync::Arc::new(false.into()), tail: threads * 2, cap };
             busy_ns.store(0, std::sync::atomic::Ordering::Relaxed);
             // (the card of this thread's picture)

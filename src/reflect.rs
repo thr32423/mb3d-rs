@@ -2095,6 +2095,11 @@ const CPU_RAYS: usize = 2000;
 #[cfg(feature = "gpu")]
 const CPU_FINISH: f64 = 0.6;
 
+/// The CPU's part of the rays after which one round alone sends the rest
+/// to the CPU (see `reflections_gpu`).
+#[cfg(feature = "gpu")]
+const CPU_FINISH_ONE: f64 = 0.75;
+
 /// The per pixel state of the reflection pass on the graphics card: the
 /// tracer fields `calc_ray` keeps between its rays and its frames.
 #[cfg(feature = "gpu")]
@@ -2585,7 +2590,10 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
                 }
             }
         }
-        if cpu_part.iter().all(|c| c.is_some_and(|c| c >= cpu_finish)) {
+        // (one round with the threads at three times the card's rate is a
+        // clear enough sign: ImpossibleWorld dIFS at a quarter size, 73 %
+        // after the first round, took 21.7 s against 14.8 s on the CPU alone)
+        if cpu_part.iter().all(|c| c.is_some_and(|c| c >= cpu_finish)) || cpu_part.iter().any(|c| c.is_some_and(|c| c >= CPU_FINISH_ONE)) {
             cpu_rest = true;
         }
         let n_cpu_done = all.len() - n_gpu;

@@ -58,6 +58,7 @@ pub mod oidn;
 pub mod dof;
 pub mod exr;
 pub mod finish;
+#[cfg(feature = "gui")]
 pub mod formula_book;
 pub mod formulas;
 pub mod frames;

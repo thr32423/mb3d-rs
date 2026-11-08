@@ -92,7 +92,11 @@ pub fn os_name() -> String {
 pub fn run(card: bool, progress: &(dyn Fn(&str) + Sync), cancel: &(dyn Fn() -> bool + Sync)) -> Result<BenchResult, String> {
     let sc = scene();
     let threads = std::thread::available_parallelism().map_or(1, |n| n.get());
-    let mut r = BenchResult { cpu_name: cpu_name(), threads, card_name: crate::gpu::name(), os: os_name(), ..Default::default() };
+    #[cfg(feature = "gpu")]
+    let card_name = crate::gpu::name();
+    #[cfg(not(feature = "gpu"))]
+    let card_name: Option<String> = None;
+    let mut r = BenchResult { cpu_name: cpu_name(), threads, card_name, os: os_name(), ..Default::default() };
     #[cfg(feature = "gpu")]
     let was = crate::gpu::enabled();
     #[cfg(feature = "gpu")]

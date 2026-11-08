@@ -31,6 +31,14 @@ font = Tamil.ttf
 [Labels]
 A360DegreeAnimationForVR=VR ஹெட்செட்களுக்கான 360 டிகிரி அனிமேஷன்: ஒவ்வொரு பிரேமும் ஒரு கோளப் பனோரமா, உயரத்தை விட இரு மடங்கு அகலம்; 'Render stereo animation' உடன் வீடியோவில் இரு கண்களும் ஒன்றின் மேல் ஒன்றாக இருக்கும், ffmpeg கட்டளை MP4 ஐ VR பிளேயர்களுக்காகக் குறிக்கிறது
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=எண்ணியல் தூர மதிப்பீட்டுடன் கூடிய 3D எஸ்கேப்-டைம் சூத்திரம்: வடிவம் தனியாகவும் வேலை செய்யும், மற்றவற்றுடன் இணையும்; பகுப்பாய்வு DE ஐ விட மெதுவானது.
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=பகுப்பாய்வு தூர மதிப்பீட்டுடன் கூடிய 3D எஸ்கேப்-டைம் சூத்திரம்: வேகமானது, நம்பகமானது; முதல் சூத்திரமாக நல்லது.
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=4D சூத்திரம்: நான்காவது ஆயமும் சூத்திரங்கள் சாளரத்தின் 4D சுழற்சியும் செயல்படும்; எண்ணியல் DE, எனவே மெதுவானது.
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=பகுப்பாய்வு தூர மதிப்பீட்டுடன் கூடிய 4D சூத்திரம்: 4D சுழற்சி செயல்படும், வேகமாக ரெண்டர் ஆகும்.
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=ஒரு 4d குவாட்டர்னியன் சூத்திரம், ஒரு தொடர்மடக்கு:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=Aexion பரிந்துரைத்த ஒரு பல்ப் சூத்திரம்:\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\nZ மற்றும் C திசையன்களின் தூரத்தால் மாறிலியை அடுக்குச் சுழற்றும் இரு விருப்பங்கள் (Cond Phi=1) சேர்க்கப்பட்டன,\nமேலும் பின்வரும் Mode விருப்பங்கள்:\n(Mode மதிப்பின் பிட்கள்)\nBit1: atan theta கூறுகளைத் திருப்பு\nBit2: atan phi கூறுகளைத் திருப்பு\nBit3: theta மற்றும் phi ஐத் திருப்பு\nBit4: கோணக் கணக்கிற்கு CyCz ஐத் திருப்பு\nBit5: Z மற்றும் C திசையன்களின் தூரத்தால் powerC ஐப் பெருக்கு
@@ -39,6 +47,12 @@ ACalculationIsRunningStopIt=ஒரு கணக்கீடு இயங்க�
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=16 பிக்சல் தொகுதிக்கு ஒரு கரடுமுரடான கதிர், பின்னர் 4 பிக்சல் தொகுதிக்கு, தொகுதியின் பரவல் தூர மதிப்பீட்டிலிருந்து கழிக்கப்பட்டு முன்னேறுகிறது; ஒவ்வொரு பிக்சலின் முன்னேற்றமும் அதன் ஆழத்தில் தொடங்குகிறது. திறந்த வெளியில் 60 % வரை வேகம்; மதிப்பீடு மிகவும் தவறான இடங்களில் மெல்லிய பகுதிகள் தொலையலாம்.
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=ஒவ்வொரு மறுசெயலிலும் சேர்க்கப்படும் மாறிலி; வடிவத்தை நகர்த்தி அதன் சமச்சீரை உடைக்கும்
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=dIFS வடிவம்: தூர மதிப்பீட்டுத் திடப்பொருள் (கோளம், பெட்டி, குழாய் ...). மற்ற dIFS சூத்திரங்களுடன் மட்டும் இணைக்கவும்; எஸ்கேப்-டைம் சூத்திரங்களுடன் கலந்தால் 'formula option is not valid' பிழை வரும்.
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=dIFS உருமாற்றம்: அதற்குப் பின்னுள்ள இடங்களின் dIFS வடிவங்களை வளைக்கும், மீண்டும் செய்யும் அல்லது வெட்டும்.
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=binsearch ஐ விட வேகமான முறை, ஆனால் DE மோசமாக இருந்தால் தோல்விகள் ஏற்படலாம்
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=சில விநாடிகள் மீதம்
@@ -61,10 +75,22 @@ AMultiplierThatDefinesTheMiximal=கடின நிழல் கணக்கீ
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO கணக்கீட்டு நேரம்:
 ;AO calc time:
+APlanarOpticWithAField=1 பாகை பார்வைக் கோணத்துடன் கூடிய தட்டை ஒளியியல்: கிட்டத்தட்ட செங்குத்து வீழ்த்தம், உயர வரைபடத்தில் முன்னோக்கு இல்லை. பிறகு மீண்டும் கணக்கிடவும்.
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
+ARotationAppliedEachIterationIn=ஒவ்வொரு மறுசெயலிலும் பயன்படுத்தப்படும் சுழற்சி, பாகைகளில்
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=அமேசிங் பாக்ஸில் உள்ளது போல முன் மடிப்புகளுடன் ஒரு சைன் முழு எண் அடுக்கு பல்ப்.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=வெளியின் கோள நேர்மாறு; அதன் மையமும் ஆரமும் எந்தப் பகுதி உள்புறம் திருப்பப்படும் என்பதைத் தீர்மானிக்கும்
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
+ASphericalPanoramaGetsTheEXIF=கோளப் பரந்தோற்றம் Photo Sphere குறிகளுடன் 360 கேமராவின் (RICOH THETA S) EXIF கேமராவையும் பெறும், அதனால் Facebook அதை 360 புகைப்படமாகக் காட்டும். நிரல் சேமிக்கும் ஒவ்வொரு 360 படத்திற்கும்.
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=நிறுத்தப்பட்ட அல்லது குறுக்கிடப்பட்ட ரெண்டர் கணக்கிட்டதை வைத்துக் கொள்கிறது; அதே அளவுருக்களின் Calculate 3D அதைத் தொடர்கிறது.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=உருமாற்றம்: புள்ளியை மட்டும் மாற்றும், அதற்குச் சொந்த வடிவம் இல்லை. வடிவம் தரும் சூத்திரங்களுக்கு முன்னோ இடையிலோ உள்ள இடத்தில் பயன்படுத்தவும், ஒருபோதும் தனியாக அல்ல.
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=உருமாற்றம் தனியாக எதையும் காட்டாது: இடம் 1 இல் ஒரு வடிவத்தையும் இடம் 2 இல் இதையும் வைக்கவும், அல்லது மாற்றி.
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=ஒளிபுகும் பின்னணிக்கு PNG பிரேம்கள் தேவை: வெளியீட்டு வடிவமாக PNG ஐத் தேர்வு செய்யுங்கள்.
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=வீடியோவிற்குப் படங்கள் தேவை: வெளியீட்டு வடிவமாக BMP, PNG அல்லது JPG ஐத் தேர்வு செய்யுங்கள்.
@@ -87,6 +113,8 @@ AboutHMinLeft=சுமார் {} மணி {} நிமிடம் மீத
 ;about {} h {} min left
 AboutMinLeft=சுமார் {} நிமிடம் மீதம்
 ;about {} min left
+AboutThisFormula=இந்தச் சூத்திரம் பற்றி...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=பொருளின் உள்ளே முழுமையான உறிஞ்சுதல் அளவு (அதிக பெரிதாக்கங்களுக்குப் பெரிய மதிப்புகள் தேவை). பரவல் பொருள் நிறம் உள்ளேயும் பொருந்தும்.
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=மென்மையான இணைப்புச் சார்புகளின் முழுமையான தூரம்,\nசிறிய மதிப்புகளுக்கு 3e-5 போன்ற அறிவியல் குறியீட்டைப் பயன்படுத்தலாம்.\nவேலை செய்யும் மதிப்பை நெருங்க 1/zoom ஐ முயற்சிக்கவும்.
@@ -155,6 +183,8 @@ AllFiles=எல்லாக் கோப்புகளும்
 ;All files
 AllFilesParen=எல்லாக் கோப்புகளும் (*.*)
 ;All files (*.*)
+AllFormulas=எல்லாச் சூத்திரங்களும்
+;All formulas
 AllKinds=எல்லா வகைகளும்
 ;All kinds
 AllRealworldUnitsInMeter=எல்லா உண்மை உலக அலகுகளும் மீட்டரில்.
@@ -181,6 +211,8 @@ AmbientLower=சூழல்
 ;ambient
 AmbientOcclusion=சூழல் மறைப்பு
 ;ambient occlusion
+AmbientOcclusion16Bit=சுற்றுப்புற மறைப்பு (16 பிட்)
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=சூழல் கதிர்களின் ஆழம்:
 ;Ambient rays depth:
 AmbientShadow=சூழல் நிழல்
@@ -195,6 +227,8 @@ Amount=அளவு:
 ;Amount:
 AnAIAssistantOnThisComputer=இந்தக் கணினியில் உள்ள ஒரு AI உதவியாளர் Mandelbulb 3D ஐப் பயன்படுத்தலாம்: உங்கள் படங்களை விவரிக்க, மாற்ற, ரெண்டர் செய்ய, மாறுபாடுகளை உருவாக்க அல்லது கடைசியாக வேலை செய்ததை ரெண்டர் செய்ய எளிய வார்த்தைகளில் அல்லது குரலில் கேளுங்கள். Mandelbulb 3D ஆஃப்லைனிலேயே இருக்கும்: உதவியாளரின் செயலி இந்தக் கணினியில் அதைத் தொடங்குகிறது.
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=இடைச்செருகல் கலப்பினம் (சூத்திரச் சாளரத்தின் "Interpolate" தாவல்) இரண்டு பின்னல் சூத்திரங்களைப் படிப்படியாகக் கலக்கும்; dIFS சூத்திரங்களைக் கலக்க முடியாது. அவற்றுக்கு "Alternate" அல்லது "DEcombinate" பயன்படுத்தவும்.
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=இந்தப் படத்தின் முடிக்கப்படாத கணக்கீடு வைக்கப்பட்டிருந்தது ({}).\n\nஅதைத் தொடரவா?  "No" தொடக்கத்திலிருந்து மீண்டும் கணக்கிடும்.
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=இந்த அளவுருக்களின் முடிக்கப்படாத மான்டே கார்லோ ரெண்டர் வைக்கப்பட்டிருந்தது ({}).\n\nஅதைத் தொடரவா?  "No" தொடக்கத்திலிருந்து மீண்டும் ரெண்டர் செய்யும்.
@@ -253,6 +287,8 @@ Aperture=துளை:
 ;Aperture:
 Appearance=தோற்றம்
 ;Appearance
+ApplyTheRecommendedSetting=பரிந்துரைத்த அமைப்பைப் பயன்படுத்து
+;Apply the recommended setting
 ApplyToImage=படத்தில் பயன்படுத்து
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=மாற்றிய மதிப்புகளைப் பயன்படுத்துங்கள், திருத்தங்கள் வெளியீடு மட்டுமே
@@ -265,6 +301,8 @@ Around=சுற்றி:
 ;Around:
 AroundTheMiddleAnObject=நடுவைச் சுற்றி (ஒரு பொருள்)
 ;Around the middle (an object)
+Artist=கலைஞர்:
+;Artist:
 AsFullBackgroundSphere=முழுப் பின்னணிக் கோளமாக:
 ;As full background sphere:
 Aspect=விகிதம்:
@@ -341,6 +379,10 @@ BatchProcessing=தொகுதிச் செயலாக்கம்
 ;Batch processing
 BatchProcessingPictureOf=தொகுதிச் செயலாக்கம்: படம் {} / {}
 ;Batch processing: picture {} of {}
+Benchmark=செயல்திறன் சோதனை...
+;Benchmark...
+Benchmark2=செயல்திறன் சோதனை
+;Benchmark
 Between=இடையில்:
 ;between:
 Big=பெரிய
@@ -387,6 +429,8 @@ Browse=உலாவு...
 ;Browse...
 BuiltIn=உள்ளமைந்த
 ;built in
+BuiltInFormula=உள்ளமைந்த சூத்திரம்
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=Intel Open Image Denoise இல்லாமல் கட்டமைக்கப்பட்டது
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -397,6 +441,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2 அமைப்புகள் (*.btrace2
 ;BulbTracer2 settings (*.btrace2)
 By=மூலம்
 ;By
+By2={} - {}
+;{} by {}
 ByOfDone={} ({}, {} மூலம்): {} / {} {} முடிந்தது
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -415,6 +461,10 @@ Calculate3DAndTheBatchWindow=Calculate 3D மற்றும் Batch சாள�
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=சரியான ஒளியமைப்பு இல்லாத விரைவான 8x8 தொகுதிப் படத்தைக் கணக்கிடு
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=முதலில் ஒரு படத்தைக் கணக்கிடவும்.
+;Calculate a picture first.
+CalculateAPictureFirstOrUntick=முதலில் ஒரு படத்தைக் கணக்கிடவும், அல்லது படத்தின் தேர்வை நீக்கவும்.
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=A.S. ஐத் தானாகக் கணக்கிடு
 ;Calculate A.S. automatically
 CalculateColors=நிறங்களைக் கணக்கிடு
@@ -485,6 +535,8 @@ Camera=கேமரா
 ;Camera
 CameraColon=கேமரா:
 ;Camera:
+CameraForTextures=இழைமங்களுக்கான கேமரா
+;Camera for textures
 CameraLense=கேமரா லென்ஸ்:
 ;Camera lense:
 Cancel=ரத்து
@@ -517,6 +569,8 @@ ChangeParams=அளவுருக்களை மாற்று
 ;Change Params
 ChangeTheJuliaValuesWithRadius=ஆரம், தீர்க்கரேகை மற்றும் அட்சரேகையுடன் ஜூலியா மதிப்புகளை மாற்று
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=வண்ணமிடுதலை மட்டும் மாற்றும், வடிவத்தை அல்ல
+;changes the colouring only, not the shape
 CheckColors=நிறங்களைச் சரிபார்
 ;Check colors
 CheckThisIfYouWantTo=வளைய அனிமேஷன் வேண்டுமானால் இதைத் தேர்வு செய்யுங்கள்.\nகடைசி முக்கிய பிரேமுக்குப் பின் முதல் முக்கிய பிரேம் மீண்டும் வருவது போலவும்\nஅதற்கு எதிர்மறையாகவும் இடைக்கணிப்பு நடக்கும்.
@@ -535,6 +589,8 @@ ChooseASharedFolderFirstOne=முதலில் ஒரு பகிர்ந�
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=விருப்பத்தைத் தேர்ந்தெடு:
 ;Choose Option:
+ChoosesAVariantOfTheFormula=சூத்திரத்தின் ஒரு வகையைத் தேர்ந்தெடுக்கும்; முழு எண்கள் மட்டும்
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=தீமைத் தேர்ந்தெடு:
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code (டெர்மினலில்)
@@ -551,6 +607,8 @@ ClearTheWholeList=முழுப் பட்டியலையும் அழ
 ;Clear the whole list
 ClickAButtonToChangeA=(ஒரு கோப்பகத்தை மாற்ற ஒரு பொத்தானைக் கிளிக் செய்யவும்)
 ;(Click a button to change a directory)
+ClickAColourEsc=ஒரு வண்ணத்தைச் சொடுக்கவும் (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=வரிசைப்படுத்த ஒரு நெடுவரிசைத் தலைப்பைக் கிளிக் செய்யவும்.
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=சாளரங்களை அந்த மொழிக்கு மாற்ற ஒரு மொழியைக் கிளிக் செய்யவும்
@@ -575,6 +633,8 @@ ClickOnTheButtonAndAfterwards3=பொத்தானைக் கிளிக்
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=மையப்படுத்த படத்தில் உள்ள பொருளைக் கிளிக் செய்யவும்.\nகேமரா திசை மாறாது, நடுப்புள்ளியைச் சுற்றிச் சுழற்ற\nசுழற்சி விருப்பங்களைப் பயன்படுத்தவும்.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=சொடுக்கி, பிறகு நிரலின் சாளரங்களில் (படம், வரைபடம், வண்ணத்தட்டு, வேறு சாளரம்) எந்தப் பிக்சலையும் சொடுக்கி அதன் வண்ணத்தை எடுக்கவும். Esc நிறுத்தும்.
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Dynfog on its மற்றும் Color on its இடையே மாற்றக் கிளிக் செய்யவும்
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=வெளியீட்டுக் கோப்பைத் தேர்ந்தெடுக்கக் கிளிக் செய்யவும்
@@ -659,6 +719,10 @@ ColorStart=நிறத் தொடக்கம்
 ;Color start
 Coloring=நிறமூட்டல்
 ;Coloring
+ColorsFromFile=கோப்பிலிருந்து வண்ணங்கள்...
+;Colors from file...
+ColorsTakenFrom={} இலிருந்து வண்ணங்கள் எடுக்கப்பட்டன
+;Colors taken from {}
 Colour0Grey1AsIt=நிறம்: 0 சாம்பல், 1 அப்படியே, 2 இரு மடங்கு வண்ணமயம்
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=நிற விளிம்புகள்
@@ -723,6 +787,12 @@ CopyParamsToClipboard=அளவுருக்களைக் கிளிப்
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=டெர்மினலில் ஒட்ட கட்டளையை நகலெடுங்கள்
 ;Copy the command, to paste it into a terminal
+CopyTheName=பெயரை நகலெடு
+;Copy the name
+CopyThePostText=பதிவு உரையை நகலெடு
+;Copy the post text
+CopyTheResult=முடிவை நகலெடு
+;Copy the result
 CopyTheSelectedLineOrAll=தேர்ந்த வரியை நகலெடு, அல்லது எதுவும் தேர்வில்லையெனில் காட்டப்படும் எல்லா வரிகளையும்
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=மதிப்புகளை நகலெடு
@@ -781,6 +851,8 @@ CreateLanguageFile=மொழிக் கோப்பை உருவாக்�
 ;Create language file
 CreateMeshes=Mesh களை உருவாக்கு
 ;Create Meshes
+Credit=நன்றி:
+;Credit:
 CrossEyedPreview=குறுக்குப் பார்வை முன்னோட்டம்
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=பட்டியலின் வரிசையில் Ctrl+1 முதல் Ctrl+7 வரை, மூட Ctrl+W
@@ -833,6 +905,8 @@ DEOcclusionAtHalfResolution=பாதித் தெளிவுத்திற
 ;DE occlusion at half resolution
 DEStop=DE நிறுத்தம்:
 ;DE stop:
+DEStopOfThePostPasses=பின் கடவுகளின் DE நிறுத்தம்:
+;DE stop of the post passes:
 DEcombinate=DEcombinate
 ;DEcombinate
 DEstop=DEstop:
@@ -1049,6 +1123,8 @@ DownscaleDiffuseKeepReflections=பரவலைக் கீழ்அளவி�
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=specular ஐக் கீழ்அளவிடு
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=மிகப்பெரிய துண்டின் முக்கோணங்களில் இந்தப் பங்கை விடச் சிறிய தளர்ந்த துண்டுகளை நீக்கு (சதவீதம்); 0 எல்லாத் துண்டுகளையும் வைத்திருக்கும்
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=தெரியவில்லை, எதுவும் செய்யாதே
@@ -1069,6 +1145,8 @@ DynamicFogOrVolumetricLightParams=இயங்கு மூடுபனி அ�
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=இயங்கு மூடுபனி:\nஎண் குறையும்போது மூடுபனி பொருளிலிருந்து தொலைவில் தோன்றும்.\ndIFS உடன், மூடுபனி இந்தத் தொடர்மடக்கில் கணக்கிடப்பட்ட பொருள் பகுதியைச் சுற்றி இருக்கும்.\nஇந்த அம்சத்தை முடக்கி வழக்கம் போல கதிர் படி எண்ணிக்கையில் இயங்கு மூடுபனியைச் செய்ய பூஜ்ஜியம்.\nகுறிப்பு: படிகளைத் தடுக்க 'First step random' விருப்பத்தைத் தேர்வு செய்யவும்.\nகனஅளவு ஒளி:\nஒளிச் சிதறல் கணக்கிடப்படும் ஒளி எண்ணைத் தேர்ந்தெடுக்கவும்.
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=ஒவ்வொரு வரைபடமும் மற்றவற்றின் அருகில் தனி PNG: <பெயர்>_color, _height, _normal, _ao. உயரம் மேற்பரப்பின் ஆழம், செங்குத்துகள் OpenGL மரபில், மறைப்பு படத்தின் சுற்றுப்புற நிழல்.
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=விளிம்புகளின் நிறம்
 ;Edges color
 Edit=திருத்து
@@ -1135,6 +1213,12 @@ EveryNewPictureOfTheMain=முதன்மைச் சாளரத்தின
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=அனைத்தும்
 ;Everything
+Example0=எடுத்துக்காட்டு: {0}
+;Example: {0}
+ExampleFiles=எடுத்துக்காட்டுக் கோப்புகள்
+;Example files
+ExampleFilesUsingIt0=இதைப் பயன்படுத்தும் எடுத்துக்காட்டுக் கோப்புகள்: {0}
+;Example files using it: {0}
 ExchangeAdd=மாற்று, சேர்
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=இந்தச் சூத்திரத்தை அடுத்ததுடன் மாற்று
@@ -1169,12 +1253,18 @@ ExtractingAmbientInformationFromTheOriginal=அசல் M3I கோப்பி�
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ தீவிரச் சோதனை }
 ;{ Extreme testing }
+Eyedropper=வண்ணம் எடுப்பான்
+;Eyedropper
 FFmpegCommand=FFmpeg கட்டளை
 ;FFmpeg command
 FNr=F.எண்:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Facebook அளவு (2048 px, 360 புகைப்படங்கள் 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=பதிவில் ஒட்டப்பட்ட அளவுருக்களை Facebook இணைப்புகளாக மாற்றும், குழுக்கள் அவற்றை உரைக் கோப்பாகக் கேட்கின்றன: இந்தக் கோப்பைப் படத்துடன் பதிவிடவும் அல்லது குழுவின் கோப்புகளில் வைக்கவும்.
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=ஃபிராக்டல் அளவுருக்களை இறக்குமதி செய்ய முடியவில்லை. மற்ற எல்லா அமைப்புகளும் இறக்குமதி செய்யப்பட்டனவா?
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=தொலை ஆழ மூடுபனி
@@ -1219,6 +1309,8 @@ Fine=நுண்
 ;fine
 FineTuneThePositionsWithThe=அம்புப் பொத்தான்களால் நிலைகளை நுணுக்கமாகச் சரிசெய்யுங்கள்
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=தூர மதிப்பீட்டின் நுண் சரிசெய்தல்: மேற்பரப்பில் துளைகள் தெரிந்தால் உயர்த்தவும், வீங்கியதாகத் தெரிந்தால் குறைக்கவும்
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=படத்தை முடி
 ;Finish the picture
 FinishedRenderingSlices=துண்டுகள் ரெண்டர் முடிந்தது.
@@ -1227,6 +1319,8 @@ FinishedTracingObject=பொருள் தடமறிதல் முடி�
 ;Finished tracing object.
 Finishing=முடித்தல்
 ;Finishing
+First=முதல்
+;first
 First4RaysNoisy=முதல் 4 கதிர்கள் (இரைச்சலுடன்)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=இந்தச் சூத்திர இணைப்பின் முதல் கணக்கீடு: கிராபிக்ஸ் கார்டின் ஷேடர்கள் தொகுக்கப்படுகின்றன (10-30 வி, ஒரே ஒரு முறை - இயக்கி அவற்றை வைத்திருக்கும்). இதற்கிடையில் CPU கணக்கிடுகிறது, தயாரானதும் கார்டு சேரும்.
@@ -1263,6 +1357,8 @@ FogOffset=மூடுபனி ஆஃப்செட்
 ;Fog offset
 Folder=கோப்புறை
 ;Folder
+Folder2=கோப்புறை:
+;Folder:
 FolderOfTheLanguageFiles=மொழிக் கோப்புகளின் கோப்புறை:
 ;Folder of the language files:
 FollowTheNewest=புதியதைப் பின்தொடர்
@@ -1277,10 +1373,14 @@ Formula1=சூத்திரம்1 •
 ;Formula1 •
 Formula12=சூத்திரம்1
 ;Formula1
+FormulaBook=சூத்திர நூல்
+;Formula book
 FormulaCombinationsInThisBatchThat=இந்தத் தொகுதியில் கிராபிக்ஸ் கார்டுக்குப் புதிய சூத்திர இணைப்புகள் (அவற்றின் ஷேடர்கள் முதலில் தொகுக்கப்படும், ஒவ்வொன்றும் 10 முதல் 30 வி; இதற்கிடையில் CPU கணக்கிடுகிறது, நினைவகம் குறையும்போது தொகுப்பு காத்திருக்கும்):
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=சூத்திரத் திருத்தி
 ;Formula editor
+FormulaFile0=சூத்திரக் கோப்பு: {0}
+;Formula file: {0}
 FormulaLower=சூத்திரம்
 ;formula
 FormulaM3f=சூத்திரம் (*.m3f)
@@ -1289,12 +1389,16 @@ FormulaName=சூத்திரப் பெயர்:
 ;Formula name:
 FormulaNotFound=சூத்திரம் '{}' கிடைக்கவில்லை.
 ;Formula '{}' not found.
+FormulaNotInstalled=சூத்திரம் நிறுவப்படவில்லை
+;Formula not installed
 FormulaNrWhereThe2ndPart=கலப்பினத்தின் 2 ஆம் பகுதி தொடங்கும் சூத்திர எண்
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=சூத்திர மதிப்புகள்:
 ;Formula values:
 Formulas=சூத்திரங்கள்
 ;Formulas
+Formulas2=சூத்திரங்கள்: {}
+;Formulas: {}
 FormulasColon=சூத்திரங்கள்:
 ;Formulas:
 Forward=முன்னோக்கி
@@ -1329,6 +1433,8 @@ FromTheCameraAllAroundA=கேமராவிலிருந்து, சுற
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=முழு M3I படக் கோப்புகள்:
 ;Full M3I image files:
+FullSize=முழு அளவு
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1493,6 +1599,8 @@ GoToNext=அடுத்ததற்குச் செல்
 ;Go to next
 GoneLastSeenSAgo=இல்லை (கடைசியாக {} வி முன் பார்த்தது)
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=நல்ல முதல் சூத்திரம்: சில மதிப்புகள், வேகம், தொடங்க எடுத்துக்காட்டுக் கோப்புகள்.
+;Good first formula: few values, fast, and example files to start from.
 Grain=தானியம்
 ;Grain
 GraphicsCard=கிராபிக்ஸ் கார்டு
@@ -1521,14 +1629,18 @@ HardShadowsLower=கடின நிழல்கள்
 ;hard shadows
 Height=உயரம்:
 ;Height:
+Height16BitNearestPointWhite=உயரம் (16 பிட், அருகிலுள்ள புள்ளி வெள்ளை)
+;Height (16 bit, nearest point white)
 HeightMapGenerator=உயர வரைபட உருவாக்கி
 ;HeightMap Generator
 HeightMapGeneratorPreview=உயர வரைபட உருவாக்கி முன்னோட்டம்
 ;HeightMap Generator Preview
-Help=உதவி
-;Help
 HelpfulIfYouWantToRedo=எடுத்துக்காட்டாக தேவையற்ற வரைதலை மீண்டும் செய்ய விரும்பினால் பயனுள்ளது.
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=இங்கே dIFS சூத்திரங்களும் மற்றவையும் இடங்களில் மாறி மாறி வருகின்றன: முதலில் dIFS சூத்திரங்களை மற்றவற்றுக்குப் பின் நகர்த்தவும் (சூத்திரச் சாளரத்தின் சூத்திரத் தாவலில் வலது சொடுக்கு சூத்திரங்களை நகர்த்தி நகலெடுக்கும்), பிறகு "DEcombinate" பயன்படுத்தவும்.
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=ஹெக்ஸ்:
+;Hex:
 HiQual=HiQual
 ;HiQual
 HiQual1=HiQual 1
@@ -1543,6 +1655,8 @@ High=அதிக
 ;high
 HighlightsMoveAsInThePictures=ஒளிப்புள்ளிகள் படங்களில் உள்ளது போல நகரும். ஒரு splat 2 இல் சுமார் 160 பைட்டுகள், அணைத்தால் 68.
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=குறிப்புகள்:
+;Hints:
 History=வரலாறு
 ;History
 HistoryThePicturesCalculatedTheFiles=வரலாறு: கணக்கிட்ட படங்கள், திறந்த மற்றும் சேமித்த கோப்புகள் (உலாவக் கிளிக் செய்யவும்)
@@ -1551,6 +1665,8 @@ HoldShiftKeyForFinerSteps=(நுண்ணிய படிகளுக்கு 
 ;(Hold Shift key for finer steps)
 Hotkeys=விரைவு விசைகள்
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=வடிவத்தில் நகல்களுக்குள் எத்தனை நகல்கள் உள்ளன; ஒவ்வொரு நிலைக்கும் நேரம் செலவாகும்
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=நீர் எவ்வளவு ஒளியைக் கடக்க விடுகிறது (0 முதல் 1, 0: ஒளிபுகாதது): பிரதிபலிப்புகளுடன் (Post processing) அல்லது மான்டே கார்லோவில் ஃபிராக்டல் மேற்பரப்பின் கீழே தெரியும், ஒளிவிலகலால் வளைந்து ஆழத்துடன் மங்கும்
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=தளம் எவ்வளவு பிரதிபலிக்கிறது (0 முதல் 1): அதன் ஒளிப்புள்ளிகள், மற்றும் பிரதிபலிப்புகள் கணக்கிடப்படும்போது அதன் கண்ணாடி (Post processing)
@@ -1563,6 +1679,8 @@ HowMurkyTheWaterIsHow=நீர் எவ்வளவு கலங்கலா�
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=நீக்கப்படும் இரைச்சல் எவ்வளவு வலுவானது (1 முதல் 30, GIMP இன் "Denoise DCT" போல).\nஅதிகம் அதிக இரைச்சலையும், அதிக நுண் விவரங்களையும் நீக்கும்.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=மறுசெயல் எண்ணிக்கையுடன் மதிப்பு எப்படி மாறும்; 0 அதை மாறாமல் வைக்கும்
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=மேகங்கள் எவ்வளவு அடர்த்தி (1: ஒரு முழு அடுக்கு சுமார் 2 % ஒளியைக் கடக்க விடும்) மற்றும் வானில் எவ்வளவு மூடுகின்றன (0 முதல் 1)
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=இந்தக் கணினி ஸ்வார்மில் எப்படிப் பட்டியலிடப்படுகிறது
@@ -1721,6 +1839,8 @@ InsideColor=உள் நிறம்
 ;Inside color
 InsideRender=உள் ரெண்டர்
 ;Inside render
+InstalledFormulasWithASimilarName=ஒத்த பெயருடன் நிறுவப்பட்ட சூத்திரங்கள்: {}
+;Installed formulas with a similar name: {}
 Int=Int.:
 ;Int.:
 Int64=Int64
@@ -1759,6 +1879,8 @@ IsNotAValidFloatingPoint='{}' சரியான மிதவைப் புள
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' சரியான முழு எண் மதிப்பு அல்ல
 ;'{}' is not a valid integer value
+Islands=தீவுகள் %
+;Islands %
 Iteration=தொடர்மடக்கு
 ;Iteration
 IterationCount=தொடர்மடக்கு எண்ணிக்கை
@@ -1807,6 +1929,8 @@ JuliaOn=ஜூலியா இயக்கு
 ;Julia On
 JuliaValuesXYZ=ஜூலியா மதிப்புகள் (x,y,z):
 ;Julia values (x,y,z):
+Keep=வைத்திரு %
+;Keep %
 KeepAspect=விகிதத்தைக் காத்திரு
 ;keep aspect
 KeepLights=ஒளிகளை வைத்திரு
@@ -1841,18 +1965,16 @@ KeysThatBringAWindowTo=எந்தச் சாளரத்திலிரு�
 ;Keys that bring a window to the front from any window
 Kind=வகை
 ;Kind
+Kind0=வகை: {0}
+;Kind: {0}
 LGamma05=L-காமா:  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=ஒளிக் கோடுகள்
 ;LIGHT STROKES
 LMBMoveRMBRotate=LMB: நகர்த்து           RMB: சுழற்று
 ;LMB: move           RMB: rotate
-Language=மொழி
-;Language
 LargestTurnDegreesAFrame=பெரிய திருப்பம் (பிரேமுக்கு டிகிரிகள்):
 ;Largest turn (degrees a frame):
-LastCalculation=கடைசிக் கணக்கீடு
-;Last calculation
 LastLengthIncrease=கடைசி நீள அதிகரிப்பு
 ;Last length increase
 LastPass=\s· கடைசிப் பாஸ் {}
@@ -2037,6 +2159,8 @@ MMBWheelZoom=MMB/சக்கரம்: பெரிதாக்கு
 ;MMB/Wheel: zoom
 MRelObj=M.rel.obj.
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=mb3d-rs {} உடன் உருவாக்கப்பட்டது (Windows, Linux, macOS க்கான Mandelbulb3D)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=முதன்மைக் கணக்கீட்டு நேரம்:
 ;Main calc time:
 MainParas=முதன்மை அளவுருக்கள்
@@ -2053,6 +2177,8 @@ MakeSureThatNoLightWill=கலக்காத முறையில் ஒளி
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=கடின மற்றும் சூழல் நிழல்களைக் கருத்தில் கொள்ள விரும்பினால், அவற்றின்\n'Calc... automatic.' விருப்பங்கள் அமைக்கப்பட்டுள்ளதை உறுதி செய்யுங்கள்.
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=கோப்புகளை உருவாக்கு
+;Make the files
 MakeTheLightOfThatPicture=அந்தப் படத்தின் ஒளியை வெதுவெதுப்பாக்கி மீண்டும் ரெண்டர் செய்.
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=சூழல் மற்றும் பின்னணி நிறங்களின் மேல்-கீழ் சரிவைப்\nபொருளின் ஆயத்தொலைவு அமைப்பிற்குச் சார்பாக்கு.\nஅனிமேஷன்களில் ஒளிகளைக் காட்சியுடன் நிலைநிறுத்தப் பயன்படுத்தவும்.
@@ -2063,6 +2189,10 @@ MakesReflectionsALittleDiffuseValue=பிரதிபலிப்புகள�
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=வீடியோ உருவாக்கப்படுகிறது...
 ;Making the video...
+MandelbulberSettingsFract=Mandelbulber அமைப்புகள் (*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=பல மதிப்புகள்: ஒரு நேரத்தில் ஒன்றை மாற்றவும், பிடித்ததை வரலாற்றுச் சாளரத்தில் வைத்திருக்கவும்.
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=வரைபடம்\nகிடைக்கவில்லை
 ;Map not\nfound
 MapNumber=வரைபட எண்
@@ -2071,12 +2201,16 @@ MapNumber2=வரைபட எண்:
 ;Map Number:
 MapNumberColon=வரைபட எண்:
 ;Map number:
+MapNumberRightClickToChoose=வரைபட எண். படத்தைத் தேர்வு செய்ய வலது சொடுக்கு: எந்தப் பெயரும், எந்தக் கோப்புறையும் (அது எண்ணுடன் வரைபடக் கோப்புறையில் நகலெடுக்கப்படும், அளவுருக்கள் அடுத்த முறையும் MB3D இலும் கண்டுபிடிக்கும்)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=வெளியீட்டுத் திசையனில் வரைபடம்
 ;Map on output vector
 MapSequences=வரைபடத் தொடர்கள்
 ;Map Sequences
 MapType=வரைபட வகை:
 ;Map Type:
+MapsOfTheCalculatedPicture=கணக்கிட்ட படத்தின் வரைபடங்கள்:
+;Maps of the calculated picture:
 Material=பொருள்
 ;Material
 Max=Max
@@ -2241,6 +2375,8 @@ MutationType=மாற்ற வகை
 ;Mutation type
 N0No255FullTransparency=0: இல்லை, 255: முழு ஒளிபுகுதன்மை
 ;0: no, 255: Full transparency
+N0Of1Formulas={1} இல் {0} சூத்திரங்கள்
+;{0} of {1} formulas
 N0To1DarkerCorners=0 முதல் 1: இருண்ட மூலைகள்
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 முதல் 1: லென்ஸ் காட்டுவது போல மூலைகளை நோக்கிச் சிவப்பு மற்றும் நீல விளிம்புகள்
@@ -2273,18 +2409,30 @@ N360Orbit=360° சுற்றுப்பாதை
 ;360° orbit
 N360Panorama=360 பனோரமா
 ;360 Panorama
+N360PhotoTaggedForFacebookRICOH=360 புகைப்படம்: Facebook க்காகக் குறியிடப்பட்டது (RICOH THETA கேமரா, Photo Sphere XMP)
+;360 photo: tagged for Facebook (RICOH THETA camera, Photo Sphere XMP)
+N360PhotosTheCameraTagFacebook=360 புகைப்படங்கள்: Facebook தேடும் கேமராக் குறி
+;360 photos: the camera tag Facebook looks for
 N360VR=360° VR
 ;360° VR
 N3DAnalyticFormula=3D பகுப்பாய்வுச் சூத்திரம்
 ;3D analytic formula
+N3DEscapeTimeFormulas=3D எஸ்கேப்-டைம் சூத்திரங்கள்
+;3D escape-time formulas
 N3DFormula=3D சூத்திரம்
 ;3D formula
+N3DFormulasWithAnalyticDEFast=பகுப்பாய்வு DE உடன் 3D சூத்திரங்கள் (வேகம்)
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=4D பகுப்பாய்வுச் சூத்திரம்
 ;4D analytic formula
 N4DFormula=4D சூத்திரம்
 ;4D formula
+N4DFormulas=4D சூத்திரங்கள்
+;4D formulas
+N4DFormulasWithAnalyticDE=பகுப்பாய்வு DE உடன் 4D சூத்திரங்கள்
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=முழு பல்பின் 4D சுழற்சி:
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2343,8 +2491,14 @@ No=இல்லை
 ;no
 No2=இல்லை
 ;No
+No360TagsTheCalculatedPicture=360 குறிகள் இல்லை: கணக்கிட்ட படம் உயரத்தை விட இரு மடங்கு அகலமான கோளப் பரந்தோற்றம் அல்ல ({0} x {1}). ஒளியியலையும் அளவையும் அமைத்து மீண்டும் கணக்கிடவும்.
+;No 360 tags: the calculated picture is not a spherical panorama twice as wide as high ({0} x {1}). Set the optic, the size and calculate again.
+NoDescriptionFromTheAuthor=ஆசிரியரின் விளக்கம் இல்லை.
+;No description from the author.
 NoDoFOnTiles=ஓடுகளில் DoF இல்லை.
 ;No DoF on tiles.
+NoExampleFileUsesItTry=எந்த எடுத்துக்காட்டுக் கோப்பும் இதைப் பயன்படுத்தவில்லை; முதலில் தனியாக முயற்சிக்கவும், பிறகு Amazing Box க்குப் பின் இடம் 2 இல்.
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=கோப்பில் முகங்கள் இல்லை
 ;no faces in the file
 NoFileAdded=கோப்பு சேர்க்கப்படவில்லை
@@ -2385,6 +2539,8 @@ Noise=-இரைச்சல்
 ;-noise
 NoiseAI=-இரைச்சல் AI
 ;-noise AI
+NoiseDoctor=இரைச்சல் மருத்துவர்
+;Noise doctor
 NoiseFilter=\sஇரைச்சல் வடிகட்டி
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=காட்டப்படும் படத்தில் இரைச்சல் வடிகட்டி (GIMP இன் "Denoise DCT" போன்ற DCT இரைச்சல் நீக்கம்),\nஅதன் வலிமை கதிர்களிலிருந்து மதிப்பிடப்படுகிறது. ரெண்டரே மாறாது;\nஅடுத்த புதுப்பிப்பு மீண்டும் வடிகட்டாமல் காட்டும்.
@@ -2393,8 +2549,12 @@ NoiseFilterStrength=இரைச்சல் வடிகட்டி: வலி
 ;Noise filter: strength {}
 None=எதுவுமில்லை
 ;none
+NoneOfTheFormulaSlotsHolds=எந்தச் சூத்திர இடத்திலும் பின்னலை உருவாக்கும் சூத்திரம் இல்லை: ஒவ்வொன்றும் காலியாக உள்ளது, 0 மறுசெயல்கள் கொண்டுள்ளது, அல்லது வெளியை மட்டும் மாற்றும் சூத்திரத்தைக் கொண்டுள்ளது ({}).\n\nInteger Power அல்லது Amazing Box போன்ற பின்னல் சூத்திரத்தை ஒரு இடத்தில் வைத்து குறைந்தது 1 மறுசெயல் கொடுக்கவும்.
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=இயல்பு
 ;Normal
+NormalMap=செங்குத்து வரைபடம்
+;Normal map
 NormalStatusForThisFormula=இந்தச் சூத்திரத்திற்கு இயல்பான நிலை
 ;Normal status for this formula
 NormalsOnDE=DE இல் இயல்நிலைகள்:
@@ -2541,6 +2701,10 @@ OpenTextParameters=உரை அளவுருக்களைத் திற
 ;Open text parameters
 OpenTheAnimationMaker=அனிமேஷன் உருவாக்கியைத் திற
 ;Open the animation maker
+OpenTheExample=எடுத்துக்காட்டைத் திற
+;Open the example
+OpenTheFolder=கோப்புறையைத் திற
+;Open the folder
 OpenTheFolderOfTheFile=கோப்பின் கோப்புறையைத் திற
 ;Open the folder of the file
 OpenTheFolderOfTheLog=பதிவுக் கோப்புகளின் கோப்புறையைத் திற (நாளுக்கு ஒன்று, 30 நாட்கள் வைக்கப்படும்)
@@ -2601,6 +2765,8 @@ OverwriteExistingImages=இருக்கும் படங்களை மே
 ;Overwrite existing images
 OverwriteExistingM3IFiles=இருக்கும் M3I கோப்புகளை மேலெழுது
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=முதன்மைக் கடவுக்குப் பின்னுள்ள கடவுகளுக்கு (நிழல்கள், மறைப்பு, கனஅளவு ஒளி, பிரதிபலிப்புகள்) தனிப் படி அமைப்புகள்
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16 பிட் (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2627,8 +2793,6 @@ PaintingAPreview=முன்னோட்டம் வரையப்படு�
 ;painting a preview
 PaintsThePictureAgainWithThe=இங்கே அமைத்த மேகங்களுடன் படத்தை மீண்டும் வரைகிறது
 ;Paints the picture again with the clouds as set here
-Panels=பலகங்கள்
-;Panels
 Pano=பனோ.
 ;pano.
 PanoramaModeTheFOVIsChoosen=பனோரமா முறை:\n- FOV தானாகத் தேர்ந்தெடுக்கப்படும்\n- சூழல் நிழல்களுக்கு 24பிட் SSAO அல்லது DEAO ஐப் பயன்படுத்தவும்\n- 2:1 விகிதம் பரிந்துரைக்கப்படுகிறது, ஆனால் அவசியமில்லை.
@@ -2641,6 +2805,12 @@ Parameter=அளவுரு
 ;Parameter
 Parameters=அளவுருக்கள்
 ;Parameters
+ParametersAndLights=அளவுருக்களும் ஒளிகளும்
+;Parameters and lights
+ParametersAsATextFileTxt=அளவுருக்கள் உரைக் கோப்பாக (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=அளவுருக்கள்: {} (இணைக்கப்பட்டது)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=அளவுருக்கள் கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டன.
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=அளவுருக்கள் ஏற்றப்பட்டன, ரெண்டர் செய்ய "Calculate 3D" ஐ அழுத்துங்கள்.
@@ -2657,6 +2827,8 @@ Pass=பாஸ் {}
 ;pass {}
 Passes=பாஸ்கள்
 ;Passes
+PatienceA4DFormulaWithNumerical=பொறுமை: எண்ணியல் DE உடன் 4D சூத்திரம் மெதுவாக ரெண்டர் ஆகும்; சிறியதாகத் தொடங்கி பிறகு விவரத்தை உயர்த்தவும்.
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=ரெண்டரை இடைநிறுத்து
 ;Pause rendering
 PausedPressToContinue=இடைநிறுத்தப்பட்டது, தொடர அழுத்தவும்
@@ -2667,8 +2839,8 @@ PercentOfLocalDE=உள்ளூர் DE இன் சதவீதம்
 ;Percent of local DE
 Picture=படம்
 ;picture
-PictureWithParametersJPEG=அளவுருக்களுடன் படம் (JPEG)
-;Picture with parameters (JPEG)
+PictureJPEG=படம் (JPEG)
+;Picture (JPEG)
 Pictures=படங்கள்
 ;pictures
 PicturesAndFilesTheAssistantMakes=உதவியாளர் உருவாக்கும் படங்களும் கோப்புகளும் {} இல் போகும்; எதுவும் நீக்கப்படாது. 4K ஐ விடப் பெரிய படங்கள் நீங்கள் ஒப்புக்கொண்ட பின்னரே உருவாக்கப்படும், கணக்கீடு 10 நிமிடங்களுக்குப் பின் நிற்கும். அது செய்யும் அனைத்தும் பதிவில் உள்ளது.
@@ -2713,6 +2885,8 @@ PostProcessingColon=பின்செயலாக்கம்:
 ;Post processing:
 PostProcessingLower=பின்செயலாக்கம்
 ;post processing
+PostText=பதிவு உரை:
+;Post text:
 Postprocess=பின்செயலாக்கம்
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: அடியை எந்த அடுக்கிற்கும் உயர்த்து.
@@ -2821,6 +2995,8 @@ Range=வரம்பு
 ;Range
 RawValuesMappedValuesClampedValues=மூல மதிப்புகள்:\n  {}..\n  {}\nவரைபட மதிப்புகள்:\n  {}..\n  {}\nவரம்பிட்ட மதிப்புகள்:\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=பின் கடவுகளின் கதிர் படி:
+;Ray step of the post passes:
 Rays=கதிர்கள்:
 ;Rays:
 RaystepDivisor=கதிர் படி வகுத்தி:
@@ -2829,6 +3005,8 @@ RaystepMultiplier=கதிர் படி பெருக்கி:
 ;Raystep multiplier:
 RaystepSubDEstop=கதிர் படி துணை DEstop:
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=எடுத்துக்காட்டுக் கோப்புகளைப் படிக்கிறது ...
+;Reading the example files ...
 ReadingTheHistoryEntries=வரலாறு படிக்கப்படுகிறது... {} பதிவுகள்
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=ஒன்றைத் திருத்திய பின் மொழிக் கோப்புகளை மீண்டும் படிக்கிறது
@@ -2839,6 +3017,8 @@ RecalculateASelection=\sதேர்வை மீண்டும் கணக்
 ;\sRecalculate a Selection
 RecalculatingTheSelection=தேர்வு மீண்டும் கணக்கிடப்படுகிறது
 ;recalculating the selection
+RecentColours=சமீபத்திய வண்ணங்கள்:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=பறப்பின் {} முக்கிய பிரேம்கள் பதிவு செய்யப்பட்டன
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=பறப்பைப் பதிவு செய்கிறது: பொத்தான் அழுத்தப்பட்டிருக்கும்போது நேவிகேட்டரின் ஒவ்வொரு புதிய பார்வையும் (விநாடிக்கு அதிகபட்சம் இரண்டு) அனிமேஷனின் அடுத்த முக்கிய பிரேமாகும்
@@ -2849,6 +3029,8 @@ RectLower=செவ்.
 ;rect.
 Rectilinear=நேர்கோட்டு
 ;Rectilinear
+ReduceTheMeshToThisShare=வலையை அதன் முனைகளின் இந்தப் பங்கிற்குக் குறை (சதவீதம், முனைக் கொத்தாக்கம்); 100 வரைந்தபடியே வைக்கும்
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=தொகுதிப் பிழைகளைக் குறைக்கிறது, ஸ்ப்லைன் இடைக்கணிப்பால் இனி அவ்வளவு முக்கியமில்லை.
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=மிகை படியெடுப்பைத் தவிர்க்கக் கதிர் படி பெருக்கியைக் குறைக்கிறது.\nரெண்டரை மெதுவாக்கும்.
@@ -2935,6 +3117,10 @@ RenderingNow=இப்போது ரெண்டர் செய்கிற�
 ;rendering now
 RenderingSliceOf=துண்டு ரெண்டர்: {} / {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=நிலையான சோதனைக் காட்சியை (Integer Power, 640 x 512, 120 மறுசெயல்கள், முதன்மைக் கடவு) செயலியிலும் கிராபிக்ஸ் அட்டையிலும் ரெண்டர் செய்யும், அதனால் வெவ்வேறு கணினிகளின் முடிவுகள் ஒப்பிடத்தக்கவை. உரையை அப்படியே பதிவிடவும்.
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=படத்தின் நடுவை முதன்மைக் கடவு மட்டும் கொண்டு மூன்று படி அமைப்புகளில் ரெண்டர் செய்து ஒவ்வொன்றிலும் புள்ளிகளையும் துளைகளையும் எண்ணும். பரிந்துரைத்த அமைப்பைக் காட்சிக்குப் பயன்படுத்தலாம்.
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=இங்கிருந்து மீண்டும்
 ;Repeat from here
 RerenderAllKeyframePreviewImages=எல்லா முக்கிய பிரேம் முன்னோட்டப் படங்களையும் மீண்டும் ரெண்டர் செய்
@@ -2945,8 +3131,6 @@ Reset0=மீட்டமை 0
 ;Reset 0
 Reset2=மீட்டமை
 ;Reset
-ResetLayout=அமைப்பை மீட்டமை
-;Reset layout
 ResetNow=இப்போது மீட்டமை
 ;Reset now
 ResetOffsetScale=ஆஃப்செட்+அளவை மீட்டமை
@@ -3007,6 +3191,8 @@ RoughImage=கரடுமுரடான படம்
 ;rough image
 Roughness=கரடுமுரடுத்தன்மை
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=விளிம்புகளை வட்டமாக்கும்; சிறிய மதிப்புகள் வடிவத்தை வைத்திருக்கும், பெரியவை உருக்கும்
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=X, Y இன் Rout கோணம்
 ;Rout angle of X, Y
 RoutAngleOfXZ=X, Z இன் Rout கோணம்
@@ -3017,6 +3203,14 @@ Rows=வரிசைகள்
 ;Rows
 RowsOfTiles=ஓடுகளின் வரிசைகள்
 ;Rows of tiles
+RunTheBenchmark=செயல்திறன் சோதனையை இயக்கு
+;Run the benchmark
+RunTheNoiseDoctor=இரைச்சல் மருத்துவரை இயக்கு
+;Run the noise doctor
+Running0=இயங்குகிறது: {0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=இரைச்சல் மருத்துவர் இயங்குகிறார் ...
+;Running the noise doctor ...
 SLeft={} வி மீதம்
 ;{} s left
 SSAO15=SSAO15
@@ -3055,6 +3249,8 @@ SaveAsImageAtTheLocation=நீங்கள் குறிப்பிடும
 ;Save as image at the location you specify
 SaveBtrace2=btrace2 ஐச் சேமி...
 ;Save btrace2...
+SaveColors=வண்ணங்களைச் சேமி...
+;Save colors...
 SaveCompleteM3I=முழு M3I ஐச் சேமி
 ;Save complete M3I
 SaveExit=சேமி + வெளியேறு
@@ -3069,18 +3265,12 @@ SaveM3iFiles=m3i கோப்புகளைச் சேமி
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=உள்ளகப் படத் தாங்கல் உட்பட m3i கோப்புகளைச் சேமி, பிரதிபலிப்புகள் முதலியவற்றைச் சேமித்து.
 ;Save m3i files including the internal image buffer, saving reflections etc.
-SaveM3p=m3p சேமி
-;Save m3p
 SaveParametersOnly=அளவுருக்களை மட்டும் சேமி
 ;Save parameters only
 SaveParametersToClipboardAsText=அளவுருக்களைக் கிளிப்போர்டுக்கு உரையாகச் சேமி,\nபின்னர் ctrl+v ஐ அழுத்தி உரையை வேறு இடத்தில் செருகலாம்.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=படத்தைச் சேமி
 ;Save pic
-SavePicture=படத்தைச் சேமி
-;Save picture
-SavePictureAsJPEG=படத்தை JPEG ஆகச் சேமி
-;Save picture as JPEG
 SaveProject=திட்டத்தைச் சேமி
 ;Save project
 SaveTextParametersInThePNG=தேர்ந்தால் PNG கோப்பில் உரை அளவுருக்களைச் சேமி.\nஎடுத்துக்காட்டாக gimp இல்\n'Image Properties' -> Comment இல் இவற்றைப் பார்க்கலாம்.
@@ -3117,6 +3307,8 @@ SavedOpenEXRFloatingPointColoursAnd={} சேமிக்கப்பட்ட�
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} சேமிக்கப்பட்டது (ஒளிபுகும் பின்னணி)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=இந்த வண்ணங்களுடன் ஒளியமைப்பை ஒளிக் கோப்பாகச் சேமிக்கும் (.m3l, MB3D க்கும்); "கோப்பிலிருந்து வண்ணங்கள்" அதிலிருந்து வண்ணங்களைத் திரும்ப எடுக்கும்.
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=சேமிப்பு:
 ;Saving:
 SavingSucceeded=சேமிப்பு வெற்றி
@@ -3135,6 +3327,8 @@ ScaleTheValuesByTheSelected=தேர்ந்த சதவீதத்தால
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=தொடக்கச் சூத்திரத்தின் அளவு மதிப்பு, DE துல்லியத்தைப் பாதிக்கும்
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=ஒவ்வொரு மறுசெயலிலும் ஒரு ஆயத்தை அளவிடும்; -1 பிரதிபலிக்கும், 0 தட்டையாக்கும்
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=கணக்கிடப்படும் சூழல் கதிர்களின் அதிகபட்ச நீளத்தை அளவிடுகிறது.\nநிழல்களுக்கு அதிக ஆழம் தர 1 ஐ விடப் பெரிய மதிப்பு,\n1 க்குக் கீழே அதிக உள்ளூர் நிழல்கள்.
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=ஸ்கேன் முன்னோட்டம்
@@ -3153,6 +3347,8 @@ SecantSearchForTheSurface=மேற்பரப்பிற்கான secant �
 ;Secant search for the surface
 SecantSearchmode=Secant தேடல் முறை:
 ;Secant searchmode:
+Second=இரண்டாம்
+;second
 SecondFocusPointIfDifferentFrom=இரண்டாம் குவியப் புள்ளி, முதலாவதிலிருந்து வேறுபட்டால்\nகுவியப் புள்ளிக்குப் பதில் குவியக் கோடு கிடைக்கும்.\n(இயற்பியல் ரீதியாக அவ்வளவு யதார்த்தமல்ல, ஆனால் இருப்பது நல்லது)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=முதன்மைச் சாளரத்தின் 'Coloring' தாவலில் வரைபட நிறமூட்டல் விருப்பங்களையும் பார்க்கவும்.
@@ -3195,6 +3391,8 @@ SessionsAndCrashes=அமர்வுகளும் செயலிழப்ப
 ;Sessions and crashes
 Set=அமை
 ;Set
+SetItUpNowTheFormulas=இப்போது அமைக்கவா? சூத்திரங்கள் தங்கள் இடங்களிலேயே இருக்கும்: முதல் பகுதி {} ஐயும், இரண்டாம் பகுதி {} ஐயும் எடுக்கும், min உடன் இணைக்கப்படும் (இரு பொருள்களும்).
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=ஒளிச் சார்பை cosine ஆக அமை
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=வரைபடங்களின் நோக்குநிலையைப் பொருளுக்குச் சார்பாக அமை.\nஅனிமேஷன்களில் ஒளிகளைக் காட்சியுடன் நிலைநிறுத்தப் பயன்படுத்தவும்.
@@ -3203,6 +3401,8 @@ SetTheVisualThemeOfThe=செயலியின் காட்சித் த�
 ;Set the visual theme of the application
 SetTo0=0 ஆக அமை
 ;set to 0
+SetUpDECombination=DE இணைப்பை அமை
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=நிழல் கணக்கிடப்படும்போது தொடர்புடைய ஒளிச் சார்பைத் தானாக\ncosine ஆக அமைக்கிறது.\ncosine மற்றும் இருபடி cosine சார்புகள் நிழலுடன் நன்றாக வேலை செய்யும்.
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=காட்சித் தீம் அமைத்தல்
@@ -3211,12 +3411,18 @@ ShadersCompiling=ஷேடர்கள் தொகுக்கப்படு�
 ;shaders compiling
 ShadowsAndAO=நிழல்களும் AO யும்
 ;shadows and AO
+Share=பகிர்
+;Share
 ShareRenderingBetweenYourComputersThrough=பகிர்ந்த கோப்புறை மூலம் உங்கள் கணினிகளுக்கிடையே ரெண்டரைப் பகிர்
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=பகிர்: படம், அதன் அளவுருக்கள் உரைக் கோப்பாக, பதிவின் உரை, ஒரு குழுவிற்குத் தயார்
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=இந்தக் கணினியைப் பகிர்: கோப்புறையின் பணிகளை ரெண்டர் செய், என்னுடையதை ஸ்வார்முக்குக் கொடு
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=பகிர்ந்த கோப்புறை:
 ;Shared folder:
+SharedInThePostTextIs="{}" கோப்புறையில் சேமிக்கப்பட்டது; பதிவு உரை இடைநிலைப் பலகையில் உள்ளது.
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=பகிர்கிறது, ஆனால் ஸ்வார்மில் இன்னும் வேறு கணினி இல்லை: ரெண்டர்கள் இந்தக் கணினியில் மட்டும் இயங்கும்
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=பகிர்வு நிறுத்தப்பட்டது: {}
@@ -3283,6 +3489,10 @@ Sliding=சறுக்கல்
 ;Sliding
 SlidingWalkingStep=சறுக்கல்+நடை படி:
 ;Sliding+Walking step:
+Slot=இடம் {}
+;slot {}
+SlotsTo=இடங்கள் {} முதல் {} வரை
+;slots {} to {}
 SmoothDEcomb=மென்மையான DEcomb:
 ;Smooth DEcomb:
 SmoothImageOnLoad=ஏற்றும்போது படத்தை மென்மையாக்கு
@@ -3335,6 +3545,8 @@ StartBatchRendering=தொகுதி ரெண்டரைத் தொடங�
 ;Start batch rendering
 StartFrom=இதிலிருந்து தொடங்கு
 ;Start from
+StartFromAnExampleOpenOne=எடுத்துக்காட்டிலிருந்து தொடங்கவும்: ஒன்றைத் திறந்து மதிப்புகளைக் கொஞ்சம் கொஞ்சமாக மாற்றவும்.
+;Start from an example: open one and change the values a little at a time.
 StartIndex=தொடக்கக் குறியீடு:
 ;Start index:
 StartRendering=ரெண்டரைத் தொடங்கு
@@ -3357,6 +3569,10 @@ StepRelax=படித் தளர்வு:
 ;Step relax:
 StepcountForBinarySearch=இருமத் தேடலுக்கான \nபடி எண்ணிக்கை:
 ;Stepcount for \nbinary search:
+StepsAndNoise=படிகளும் இரைச்சலும்
+;Steps and noise
+StepsAndNoise2=படிகளும் இரைச்சலும்...
+;Steps and noise...
 StepwidthLimiter=படி அகல வரம்பி:
 ;Stepwidth limiter:
 Stereo=ஸ்டீரியோ
@@ -3405,6 +3621,8 @@ StrengthOfDynamicFog=இயங்கு மூடுபனியின் வல
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=புடைப்பின் வலிமை, அளவு (ஃபிராக்டல் அலகுகள்) மற்றும் நுண்மை (0.2 மென்மை முதல் 0.8 தானியம் வரை)
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=ஒவ்வொரு மறுசெயலிலும் வெளியை நீட்டும்; 2 அல்லது 3 அருகில் பாரம்பரிய வடிவம், கழித்தல் குறி பிரதிபலிக்கும், 1 முதல் 1.5 வரையிலான மதிப்புகள் உருக்கும்
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=மேல் மற்றும் கீழ் பகுதிகளை நீட்டுகிறது, முழுக் கோள விருப்பத்தில் பொதுப் படத்திற்குப் பயனுள்ளதாக இருக்கலாம்.
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=துணை பிரேம் எண்ணிக்கை\nபெருக்கி:
@@ -3449,12 +3667,20 @@ SwitchBackToTheDefaultTheme=இயல்புநிலைத் தீமுக
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=பதிவை வரலாற்றிலிருந்து நீக்கு (கணக்கிட்ட படத்தின் அளவுருக்களும் சிறுபடமும் நீக்கப்படும்; பிற கோப்புகள் அப்படியே இருக்கும்)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=இடைநிலைப் பலகையிலுள்ள அளவுருக்களிலிருந்து (எடுத்துக்காட்டாக ஒரு பதிவிலிருந்து நகலெடுத்தது) வண்ணங்களை மட்டும் எடுக்கும்.
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=அளவுருக் கோப்பிலிருந்து (.m3p, .m3i, உரை) அல்லது ஒளிக் கோப்பிலிருந்து (.m3l) வண்ணங்களை மட்டும் (மேற்பரப்பு வண்ணத்தட்டு, அதன் ஒளிபுகுதன்மை, உள் வண்ணங்கள்) எடுக்கும்: ஒளிகள், பின்னல், பார்வை அப்படியே இருக்கும்.
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=இலக்கு வரைபட இடம்
 ;Target Map Slot
 TargetMapSlotUseThisNumber=இலக்கு வரைபட இடம். அனிமேட் செய்த வரைபடம் பெற இந்த எண்ணை உங்கள் ஃபிராக்டலில் வரைபடமாக, எ.கா. உயர வரைபடமாகப் பயன்படுத்துங்கள்
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=வார்ப்புரு:
 ;Template:
+TextureExport=இழைம ஏற்றுமதி...
+;Texture export...
+TextureExport2=இழைம ஏற்றுமதி
+;Texture export
 TheAmazingBoxAkaMandboxFormula=fractalforums.com இல் TGlad கண்டுபிடித்த 'Amazing Box' எனும் Mandbox சூத்திரம்.\n\nஒரு தொடர்மடக்கின் சூத்திரம் இப்படி:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=சேர்த்த பரவல் மற்றும் specular நிறங்களின் அளவு 1 ஐ விடப் பெரிது,\nயதார்த்தமான நிறமூட்டலுக்கு அவற்றைக் கீழ்அளவிடவா?
@@ -3473,10 +3699,14 @@ TheBTracer2CacheFormatIsNot2=BTracer2 cache வடிவம் ஆதரிக�
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=பின்னணிப் படத்தை ஏற்ற முடியவில்லை.
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=பின்னணிப் படம் {} வரைபடக் கோப்புறையில் நகலெடுக்கப்பட்டது: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=எஸ்கேப் டைம் சூத்திரங்களுக்கான bailout மதிப்பு.\nதொடர்மடக்கும்போது 3d மதிப்பு இதை மீறினால்,\nதற்போதைய புள்ளி பொருளுக்குச் சொந்தமில்லை.
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=மங்கல் ஆரம் இந்த மதிப்பில் வரம்பிடப்படும்.\nசில படப் பகுதிகளில் ஆரம் மிகப் பெரிதாகும்போது ரெண்டரை வேகப்படுத்தும்.
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=பெட்டி மடிப்பின் எல்லை: அதற்கு அப்பால் உள்ளது திரும்பப் பிரதிபலிக்கப்படும்; 1 பாரம்பரியப் பெட்டி, சிறியது அதிகம் மடிக்கும்
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=கணக்கீடு தோல்வியுற்றது: {}
 ;The calculation failed: {}
 TheCalculationFailedLower=கணக்கீடு தோல்வியுற்றது
@@ -3489,10 +3719,14 @@ TheCameraLeftTheFractal=கேமரா ஃபிராக்டலை விட
 ;the camera left the fractal
 TheChosenValueOverAllFrames=அனிமேஷனின் எல்லா பிரேம்களிலும் தேர்ந்த மதிப்பு: முக்கிய பிரேமின் சதுரத்தை மேலே அல்லது கீழே இழுக்கவும், அல்லது கிளிக் செய்து அதன் மதிப்பைத் தட்டச்சு செய்யவும்
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=வண்ணம் பதினாறடிமான RGB ஆக, #RRGGBB (# விருப்பத்தேர்வு; #RGB உம் வேலை செய்யும்)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=ஆழமான நீரின் நிறம்: நீரின் சொந்த ஒளி, மற்றும் அதன் கீழே உள்ளது ஆழத்துடன் மாறும் நிறம் (மாற்றக் கிளிக் செய்யவும்)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=கட்டளை வரி நிரல் mb3d இந்த நிரலின் அருகே இல்லை: நிரலை மீண்டும் நிறுவுங்கள்.
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=இங்குள்ள dIFS சூத்திரங்கள் ({}) வெளியை மட்டும் மாற்றும்: நகர்த்தும், திருப்பும், மடிக்கும் அல்லது மீண்டும் செய்யும். dIFS சங்கிலிக்கு அவற்றுக்குப் பின் boxIFS, cylinderIFS அல்லது HeightMapIFS போன்ற ஏதாவது வரையும் dIFS வடிவச் சூத்திரமும் தேவை.
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=இயல்புநிலை எண்ணிடல் X மற்றும் Y இல் பிரிக்கப்பட்ட 2 எண்களைக் கொண்டது.\nஇந்த விருப்பத்தைத் தேர்ந்தால், எண்ணிடல் ஒரே ஒரு எண்,\nஒவ்வொரு நெடுவரிசையிலும் அதிகரித்து அடுத்த வரிசையில் தொடரும்.
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=இயல்புநிலை வெளியீடு பொருளுக்கு வெள்ளை, வெளிப் பகுதிக்குக் கருப்பு.\nநிறங்களை எதிர்மறையாக்க இந்த விருப்பத்தைத் தேர்ந்தெடுங்கள்.
@@ -3511,6 +3745,8 @@ TheEntriesUnderTheirDaysA=பதிவுகள் அவற்றின் ந�
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=பதிவை நீக்க முடியவில்லை.
 ;The entry could not be removed.
+TheExponentOfTheBulb8=பல்பின் அடுக்கு; 8 பாரம்பரிய Mandelbulb ஐத் தரும், 2 மென்மையானது, உயர்ந்த மதிப்புகள் அதிக மடிப்புகளைத் தரும்
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=கோப்பு இனி அங்கே இல்லை.
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=கோப்பு <{}.m3f> ஏற்கனவே உள்ளது. மேலெழுதவா?
@@ -3521,10 +3757,18 @@ TheFirstFocusPointTheValue=(முதல்) குவியப் புள்�
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=ஊடாகப் பறத்தல் இங்கே தொடங்க முடியாது: {}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=ஒரு அச்சில் மடிப்பின் இடப்பெயர்ச்சி; 1 எளிய வடிவம், மற்ற மதிப்புகள் நகல்களை நகர்த்தும்
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=கோப்புறை இல்லை (அல்லது அடைய முடியவில்லை)
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=சூத்திரம் தனியாக, அதன் இயல்புநிலை மதிப்புகளில்
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=சூத்திர நூல்: ஒவ்வொரு சூத்திரமும் சொற்களில், படத்துடன், விளக்கப்பட்ட மதிப்புகளுடன், எடுத்துக்காட்டுக் கோப்புகளுடன்
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=ASM அடிப்படையிலான சூத்திரங்களிலிருந்து வேறுபடுத்தச் சூத்திரப் பெயர் "JIT" உடன் தொடங்க வேண்டும்
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=நான்காவது ஆயம்: இது அதை 0 இலிருந்து விலகித் தொடங்கும்; 4D சுழற்சி அதைத் திருப்பும்
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=ஃபிராக்டல் எந்தப் பார்வையிலும் இல்லை.
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=முதன்மைச் சாளரத்தின் ஃபிராக்டல் Gaussian splats ஆக, Blender (5.3 மற்றும் அதற்குப் பின்) மற்றும் பிற splat பார்வையாளர்களில் எல்லாப் பக்கங்களிலிருந்தும் பார்க்க. இது பல திசைகளிலிருந்து கணக்கிடப்பட்டு ஒவ்வொரு பிக்சலும் அதன் நிறத்துடன் ஒரு splat ஆகும்.
@@ -3545,6 +3789,8 @@ TheImageSizeChangedCalculateThe=பட அளவு மாறியது: ப�
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap முறை "Coloring" தாவலில் கணக்கிட்ட விருப்பத்தைச் சார்ந்தது.
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=இந்தச் சூத்திரத்தின் மட்டும் ஜூலியா மாறிலி; காட்சியின் ஜூலியா முறை சூத்திரங்கள் சாளரத்தில் உள்ளது
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=கடைசி முக்கிய பிரேம்
 ;The last keyframe
 TheLastSessionCrashed=கடைசி அமர்வு செயலிழந்தது: {}. மேலும் Log சாளரத்தில் (தலைப்புப் பட்டையில் உள்ள ஐகான்).
@@ -3553,6 +3799,8 @@ TheLastSessionDidNotEnd=கடைசி அமர்வு சரியாக �
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=முதன்மைத் திருத்தி இன்னும் ரெண்டர் செய்கிறது. முதலில் நிறுத்துங்கள் அல்லது முடியும் வரை காத்திருங்கள்.
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=முதன்மைக் கடவு மிக நுண்ணிய கதிர் படியுடன் நகரும் போது நிழல்கள், மறைப்பு, பிரதிபலிப்புகள் சாதாரணப் படியை வைத்திருக்கலாம்: நுண்ணிய படி தெரியும் இடத்தில் மட்டுமே நேரம் செலவாகும். அளவுருக்களுடன் சேமிக்கப்படும்.
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=முதன்மைச் சாளரத்தின் பார்வை
 ;The main window's view
 TheMapOptionsCalculatesXY=வரைபட விருப்பங்கள் கோள வரைபடங்களுக்குக் குறிப்பிட்ட திசையனிலிருந்து\nx,y ஆயத்தொலைவுகளைக் கணக்கிடுகின்றன, இது வழக்கமாக மென்மையான தொடர்மடக்குகளை\nஅடிப்படையாகக் கொண்ட முதல் நிறத் தேர்வையும் மாற்றும்.\nஇந்த விருப்ப மாற்றங்களின் முடிவைப் பார்க்கப் படத்தை\nமீண்டும் கணக்கிட வேண்டும்.
@@ -3569,12 +3817,16 @@ TheNewestJobSoFarRendered=இதுவரை புதிய பணி: ரெ�
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=அளவுருக்கள் இனி முடிக்கப்படாத கணக்கீட்டுடன் பொருந்தவில்லை: கணக்கிட "Calculate 3D" ஐ அழுத்துங்கள்.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=DE இணைப்பின் {} பகுதி dIFS சூத்திரங்களை ({}) மற்றவற்றுடன் ({}) கலக்கிறது. ஒவ்வொரு பகுதியும் ஒரு வகையை மட்டுமே கணக்கிடும்: dIFS சூத்திரங்களை ஒரு பகுதியிலும் மற்றவற்றை மற்றொரு பகுதியிலும் வைக்கவும் (சூத்திரச் சாளரத்தின் "DEcombinate" தாவல் இரண்டாம் பகுதி எங்கு தொடங்கும் என்பதை அமைக்கும்).
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=படம் அதன் கணக்கீட்டுடன் பொருந்தவில்லை: மீண்டும் கணக்கிடுங்கள்.
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=மற்ற எல்லா பாஸ்களுக்கும் பின் படத்தின் முடித்தல்: வெளிப்பாடு, பிரகாசமான ஒளியைச் சுற்றி ஒளிர்வு, filmic டோன் மேப்பிங், நிறத் தரப்படுத்தல், ஒரு vignette மற்றும் நிற விளிம்புகள்
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=தளத்தின் நிறம் (மாற்றக் கிளிக் செய்யவும்)
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=கோள மடிப்பின் உள் கோளத்தின் ஆரம்; உள்ளே இருப்பது ஊதப்படும்; 0.5 பாரம்பரிய மதிப்பு, 0 அணைக்கும்
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=சுழற்சி நடுப்புள்ளியைச் (Xmid, Ymid, Zmid) சுற்றிச் செய்யப்படுகிறது
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=சுழற்சிகள் வரிசையாகச் செய்யப்படுகின்றன, முதலில் XW, கடைசியாக ZW தளம்.
@@ -3589,6 +3841,8 @@ TheSharedFolderOfTheSwarm=ஸ்வார்மின் பகிர்ந்�
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=எந்த அடுக்கு மதிப்புகளையும் பயன்படுத்தக்கூடிய சைன் பல்ப், கணக்கீடு முழு எண் அடுக்குகளை விட மெதுவானது.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=அடிப்படை வடிவத்தின் அளவு, காட்சி அலகுகளில்
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=மேகங்களின் அம்சங்களின் அளவு ஃபிராக்டல் அலகுகளில், மற்றும் அவற்றின் நிறம் (கிளிக்)
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=ஓடுகளின் அளவு
@@ -3609,10 +3863,14 @@ TheViewIsFilledWithThe=பார்வை ஃபிராக்டலால் �
 ;the view is filled with the fractal
 TheViewShowsOnlySky=பார்வை வானத்தை மட்டும் காட்டுகிறது
 ;the view shows only sky
+TheWallThicknessOfAHollow=வெற்று வடிவத்தின் சுவர் தடிமன்
+;the wall thickness of a hollow shape
 Themes=தீம்கள்
 ;Themes
 ThereIsAFileAlready={} கோப்பு ஏற்கனவே உள்ளது.
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=இந்த அளவுருக்கள் "{}" சூத்திரத்தைப் பயன்படுத்துகின்றன, அது இங்கு நிறுவப்படவில்லை.\n\nசூத்திரங்கள் .m3f இல் முடியும் கோப்புகள். {}.m3f ஐப் பெற்று (பெரும்பாலும் அளவுருக்களுடன், குழுவின் கோப்புகளில் அல்லது சூத்திரத் தொகுப்பில் பகிரப்படும்) சூத்திரக் கோப்புறைகளில் ஒன்றில் வைக்கவும்:\n{}\n\nபிறகு அளவுருக்களை மீண்டும் திறக்கவும் அல்லது ஒட்டவும்.
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=உதவியாளரிடம் கேட்க வேண்டியவை
 ;Things to ask the assistant
 ThisComputer=இந்தக் கணினி:
@@ -3629,6 +3887,8 @@ ThisRenderKeepsNoImage=இந்த ரெண்டர் படத்தை வ
 ;This render keeps no image.
 ThisRenderKeptNoParameters=இந்த ரெண்டர் அளவுருக்களை வைத்திருக்கவில்லை.
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=இந்தக் காட்சி ஒரு சூத்திரச் சங்கிலியில் இரண்டு வகைச் சூத்திரங்களைக் கலக்கிறது:\n- dIFS சூத்திரங்கள் ({}) தூரங்களிலிருந்து நேரடியாக வடிவத்தை உருவாக்கும்,\n- மற்றவை ({}) படிப்படியாக மறுசெயல் செய்யப்படும் பின்னல்கள் (எஸ்கேப் டைம்).\nஒரு சங்கிலி இரு வகைகளையும் ஒரே நேரத்தில் கணக்கிட முடியாது.\n\nஇரண்டையும் காட்ட, DE இணைப்பால் இணைக்கவும்: முதல் பகுதி ஒரு வகையையும் இரண்டாம் பகுதி மற்றொன்றையும் கணக்கிடும், இரு பொருள்களும் இணைக்கப்படும் (min: இரு பொருள்களும், max: மேற்பொருந்தும் இடத்தில் மட்டும், smooth: மென்மையான இணைப்புடன்). இது சூத்திரச் சாளரத்தின் மேலே உள்ள "DEcombinate" தாவல்.
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=இந்த அமர்வு (நேரலை)
 ;This session (live)
 ThreadPriority=திரி\nமுன்னுரிமை
@@ -3657,6 +3917,8 @@ TileXYLower=ஓடு X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=ஓடு X={} Y={} சேமிக்கப்பட்டது.
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=ஓடு வடிவம்: இரு மடங்கு அளவிற்குப் பிரதிபலிக்கப்பட்டது, ஒவ்வொரு விளிம்பிலும் இணைப்பின்றி
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=ஓடுகள்
 ;tiles
 Tiles2=ஓடுகள்
@@ -3671,6 +3933,8 @@ Tiling=ஓடுகளாக்கம்:
 ;Tiling:
 TimeNeeded=தேவையான நேரம்:
 ;Time needed:
+Title=தலைப்பு:
+;Title:
 ToCalculateABetterHardShadow=சிறந்த கடின நிழலைக் கணக்கிட, 1 HS மட்டும் தேர்ந்தால்!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=கிளிப்போர்டுக்கு
@@ -3707,6 +3971,8 @@ TracingObject=பொருள் தடமறியப்படுகிறத�
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=பல நிகழ்வுகள் மற்ற முனைகளின் வேலையை மேலெழுதாமல் அதே கோப்புத் தொடரை ரெண்டர் செய்யக் கோப்பு முறைமை முழுவதும் ரெண்டர் நிலையைக் கண்காணி
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=உருமாற்றங்கள் (இணைப்பில் மட்டும்)
+;Transformations (only in combination)
 Transparency=ஒளிபுகுதன்மை
 ;Transparency
 TransparencyIntensity=ஒளிபுகுதன்மைத் தீவிரம்
@@ -3725,6 +3991,8 @@ Turned=திருப்பப்பட்டது:
 ;Turned:
 Turntable=சுழல் மேசை
 ;Turntable
+TweakOfParametersBy={} இன் அளவுருக்களின் மாற்றம்
+;Tweak of parameters by {}
 Type=வகை:
 ;Type:
 Type2=வகை
@@ -3775,6 +4043,8 @@ UseAmbientShadowsFromOriginalM3I=அசல் M3I கோப்பிலிரு
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=இயல்புநிலை நோக்குநிலையைப் பயன்படுத்து
 ;Use default orientation
+UseInTheFormulasWindow=சூத்திரங்கள் சாளரத்தில் பயன்படுத்து
+;Use in the Formulas window
 UseItInAnimationsToFix=அனிமேஷன்களில் ஒளிகளைக் காட்சியுடன் நிலைநிறுத்தப் பயன்படுத்தவும்.
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=இயல்நிலைகள் (ஒளியமைப்பிற்கான மேற்பரப்புத் திசை) மோசமாகத் தெரிந்தால் மட்டும் இரண்டாம் விருப்பமாகப் பயன்படுத்தவும்.
@@ -3803,6 +4073,8 @@ Value=மதிப்பு:
 ;Value:
 ValueNotGuilty=மதிப்பு செல்லாது
 ;Value not guilty
+Values=மதிப்புகள்:
+;Values:
 ValuesHaveAFractionFieldThat=// மதிப்புகளின் பின்னப் புலம் 0 அல்ல.
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=FOV இல் DEstop ஐ மாற்று:
@@ -3863,6 +4135,10 @@ WarningMustRecalculateTheWholeImage=எச்சரிக்கை: செயல
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=எச்சரிக்கைகளும் பிழைகளும்
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} வரைபடக் கோப்புறையில் வரைபடம் {} ஆக நகலெடுக்கப்பட்டது: {}
+;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=4D சுழற்சியைக் கவனிக்கவும் (சூத்திரங்கள் சாளரம்): அது வடிவத்தை முழுமையாக மாற்றும்.
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=நீர்:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3895,6 +4171,10 @@ White=வெள்ளை
 ;white
 WhiteOutside=வெளியே வெள்ளை
 ;White outside
+WhoseParametersYouStartedFromGroups=யாருடைய அளவுருக்களிலிருந்து தொடங்கினீர்கள்: குழுக்கள் கலைஞருக்கு நன்றி கூறக் கேட்கின்றன (எடுத்துக்காட்டாக: Marije இன் "Pipe Organ" இன் மாற்றம்)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=கணக்கீடு ஏன் தொடங்க முடியாது
+;Why the calculation cannot start
 Width=அகலம்:
 ;Width:
 Windows=Windows
@@ -3909,18 +4189,18 @@ WithThe360PanoramaCameraA=360 பனோரமா கேமராவுடன்:
 ;With the 360 Panorama camera: a stereo panorama for VR, both eyes one above the other (left on top), the depth right in every direction
 WithZBuffer=ZBuffer உடன்
 ;With ZBuffer
-Workspace=பணியிடம்
-;Workspace
-WorkspaceOneWindowWithPanels=பணியிடம்: பலகங்களுடன் ஒரே சாளரம்
-;Workspace: one window with panels
 Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=வரைபடங்களை எழுது
+;Write the maps
 WritesTheEnglishTextsAsA=ஆங்கில உரைகளை இந்தப் பெயரில் புதிய மொழிக் கோப்பாக எழுதுகிறது; உரைத் திருத்தியால் மொழிபெயர்த்து, பின் Reload ஐ அழுத்துங்கள்
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=படத்தை இப்போது இருப்பது போல (முடியாத வரிசைகள் பின்னணியாக) .m3i கோப்பாக எழுதுகிறது
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=எழுதப்பட்டது: {0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=எழுதப்பட்டது: {}\n"=" இன் வலப்புறம் உள்ள உரைகளை உரைத் திருத்தியால் மொழிபெயர்த்து, பின் Reload ஐ அழுத்துங்கள்.
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=X கோணம்:
@@ -3985,8 +4265,6 @@ ZBuf16Bit=ZBuf16Bit
 ;ZBuf16Bit
 ZBuffer=Z-buffer: {}
 ;Z-buffer: {}
-ZBufferPicture=Z-buffer படம்
-;Z-buffer picture
 ZEnd=Z முடிவு
 ;Z end
 ZMid=Z நடு

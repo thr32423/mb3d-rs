@@ -5,7 +5,7 @@
 use super::util::{argb, rgb_of};
 use super::Mb3d;
 use crate::vcl::bitmap::Bitmap;
-use crate::vcl::lang::tr;
+use crate::vcl::lang::{tr, trf};
 use crate::vcl::{DialogResult, Ev, Event, MouseButton, Ui};
 
 const F: &str = "ColorForm";
@@ -152,6 +152,34 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             super::main_form::show_paint_brush(app, ui, false);
         }
         "RadioGroup1Click" => radio_group1(app, ui),
+        "ColorsFileBtnClick" => {
+            let o = crate::vcl::dialogs::FileOptions {
+                title: tr("@MB:ColorsFromFile"),
+                filter: format!("{}|*.m3p;*.m3i;*.m3l;*.txt;*.m3s|{}|*.*", tr("@MB:ParametersAndLights"), tr("@MB:AllFilesParen")),
+                initial_dir: Some(app.ini.dir(super::ini::DIR_M3P)),
+                ..Default::default()
+            };
+            ui.open_dialog("palette:colorsfile", &o);
+        }
+        "ColorsClipBtnClick" => {
+            let text = crate::vcl::clipboard::get().unwrap_or_default();
+            let l = if text.contains("Mandelbulb3Dv") {
+                crate::m3p::raw_from_text(&text).and_then(|(raw, _)| crate::m3p::parse(&raw)).map(|m| m.scene.lighting)
+            } else {
+                Err(tr("@MB:NoTextParametersFoundInThe"))
+            };
+            colors_taken(app, ui, l, &tr("@MB:FromClipboard"));
+        }
+        "ColorsSaveBtnClick" => {
+            let o = crate::vcl::dialogs::FileOptions {
+                title: tr("@MB:SaveColors"),
+                filter: format!("{}|*.m3l", tr("@MB:M3DLightParameterM3l")),
+                initial_dir: Some(app.ini.dir(super::ini::DIR_LIGHTS)),
+                default_ext: "m3l".into(),
+                ..Default::default()
+            };
+            ui.save_dialog("palette:colorssave", &o);
+        }
         "Image1MouseDown" => {
             if let Ev::MouseDown { button: MouseButton::Left, x, .. } = e.ev {
                 ui.cm(F, "Shape31").brush_clear = false;
@@ -431,8 +459,64 @@ fn move_slider(app: &mut Mb3d, ui: &mut Ui) {
     repaint_image(app, ui, true);
 }
 
+/// The lighting of a parameter file (.m3p, .m3i, text parameters, an
+/// .m3s scene) or a light file (.m3l).
+pub fn lighting_of_file(p: &std::path::Path) -> Result<crate::lighting::Lighting, String> {
+    let data = std::fs::read(p).map_err(|e| format!("{}: {e}", p.display()))?;
+    let ext = p.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).unwrap_or_default();
+    if ext == "m3l" {
+        return crate::m3p::light_from_record(&data).ok_or_else(|| trf("@MB:NoLightParameters", &[&p.display()]));
+    }
+    let text = String::from_utf8_lossy(&data).into_owned();
+    if ext == "m3p" || ext == "m3i" || text.contains("Mandelbulb3Dv") {
+        let (raw, _) = crate::m3p::raw_from_bytes(data, ext == "m3i")?;
+        Ok(crate::m3p::parse(&raw)?.scene.lighting)
+    } else {
+        Ok(crate::scene::Scene::parse(&text)?.lighting)
+    }
+}
+
+/// The colours of `from` into `to`: the surface palette (positions,
+/// diffuse and specular colours, transparency), the inside colours and
+/// "no colour interpolation"; the lights, fog, maps and colour range stay.
+pub fn take_colors(to: &mut crate::lighting::Lighting, from: &crate::lighting::Lighting) {
+    to.palette = from.palette;
+    to.palette_alpha = from.palette_alpha;
+    to.interior = from.interior;
+    to.interior_spec = from.interior_spec;
+    to.no_col_ipol = from.no_col_ipol;
+}
+
+fn colors_taken(app: &mut Mb3d, ui: &mut Ui, l: Result<crate::lighting::Lighting, String>, from: &str) {
+    match l {
+        Ok(l) => {
+            take_colors(&mut app.scene.lighting, &l);
+            repaint_image(app, ui, true);
+            app.message(ui, &trf("@MB:ColorsTakenFrom", &[&from]));
+        }
+        Err(e) => app.message(ui, &e),
+    }
+}
+
 pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
     let out = outside(ui);
+    match (what, r) {
+        ("colorsfile", DialogResult::File(Some(p))) => {
+            let l = lighting_of_file(p);
+            let name = p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+            return colors_taken(app, ui, l, &name);
+        }
+        ("colorssave", DialogResult::File(Some(p))) => {
+            let rec = crate::m3p::write(&app.scene);
+            let p = p.with_extension("m3l");
+            match std::fs::write(&p, &rec[432..840]) {
+                Ok(()) => app.message(ui, &trf("@MB:Saved2", &[&p.display()])),
+                Err(e) => app.message(ui, &format!("{}: {e}", p.display())),
+            }
+            return;
+        }
+        _ => {}
+    }
     match (what.split_once(':'), r) {
         (Some(("col", t)), DialogResult::Color(Some(c))) => {
             let t: i64 = t.parse().unwrap_or(0);
@@ -570,4 +654,36 @@ pub fn paint_on_image(app: &Mb3d, x: i32, y: i32, radius: i32, rect: bool) -> bo
             }
         }
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Colours taken from a light file and from a parameter file; the
+    /// lights stay.
+    #[test]
+    fn colors_come_from_light_and_parameter_files() {
+        let mut src = crate::scene::Scene::default();
+        src.lighting.palette[3].diffuse = [1, 2, 3];
+        src.lighting.palette[5].specular = [200, 100, 50];
+        src.lighting.interior[1].1 = [9, 8, 7];
+        src.lighting.lights[0].color = [11, 22, 33];
+        let dir = std::env::temp_dir().join(format!("mb3d-colors-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let rec = crate::m3p::write(&src);
+        std::fs::write(dir.join("c.m3l"), &rec[432..840]).unwrap();
+        std::fs::write(dir.join("c.m3p"), &rec).unwrap();
+        for f in ["c.m3l", "c.m3p"] {
+            let l = lighting_of_file(&dir.join(f)).unwrap();
+            let mut to = crate::scene::Scene::default().lighting;
+            let lights_before = to.lights[0].color;
+            take_colors(&mut to, &l);
+            assert_eq!(to.palette[3].diffuse, [1, 2, 3], "{f}");
+            assert_eq!(to.palette[5].specular, [200, 100, 50], "{f}");
+            assert_eq!(to.interior[1].1, [9, 8, 7], "{f}");
+            assert_eq!(to.lights[0].color, lights_before, "{f}");
+        }
+        assert!(lighting_of_file(&dir.join("missing.m3p")).is_err());
+    }
 }

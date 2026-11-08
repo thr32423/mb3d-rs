@@ -74,6 +74,9 @@ struct Runner<A: App> {
     buttons: u8,
     /// wheel delta short of a notch (120), for the next event
     wheel_rest: i32,
+    /// the release of the click that the colour dialog's eyedropper took
+    /// goes to no control
+    eat_release: bool,
     /// the forms in the order they were last activated (the last on top)
     #[cfg(target_os = "windows")]
     activated: Vec<usize>,
@@ -132,6 +135,7 @@ pub fn run<A: App + 'static>(mut ui: Ui, app: A) -> Result<(), String> {
         look: None,
         buttons: 0,
         wheel_rest: 0,
+            eat_release: false,
         #[cfg(target_os = "windows")]
         activated: Vec::new(),
         #[cfg(target_os = "windows")]
@@ -634,6 +638,7 @@ impl<A: App> Runner<A> {
         let Some(w) = self.wins.get(&id) else { return };
         let f = &self.ui.forms[w.form];
         let icon = match w.nc {
+            _ if self.ui.eyedropper_active() => CursorIcon::Crosshair,
             Nc::Lang | Nc::History | Nc::Log => CursorIcon::Pointer,
             Nc::Border(d) => match d {
                 ResizeDirection::East | ResizeDirection::West => CursorIcon::EwResize,
@@ -783,6 +788,20 @@ impl<A: App> Runner<A> {
         let fi = w.form;
         let (x, y) = w.cursor;
         let nc = w.nc;
+        // the colour dialog's eyedropper: a left click in any window takes
+        // the colour of its pixel (also in windows the dialog blocks)
+        if !pressed && std::mem::take(&mut self.eat_release) {
+            return;
+        }
+        if pressed && b == winit::event::MouseButton::Left && self.ui.eyedropper_active() {
+            let s = self.scale_of(w) as f32;
+            self.ui.eyedropper_pick(fi, x, y, s);
+            self.eat_release = true;
+            self.process();
+            self.redraw_dirty();
+            self.update_cursor(id);
+            return;
+        }
         if self.input_blocked(fi) {
             if pressed {
                 if let Some(m) = self.ui.modal_top() {
@@ -895,6 +914,13 @@ impl<A: App> Runner<A> {
     fn key(&mut self, id: WindowId, ev: winit::event::KeyEvent) {
         let Some(w) = self.wins.get(&id) else { return };
         let fi = w.form;
+        // Esc ends the colour dialog's eyedropper (in any window)
+        if ev.state == ElementState::Pressed && self.ui.eyedropper_active() && ev.physical_key == PhysicalKey::Code(KeyCode::Escape) {
+            self.ui.eyedropper_cancel();
+            self.redraw_dirty();
+            self.update_cursor(id);
+            return;
+        }
         if self.input_blocked(fi) {
             return;
         }

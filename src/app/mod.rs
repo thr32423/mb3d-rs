@@ -192,6 +192,10 @@ pub fn forms_jit_open(app: &mut Mb3d, ui: &mut Ui, name: Option<String>) {
 
 impl App for Mb3d {
     fn event(&mut self, ui: &mut Ui, e: &Event) {
+        if let Ev::DialogResult(DialogResult::Color(Some(_))) = &e.ev {
+            let list: Vec<String> = ui.recent_colors.iter().map(|c| crate::vcl::dialogs::hex_color(*c)).collect();
+            self.ini.set_extra("RecentColors", &list.join(","));
+        }
         if let Ev::DialogResult(r) = &e.ev {
             // files dropped on the batch window go into its list
             // (BatchForm.pas WMDROPFILES), also while it calculates
@@ -382,6 +386,14 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         }
     }
     let mut ui = Ui::new(style);
+    // the colour dialog's recent colours (RecentColors: hexadecimal, the newest first)
+    ui.recent_colors = ini
+        .get_extra("RecentColors")
+        .unwrap_or("")
+        .split(',')
+        .filter_map(crate::vcl::dialogs::parse_hex_color)
+        .take(crate::vcl::dialogs::RECENT_COLORS)
+        .collect();
     ui.set_ui_scale(scale_pct.clamp(50, 400) as f64 / 100.0);
     for f in FORMS {
         if let Err(e) = ui.add_form(forms::get(f)) {

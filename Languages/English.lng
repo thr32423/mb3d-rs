@@ -550,6 +550,8 @@ ClearTheWholeList=Clear the whole list
 ;BatchForm1.Clearthewholelist1.Caption
 ClickAButtonToChangeA=(Click a button to change a directory)
 ;IniDirForm.Label1.Caption
+ClickAColourEsc=Click a color (Esc)
+;the program
 ClickAColumnHeaderToSort=Click a column header to sort.
 ;HistoryFrm.Label4.Caption
 ClickALanguageToSwitchThe=Click a language to switch the windows to it
@@ -574,6 +576,8 @@ ClickOnTheButtonAndAfterwards3=Click on the button and afterwards on the object 
 ;Mand3DForm.Button17.Hint
 ClickOnTheObjectInThe=Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
 ;Mand3DForm.SpeedButton30.Hint
+ClickThenClickAnyPixelIn=Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
+;the program
 ClickToChangeBetweenDynfogOn=Click to change between Dynfog on its and Color on its
 ;FNavigator.SpeedButton33.Hint
 ClickToChooseTheOutputFile=Click to choose the output file
@@ -658,6 +662,10 @@ ColorStart=Color start
 ;LightAdjustForm.Label5.Caption, LightAdjustForm.Label10.Caption
 Coloring=Coloring
 ;Mand3DForm.TabSheet3.Caption
+ColorsFromFile=Colors from file...
+;not used
+ColorsTakenFrom=Colors taken from {}
+;not used
 Colour0Grey1AsIt=Colour: 0 grey, 1 as it is, 2 twice as colourful
 ;PostProForm.FinSatEdit.Hint
 ColourFringes=Colour fringes
@@ -1168,6 +1176,8 @@ ExtractingAmbientInformationFromTheOriginal=Extracting ambient information from 
 ;BRInfoForm.Label1.Caption
 ExtremeTesting={ Extreme testing }
 ;JITFormulaEditorForm.SupportedFunctionsEdit.Lines
+Eyedropper=Eyedropper
+;the program
 FFmpegCommand=FFmpeg command
 ;AnimationForm.FfmpegBtn.Caption
 FNr=F.nr:
@@ -1526,6 +1536,8 @@ HeightMapGeneratorPreview=HeightMap Generator Preview
 ;the program
 HelpfulIfYouWantToRedo=Helpful if you want to redo an unwanted drawing for example.
 ;PostProForm.CheckBox30.Hint
+Hex=Hex:
+;the program
 HiQual=HiQual
 ;FNavigator.CheckBox4.Caption
 HiQual1=HiQual 1
@@ -2059,13 +2071,13 @@ MakingTheVideo=Making the video...
 MapNotFound=Map not\nfound
 ;LightAdjustForm.Label39.Caption, LightAdjustForm.Label40.Caption
 MapNumber=Map number
-;HeightMapGenFrm.MapNumberEdit.Hint, LightAdjustForm.Edit2.Hint, MapSequencesFrm.FirstImageEdit.Hint and 1 more
+;HeightMapGenFrm.MapNumberEdit.Hint, MapSequencesFrm.FirstImageEdit.Hint, MapSequencesFrm.LastImageEdit.Hint
 MapNumber2=Map Number:
 ;HeightMapGenFrm.Label1.Caption
 MapNumberColon=Map number:
 ;LightAdjustForm.Label34.Caption
 MapNumberRightClickToChoose=Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
-;not used
+;LightAdjustForm.Edit2.Hint, LightAdjustForm.Edit21.Hint; the program
 MapOnOutputVector=Map on output vector
 ;Mand3DForm.RadioGroup1.Items
 MapSequences=Map Sequences
@@ -2634,6 +2646,8 @@ Parameter=Parameter
 ;FNavigator.SpeedButton11.Caption
 Parameters=Parameters
 ;HistoryFrm.ComboBox1.Items
+ParametersAndLights=Parameters and lights
+;not used
 ParametersCopiedToTheClipboard=Parameters copied to the clipboard.
 ;the program
 ParametersLoadedPressCalculate3DTo=Parameters loaded, press "Calculate 3D" to render.
@@ -2829,6 +2843,8 @@ Rec=Rec
 RecalculateASelection=\sRecalculate a Selection
 ;PostProForm.RecalcSectionBtn.Caption
 RecalculatingTheSelection=recalculating the selection
+;the program
+RecentColours=Recent colors:
 ;the program
 RecordedSKeyframesOfTheFlight=Recorded {} keyframes of the flight
 ;the program
@@ -3044,6 +3060,8 @@ SaveAsImageAtTheLocation=Save as image at the location you specify
 ;HeightMapGenFrm.SaveImgBtn.Hint
 SaveBtrace2=Save btrace2...
 ;BulbTracer2Frm.SaveBTracer2FileBtn.Caption
+SaveColors=Save colors...
+;not used
 SaveCompleteM3I=Save complete M3I
 ;Mand3DForm.Button8.Hint
 SaveExit=Save + exit
@@ -3100,6 +3118,8 @@ SavedOpenEXRFloatingPointColoursAnd=Saved {} (OpenEXR, floating point colours an
 ;the program
 SavedTransparentBackground=Saved {} (transparent background)
 ;the program
+SavesTheLightingWithTheseColors=Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
+;not used
 Saving=Saving:
 ;TilingForm.Label5.Caption; the program
 SavingSucceeded=Saving succeeded
@@ -3432,6 +3452,10 @@ SwitchBackToTheDefaultTheme=Switch back to the default theme
 ;VisualThemesFrm.DefaultThemeBtn.Hint
 TakeTheEntryOutOfThe=Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
 ;HistoryFrm.Button3.Hint
+TakesOnlyTheColorsFromThe=Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+;not used
+TakesOnlyTheColorsTheSurface=Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
+;not used
 TargetMapSlot=Target Map Slot
 ;MapSequencesFrm.Label3.Caption
 TargetMapSlotUseThisNumber=Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
@@ -3457,7 +3481,7 @@ TheBTracer2CacheFormatIsNot2=The BTracer2 cache format is not supported, the mes
 TheBackgroundImageCouldNotBe=The background image could not be loaded.
 ;the program
 TheBackgroundPictureWasCopiedInto=The background picture {} was copied into the maps folder: {}
-;not used
+;the program
 TheBailoutValueForEscapetimeFormulas=The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 ;FormulaGUIForm.RBailoutEdit.Hint
 TheBlurRadiusWillBeLimited=The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
@@ -3474,6 +3498,8 @@ TheCameraLeftTheFractal=the camera left the fractal
 ;the program
 TheChosenValueOverAllFrames=The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 ;AnimationForm.CurvesBtn.Hint, CurvesFrm.Image1.Hint
+TheColourAsHexadecimalRGBAs=The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
+;the program
 TheColourOfDeepWaterThe=The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 ;Mand3DForm.GroundWaterColBtn.Hint
 TheCommandLineProgramMb3dWas=The command line program mb3d was not found next to this program: install the program again.
@@ -3849,7 +3875,7 @@ WarningMustRecalculateTheWholeImage=Warning: Must recalculate the whole image to
 WarningsAndErrors=Warnings and errors
 ;LogFrm.ComboBox1.Items
 WasCopiedIntoTheMapsFolder={} was copied into the maps folder as map {}: {}
-;not used
+;the program
 Water=Water:
 ;Mand3DForm.Label92.Caption
 WavefrontOBJObj=Wavefront OBJ (*.obj)

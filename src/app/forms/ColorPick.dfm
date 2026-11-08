@@ -469,6 +469,42 @@ object ColorForm: TColorForm
     TabOrder = 3
     OnClick = Button3Click
   end
+  object ColorsFileBtn: TButton
+    Left = 404
+    Top = 232
+    Width = 112
+    Height = 25
+    Hint = '@MB:TakesOnlyTheColorsTheSurface'
+    Caption = '@MB:ColorsFromFile'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 6
+    OnClick = ColorsFileBtnClick
+  end
+  object ColorsClipBtn: TButton
+    Left = 520
+    Top = 232
+    Width = 96
+    Height = 25
+    Hint = '@MB:TakesOnlyTheColorsFromThe'
+    Caption = '@MB:FromClipboard'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 7
+    OnClick = ColorsClipBtnClick
+  end
+  object ColorsSaveBtn: TButton
+    Left = 620
+    Top = 232
+    Width = 80
+    Height = 25
+    Hint = '@MB:SavesTheLightingWithTheseColors'
+    Caption = '@MB:SaveColors'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 8
+    OnClick = ColorsSaveBtnClick
+  end
   object RadioGroup1: TRadioGroup
     Left = 840
     Top = 72

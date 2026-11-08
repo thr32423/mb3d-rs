@@ -95,6 +95,11 @@ pub struct Ui {
     /// `ui_scale`), once a window was opened: windows that grow with their
     /// content (the Navigator) keep within it.
     pub screen: Option<(i32, i32)>,
+    /// The colours last chosen in the colour dialog, the newest first (at
+    /// most [`super::dialogs::RECENT_COLORS`]); the program keeps them.
+    pub recent_colors: Vec<u32>,
+    /// The colour dialog whose eyedropper waits for a click (its form).
+    pub(crate) eyedropper: Option<usize>,
 }
 
 impl Default for Ui {
@@ -127,6 +132,8 @@ impl Ui {
             busy: false,
             ui_scale: 1.0,
             screen: None,
+            recent_colors: Vec::new(),
+            eyedropper: None,
         }
     }
 
@@ -677,6 +684,19 @@ impl Ui {
         f.active = true;
         f.paint(&mut cv, &theme, w, h);
         (dw, dh, buf)
+    }
+
+    /// The colour (0xRRGGBB) of the pixel at `x`, `y` of form `fi` as it is
+    /// painted at `scale` (logical window coordinates, the frame included;
+    /// for the colour dialog's eyedropper).
+    pub fn form_pixel(&mut self, fi: usize, x: f64, y: f64, scale: f32) -> Option<u32> {
+        let name = self.forms.get(fi)?.name.clone();
+        let (w, h, buf) = self.render_form(&name, scale);
+        let (px, py) = ((x * scale as f64).floor(), (y * scale as f64).floor());
+        if px < 0.0 || py < 0.0 || px as usize >= w || py as usize >= h {
+            return None;
+        }
+        Some(buf[py as usize * w + px as usize] & 0xFF_FFFF)
     }
 
     /// Writes a form as PNG (for checking the layouts).

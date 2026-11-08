@@ -322,19 +322,31 @@ impl Ui {
         self.forms[i].modal = true;
     }
 
-    /// TColorDialog: the result comes as `DialogResult::Color`.
+    /// TColorDialog: the result comes as `DialogResult::Color`.  Besides
+    /// the basic colours and the red, green and blue sliders of the Windows
+    /// dialog it has the colours chosen last ([`Ui::recent_colors`]), the
+    /// colour as hexadecimal `#RRGGBB` and an eyedropper that takes the
+    /// colour of a pixel of any of the program's windows.
     pub fn pick_color(&mut self, tag: &str, color: u32) {
-        let mut d = format!("object ColorDlg: TForm\n  Caption = {}\n  ClientWidth = 300\n  ClientHeight = 290\n{FORM_HEAD}", esc(&tr("@MB:Color")));
+        let mut d = format!("object ColorDlg: TForm\n  Caption = {}\n  ClientWidth = 300\n  ClientHeight = 356\n  KeyPreview = True\n  OnKeyDown = FormKeyDown\n{FORM_HEAD}", esc(&tr("@MB:Color")));
         d.push_str(&format!("  object BasicLabel: TLabel\n    Left = 8\n    Top = 6\n    Width = 70\n    Height = 13\n    Caption = {}\n  end\n", esc(&tr("@MB:BasicColors"))));
-        for (k, c) in BASIC.iter().enumerate() {
-            let (x, y) = (8 + (k % 8) as i32 * 36, 24 + (k / 8) as i32 * 24);
-            d.push_str(&format!(
-                "  object Swatch{k}: TShape\n    Tag = {k}\n    Left = {x}\n    Top = {y}\n    Width = 30\n    Height = 19\n    Brush.Color = ${:06X}\n    Pen.Color = clGray\n    OnMouseDown = SwatchDown\n  end\n",
+        let swatch = |name: &str, k: usize, x: i32, y: i32, c: u32| {
+            format!(
+                "  object {name}{k}: TShape\n    Tag = {k}\n    Left = {x}\n    Top = {y}\n    Width = 30\n    Height = 19\n    Brush.Color = ${:06X}\n    Pen.Color = clGray\n    OnMouseDown = SwatchDown\n  end\n",
                 (c & 0xFF) << 16 | (c & 0xFF00) | (c >> 16 & 0xFF)
-            ));
+            )
+        };
+        for (k, c) in BASIC.iter().enumerate() {
+            d.push_str(&swatch("Swatch", k, 8 + (k % 8) as i32 * 36, 24 + (k / 8) as i32 * 24, *c));
+        }
+        // the colours chosen last
+        d.push_str(&format!("  object RecentLabel: TLabel\n    Left = 8\n    Top = 170\n    Width = 120\n    Height = 13\n    Caption = {}\n  end\n", esc(&tr("@MB:RecentColours"))));
+        for k in 0..RECENT_COLORS {
+            let c = self.recent_colors.get(k).copied().unwrap_or(0xFFFFFF);
+            d.push_str(&swatch("Recent", k, 8 + k as i32 * 36, 186, c & 0xFF_FFFF).replace("    Pen.Color = clGray\n", &format!("    Pen.Color = clGray\n    Visible = {}\n", if k < self.recent_colors.len() { "True" } else { "False" })));
         }
         for (k, name) in ["Red", "Green", "Blue"].iter().enumerate() {
-            let y = 178 + k as i32 * 26;
+            let y = 216 + k as i32 * 26;
             d.push_str(&format!(
                 "  object L{name}: TLabel\n    Left = 8\n    Top = {}\n    Width = 30\n    Height = 13\n    Caption = '{name}:'\n  end\n  object T{name}: TTrackBar\n    Left = 46\n    Top = {y}\n    Width = 170\n    Height = 24\n    Max = 255\n    Frequency = 32\n    TickStyle = tsNone\n    TabOrder = {k}\n    OnChange = TrackChange\n  end\n  object E{name}: TEdit\n    Left = 222\n    Top = {}\n    Width = 36\n    Height = 21\n    TabOrder = {}\n    Text = '0'\n    OnChange = EditChange\n  end\n",
                 y + 4,
@@ -342,9 +354,19 @@ impl Ui {
                 k + 3
             ));
         }
-        d.push_str("  object Preview: TShape\n    Left = 264\n    Top = 178\n    Width = 28\n    Height = 72\n    Pen.Color = clGray\n  end\n");
-        d.push_str(&button("OkBtn", &tr("@MB:OK"), 136, 258, 75, MR_OK, true, false));
-        d.push_str(&button("CancelBtn", &tr("@MB:Cancel"), 217, 258, 75, MR_CANCEL, false, true));
+        d.push_str("  object Preview: TShape\n    Left = 264\n    Top = 216\n    Width = 28\n    Height = 72\n    Pen.Color = clGray\n  end\n");
+        d.push_str(&format!(
+            "  object LHex: TLabel\n    Left = 8\n    Top = 300\n    Width = 30\n    Height = 13\n    Caption = {}\n  end\n  object EHex: TEdit\n    Left = 46\n    Top = 296\n    Width = 80\n    Height = 21\n    Hint = {}\n    ParentShowHint = False\n    ShowHint = True\n    TabOrder = 6\n    Text = '#000000'\n    OnChange = HexChange\n  end\n",
+            esc(&tr("@MB:Hex")),
+            esc(&tr("@MB:TheColourAsHexadecimalRGBAs"))
+        ));
+        d.push_str(&format!(
+            "  object PickBtn: TButton\n    Left = 134\n    Top = 295\n    Width = 158\n    Height = 23\n    Hint = {}\n    Caption = {}\n    ParentShowHint = False\n    ShowHint = True\n    TabOrder = 7\n    OnClick = PickClick\n  end\n",
+            esc(&tr("@MB:ClickThenClickAnyPixelIn")),
+            esc(&tr("@MB:Eyedropper"))
+        ));
+        d.push_str(&button("OkBtn", &tr("@MB:OK"), 136, 326, 75, MR_OK, true, false));
+        d.push_str(&button("CancelBtn", &tr("@MB:Cancel"), 217, 326, 75, MR_CANCEL, false, true));
         d.push_str("end\n");
         let i = self.dialog_form("ColorDlg", &d);
         self.dialogs.insert(i, DialogState::Color { tag: tag.to_string() });
@@ -362,7 +384,51 @@ impl Ui {
             f.c_mut(&format!("T{name}")).position = ch[k] as i64;
             f.c_mut(&format!("E{name}")).set_text(&ch[k].to_string());
         }
+        f.c_mut("EHex").set_text(&hex_color(color));
         f.c_mut("Preview").brush_color = 0xFF00_0000 | (color & 0xFF_FFFF);
+    }
+
+    /// The colour dialog `i`'s eyedropper on or off: while on, the next
+    /// left click in any of the program's windows takes the colour of its
+    /// pixel ([`Ui::eyedropper_pick`]), Esc ends it.
+    fn set_eyedropper(&mut self, i: usize, on: bool) {
+        self.eyedropper = on.then_some(i);
+        if let Some(b) = self.forms.get_mut(i).and_then(|f| f.id("PickBtn").map(|id| (f, id))) {
+            let (f, id) = b;
+            let cap = if on { tr("@MB:ClickAColourEsc") } else { tr("@MB:Eyedropper") };
+            f.ctl[id].caption = cap;
+            f.dirty = true;
+        }
+    }
+
+    /// Is the colour dialog's eyedropper waiting for a click?
+    pub fn eyedropper_active(&self) -> bool {
+        self.eyedropper.is_some_and(|i| matches!(self.dialogs.get(&i), Some(DialogState::Color { .. })))
+    }
+
+    /// A click with the eyedropper on: the pixel at `x`, `y` (logical
+    /// window coordinates) of form `fi`, painted at `scale`, becomes the
+    /// colour dialog's colour.  Returns whether a colour was taken.
+    pub fn eyedropper_pick(&mut self, fi: usize, x: f64, y: f64, scale: f32) -> bool {
+        let Some(i) = self.eyedropper.filter(|i| matches!(self.dialogs.get(i), Some(DialogState::Color { .. }))) else {
+            self.eyedropper = None;
+            return false;
+        };
+        let c = self.form_pixel(fi, x, y, scale);
+        self.set_eyedropper(i, false);
+        if let Some(c) = c {
+            self.set_dialog_color(i, c);
+        }
+        self.forms[i].dirty = true;
+        self.requests.push(super::ui::Request::Raise(i));
+        c.is_some()
+    }
+
+    /// Ends the eyedropper without taking a colour (Esc).
+    pub fn eyedropper_cancel(&mut self) {
+        if let Some(i) = self.eyedropper.take() {
+            self.set_eyedropper(i, false);
+        }
     }
 
     /// TOpenDialog: the result comes as `DialogResult::File` (or `Files`
@@ -719,9 +785,24 @@ impl Ui {
         }
         if is_color {
             match (name.as_str(), r.name) {
-                (s, "OnMouseDown") if s.starts_with("Swatch") => {
+                (s, "OnMouseDown") if s.starts_with("Swatch") || s.starts_with("Recent") => {
                     let col = self.forms[i].ctl[r.id].brush_color;
                     self.set_dialog_color(i, col);
+                }
+                ("PickBtn", "OnClick") => {
+                    let on = self.eyedropper != Some(i);
+                    self.set_eyedropper(i, on);
+                }
+                ("EHex", "OnChange") => {
+                    if let Some(col) = parse_hex_color(&self.forms[i].c("EHex").text) {
+                        let f = &mut self.forms[i];
+                        f.c_mut("Preview").brush_color = 0xFF00_0000 | col;
+                        for (k, n) in ["Red", "Green", "Blue"].iter().enumerate() {
+                            let ch = (col >> (16 - 8 * k)) & 255;
+                            f.c_mut(&format!("T{n}")).position = ch as i64;
+                            f.c_mut(&format!("E{n}")).set_text(&ch.to_string());
+                        }
+                    }
                 }
                 (_, "OnChange") => {
                     let f = &self.forms[i];
@@ -736,6 +817,7 @@ impl Ui {
                     let col = 0xFF00_0000 | v("Red") << 16 | v("Green") << 8 | v("Blue");
                     let f = &mut self.forms[i];
                     f.c_mut("Preview").brush_color = col;
+                    f.c_mut("EHex").set_text(&hex_color(col));
                     for (k, n) in ["Red", "Green", "Blue"].iter().enumerate() {
                         let ch = (col >> (16 - 8 * k)) & 255;
                         if from_edit {
@@ -763,7 +845,13 @@ impl Ui {
                 (tag, DialogResult::Text(if mr == MR_OK { Some(t) } else { None }))
             }
             DialogState::Color { tag } => {
+                if self.eyedropper == Some(i) {
+                    self.eyedropper = None;
+                }
                 let c = self.forms[i].c("Preview").brush_color;
+                if mr == MR_OK {
+                    remember_color(&mut self.recent_colors, c);
+                }
                 (tag, DialogResult::Color(if mr == MR_OK { Some(c) } else { None }))
             }
             DialogState::File(d) => (d.tag, if d.multi { DialogResult::Files(Vec::new()) } else { DialogResult::File(None) }),
@@ -786,6 +874,41 @@ impl Ui {
     }
 }
 
+/// The colours the colour dialog keeps as recent ones.
+pub const RECENT_COLORS: usize = 8;
+
+/// `c` (0x..RRGGBB) as `#RRGGBB`.
+pub fn hex_color(c: u32) -> String {
+    format!("#{:06X}", c & 0xFF_FFFF)
+}
+
+/// A colour typed as hexadecimal RGB: `#RRGGBB`, `RRGGBB`, `0xRRGGBB` or the
+/// short `#RGB` (each digit doubled); None for anything else.
+pub fn parse_hex_color(s: &str) -> Option<u32> {
+    let t = s.trim();
+    let t = t.strip_prefix('#').or_else(|| t.strip_prefix("0x")).or_else(|| t.strip_prefix("0X")).unwrap_or(t);
+    if !t.chars().all(|c| c.is_ascii_hexdigit()) {
+        return None;
+    }
+    match t.len() {
+        6 => u32::from_str_radix(t, 16).ok(),
+        3 => {
+            let v = u32::from_str_radix(t, 16).ok()?;
+            let (r, g, b) = (v >> 8 & 15, v >> 4 & 15, v & 15);
+            Some((r * 17) << 16 | (g * 17) << 8 | b * 17)
+        }
+        _ => None,
+    }
+}
+
+/// Puts `c` first in the recent colours (once), keeping [`RECENT_COLORS`].
+pub fn remember_color(list: &mut Vec<u32>, c: u32) {
+    let c = c & 0xFF_FFFF;
+    list.retain(|x| x & 0xFF_FFFF != c);
+    list.insert(0, c);
+    list.truncate(RECENT_COLORS);
+}
+
 /// The 48 basic colours of the Windows colour dialog.
 const BASIC: [u32; 48] = [
     0xFF8080, 0xFFFF80, 0x80FF80, 0x00FF80, 0x80FFFF, 0x0080FF, 0xFF80C0, 0xFF80FF, 0xFF0000, 0xFFFF00, 0x80FF00, 0x00FF40, 0x00FFFF, 0x0080C0,
@@ -797,6 +920,87 @@ const BASIC: [u32; 48] = [
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn hex_colors_read_and_write() {
+        assert_eq!(parse_hex_color("#4080C0"), Some(0x4080C0));
+        assert_eq!(parse_hex_color(" 4080c0 "), Some(0x4080C0));
+        assert_eq!(parse_hex_color("0xFF0000"), Some(0xFF0000));
+        assert_eq!(parse_hex_color("#f80"), Some(0xFF8800));
+        assert_eq!(parse_hex_color("#12345"), None);
+        assert_eq!(parse_hex_color("#GG0000"), None);
+        assert_eq!(hex_color(0xFF4080C0), "#4080C0");
+    }
+
+    #[test]
+    fn recent_colors_keep_the_newest_once() {
+        let mut v = Vec::new();
+        for c in [1, 2, 3, 2, 0xFF000001] {
+            remember_color(&mut v, c);
+        }
+        assert_eq!(v, vec![1, 2, 3]);
+        for c in 10..30 {
+            remember_color(&mut v, c);
+        }
+        assert_eq!(v.len(), RECENT_COLORS);
+        assert_eq!(v[0], 29);
+    }
+
+    /// The hex field and the sliders follow each other; OK puts the colour
+    /// first in the recent ones.
+    #[test]
+    fn the_hex_field_sets_the_color() {
+        let mut ui = Ui::default();
+        ui.pick_color("t", 0x102030);
+        let i = ui.form_index("ColorDlg").unwrap();
+        assert_eq!(ui.forms[i].c("EHex").text, "#102030");
+        ui.forms[i].c_mut("EHex").set_text("#C08040");
+        let e = ui.forms[i].id("EHex").unwrap();
+        ui.dialog_event(i, &Raw { id: e, name: "OnChange", ev: Ev::Change });
+        assert_eq!(ui.forms[i].c("ERed").text, "192");
+        assert_eq!(ui.forms[i].c("TBlue").position, 64);
+        assert_eq!(ui.forms[i].c("Preview").brush_color & 0xFF_FFFF, 0xC08040);
+        ui.forms[i].modal_result = MR_OK;
+        ui.dialog_closed(i);
+        assert_eq!(ui.recent_colors.first().copied(), Some(0xC08040));
+        let got = ui.events.iter().find_map(|e| match &e.ev {
+            Ev::DialogResult(DialogResult::Color(c)) => Some(*c),
+            _ => None,
+        });
+        assert_eq!(got.flatten().map(|c| c & 0xFF_FFFF), Some(0xC08040));
+    }
+
+    /// The eyedropper takes the colour of a painted pixel: here the red
+    /// swatch of the dialog itself.
+    #[test]
+    fn the_eyedropper_takes_a_painted_pixel() {
+        let mut ui = Ui::default();
+        ui.pick_color("t", 0x000000);
+        let i = ui.form_index("ColorDlg").unwrap();
+        let b = ui.forms[i].id("PickBtn").unwrap();
+        ui.dialog_event(i, &Raw { id: b, name: "OnClick", ev: Ev::Click });
+        assert!(ui.eyedropper_active());
+        // the middle of the red swatch (basic colour 8), in window coordinates
+        let theme = ui.theme;
+        let f = &ui.forms[i];
+        let sw = f.c("Swatch8");
+        let (x, y) = (f.frame_w() + sw.left + 15, f.frame_w() + f.caption_h(&theme) + sw.top + 9);
+        assert!(ui.eyedropper_pick(i, x as f64 + 0.5, y as f64 + 0.5, 1.0));
+        assert!(!ui.eyedropper_active());
+        assert_eq!(ui.forms[i].c("EHex").text, "#FF0000");
+        // at twice the size
+        ui.dialog_event(i, &Raw { id: b, name: "OnClick", ev: Ev::Click });
+        let sw = ui.forms[i].c("Swatch18");
+        let want = sw.brush_color & 0xFF_FFFF;
+        let f = &ui.forms[i];
+        let (x, y) = (f.frame_w() + sw.left + 15, f.frame_w() + f.caption_h(&theme) + sw.top + 9);
+        assert!(ui.eyedropper_pick(i, x as f64 + 0.5, y as f64 + 0.5, 2.0));
+        assert_eq!(ui.forms[i].c("Preview").brush_color & 0xFF_FFFF, want);
+        // Esc: off without a colour
+        ui.dialog_event(i, &Raw { id: b, name: "OnClick", ev: Ev::Click });
+        ui.eyedropper_cancel();
+        assert!(!ui.eyedropper_active());
+    }
 
     /// Another file type in a save dialog changes the name's extension; a
     /// name without one gets the type's when accepted.

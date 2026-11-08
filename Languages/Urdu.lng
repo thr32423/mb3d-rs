@@ -63,6 +63,8 @@ AOCalcTime=AO حساب کا وقت:
 ;AO calc time:
 ASineIntegerPowerBulbWith=پہلے فولڈنگ کے ساتھ سائن انٹیجر پاور بلب، جیسا امیزنگ باکس میں ہے۔
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=کروی پینوراما کو Photo Sphere ٹیگز کے ساتھ ایک 360 کیمرے (RICOH THETA S) کا EXIF کیمرا بھی ملتا ہے، تاکہ Facebook اسے 360 تصویر کے طور پر دکھائے۔ پروگرام کی محفوظ کردہ ہر 360 تصویر کے لیے۔
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=روکا گیا یا منقطع رینڈر اپنا حساب کیا ہوا حصہ رکھتا ہے؛ انہی پیرامیٹرز پر "3D حساب کریں" اسے جاری رکھتا ہے۔
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=شفاف پس منظر کے لیے PNG فریم درکار ہیں: آؤٹ پٹ فارمیٹ PNG منتخب کریں۔
@@ -195,6 +197,8 @@ Amount=مقدار:
 ;Amount:
 AnAIAssistantOnThisComputer=اس کمپیوٹر پر AI اسسٹنٹ Mandelbulb 3D استعمال کر سکتا ہے: سادہ الفاظ میں یا آواز سے کہیں کہ وہ آپ کی تصاویر بیان کرے، بدلے اور رینڈر کرے، مختلف شکلیں بنائے یا جس پر آپ نے آخری بار کام کیا اسے رینڈر کرے۔ Mandelbulb 3D آف لائن رہتا ہے: اسسٹنٹ کی ایپ اسے اسی کمپیوٹر پر شروع کرتی ہے۔
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=انٹرپولیشن ہائبرڈ (فارمولا ونڈو کا "انٹرپولیٹ" ٹیب) دو فریکٹل فارمولوں کو قدم بہ قدم ملاتا ہے؛ dIFS فارمولے ملائے نہیں جا سکتے۔ ان کے لیے "متبادل" یا "DE امتزاج" استعمال کریں۔
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=اس تصویر کا ایک نامکمل حساب محفوظ رکھا گیا تھا ({})۔\n\nاسے جاری رکھیں؟  "نہیں" اسے شروع سے دوبارہ حساب کرتا ہے۔
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=ان پیرامیٹرز کا ایک نامکمل Monte Carlo رینڈر محفوظ رکھا گیا تھا ({})۔\n\nاسے جاری رکھیں؟  "نہیں" اسے شروع سے دوبارہ رینڈر کرتا ہے۔
@@ -265,6 +269,8 @@ Around=گرد:
 ;Around:
 AroundTheMiddleAnObject=مرکز کے گرد (ایک چیز)
 ;Around the middle (an object)
+Artist=فنکار:
+;Artist:
 AsFullBackgroundSphere=مکمل پس منظر کرّے کے طور پر:
 ;As full background sphere:
 Aspect=تناسب:
@@ -397,6 +403,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2 ترتیبات (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=بذریعہ
 ;By
+By2={} از {}
+;{} by {}
 ByOfDone={} ({}، بذریعہ {}): {} از {} {} مکمل
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -415,6 +423,8 @@ Calculate3DAndTheBatchWindow=3D حساب اور بیچ ونڈو سوارم کے 
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=درست روشنی کے بغیر ایک تیز 8x8 بلاک دار تصویر کا حساب کریں
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=پہلے تصویر کا حساب کریں، یا تصویر کا نشان ہٹا دیں۔
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=A.S. خودکار حساب کریں
 ;Calculate A.S. automatically
 CalculateColors=رنگوں کا حساب کریں
@@ -551,6 +561,8 @@ ClearTheWholeList=پوری فہرست صاف کریں
 ;Clear the whole list
 ClickAButtonToChangeA=(ڈائریکٹری بدلنے کے لیے بٹن پر کلک کریں)
 ;(Click a button to change a directory)
+ClickAColourEsc=رنگ پر کلک کریں (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=ترتیب دینے کے لیے کالم کے عنوان پر کلک کریں۔
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=ونڈوز کو کسی زبان میں بدلنے کے لیے اس پر کلک کریں
@@ -575,6 +587,8 @@ ClickOnTheButtonAndAfterwards3=بٹن پر کلک کریں اور پھر تصو�
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=تصویر میں جس شے کو مرکز میں لانا ہو اس پر کلک کریں۔\nکیمرے کی سمت نہیں بدلے گی، درمیانی نقطے کے گرد گھمانے\nکے لیے گردش کے اختیارات استعمال کریں۔
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=کلک کریں، پھر پروگرام کی ونڈوز میں کسی بھی پکسل پر کلک کریں (تصویر، نقشہ، پیلیٹ، کوئی اور ونڈو) تاکہ اس کا رنگ لیا جائے۔ Esc روک دیتا ہے۔
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Dynfog on its اور Color on its کے درمیان بدلنے کے لیے کلک کریں
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=آؤٹ پٹ فائل منتخب کرنے کے لیے کلک کریں
@@ -659,6 +673,10 @@ ColorStart=رنگ آغاز
 ;Color start
 Coloring=رنگ کاری
 ;Coloring
+ColorsFromFile=فائل سے رنگ...
+;Colors from file...
+ColorsTakenFrom=رنگ {} سے لیے گئے
+;Colors taken from {}
 Colour0Grey1AsIt=رنگ: 0 سرمئی، 1 جیسا ہے، 2 دگنا رنگین
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=رنگین کنارے
@@ -723,6 +741,8 @@ CopyParamsToClipboard=پیرامیٹرز کلپ بورڈ پر کاپی کریں
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=کمانڈ کاپی کریں تاکہ اسے ٹرمینل میں پیسٹ کیا جا سکے
 ;Copy the command, to paste it into a terminal
+CopyThePostText=پوسٹ کا متن کاپی کریں
+;Copy the post text
 CopyTheSelectedLineOrAll=منتخب سطر کاپی کریں، یا کچھ منتخب نہ ہو تو دکھائی گئی تمام سطریں
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=قدریں کاپی کریں
@@ -781,6 +801,8 @@ CreateLanguageFile=زبان کی فائل بنائیں
 ;Create language file
 CreateMeshes=میش بنائیں
 ;Create Meshes
+Credit=کریڈٹ:
+;Credit:
 CrossEyedPreview=کراس آئیڈ پیش منظر
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=فہرست کی ترتیب میں Ctrl+1 سے Ctrl+7، بند کرنے کے لیے Ctrl+W
@@ -1169,12 +1191,18 @@ ExtractingAmbientInformationFromTheOriginal=اصل M3I فائل سے ایمبی�
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ انتہائی جانچ }
 ;{ Extreme testing }
+Eyedropper=آئی ڈراپر
+;Eyedropper
 FFmpegCommand=FFmpeg کمانڈ
 ;FFmpeg command
 FNr=F.nr:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Facebook سائز (2048 px، 360 تصاویر 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook پوسٹ میں چسپاں پیرامیٹرز کو لنکس بنا دیتا ہے، اور گروپس انہیں متنی فائل کی صورت میں مانگتے ہیں: یہ فائل تصویر کے ساتھ پوسٹ کریں یا گروپ کی فائلوں میں ڈال دیں۔
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=فریکٹل پیرامیٹرز درآمد نہیں ہو سکے۔ کیا باقی تمام ترتیبات درآمد ہو گئیں؟
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=دور گہرائی دھند
@@ -1227,6 +1255,8 @@ FinishedTracingObject=شے کی ٹریسنگ مکمل۔
 ;Finished tracing object.
 Finishing=تکمیل
 ;Finishing
+First=پہلا
+;first
 First4RaysNoisy=پہلی 4 شعاعیں (شور والی)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=اس فارمولا امتزاج کا پہلا حساب: گرافکس کارڈ کے شیڈرز کمپائل ہو رہے ہیں (10-30 s، صرف ایک بار - ڈرائیور انہیں رکھ لیتا ہے)۔ اس دوران CPU حساب کرتا ہے، تیار ہونے پر کارڈ شامل ہو جاتا ہے۔
@@ -1263,6 +1293,8 @@ FogOffset=دھند آفسیٹ
 ;Fog offset
 Folder=فولڈر
 ;Folder
+Folder2=فولڈر:
+;Folder:
 FolderOfTheLanguageFiles=زبان کی فائلوں کا فولڈر:
 ;Folder of the language files:
 FollowTheNewest=تازہ ترین کے ساتھ چلیں
@@ -1289,12 +1321,16 @@ FormulaName=فارمولے کا نام:
 ;Formula name:
 FormulaNotFound=فارمولا '{}' نہیں ملا۔
 ;Formula '{}' not found.
+FormulaNotInstalled=فارمولا انسٹال نہیں
+;Formula not installed
 FormulaNrWhereThe2ndPart=فارمولا نمبر جہاں سے ہائبرڈ کا دوسرا حصہ شروع ہوتا ہے
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=فارمولا قدریں:
 ;Formula values:
 Formulas=فارمولے
 ;Formulas
+Formulas2=فارمولے: {}
+;Formulas: {}
 FormulasColon=فارمولے:
 ;Formulas:
 Forward=آگے
@@ -1329,6 +1365,8 @@ FromTheCameraAllAroundA=کیمرے سے، ہر سمت میں (اندر سے دی
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=مکمل M3I تصویری فائلیں:
 ;Full M3I image files:
+FullSize=پورا سائز
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1527,6 +1565,10 @@ HeightMapGeneratorPreview=HeightMap جنریٹر پیش منظر
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=مثلاً کسی ناپسندیدہ ڈرائنگ کو دوبارہ کرنا ہو تو مددگار۔
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=یہاں dIFS فارمولے اور دوسرے فارمولے سلاٹس میں باری باری آتے ہیں: پہلے dIFS فارمولوں کو دوسروں کے بعد لے جائیں (فارمولا ونڈو کے کسی فارمولا ٹیب پر دائیں کلک فارمولوں کو کھسکاتا اور کاپی کرتا ہے)، پھر "DE امتزاج" استعمال کریں۔
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=ہیکس:
+;Hex:
 HiQual=HiQual
 ;HiQual
 HiQual1=HiQual 1
@@ -1719,6 +1761,8 @@ InsideColor=اندرونی رنگ
 ;Inside color
 InsideRender=اندرونی رینڈر
 ;Inside render
+InstalledFormulasWithASimilarName=ملتے جلتے نام والے انسٹال شدہ فارمولے: {}
+;Installed formulas with a similar name: {}
 Int=شدت:
 ;Int.:
 Int64=Int64
@@ -2031,6 +2075,8 @@ MMBWheelZoom=درمیانی بٹن/وہیل: زوم
 ;MMB/Wheel: zoom
 MRelObj=M.rel.obj.
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=mb3d-rs {} سے بنایا گیا (Mandelbulb3D برائے Windows، Linux اور macOS)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=مرکزی حساب کا وقت:
 ;Main calc time:
 MainParas=مرکزی پیرامیٹرز
@@ -2047,6 +2093,8 @@ MakeSureThatNoLightWill=یقینی بنائیں کہ غیر ملاوٹ موڈ م
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=اگر سخت اور ایمبیئنٹ سائے شامل کرنے ہوں تو یقینی بنائیں کہ ان کے\n'خودکار حساب' اختیارات منتخب ہیں۔
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=فائلیں بنائیں
+;Make the files
 MakeTheLightOfThatPicture=اس تصویر کی روشنی گرم کریں اور اسے دوبارہ رینڈر کریں۔
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=ایمبیئنٹ اور پس منظر رنگوں کا اوپر-نیچے گریڈینٹ\nشے کے کوآرڈینیٹ نظام کے لحاظ سے بنائیں۔\nاینیمیشنز میں روشنیوں کو منظر کے ساتھ جمانے کے لیے استعمال کریں۔
@@ -2065,6 +2113,8 @@ MapNumber2=نقشہ نمبر:
 ;Map Number:
 MapNumberColon=نقشہ نمبر:
 ;Map number:
+MapNumberRightClickToChoose=نقشہ نمبر۔ تصویر چننے کے لیے دائیں کلک کریں: کوئی بھی نام، کوئی بھی فولڈر (یہ ایک نمبر کے ساتھ نقشوں کے فولڈر میں کاپی ہو جاتی ہے، تاکہ پیرامیٹرز اسے اگلی بار اور MB3D میں ڈھونڈ لیں)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=آؤٹ پٹ ویکٹر پر نقشہ
 ;Map on output vector
 MapSequences=نقشہ سلسلے
@@ -2267,6 +2317,8 @@ N360Orbit=360° مدار
 ;360° orbit
 N360Panorama=360 پینوراما
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=360 تصاویر: وہ کیمرا ٹیگ جو Facebook ڈھونڈتا ہے
+;360 photos: the camera tag Facebook looks for
 N360VR=360° وی آر
 ;360° VR
 N3DAnalyticFormula=3D تجزیاتی فارمولا
@@ -2387,6 +2439,8 @@ NoiseFilterStrength=شور فلٹر: شدت {}
 ;Noise filter: strength {}
 None=کوئی نہیں
 ;none
+NoneOfTheFormulaSlotsHolds=کسی بھی فارمولا سلاٹ میں فریکٹل بنانے والا فارمولا نہیں: ہر سلاٹ خالی ہے، اس کی تکرارات 0 ہیں، یا اس میں ایسا فارمولا ہے جو صرف اسپیس بدلتا ہے ({})۔\n\nکسی سلاٹ میں Integer Power یا Amazing Box جیسا فریکٹل فارمولا رکھیں اور اسے کم از کم 1 تکرار دیں۔
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=عام
 ;Normal
 NormalStatusForThisFormula=اس فارمولے کی عام حیثیت
@@ -2535,6 +2589,8 @@ OpenTextParameters=متنی پیرامیٹرز کھولیں
 ;Open text parameters
 OpenTheAnimationMaker=اینیمیشن ساز کھولیں
 ;Open the animation maker
+OpenTheFolder=فولڈر کھولیں
+;Open the folder
 OpenTheFolderOfTheFile=فائل کا فولڈر کھولیں
 ;Open the folder of the file
 OpenTheFolderOfTheLog=لاگ فائلوں کا فولڈر کھولیں (روزانہ ایک، 30 دن رکھی جاتی ہیں)
@@ -2633,6 +2689,12 @@ Parameter=پیرامیٹر
 ;Parameter
 Parameters=پیرامیٹرز
 ;Parameters
+ParametersAndLights=پیرامیٹرز اور روشنیاں
+;Parameters and lights
+ParametersAsATextFileTxt=پیرامیٹرز متنی فائل کے طور پر (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=پیرامیٹرز: {} (منسلک)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=پیرامیٹرز کلپ بورڈ پر کاپی ہو گئے۔
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=پیرامیٹرز لوڈ ہو گئے، رینڈر کرنے کے لیے "3D حساب کریں" دبائیں۔
@@ -2659,6 +2721,8 @@ PercentOfLocalDE=مقامی DE کا فیصد
 ;Percent of local DE
 Picture=تصویر
 ;picture
+PictureJPEG=تصویر (JPEG)
+;Picture (JPEG)
 Pictures=تصاویر
 ;pictures
 PicturesAndFilesTheAssistantMakes=اسسٹنٹ کی بنائی ہوئی تصاویر اور فائلیں {} میں جاتی ہیں؛ کچھ حذف نہیں ہوتا۔ 4K سے بڑی تصاویر صرف آپ کی رضامندی کے بعد بنتی ہیں، اور حساب 10 منٹ بعد رک جاتا ہے۔ اس کا ہر کام لاگ میں درج ہے۔
@@ -2703,6 +2767,8 @@ PostProcessingColon=پوسٹ پروسیسنگ:
 ;Post processing:
 PostProcessingLower=پوسٹ پروسیسنگ
 ;post processing
+PostText=پوسٹ کا متن:
+;Post text:
 Postprocess=پوسٹ پروسیس
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: اساس کو کسی بھی قوت تک بڑھائیں۔
@@ -2829,6 +2895,8 @@ RecalculateASelection=\sمنتخب حصہ دوبارہ حساب کریں
 ;\sRecalculate a Selection
 RecalculatingTheSelection=منتخب حصے کا دوبارہ حساب
 ;recalculating the selection
+RecentColours=حالیہ رنگ:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=پرواز کے {} کی فریم ریکارڈ ہوئے
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=پرواز ریکارڈ کرتا ہے: جب تک بٹن دبا ہوا ہے، نیویگیٹر کا ہر نیا منظر (زیادہ سے زیادہ دو فی سیکنڈ) اینیمیشن کا اگلا کی فریم بنتا ہے
@@ -3043,6 +3111,8 @@ SaveAsImageAtTheLocation=آپ کی بتائی گئی جگہ پر تصویر کے
 ;Save as image at the location you specify
 SaveBtrace2=btrace2 محفوظ کریں...
 ;Save btrace2...
+SaveColors=رنگ محفوظ کریں...
+;Save colors...
 SaveCompleteM3I=مکمل M3I محفوظ کریں
 ;Save complete M3I
 SaveExit=محفوظ + باہر نکلیں
@@ -3099,6 +3169,8 @@ SavedOpenEXRFloatingPointColoursAnd={} محفوظ ہوا (OpenEXR، فلوٹنگ
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} محفوظ ہوا (شفاف پس منظر)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=ان رنگوں کے ساتھ روشنی کاری کو روشنی فائل (.m3l، MB3D کے لیے بھی) کے طور پر محفوظ کرتا ہے؛ "فائل سے رنگ" اس سے رنگ واپس لیتا ہے۔
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=محفوظ کرنا:
 ;Saving:
 SavingSucceeded=محفوظ کرنا کامیاب
@@ -3135,6 +3207,8 @@ SecantSearchForTheSurface=سطح کی Secant تلاش
 ;Secant search for the surface
 SecantSearchmode=Secant تلاش موڈ:
 ;Secant searchmode:
+Second=دوسرا
+;second
 SecondFocusPointIfDifferentFrom=دوسرا فوکس پوائنٹ، اگر پہلے سے مختلف ہو تو\nفوکس پوائنٹ کے بجائے فوکس لکیر ملتی ہے۔\n(طبعی طور پر زیادہ حقیقی نہیں، لیکن کام کا ہے)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=مرکزی ونڈو کے 'رنگ کاری' ٹیب میں نقشہ رنگ کاری کے اختیارات بھی دیکھیں۔
@@ -3177,6 +3251,8 @@ SessionsAndCrashes=سیشن اور کریش
 ;Sessions and crashes
 Set=مقرر کریں
 ;Set
+SetItUpNowTheFormulas=ابھی ترتیب دیں؟ فارمولے اپنے سلاٹس میں رہتے ہیں: پہلا حصہ {} لیتا ہے، دوسرا حصہ {}، اور دونوں min سے جوڑے جاتے ہیں (دونوں اشیاء)۔
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=روشنی فنکشن کو cosine پر رکھیں
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=نقشوں کا رخ شے کے لحاظ سے طے کریں۔\nاینیمیشنز میں روشنیوں کو منظر کے ساتھ جمانے کے لیے استعمال کریں۔
@@ -3185,6 +3261,8 @@ SetTheVisualThemeOfThe=ایپلیکیشن کی بصری تھیم طے کریں
 ;Set the visual theme of the application
 SetTo0=0 کریں
 ;set to 0
+SetUpDECombination=DE امتزاج ترتیب دیں
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=سایہ حساب ہونے پر متعلقہ روشنی فنکشن کو\nخودکار طور پر cosine پر رکھتا ہے۔\ncosine اور مربعی cosine فنکشن سائے کے ساتھ اچھا کام کرتے ہیں۔
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=بصری تھیم کی ترتیب
@@ -3193,12 +3271,18 @@ ShadersCompiling=شیڈرز کمپائل ہو رہے ہیں
 ;shaders compiling
 ShadowsAndAO=سائے اور AO
 ;shadows and AO
+Share=شیئر
+;Share
 ShareRenderingBetweenYourComputersThrough=مشترکہ فولڈر کے ذریعے اپنے کمپیوٹرز کے درمیان رینڈرنگ بانٹیں
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=شیئر: تصویر، اس کے پیرامیٹرز متنی فائل میں اور پوسٹ کا متن، گروپ کے لیے تیار
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=یہ کمپیوٹر شیئر کریں: فولڈر کے کام رینڈر کریں، اور میرے کام سوارم کو دیں
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=مشترکہ فولڈر:
 ;Shared folder:
+SharedInThePostTextIs=فولڈر "{}" میں محفوظ ہو گیا؛ پوسٹ کا متن کلپ بورڈ پر ہے۔
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=اشتراک جاری، لیکن ابھی سوارم میں کوئی دوسرا کمپیوٹر نہیں: رینڈرز صرف اسی کمپیوٹر پر چلتے ہیں
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=اشتراک رک گیا: {}
@@ -3265,6 +3349,10 @@ Sliding=سرکنا
 ;Sliding
 SlidingWalkingStep=سرکنے+چلنے کا قدم:
 ;Sliding+Walking step:
+Slot=سلاٹ {}
+;slot {}
+SlotsTo=سلاٹس {} تا {}
+;slots {} to {}
 SmoothDEcomb=ہموار DE امتزاج:
 ;Smooth DEcomb:
 SmoothImageOnLoad=لوڈ پر تصویر ہموار کریں
@@ -3431,6 +3519,10 @@ SwitchBackToTheDefaultTheme=طے شدہ تھیم پر واپس جائیں
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=اندراج تاریخچے سے نکالیں (حساب شدہ تصویر کے پیرامیٹرز اور تھمب نیل حذف ہو جاتے ہیں؛ دوسری فائلیں اپنی جگہ رہتی ہیں)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=کلپ بورڈ پر موجود پیرامیٹرز سے صرف رنگ لیتا ہے (مثلاً کسی پوسٹ سے کاپی کیے گئے)۔
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=پیرامیٹر فائل (.m3p، .m3i، متن) یا روشنی فائل (.m3l) سے صرف رنگ لیتا ہے (سطح کا پیلیٹ، اس کی شفافیت اور اندرونی رنگ): روشنیاں، فریکٹل اور منظر ویسے ہی رہتے ہیں۔
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=ہدف نقشہ خانہ
 ;Target Map Slot
 TargetMapSlotUseThisNumber=ہدف نقشہ خانہ۔ متحرک نقشے کے لیے یہ نمبر اپنے فریکٹل میں نقشے کے طور پر استعمال کریں، مثلاً heightmap کے طور پر
@@ -3455,6 +3547,8 @@ TheBTracer2CacheFormatIsNot2=BTracer2 کیش فارمیٹ معاون نہیں، 
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=پس منظر تصویر لوڈ نہیں ہو سکی۔
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=پس منظر تصویر {} نقشوں کے فولڈر میں کاپی کر دی گئی: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=escapetime فارمولوں کے لیے bailout قدر۔\nاگر تکرار کے دوران 3d قدر اس سے بڑھ جائے،\nتو موجودہ نقطہ شے کا حصہ نہیں ہے۔
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=دھندلاپن کا رداس اس قدر تک محدود ہو گا۔\nجب تصویر کے کچھ حصوں میں رداس بہت بڑا ہو جائے تو رینڈرنگ تیز کر سکتا ہے۔
@@ -3471,10 +3565,14 @@ TheCameraLeftTheFractal=کیمرہ فریکٹل سے باہر نکل گیا
 ;the camera left the fractal
 TheChosenValueOverAllFrames=اینیمیشن کے تمام فریموں پر چنی گئی قدر: کسی کی فریم کا مربع اوپر یا نیچے گھسیٹیں، یا اس پر کلک کر کے قدر لکھیں
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=رنگ ہیکساڈیسیمل RGB میں، بطور #RRGGBB (# اختیاری ہے؛ #RGB بھی چلتا ہے)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=گہرے پانی کا رنگ: پانی کی اپنی روشنی، اور وہ رنگ جو نیچے کی چیزیں گہرائی کے ساتھ اختیار کرتی ہیں (بدلنے کے لیے کلک کریں)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=کمانڈ لائن پروگرام mb3d اس پروگرام کے ساتھ نہیں ملا: پروگرام دوبارہ انسٹال کریں۔
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=یہاں کے dIFS فارمولے ({}) صرف اسپیس کو بدلتے ہیں: اسے ہلاتے، گھماتے، موڑتے یا دہراتے ہیں۔ dIFS زنجیر کو ان کے بعد ایک dIFS شکل فارمولا بھی چاہیے جو کچھ بنائے، جیسے boxIFS، cylinderIFS یا HeightMapIFS۔
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=طے شدہ نمبرنگ میں 2 نمبر ہوتے ہیں، X اور Y میں الگ۔\nیہ اختیار منتخب کرنے پر نمبرنگ صرف ایک نمبر ہوتی ہے،\nجو ہر کالم میں بڑھتی ہے اور اگلی قطار میں جاری رہتی ہے۔
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=طے شدہ آؤٹ پٹ شے کے لیے سفید اور باہر کے حصے کے لیے سیاہ ہے۔\nرنگ الٹنے کے لیے یہ اختیار منتخب کریں۔
@@ -3551,6 +3649,8 @@ TheNewestJobSoFarRendered=اب تک کا تازہ ترین کام: رینڈر ش
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=پیرامیٹرز اب نامکمل حساب سے میل نہیں کھاتے: ان کا حساب کرنے کے لیے "3D حساب کریں" دبائیں۔
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=DE امتزاج کا {} حصہ dIFS فارمولوں ({}) کو دوسروں ({}) کے ساتھ ملاتا ہے۔ ہر حصہ صرف ایک قسم کا حساب کرتا ہے: dIFS فارمولے ایک حصے میں اور باقی دوسرے حصے میں رکھیں (فارمولا ونڈو کا "DE امتزاج" ٹیب طے کرتا ہے کہ دوسرا حصہ کہاں سے شروع ہو)۔
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=تصویر اپنے حساب سے میل نہیں کھاتی: اس کا دوبارہ حساب کریں۔
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=باقی تمام مراحل کے بعد تصویر کی تکمیل: ایکسپوژر، تیز روشنی کے گرد دمک، فلمی ٹون میپنگ، رنگ کی درجہ بندی، وگنیٹ اور رنگین کنارے
@@ -3595,6 +3695,8 @@ Themes=تھیمز
 ;Themes
 ThereIsAFileAlready=فائل {} پہلے سے موجود ہے۔
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=یہ پیرامیٹرز فارمولا "{}" استعمال کرتے ہیں، جو یہاں انسٹال نہیں ہے۔\n\nفارمولے .m3f پر ختم ہونے والی فائلیں ہیں۔ {}.m3f حاصل کریں (یہ اکثر پیرامیٹرز کے ساتھ، کسی گروپ کی فائلوں میں یا کسی فارمولا پیک میں شیئر ہوتا ہے) اور اسے فارمولا فولڈرز میں سے کسی ایک میں رکھیں:\n{}\n\nپھر پیرامیٹرز دوبارہ کھولیں یا چسپاں کریں۔
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=اسسٹنٹ سے پوچھنے کی باتیں
 ;Things to ask the assistant
 ThisComputer=یہ کمپیوٹر:
@@ -3611,6 +3713,8 @@ ThisRenderKeepsNoImage=یہ رینڈر کوئی تصویر نہیں رکھتا۔
 ;This render keeps no image.
 ThisRenderKeptNoParameters=اس رینڈر نے کوئی پیرامیٹرز نہیں رکھے۔
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=یہ منظر ایک فارمولا زنجیر میں دو قسم کے فارمولے ملاتا ہے:\n- dIFS فارمولے ({}) فاصلوں سے سیدھے ایک شکل بناتے ہیں،\n- دوسرے ({}) فریکٹل ہیں جو قدم بہ قدم دہرائے جاتے ہیں (escape time)۔\nایک زنجیر دونوں قسموں کا ایک ساتھ حساب نہیں کر سکتی۔\n\nدونوں دکھانے کے لیے انہیں DE امتزاج سے جوڑیں: پہلا حصہ ایک قسم کا حساب کرتا ہے، دوسرا حصہ دوسری کا، اور دونوں اشیاء جوڑ دی جاتی ہیں (min: دونوں اشیاء، max: صرف جہاں وہ ایک دوسرے پر آتی ہیں، smooth: نرم جوڑ کے ساتھ)۔ یہ فارمولا ونڈو کے اوپر "DE امتزاج" ٹیب ہے۔
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=یہ سیشن (براہ راست)
 ;This session (live)
 ThreadPriority=تھریڈ\nترجیح
@@ -3653,6 +3757,8 @@ Tiling=ٹائلنگ:
 ;Tiling:
 TimeNeeded=درکار وقت:
 ;Time needed:
+Title=عنوان:
+;Title:
 ToCalculateABetterHardShadow=بہتر سخت سائے کے حساب کے لیے، صرف اگر 1 HS منتخب ہو!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=کلپ بورڈ پر
@@ -3707,6 +3813,8 @@ Turned=گھمایا:
 ;Turned:
 Turntable=پورا چکر
 ;Turntable
+TweakOfParametersBy={} کے پیرامیٹرز میں ترمیم
+;Tweak of parameters by {}
 Type=قسم:
 ;Type:
 Type2=قسم
@@ -3845,6 +3953,8 @@ WarningMustRecalculateTheWholeImage=تنبیہ: اسے واپس لینے کے ل
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=تنبیہات اور خرابیاں
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} نقشوں کے فولڈر میں نقشہ {} کے طور پر کاپی ہو گیا: {}
+;{} was copied into the maps folder as map {}: {}
 Water=پانی:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3877,6 +3987,10 @@ White=سفید
 ;white
 WhiteOutside=باہر سفید
 ;White outside
+WhoseParametersYouStartedFromGroups=جن کے پیرامیٹرز سے آپ نے شروع کیا: گروپس فنکار کو کریڈٹ دینے کو کہتے ہیں (مثلاً: Marije کے "Pipe Organ" میں ترمیم)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=حساب کیوں شروع نہیں ہو سکتا
+;Why the calculation cannot start
 Width=چوڑائی:
 ;Width:
 Windows=ونڈوز

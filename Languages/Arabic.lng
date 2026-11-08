@@ -63,6 +63,8 @@ AOCalcTime=زمن حساب AO:
 ;AO calc time:
 ASineIntegerPowerBulbWith=بصلة جيبية بقوة صحيحة مع طيّات قبلها، كما في الصندوق المذهل.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=تحصل البانوراما الكروية على بيانات EXIF لكاميرا 360 (RICOH THETA S) إلى جانب وسوم Photo Sphere، فيعرضها Facebook صورةَ 360. لكل صورة 360 يحفظها البرنامج.
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=التصيير الموقوف أو المنقطع يحتفظ بما حسبه؛ و«احسب ثلاثي الأبعاد» للمعاملات نفسها يتابعه.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=الخلفية الشفافة تحتاج إلى إطارات PNG: اختر PNG صيغةً للإخراج.
@@ -195,6 +197,8 @@ Amount=المقدار:
 ;Amount:
 AnAIAssistantOnThisComputer=يستطيع مساعد ذكاء اصطناعي على هذا الحاسوب استخدام Mandelbulb 3D: اطلب منه بكلمات بسيطة، أو بالصوت، أن يصف صورك ويغيّرها ويصيّرها، أو أن يصنع تنويعات منها، أو أن يصيّر آخر ما عملت عليه. يبقى Mandelbulb 3D دون اتصال بالإنترنت: تطبيق المساعد يشغّله على هذا الحاسوب.
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=الهجين بالاستيفاء (تبويب "استيفاء" في نافذة الصيغ) يمزج صيغتين كسيريتين خطوة بخطوة؛ لا يمكن مزج صيغ dIFS. استخدم لها "بديل" أو "دمج DE".
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=احتُفظ بحساب غير مكتمل لهذه الصورة ({}).\n\nأتريد متابعته؟  «لا» يحسبها من جديد من البداية.
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=احتُفظ بتصيير Monte Carlo غير مكتمل لهذه المعاملات ({}).\n\nأتريد متابعته؟  «لا» يصيّرها من جديد من البداية.
@@ -265,6 +269,8 @@ Around=حول:
 ;Around:
 AroundTheMiddleAnObject=حول المركز (جسم)
 ;Around the middle (an object)
+Artist=الفنان:
+;Artist:
 AsFullBackgroundSphere=كرةً خلفية كاملة:
 ;As full background sphere:
 Aspect=نسبة الأبعاد:
@@ -397,6 +403,8 @@ BulbTracer2SettingsBtrace2=إعدادات BulbTracer2 (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=بواسطة
 ;By
+By2={} بواسطة {}
+;{} by {}
 ByOfDone={} ({}، بواسطة {}): اكتمل {} من {} {}
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -415,6 +423,8 @@ Calculate3DAndTheBatchWindow=«احسب ثلاثي الأبعاد» ونافذة
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=حساب صورة سريعة بكتل 8x8 دون إضاءة صحيحة
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=احسب صورة أولًا، أو ألغِ تحديد الصورة.
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=حساب A.S. تلقائيًا
 ;Calculate A.S. automatically
 CalculateColors=حساب الألوان
@@ -551,6 +561,8 @@ ClearTheWholeList=مسح القائمة كلها
 ;Clear the whole list
 ClickAButtonToChangeA=(انقر زرًّا لتغيير مجلد)
 ;(Click a button to change a directory)
+ClickAColourEsc=انقر لونًا (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=انقر رأس عمود للفرز.
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=انقر لغة لتبديل النوافذ إليها
@@ -575,6 +587,8 @@ ClickOnTheButtonAndAfterwards3=انقر الزر ثم انقر الجسم في �
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=انقر الجسم في الصورة لجعله في المركز.\nلن يتغير اتجاه الكاميرا، استخدم خيارات\nالدوران للدوران حول نقطة المنتصف.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=انقر، ثم انقر أي بكسل في نوافذ البرنامج (الصورة، خريطة، لوحة ألوان، نافذة أخرى) لأخذ لونه. Esc يوقف.
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=انقر للتبديل بين Dynfog حسب التكرارات واللون حسب التكرارات
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=انقر لاختيار ملف الإخراج
@@ -659,6 +673,10 @@ ColorStart=بداية اللون
 ;Color start
 Coloring=التلوين
 ;Coloring
+ColorsFromFile=ألوان من ملف...
+;Colors from file...
+ColorsTakenFrom=ألوان مأخوذة من {}
+;Colors taken from {}
 Colour0Grey1AsIt=اللون: 0 رمادي، 1 كما هو، 2 ضعف الألوان
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=حواف ملونة
@@ -723,6 +741,8 @@ CopyParamsToClipboard=نسخ المعاملات إلى الحافظة
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=انسخ الأمر لتلصقه في الطرفية
 ;Copy the command, to paste it into a terminal
+CopyThePostText=نسخ نص المنشور
+;Copy the post text
 CopyTheSelectedLineOrAll=نسخ السطر المحدد، أو كل الأسطر المعروضة إن لم يُحدَّد شيء
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=نسخ القيم
@@ -781,6 +801,8 @@ CreateLanguageFile=إنشاء ملف لغة
 ;Create language file
 CreateMeshes=إنشاء شبكات
 ;Create Meshes
+Credit=نسب الفضل:
+;Credit:
 CrossEyedPreview=معاينة بالعينين المتقاطعتين
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=من Ctrl+1 إلى Ctrl+7 بترتيب القائمة، وCtrl+W للإغلاق
@@ -1169,12 +1191,18 @@ ExtractingAmbientInformationFromTheOriginal=جارٍ استخراج معلوما
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ اختبار القيم القصوى }
 ;{ Extreme testing }
+Eyedropper=القطّارة
+;Eyedropper
 FFmpegCommand=أمر FFmpeg
 ;FFmpeg command
 FNr=رقم F:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=مقاس Facebook (2048 بكسل، صور 360 بـ 6000 بكسل)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=يحوّل Facebook المعاملات الملصقة في منشور إلى روابط، والمجموعات تطلبها ملفًا نصيًا: انشر هذا الملف مع الصورة أو ضعه في ملفات المجموعة.
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=أخفق استيراد معاملات الكسوري. هل استُوردت كل الإعدادات الأخرى؟
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=ضباب العمق البعيد
@@ -1227,6 +1255,8 @@ FinishedTracingObject=اكتمل تتبع الجسم.
 ;Finished tracing object.
 Finishing=الإنهاء
 ;Finishing
+First=الأول
+;first
 First4RaysNoisy=أول 4 أشعة (مشوشة)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=أول حساب لتركيبة الصيغ هذه: تجري ترجمة مظلّلات بطاقة الرسوميات (10-30 ث، مرة واحدة فقط - يحتفظ بها برنامج التشغيل). يحسب CPU في الأثناء، وتنضم البطاقة حين تجهز.
@@ -1263,6 +1293,8 @@ FogOffset=إزاحة الضباب
 ;Fog offset
 Folder=المجلد
 ;Folder
+Folder2=المجلد:
+;Folder:
 FolderOfTheLanguageFiles=مجلد ملفات اللغة:
 ;Folder of the language files:
 FollowTheNewest=متابعة الأحدث
@@ -1289,12 +1321,16 @@ FormulaName=اسم الصيغة:
 ;Formula name:
 FormulaNotFound=لم يُعثر على الصيغة '{}'.
 ;Formula '{}' not found.
+FormulaNotInstalled=الصيغة غير مثبتة
+;Formula not installed
 FormulaNrWhereThe2ndPart=رقم الصيغة التي يبدأ عندها الجزء الثاني من الهجين
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=قيم الصيغة:
 ;Formula values:
 Formulas=الصيغ
 ;Formulas
+Formulas2=الصيغ: {}
+;Formulas: {}
 FormulasColon=الصيغ:
 ;Formulas:
 Forward=أمامي
@@ -1329,6 +1365,8 @@ FromTheCameraAllAroundA=من الكاميرا في كل الاتجاهات (مش
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=ملفات صور M3I الكاملة:
 ;Full M3I image files:
+FullSize=الحجم الكامل
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1527,6 +1565,10 @@ HeightMapGeneratorPreview=معاينة مولّد خرائط الارتفاع
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=مفيد إذا أردت مثلًا إعادة رسم غير مرغوب فيه.
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=هنا تتناوب صيغ dIFS والصيغ الأخرى في الخانات: انقل صيغ dIFS أولًا إلى ما بعد الصيغ الأخرى (النقر بالزر الأيمن على تبويب صيغة في نافذة الصيغ يزيح الصيغ وينسخها)، ثم استخدم "دمج DE".
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=ست عشري:
+;Hex:
 HiQual=جودة عالية
 ;HiQual
 HiQual1=جودة عالية 1
@@ -1719,6 +1761,8 @@ InsideColor=لون الداخل
 ;Inside color
 InsideRender=تصيير الداخل
 ;Inside render
+InstalledFormulasWithASimilarName=صيغ مثبتة باسم مشابه: {}
+;Installed formulas with a similar name: {}
 Int=الشدة:
 ;Int.:
 Int64=Int64
@@ -2031,6 +2075,8 @@ MMBWheelZoom=الزر الأوسط/العجلة: تكبير
 ;MMB/Wheel: zoom
 MRelObj=M.نسبي للجسم
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=صُنعت باستخدام mb3d-rs {} (Mandelbulb3D لأنظمة Windows وLinux وmacOS)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=زمن الحساب الرئيسي:
 ;Main calc time:
 MainParas=المعاملات الرئيسية
@@ -2047,6 +2093,8 @@ MakeSureThatNoLightWill=التأكد من عدم طرح أي ضوء في وضع 
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=تأكد من ضبط خيارات «حساب... تلقائيًا» للظلال الحادة\nوالمحيطية، إن أردت أخذها في الحسبان.
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=إنشاء الملفات
+;Make the files
 MakeTheLightOfThatPicture=اجعل إضاءة تلك الصورة أدفأ وصيّرها من جديد.
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=جعل التدرج من الأعلى إلى الأسفل لألوان المحيط والخلفية\nنسبةً إلى نظام إحداثيات الجسم.\nاستخدمه في التحريكات لتثبيت الأضواء على المشهد.
@@ -2065,6 +2113,8 @@ MapNumber2=رقم الخريطة:
 ;Map Number:
 MapNumberColon=رقم الخريطة:
 ;Map number:
+MapNumberRightClickToChoose=رقم الخريطة. انقر بالزر الأيمن لاختيار صورة: أي اسم، أي مجلد (تُنسخ إلى مجلد الخرائط برقم، فتجدها المعاملات في المرة القادمة وفي MB3D)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=الخريطة على متجه الإخراج
 ;Map on output vector
 MapSequences=تسلسلات الخرائط
@@ -2267,6 +2317,8 @@ N360Orbit=مدار 360°
 ;360° orbit
 N360Panorama=بانوراما 360
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=صور 360: وسم الكاميرا الذي يبحث عنه Facebook
+;360 photos: the camera tag Facebook looks for
 N360VR=واقع افتراضي 360°
 ;360° VR
 N3DAnalyticFormula=صيغة تحليلية ثلاثية الأبعاد
@@ -2387,6 +2439,8 @@ NoiseFilterStrength=مرشح التشويش: الشدة {}
 ;Noise filter: strength {}
 None=بلا
 ;none
+NoneOfTheFormulaSlotsHolds=لا تحتوي أي خانة صيغة على صيغة تصنع كسيريًا: كل خانة فارغة، أو تكراراتها 0، أو فيها صيغة تغيّر الفضاء فقط ({}).\n\nضع صيغة كسيرية، مثل Integer Power أو Amazing Box، في خانة وأعطها تكرارًا واحدًا على الأقل.
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=عادية
 ;Normal
 NormalStatusForThisFormula=حالة عادية لهذه الصيغة
@@ -2535,6 +2589,8 @@ OpenTextParameters=فتح معاملات نصية
 ;Open text parameters
 OpenTheAnimationMaker=فتح صانع التحريك
 ;Open the animation maker
+OpenTheFolder=فتح المجلد
+;Open the folder
 OpenTheFolderOfTheFile=فتح مجلد الملف
 ;Open the folder of the file
 OpenTheFolderOfTheLog=فتح مجلد ملفات السجل (ملف لكل يوم، تُحفظ 30 يومًا)
@@ -2633,6 +2689,12 @@ Parameter=المعاملات
 ;Parameter
 Parameters=المعاملات
 ;Parameters
+ParametersAndLights=المعاملات والأضواء
+;Parameters and lights
+ParametersAsATextFileTxt=المعاملات كملف نصي (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=المعاملات: {} (مرفقة)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=نُسخت المعاملات إلى الحافظة.
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=حُمّلت المعاملات، اضغط «احسب ثلاثي الأبعاد» للتصيير.
@@ -2659,6 +2721,8 @@ PercentOfLocalDE=نسبة مئوية من DE المحلي
 ;Percent of local DE
 Picture=صورة
 ;picture
+PictureJPEG=الصورة (JPEG)
+;Picture (JPEG)
 Pictures=صور
 ;pictures
 PicturesAndFilesTheAssistantMakes=الصور والملفات التي يصنعها المساعد توضع في {}؛ ولا يُحذف شيء. الصور الأكبر من 4K لا تُصنع إلا بعد موافقتك، ويتوقف الحساب بعد 10 دقائق. وكل ما يفعله مدوّن في السجل.
@@ -2703,6 +2767,8 @@ PostProcessingColon=المعالجة اللاحقة:
 ;Post processing:
 PostProcessingLower=المعالجة اللاحقة
 ;post processing
+PostText=نص المنشور:
+;Post text:
 Postprocess=معالجة لاحقة
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: رفع الأساس إلى أي قوة.
@@ -2829,6 +2895,8 @@ RecalculateASelection=\sإعادة حساب جزء محدد
 ;\sRecalculate a Selection
 RecalculatingTheSelection=جارٍ إعادة حساب الجزء المحدد
 ;recalculating the selection
+RecentColours=الألوان الأخيرة:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=سُجّل {} إطاراً مفتاحياً من الرحلة
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=يسجل رحلة: ما دام الزر مضغوطاً، يصبح كل منظر جديد في المستكشف (مرتين في الثانية على الأكثر) الإطار المفتاحي التالي للحركة
@@ -3043,6 +3111,8 @@ SaveAsImageAtTheLocation=حفظ كصورة في الموقع الذي تحدده
 ;Save as image at the location you specify
 SaveBtrace2=حفظ btrace2...
 ;Save btrace2...
+SaveColors=حفظ الألوان...
+;Save colors...
 SaveCompleteM3I=حفظ M3I كامل
 ;Save complete M3I
 SaveExit=حفظ + خروج
@@ -3099,6 +3169,8 @@ SavedOpenEXRFloatingPointColoursAnd=حُفظ {} (OpenEXR، ألوان بفاصل
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=حُفظ {} (خلفية شفافة)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=يحفظ الإضاءة بهذه الألوان كملف إضاءة (.m3l، يصلح لـ MB3D أيضًا)؛ "ألوان من ملف" يستعيد الألوان منه.
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=الحفظ:
 ;Saving:
 SavingSucceeded=نجح الحفظ
@@ -3135,6 +3207,8 @@ SecantSearchForTheSurface=البحث عن السطح بطريقة القاطع
 ;Secant search for the surface
 SecantSearchmode=وضع البحث بالقاطع:
 ;Secant searchmode:
+Second=الثاني
+;second
 SecondFocusPointIfDifferentFrom=نقطة تركيز ثانية، إن اختلفت عن الأولى\nتحصل على خط تركيز بدلًا من نقطة تركيز.\n(غير واقعي فيزيائيًا كثيرًا، لكن من الجيد وجوده)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=راجع أيضًا خيارات تلوين الخرائط في تبويب «التلوين» في النافذة الرئيسية.
@@ -3177,6 +3251,8 @@ SessionsAndCrashes=الجلسات والأعطال
 ;Sessions and crashes
 Set=تعيين
 ;Set
+SetItUpNowTheFormulas=هل تريد إعدادها الآن؟ تبقى الصيغ في خاناتها: الجزء الأول يأخذ {}، والجزء الثاني {}، ويُضمّان بـ min (كلا الجسمين).
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=ضبط دالة الضوء على جيب التمام
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=ضبط اتجاه الخرائط نسبةً إلى الجسم.\nاستخدمه في التحريكات لتثبيت الأضواء على المشهد.
@@ -3185,6 +3261,8 @@ SetTheVisualThemeOfThe=ضبط السمة المرئية للتطبيق
 ;Set the visual theme of the application
 SetTo0=ضبط على 0
 ;set to 0
+SetUpDECombination=إعداد دمج DE
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=يضبط تلقائيًا دالة الضوء المقابلة على جيب التمام\nعند حساب الظل.\nدالتا جيب التمام وجيب التمام التربيعي تعملان جيدًا مع الظل.
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=ضبط السمة المرئية
@@ -3193,12 +3271,18 @@ ShadersCompiling=جارٍ ترجمة المظلّلات
 ;shaders compiling
 ShadowsAndAO=الظلال وAO
 ;shadows and AO
+Share=مشاركة
+;Share
 ShareRenderingBetweenYourComputersThrough=مشاركة التصيير بين حواسيبك عبر مجلد مشترك
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=مشاركة: الصورة ومعاملاتها كملف نصي ونص منشور، جاهزة لمجموعة
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=مشاركة هذا الحاسوب: تصيير مهام المجلد، وإعطاء مهامي للسرب
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=المجلد المشترك:
 ;Shared folder:
+SharedInThePostTextIs=حُفظت في المجلد "{}"؛ نص المنشور في الحافظة.
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=المشاركة مفعّلة، لكن لا حاسوب آخر في السرب بعد: تجري التصييرات على هذا الحاسوب وحده
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=توقفت المشاركة: {}
@@ -3265,6 +3349,10 @@ Sliding=الانزلاق
 ;Sliding
 SlidingWalkingStep=خطوة الانزلاق+المشي:
 ;Sliding+Walking step:
+Slot=الخانة {}
+;slot {}
+SlotsTo=الخانات {} إلى {}
+;slots {} to {}
 SmoothDEcomb=دمج DE ناعم:
 ;Smooth DEcomb:
 SmoothImageOnLoad=تنعيم الصورة عند التحميل
@@ -3431,6 +3519,10 @@ SwitchBackToTheDefaultTheme=العودة إلى السمة الافتراضية
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=إخراج المدخل من السجل (تُحذف معاملات الصورة المحسوبة وصورتها المصغرة؛ وتبقى الملفات الأخرى حيث هي)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=يأخذ الألوان فقط من المعاملات الموجودة في الحافظة (المنسوخة من منشور مثلًا).
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=يأخذ الألوان فقط (لوحة ألوان السطح وشفافيتها والألوان الداخلية) من ملف معاملات (.m3p، .m3i، نص) أو ملف إضاءة (.m3l): تبقى الأضواء والكسيري والمنظر كما هي.
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=خانة الخريطة الهدف
 ;Target Map Slot
 TargetMapSlotUseThisNumber=خانة الخريطة الهدف. استخدم هذا الرقم خريطةً في كسوريّك، مثلًا خريطة ارتفاع، لتحصل على خريطة متحركة
@@ -3455,6 +3547,8 @@ TheBTracer2CacheFormatIsNot2=صيغة ذاكرة BTracer2 المؤقتة غير 
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=تعذر تحميل صورة الخلفية.
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=نُسخت صورة الخلفية {} إلى مجلد الخرائط: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=قيمة حد الهروب لصيغ زمن الهروب.\nإذا تجاوزت القيمة ثلاثية الأبعاد هذه القيمة أثناء التكرار،\nفالنقطة الحالية لا تنتمي إلى الجسم.
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=يُحد نصف قطر التمويه بهذه القيمة.\nقد يسرّع التصيير حين يصبح نصف القطر ضخمًا جدًّا في بعض أجزاء الصورة.
@@ -3471,10 +3565,14 @@ TheCameraLeftTheFractal=غادرت الكاميرا الكسورية
 ;the camera left the fractal
 TheChosenValueOverAllFrames=القيمة المختارة عبر كل إطارات الحركة: اسحب مربع إطار مفتاحي لأعلى أو لأسفل، أو انقره واكتب قيمته
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=اللون بصيغة RGB ست عشرية، مثل #RRGGBB (العلامة # اختيارية؛ و#RGB يعمل أيضًا)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=لون الماء العميق: ضوء الماء نفسه، واللون الذي يكتسبه ما تحته مع العمق (انقر للتغيير)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=لم يُعثر على برنامج سطر الأوامر mb3d بجوار هذا البرنامج: ثبّت البرنامج من جديد.
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=صيغ dIFS هنا ({}) تحوّل الفضاء فقط: تحرّكه أو تديره أو تطويه أو تكرّره. وتحتاج سلسلة dIFS بعدها أيضًا إلى صيغة شكل dIFS ترسم شيئًا، مثل boxIFS أو cylinderIFS أو HeightMapIFS.
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=الترقيم الافتراضي يتضمن رقمين، منفصلين في X وY.\nإن اخترت هذا الخيار، يصبح الترقيم رقمًا واحدًا\nيزداد في كل عمود ويستمر في الصف التالي.
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=الإخراج الافتراضي أبيض للجسم وأسود للمنطقة الخارجية.\nاختر هذا الخيار لعكس الألوان.
@@ -3551,6 +3649,8 @@ TheNewestJobSoFarRendered=أحدث مهمة حتى الآن: الأجزاء ال
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=لم تعد المعاملات تطابق الحساب غير المكتمل: اضغط «احسب ثلاثي الأبعاد» لحسابها.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=الجزء {} من دمج DE يخلط صيغ dIFS ({}) بصيغ أخرى ({}). كل جزء يحسب نوعًا واحدًا فقط: ضع صيغ dIFS في جزء والأخرى في الجزء الآخر (تبويب "دمج DE" في نافذة الصيغ يحدد أين يبدأ الجزء الثاني).
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=الصورة لا تطابق حسابها: احسبها من جديد.
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=إنهاء الصورة بعد كل المراحل الأخرى: التعريض، التوهج حول الضوء الساطع، تعيين الدرجات السينمائي، تدريج الألوان، تظليل الحواف والحواف الملونة
@@ -3595,6 +3695,8 @@ Themes=السمات
 ;Themes
 ThereIsAFileAlready=يوجد ملف {} مسبقًا.
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=تستخدم هذه المعاملات الصيغة "{}"، وهي غير مثبتة هنا.\n\nالصيغ ملفات تنتهي بـ .m3f. احصل على {}.m3f (غالبًا تُشارك مع المعاملات، في ملفات مجموعة أو في حزمة صيغ) وضعها في أحد مجلدات الصيغ:\n{}\n\nثم افتح المعاملات أو الصقها مرة أخرى.
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=أشياء تطلبها من المساعد
 ;Things to ask the assistant
 ThisComputer=هذا الحاسوب:
@@ -3611,6 +3713,8 @@ ThisRenderKeepsNoImage=هذا التصيير لا يحتفظ بصورة.
 ;This render keeps no image.
 ThisRenderKeptNoParameters=لم يحتفظ هذا التصيير بمعاملات.
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=يخلط هذا المشهد نوعين من الصيغ في سلسلة صيغ واحدة:\n- صيغ dIFS ({}) تبني شكلًا مباشرة من المسافات،\n- والأخرى ({}) كسيريات تُكرَّر خطوة بخطوة (زمن الهروب).\nلا تستطيع سلسلة واحدة حساب النوعين معًا.\n\nلإظهار الاثنين، اجمعهما بدمج DE: الجزء الأول يحسب نوعًا، والجزء الثاني النوع الآخر، ويُضم الجسمان (min: كلا الجسمين، max: حيث يتداخلان فقط، smooth: بوصلة ناعمة). إنه تبويب "دمج DE" أعلى نافذة الصيغ.
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=هذه الجلسة (مباشر)
 ;This session (live)
 ThreadPriority=أولوية\nالخيوط
@@ -3653,6 +3757,8 @@ Tiling=البلاطات:
 ;Tiling:
 TimeNeeded=الوقت اللازم:
 ;Time needed:
+Title=العنوان:
+;Title:
 ToCalculateABetterHardShadow=لحساب ظل حاد أفضل، فقط إذا حُدد HS واحد!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=إلى الحافظة
@@ -3707,6 +3813,8 @@ Turned=مُدار:
 ;Turned:
 Turntable=دوران كامل
 ;Turntable
+TweakOfParametersBy=تعديل على معاملات {}
+;Tweak of parameters by {}
 Type=النوع:
 ;Type:
 Type2=النوع
@@ -3845,6 +3953,8 @@ WarningMustRecalculateTheWholeImage=تحذير: يجب إعادة حساب ال�
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=التحذيرات والأخطاء
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder=نُسخت {} إلى مجلد الخرائط كخريطة {}: {}
+;{} was copied into the maps folder as map {}: {}
 Water=الماء:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3877,6 +3987,10 @@ White=أبيض
 ;white
 WhiteOutside=أبيض في الخارج
 ;White outside
+WhoseParametersYouStartedFromGroups=صاحب المعاملات التي بدأت منها: المجموعات تطلب نسب الفضل للفنان (مثلًا: تعديل على "Pipe Organ" لـ Marije)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=لماذا لا يمكن بدء الحساب
+;Why the calculation cannot start
 Width=العرض:
 ;Width:
 Windows=النوافذ

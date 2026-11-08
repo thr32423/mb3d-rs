@@ -62,6 +62,8 @@ AOCalcTime=Czas rechòwaniô AO:
 ;AO calc time:
 ASineIntegerPowerBulbWith=Sinusowi bulb z całkòwitą pòtãdżą ë ze wczasnyma skłôdanyma, jak w Amazing Box.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=Sferiwô panorama dostôwô kòl znaków Photo Sphere téż EXIF kamerë 360 (RICOH THETA S), tak żebë Facebook pòkôzôł jã jakno òdjimk 360. Dlô kòżdégò òbrôzka 360, chtëren programa zapisywô.
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=Zatrzëmóny abò przerwóny render trzimô to, co wërechòwôł; Rechùj 3D z tima samima parametrama gò kòntinuëje.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=Przezérné tło pòtrzebùje klatków PNG: wëbierzë PNG jakno fòrmat wińdzeniô.
@@ -194,6 +196,8 @@ Amount=Wielosc:
 ;Amount:
 AnAIAssistantOnThisComputer=Asystent AI na tim kòmpùtrze mòże brëkòwac Mandelbulb 3D: pòprosë gò prostima słowama abò głosã, żebë òpisôł, zmienił i wërenderowôł twòje òbrôzczi, zrobił warianté abò wërenderowôł to, nad czim të òstatno robił. Mandelbulb 3D òstôwô offline: aplikacjô asystenta zrëszô gò na tim kòmpùtrze.
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=Interpòlacjowô hibrida (karta "Interpòlacjô" w òknie fòrmùłów) mieszô dwie fòrmùłë fraktala krok pò kroku; fòrmùłów dIFS nie dô sã mieszac. Ùżij dlô nich "Na przemión" abò "DEcombinate".
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=Nieskùńczoné rechòwanié tegò òbrôzka òstało zachòwóné ({}).\n\nCzë jic z nim dali?  "Nié" rechùje gò znowa òd zôczątkù.
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=Nieskùńczony render Monte Carlo z tëch parametrów òstôł zachòwóny ({}).\n\nCzë jic z nim dali?  "Nié" renderëje gò znowa òd zôczątkù.
@@ -264,6 +268,8 @@ Around=Wkół:
 ;Around:
 AroundTheMiddleAnObject=Wkół westrzódka (òbiekt)
 ;Around the middle (an object)
+Artist=Artista:
+;Artist:
 AsFullBackgroundSphere=Jakno fùl kùla spòdla:
 ;As full background sphere:
 Aspect=Propòrcje:
@@ -396,6 +402,8 @@ BulbTracer2SettingsBtrace2=Nastawë BulbTracer2 (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=Òd
 ;By
+By2={}, aùtor: {}
+;{} by {}
 ByOfDone={} ({}, òd {}): {} z {} {} gòtowé
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -414,6 +422,8 @@ Calculate3DAndTheBatchWindow=Rechùj 3D ë òkno rzeszowégò renderowaniô z ro
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Rechùje chùtczi klockòwi òbrôzk 8x8 bez pòrządnégò òswieceniô
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=Nôprzód wërechùj òbrôzk abò òdznaczë òbrôzk.
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=Rechùj A.S. aùtomatno
 ;Calculate A.S. automatically
 CalculateColors=Rechùj farwë
@@ -550,6 +560,8 @@ ClearTheWholeList=Wëczëszczë całą lëstã
 ;Clear the whole list
 ClickAButtonToChangeA=(Klikni knąp, żebë zmienic katalog)
 ;(Click a button to change a directory)
+ClickAColourEsc=Klikni farwã (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=Klikni nagłówk kòlumnë, żebë sortowac.
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=Klikni jãzëk, bë przełączëc na niegò òkna
@@ -574,6 +586,8 @@ ClickOnTheButtonAndAfterwards3=Klikni na knąpã, a pòtemù na òbiekt w òbrô
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Klikni na òbiekt w òbrôzkù, jaczi mô bëc wëstrzódkòwóny.\nCzerënk kamerë sã nie zmieni, brëkùj òpcjów òbrôcaniô,\nżebë òbracac wkół strzódka.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=Klikni, a pòtemù klikni równo jaczi piksel w òknach programë (òbrôzk, mapa, paletka, jinszé òkno), żebë wząc jegò farwã. Esc òprzestôwô.
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Klikni, żebë przełączëc midzë dinamiczną dôką na it. i farwą na it.
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=Klikni, bë wëbrac lopk wińdzeniô
@@ -658,6 +672,10 @@ ColorStart=Zôczątk farwë
 ;Color start
 Coloring=Farwienié
 ;Coloring
+ColorsFromFile=Farwë z plikù...
+;Colors from file...
+ColorsTakenFrom=Farwë wzãté z {}
+;Colors taken from {}
 Colour0Grey1AsIt=Farwa: 0 szarô, 1 tak jak je, 2 dwa razë barżi farwny
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=Farwné òbrąbczi
@@ -722,6 +740,8 @@ CopyParamsToClipboard=Kòpérëj parametrë do schówkù
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=Kòpérëj kòmandã, żebë jã wkleic w terminalu
 ;Copy the command, to paste it into a terminal
+CopyThePostText=Kòpérëj tekst wpisu
+;Copy the post text
 CopyTheSelectedLineOrAll=Kòpérëj zaznaczoną régã abò wszëtczé pòkazóné régi, czej niżódnô nie je zaznaczonô
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Kòpérëj wôrtnotë
@@ -780,6 +800,8 @@ CreateLanguageFile=Ùsôdzë lopk jãzëka
 ;Create language file
 CreateMeshes=Twòrzenié sécë (mesh)
 ;Create Meshes
+Credit=Zdrój:
+;Credit:
 CrossEyedPreview=Pòdzérk na krziż
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 do Ctrl+7 w pòrządkù lëstë, Ctrl+W zamikô
@@ -1168,12 +1190,18 @@ ExtractingAmbientInformationFromTheOriginal=Wëdobiwanié wëdowiédzë ò òtoc
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ Testowanié ekstremalnëch wôrtnotów }
 ;{ Extreme testing }
+Eyedropper=Pipeta
+;Eyedropper
 FFmpegCommand=Kòmanda FFmpeg
 ;FFmpeg command
 FNr=Nr f.:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Wiôlgòsc dlô Facebooka (2048 px, òdjimczi 360: 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook robi z parametrów wstawionëch do wpisu lënczi, a grëpë proszą ò nie jakno tekstowi plik: wrzuć nen plik z òbrôzkã abò dodôj gò do plików grëpë.
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=Nie ùdało sã impòrtowac parametrów fraktala. Wszëtczé jiné nastawë òstałë impòrtowóné.
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=Dalekô mgła głãbi
@@ -1226,6 +1254,8 @@ FinishedTracingObject=Sledzenié òbiektu skùńczoné.
 ;Finished tracing object.
 Finishing=Wëkùńczenié
 ;Finishing
+First=pierszi
+;first
 First4RaysNoisy=pierszé 4 parmienie (z szumã)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=Pierszé rechòwanié ti kòmbinacji fòrmùłów: shadere graficzny kôrtë są kòmpilowóné (10-30 s, leno rôz - drajwer je trzëmô). Westrzód tegò rechùje CPU, kôrta dołącziwô, czej òne bãdą gòtowé.
@@ -1262,6 +1292,8 @@ FogOffset=Przesënienié mgłë
 ;Fog offset
 Folder=Katalog
 ;Folder
+Folder2=Katalog:
+;Folder:
 FolderOfTheLanguageFiles=Katalog lopków jãzëka:
 ;Folder of the language files:
 FollowTheNewest=Sledzë nônowszé
@@ -1288,12 +1320,16 @@ FormulaName=Miono fòrmùłë:
 ;Formula name:
 FormulaNotFound=Nie nalazłé fòrmùłë '{}'.
 ;Formula '{}' not found.
+FormulaNotInstalled=Fòrmùła nie je zainstalowónô
+;Formula not installed
 FormulaNrWhereThe2ndPart=Numer fòrmùłë, òd jaczi zaczinô sã 2. dzél hibridë
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=Wôrtnotë fòrmùłë:
 ;Formula values:
 Formulas=Fòrmùłë
 ;Formulas
+Formulas2=Fòrmùłë: {}
+;Formulas: {}
 FormulasColon=Fòrmùłë:
 ;Formulas:
 Forward=W przódk
@@ -1328,6 +1364,8 @@ FromTheCameraAllAroundA=Z kamerë, dokòła (scena widzónô òd westrzódka)
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=Fùl lopczi òbrôzków M3I:
 ;Full M3I image files:
+FullSize=Pełnô wiôlgòsc
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1526,6 +1564,10 @@ HeightMapGeneratorPreview=Pòdzérk generatora mapë wësokòscë
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=Pòmòcné, jeżlë np. chcesz pòprawic niechcóné malowanié.
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=Tu fòrmùłë dIFS ë jinszé są na przemión w slotach: nôprzód przeniesë fòrmùłë dIFS za jinszé (prawé klikniãcé na karce fòrmùłë w òknie fòrmùłów przesuwô ë kòpérëje fòrmùłë), a pòtemù ùżij "DEcombinate".
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=Hex:
+;Hex:
 HiQual=Wës. jakòsc
 ;HiQual
 HiQual1=HiQual 1
@@ -1718,6 +1760,8 @@ InsideColor=Farwa bënë
 ;Inside color
 InsideRender=Renderowanié òd bënë
 ;Inside render
+InstalledFormulasWithASimilarName=Zainstalowóné fòrmùłë z pòdobnym mionã: {}
+;Installed formulas with a similar name: {}
 Int=Int.:
 ;Int.:
 Int64=Int64
@@ -2030,6 +2074,8 @@ MMBWheelZoom=MMB/Kółkò: zblëżenié
 ;MMB/Wheel: zoom
 MRelObj=M.wzgl.òb.
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=Zrobioné w mb3d-rs {} (Mandelbulb3D dlô Windows, Linux ë macOS)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=Czas główn. rechòwaniô:
 ;Main calc time:
 MainParas=przédné param.
@@ -2046,6 +2092,8 @@ MakeSureThatNoLightWill=Zagwësniwô, że w tribie bez mieszaniô żóden wid ni
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=Zagwësni sã, że òptacje 'Rechùj... aùtomatno' dlô cwiardëch\në òkòlnëch céniów są nastawioné, jeżlë chcesz je ùwzglãdnic.
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=Zrobi pliczi
+;Make the files
 MakeTheLightOfThatPicture=Zrobi wid tegò òbrôzka cepłészim i wërenderëj gò znowa.
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=Robi gradient góra-dół farwów òkòlégò widu ë spòdla\nwzglãdnym do ùkładu kòòrdinatów òbiektu.\nBrëkùj tegò w animacjach, żebë przëwiązac widë do scenerii.
@@ -2064,6 +2112,8 @@ MapNumber2=Numer mapë:
 ;Map Number:
 MapNumberColon=Numer mapë:
 ;Map number:
+MapNumberRightClickToChoose=Numer mapë. Prawé klikniãcé, żebë wëbrac òbrôzk: równo jaczé miono, równo jaczi katalog (òn je kòpérowóny do katalogù mapów z numrã, żebë parametrë go nalazłë drëdżi rôz ë w MB3D)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=Mapa na wińdzeniowim wektorze
 ;Map on output vector
 MapSequences=Sekwencje mapów
@@ -2266,6 +2316,8 @@ N360Orbit=Òrbita 360°
 ;360° orbit
 N360Panorama=Panorama 360
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=Òdjimczi 360: znak kamerë, chtërnégò szukô Facebook
+;360 photos: the camera tag Facebook looks for
 N360VR=VR 360°
 ;360° VR
 N3DAnalyticFormula=Analiticznô fòrmùła 3D
@@ -2386,6 +2438,8 @@ NoiseFilterStrength=Filter szumù: mòc {}
 ;Noise filter: strength {}
 None=felëje
 ;none
+NoneOfTheFormulaSlotsHolds=Żóden slot fòrmùłë nie mô fòrmùłë, jakô robi fraktal: kòżdi je pùsti, mô 0 iteracjów abò mô fòrmùłã, jakô leno zmieniô rum ({}).\n\nWstôw do slotu fòrmùłã fraktala, np. Integer Power abò Amazing Box, ë daj ji colemało 1 iteracjã.
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normalny
 ;Normal
 NormalStatusForThisFormula=Normalny sztatus ti fòrmùłë
@@ -2534,6 +2588,8 @@ OpenTextParameters=Òtemkni parametrë jakno tekst
 ;Open text parameters
 OpenTheAnimationMaker=Òtemkni twòrzëdło animacjów
 ;Open the animation maker
+OpenTheFolder=Òtemkni katalog
+;Open the folder
 OpenTheFolderOfTheFile=Òtemkni katalog lopka
 ;Open the folder of the file
 OpenTheFolderOfTheLog=Òtemkni katalog lopków dzénnika (jeden na dzéń, trzëmóné 30 dni)
@@ -2632,6 +2688,12 @@ Parameter=Parametr
 ;Parameter
 Parameters=Parametrë
 ;Parameters
+ParametersAndLights=Parametrë ë widë
+;Parameters and lights
+ParametersAsATextFileTxt=Parametrë jakno tekstowi plik (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=Parametrë: {} (w załączniku)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=Parametrë skòpérowóné do schówkù.
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=Parametrë wczëtóné, wcësni "Rechùj 3D", bë renderowac.
@@ -2658,6 +2720,8 @@ PercentOfLocalDE=Procent lokalnégò DE
 ;Percent of local DE
 Picture=òbrôzk
 ;picture
+PictureJPEG=Òbrôzk (JPEG)
+;Picture (JPEG)
 Pictures=òbrôzków
 ;pictures
 PicturesAndFilesTheAssistantMakes=Òbrôzczi ë lopczi, jaczé robi asystent, trôfiają do {}; nic nie je rëmóné. Òbrôzczi wikszé jak 4K są robioné le pò Twòjim przëzwòlenim, a rechòwanié sã zatrzimùje pò 10 minutach. Wszëtkò, co òn robi, je w dzénnikù.
@@ -2702,6 +2766,8 @@ PostProcessingColon=Òbróbka:
 ;Post processing:
 PostProcessingLower=pòstprodukcja
 ;post processing
+PostText=Tekst wpisu:
+;Post text:
 Postprocess=Òbróbka
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: Pòdnôszô spòdlé do równo jaczi pòtãdżi.
@@ -2828,6 +2894,8 @@ RecalculateASelection=\sWërechùj wëbiér na nowò
 ;\sRecalculate a Selection
 RecalculatingTheSelection=pònowné rechòwanié wëbiérkù
 ;recalculating the selection
+RecentColours=Slédné farwë:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=Nagróné {} kluczowëch klatków lotu
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=Nagrôwô lot: pòczi knąpa je wcësniãtô, kòżdi nowi pòzdrzatk Nawigatora (nôwiãcy dwa na sekùndã) stôwô sã nastãpną kluczową klatką animacje
@@ -3042,6 +3110,8 @@ SaveAsImageAtTheLocation=Zapisywô jakno òbrôzk w pòdónym placu
 ;Save as image at the location you specify
 SaveBtrace2=Zapiszë btrace2...
 ;Save btrace2...
+SaveColors=Zapiszë farwë...
+;Save colors...
 SaveCompleteM3I=Zapiszë fùl M3I
 ;Save complete M3I
 SaveExit=Zapiszë + wińdzë
@@ -3098,6 +3168,8 @@ SavedOpenEXRFloatingPointColoursAnd=Zapisóné {} (OpenEXR, farwë zmiennoprzecy
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Zapisóné {} (przezérné tło)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=Zapisywô òswiecenié z tima farwama jakno plik widu (.m3l, téż dlô MB3D); "Farwë z plikù" bierze z niegò farwë nazôd.
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=Zapisywanié:
 ;Saving:
 SavingSucceeded=Zapisanié ùdało sã
@@ -3134,6 +3206,8 @@ SecantSearchForTheSurface=Szukanié pòwierzchni metodą secznëch
 ;Secant search for the surface
 SecantSearchmode=Trib szëkaniô secznym:
 ;Secant searchmode:
+Second=drëdżi
+;second
 SecondFocusPointIfDifferentFrom=Drëdżi pùnkt òstroscë, jeżlë jinszi òd pierszégò,\ndostóniesz linią òstroscë w môl pùnktu òstroscë.\n(fizyczno nie baro realistyczné, ale przëdatné)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=Òbaczë téż òptacje farwieniô mapą w karce 'Farwienié' głównégò òkna.
@@ -3176,6 +3250,8 @@ SessionsAndCrashes=Sesje i awarie
 ;Sessions and crashes
 Set=Ùstawi
 ;Set
+SetItUpNowTheFormulas=Nastawic terô? Fòrmùłë òstôwają w swòjich slotach: pierszi dzél bierze {}, drëdżi dzél {}, złączoné z min (òbadwa òbiektë).
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=Nastôw fùnkcjã widu na kòsinus
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Nastôw òrientacjã mapë wzglãdno òbiektu.\nBrëkùj tegò w animacjach, żebë przëwiązac widë do scenerii.
@@ -3184,6 +3260,8 @@ SetTheVisualThemeOfThe=Nastawi wizualną témã aplikacji
 ;Set the visual theme of the application
 SetTo0=nastôw 0
 ;set to 0
+SetUpDECombination=Nastawi kòmbinacjã DE
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=Aùtomatno nastôwiô òdpòwiedną fùnkcjã widu na kòsinus,\nczej céń je rechòwóny.\nFùnkcja kòsinusa ë kwadratowégò kòsinusa dobrze dzejają z céniã.
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=Nastôw wëzdrzatkù
@@ -3192,12 +3270,18 @@ ShadersCompiling=kòmpilacjô shaderów
 ;shaders compiling
 ShadowsAndAO=cénie ë AO
 ;shadows and AO
+Share=Pòdzelë
+;Share
 ShareRenderingBetweenYourComputersThrough=Rozdzelë renderowanié midzë swòje kòmpùtrë przez wespólny katalog
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=Pòdzelë: òbrôzk, jegò parametrë jakno tekstowi plik ë tekst wpisu, rëchtowné dlô grëpë
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=Dzelë nen kòmpùtr: renderëj robòtë z katalogù ë dôj mòje rojowi
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=Dzelony katalog:
 ;Shared folder:
+SharedInThePostTextIs=Zapisóné w katalogù "{}"; tekst wpisu je w schówkù.
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=Dzelenié, ale w roju nie ma jesz jinégò kòmpùtra: renderë jidą le na tim kòmpùtrze
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=dzelenié zatrzëmóné: {}
@@ -3264,6 +3348,10 @@ Sliding=Przesëwanié
 ;Sliding
 SlidingWalkingStep=Krok przesëwaniô+chòdzeniô:
 ;Sliding+Walking step:
+Slot=slot {}
+;slot {}
+SlotsTo=slotë òd {} do {}
+;slots {} to {}
 SmoothDEcomb=Głôdczi DEcomb:
 ;Smooth DEcomb:
 SmoothImageOnLoad=Wëgładzë òbrôzk przë wczëtanim
@@ -3430,6 +3518,10 @@ SwitchBackToTheDefaultTheme=Wrôcô nazôd do domëslny témë
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=Rëmôj wpis z historii (parametrë i miniatura wërechòwónégò òbrôzka są rëmniãté; jiné lopczi òstôwają tam, dze są)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=Bierze leno farwë z parametrów w schówkù (np. skòpérowónëch z wpisu).
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=Bierze leno farwë (paletkã pòwiérzchni, ji przezérnosc ë farwë nutra) z plikù parametrów (.m3p, .m3i, tekst) abò z plikù widu (.m3l): widë, fraktal ë wëzdrzatk òstôwają, jak są.
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=Docelowi slot mapë
 ;Target Map Slot
 TargetMapSlotUseThisNumber=Docelowi slot mapë. Ùżij ti lëczbë jakno mapë w swòjim fraktalu, np. jakno mapë wësokòscë, żebë miec animòwóną mapã
@@ -3454,6 +3546,8 @@ TheBTracer2CacheFormatIsNot2=Fòrmat cache BTracer2 nie je wspieróny, séc nie 
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=Nie dało sã wczëtac òbrôzka spòdla.
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=Òbrôzk spòdla {} òstôł skòpérowóny do katalogù mapów: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=Wôrtnota bailout dlô fòrmùłów escapetime.\nJeżlë wôrtnota 3d przekroczi tã wôrtnotã òb czas iterowaniô,\nbieżny pùnkt nie nôleżi do òbiektu.
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=Radius rozmazaniô bãdze ògrańczony do ti wôrtnoscë.\nMòże przërëchlëc renderowanié, czej radius w niechtërnëch dzélach òbrôzka robi sã baro wiôldżi.
@@ -3470,10 +3564,14 @@ TheCameraLeftTheFractal=kamera òpùscëła fraktal
 ;the camera left the fractal
 TheChosenValueOverAllFrames=Wëbróné wôrtnota we wszëtczich klatkach animacji: przecygni kwadrat klucznégò ùjęcô w górã abò w dół, abò klëknij gò ë wpiszë wôrtnotã
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=Farwa jakno szesnôstkòwé RGB, jakno #RRGGBB (# nie je nót; #RGB téż dzejô)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=Farwa głãbòczi wòdë: swòje swiatło wòdë ë farwa, jaką z głãbòkòscą bierze to, co je pòd nią (klëkni, żebë zmienic)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=Programa réżczi pòleceniów mb3d nie je kòle ti programë: zainstalëjë programã znowa.
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=Fòrmùłë dIFS tu ({}) leno zmieniają rum: przesuwają, òbrôcają, skłôdają abò pòwtôrzają gò. Łańcuch dIFS pòtrzebùje za nima jesz fòrmùłë kształtu dIFS, jakô cos rësëje, np. boxIFS, cylinderIFS abò HeightMapIFS.
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=Domëslné numrowanié mô 2 lëczbë, òddzelno dlô X ë Y.\nCzej wëbierze sã tã òptacjã, numrowanié mô le jedną lëczbã,\nrosnącą w kòżdi kòlumnie ë jidącą dali w pòsobny rédze.
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=Domëslno òbiekt je biôłi, a òbéńda bùten czôrnô.\nTa òptacjô òdwrôcô farwë.
@@ -3550,6 +3648,8 @@ TheNewestJobSoFarRendered=Nônowszô robòta donëchczôs: wërenderowóné dzé
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=Parametrë ju nie pasëją do nieskùńczonégò rechòwaniô: wcësni "Rechùj 3D", bë je wërechòwac.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=W kòmbinacji DE dzél {} mieszô fòrmùłë dIFS ({}) z jinszima ({}). Kòżdi dzél rechùje leno jeden ôrt: wstôw fòrmùłë dIFS w jeden dzél, a jinszé w drëdżi (karta "DEcombinate" w òknie fòrmùłów òznôczô, dze zaczinô sã drëdżi dzél).
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=Òbrôzk nie pasëje do swòjégò rechòwaniô: wërechùj gò znowa.
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=Wëkùńczenié òbrôzka pò wszëtczich jinszich przebiegach: ekspozycjô, pòswiata wkół jasnégò swiatła, filmòwé mapòwanié tónów, kòrekcjô farwów, winieta ë farwné òbrąbczi
@@ -3594,6 +3694,8 @@ Themes=Témë
 ;Themes
 ThereIsAFileAlready=Lopk {} ju je.
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=Te parametrë brëkùją fòrmùłë "{}", jakô tu nie je zainstalowónô.\n\nFòrmùłë to pliczi z kùńcówką .m3f. Nalézë {}.m3f (czãsto je ùdostãpniony razã z parametrama, w plikach grëpë abò w paczce fòrmùłów) ë wstôw gò do jednégò z katalogów fòrmùłów:\n{}\n\nPòtemù òtemkni abò wstôw parametrë jesz rôz.
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=Ò co mòżesz pòprosëc asystenta
 ;Things to ask the assistant
 ThisComputer=Nen kòmpùtr:
@@ -3610,6 +3712,8 @@ ThisRenderKeepsNoImage=Nen render nie zachòwiwô òbrôzka.
 ;This render keeps no image.
 ThisRenderKeptNoParameters=Nen render nie zachòwôł parametrów.
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=Na scena mieszô dwa ôrtë fòrmùłów w jednym łańcuchù fòrmùłów:\n- fòrmùłë dIFS ({}) bùdëją kształt prosto z òdległoscë,\n- jinszé ({}) to fraktale iterowóné krok pò kroku (escape time).\nJeden łańcuch nie mòże rechòwac òbù ôrtów naraz.\n\nŻebë pòkazac òba, złączë je kòmbinacją DE: pierszi dzél rechùje jeden ôrt, drëdżi dzél drëdżi, a òbadwa òbiektë są złączoné (min: òbadwa òbiektë, max: leno tam, dze sã nakłôdają, smooth: z miãkczim szwã). To je karta "DEcombinate" na górze òkna fòrmùłów.
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=Na sesjô (na żëwò)
 ;This session (live)
 ThreadPriority=Priorytet\nwątkù
@@ -3652,6 +3756,8 @@ Tiling=Kachle:
 ;Tiling:
 TimeNeeded=Pòtrzébny czas:
 ;Time needed:
+Title=Titel:
+;Title:
 ToCalculateABetterHardShadow=Żebë wërechòwac lepszi cwiardi céń, leno czej wëbróny 1 HS!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=Do schówkù
@@ -3706,6 +3812,8 @@ Turned=Òbrócony:
 ;Turned:
 Turntable=Òbrotnica
 ;Turntable
+TweakOfParametersBy=Przeróbka parametrów òd {}
+;Tweak of parameters by {}
 Type=Ôrt:
 ;Type:
 Type2=Ôrt
@@ -3844,6 +3952,8 @@ WarningMustRecalculateTheWholeImage=Bôczënk: Żebë to copnąc, trzeba wërech
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=Bôczënczi i felë
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} òstôł skòpérowóny do katalogù mapów jakno mapa {}: {}
+;{} was copied into the maps folder as map {}: {}
 Water=Wòda:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3876,6 +3986,10 @@ White=biôłé
 ;white
 WhiteOutside=Biôłé bùten
 ;White outside
+WhoseParametersYouStartedFromGroups=Czëjé parametrë bëłë zôczątkã: grëpë proszą, żebë pòdac artistã (np.: Przeróbka "Pipe Organ" òd Marije)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=Czemù rechòwanié nie mòże sã zacząc
+;Why the calculation cannot start
 Width=Szérzô:
 ;Width:
 Windows=Òkna

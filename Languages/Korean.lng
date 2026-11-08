@@ -63,6 +63,8 @@ AOCalcTime=AO 계산 시간:
 ;AO calc time:
 ASineIntegerPowerBulbWith=어메이징 박스처럼 앞에서 폴딩을 적용하는 사인 정수 거듭제곱 벌브.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=구형 파노라마에는 Photo Sphere 태그와 함께 360 카메라(RICOH THETA S)의 EXIF 카메라 정보가 기록되어 Facebook에서 360 사진으로 표시됩니다. 프로그램이 저장하는 모든 360 이미지에 적용됩니다.
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=중지되거나 중단된 렌더링은 계산한 내용을 보존하며, 같은 파라미터로 3D 계산을 하면 이어서 계산합니다.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=투명 배경에는 PNG 프레임이 필요합니다. 출력 형식으로 PNG를 선택하십시오.
@@ -195,6 +197,8 @@ Amount=양:
 ;Amount:
 AnAIAssistantOnThisComputer=이 컴퓨터의 AI 어시스턴트가 Mandelbulb 3D를 사용할 수 있습니다: 평소의 말이나 음성으로 이미지를 설명하고, 바꾸고, 렌더링하거나, 변형을 만들거나, 마지막으로 작업한 것을 렌더링하도록 요청하십시오. Mandelbulb 3D는 오프라인 상태로 유지됩니다: 어시스턴트의 앱이 이 컴퓨터에서 Mandelbulb 3D를 시작합니다.
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=보간 하이브리드(공식 창의 "보간" 탭)는 두 프랙탈 공식을 단계별로 섞습니다. dIFS 공식은 섞을 수 없으니 "교대"나 "DEcombinate"를 사용하십시오.
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=이 이미지의 완료되지 않은 계산이 보관되어 있습니다({}).\n\n계속하시겠습니까?  "아니요"를 누르면 처음부터 다시 계산합니다.
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=이 매개변수의 완료되지 않은 몬테카를로 렌더링이 보관되어 있습니다({}).\n\n계속하시겠습니까?  "아니요"를 누르면 처음부터 다시 렌더링합니다.
@@ -265,6 +269,8 @@ Around=중심:
 ;Around:
 AroundTheMiddleAnObject=중심 주위(물체)
 ;Around the middle (an object)
+Artist=작가:
+;Artist:
 AsFullBackgroundSphere=전체 배경 구로:
 ;As full background sphere:
 Aspect=비율:
@@ -397,6 +403,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2 설정 (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=요청자
 ;By
+By2={} - 작가: {}
+;{} by {}
 ByOfDone={} ({}, {} 담당): {}/{} {} 완료
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -415,6 +423,8 @@ Calculate3DAndTheBatchWindow=3D 계산과 일괄 처리 창을 스웜으로 계�
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=정식 조명 없이 8x8 블록 이미지를 빠르게 계산합니다
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=먼저 이미지를 계산하거나 이미지 선택을 해제하십시오.
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=A.S. 자동 계산
 ;Calculate A.S. automatically
 CalculateColors=색상 계산
@@ -551,6 +561,8 @@ ClearTheWholeList=목록 전체 지우기
 ;Clear the whole list
 ClickAButtonToChangeA=(버튼을 클릭하여 폴더를 변경합니다)
 ;(Click a button to change a directory)
+ClickAColourEsc=색 클릭 (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=열 머리글을 클릭하면 정렬됩니다.
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=언어를 클릭하면 창이 해당 언어로 전환됩니다.
@@ -575,6 +587,8 @@ ClickOnTheButtonAndAfterwards3=버튼을 클릭한 다음 이미지의 물체를
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=이미지에서 중심에 놓을 물체를 클릭하십시오.\n카메라 방향은 바뀌지 않습니다. 중심점을 기준으로 회전하려면\n회전 옵션을 사용하십시오.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=이 버튼을 클릭한 다음 프로그램 창(이미지, 맵, 팔레트, 다른 창)의 아무 픽셀이나 클릭하면 그 색을 가져옵니다. Esc로 중지합니다.
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=클릭하여 반복 기준 Dynfog와 반복 기준 색상 사이를 전환합니다
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=클릭하여 출력 파일을 선택하십시오.
@@ -659,6 +673,10 @@ ColorStart=색상 시작
 ;Color start
 Coloring=색상
 ;Coloring
+ColorsFromFile=파일에서 색상...
+;Colors from file...
+ColorsTakenFrom={}에서 가져온 색상
+;Colors taken from {}
 Colour0Grey1AsIt=색: 0 회색, 1 그대로, 2 두 배 선명하게
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=색수차
@@ -723,6 +741,8 @@ CopyParamsToClipboard=파라미터를 클립보드에 복사
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=터미널에 붙여 넣을 수 있도록 명령을 복사합니다
 ;Copy the command, to paste it into a terminal
+CopyThePostText=게시물 텍스트 복사
+;Copy the post text
 CopyTheSelectedLineOrAll=선택한 줄을 복사합니다. 선택한 줄이 없으면 표시된 모든 줄을 복사합니다
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=값 복사
@@ -781,6 +801,8 @@ CreateLanguageFile=언어 파일 만들기
 ;Create language file
 CreateMeshes=메시를 만듭니다
 ;Create Meshes
+Credit=출처:
+;Credit:
 CrossEyedPreview=교차시 미리보기
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1부터 Ctrl+7까지 목록 순서대로, Ctrl+W로 닫기
@@ -1169,12 +1191,18 @@ ExtractingAmbientInformationFromTheOriginal=원본 M3I 파일에서 앰비언트
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ 극값 검사 }
 ;{ Extreme testing }
+Eyedropper=스포이트
+;Eyedropper
 FFmpegCommand=FFmpeg 명령
 ;FFmpeg command
 FNr=F.nr:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Facebook 크기(2048 px, 360 사진은 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook은 게시물에 붙여 넣은 파라미터를 링크로 바꾸기 때문에 그룹에서는 텍스트 파일로 올려 달라고 합니다. 이 파일을 이미지와 함께 게시하거나 그룹의 파일에 올리십시오.
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=프랙탈 매개변수를 가져오지 못했습니다. 다른 설정은 모두 가져왔습니다.
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=원거리 깊이 안개
@@ -1227,6 +1255,8 @@ FinishedTracingObject=물체 추적을 마쳤습니다.
 ;Finished tracing object.
 Finishing=마무리
 ;Finishing
+First=첫 번째
+;first
 First4RaysNoisy=처음 4개 광선(노이즈 있음)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=이 공식 조합의 첫 계산입니다. 그래픽 카드의 셰이더를 컴파일하는 중입니다(10-30초, 한 번만 - 드라이버가 보관합니다). 그동안 CPU가 계산하고, 셰이더가 준비되면 그래픽 카드가 합류합니다.
@@ -1263,6 +1293,8 @@ FogOffset=안개 오프셋
 ;Fog offset
 Folder=폴더
 ;Folder
+Folder2=폴더:
+;Folder:
 FolderOfTheLanguageFiles=언어 파일 폴더:
 ;Folder of the language files:
 FollowTheNewest=최신 항목 따라가기
@@ -1289,12 +1321,16 @@ FormulaName=수식 이름:
 ;Formula name:
 FormulaNotFound=공식 '{}'을(를) 찾을 수 없습니다.
 ;Formula '{}' not found.
+FormulaNotInstalled=공식이 설치되지 않음
+;Formula not installed
 FormulaNrWhereThe2ndPart=하이브리드 2부가 시작되는 공식 번호
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=포뮬러 값:
 ;Formula values:
 Formulas=공식
 ;Formulas
+Formulas2=공식: {}
+;Formulas: {}
 FormulasColon=공식:
 ;Formulas:
 Forward=순방향
@@ -1329,6 +1365,8 @@ FromTheCameraAllAroundA=카메라에서 모든 방향(안에서 본 장면)
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=전체 M3I 이미지 파일:
 ;Full M3I image files:
+FullSize=원본 크기
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1527,6 +1565,10 @@ HeightMapGeneratorPreview=하이트맵 생성기 미리보기
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=예를 들어 원치 않는 드로잉을 다시 할 때 유용합니다.
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=여기서는 dIFS 공식과 다른 공식이 슬롯에 번갈아 들어 있습니다. 먼저 dIFS 공식을 다른 공식 뒤로 옮긴 다음(공식 창의 공식 탭을 오른쪽 클릭하면 공식을 옮기거나 복사할 수 있습니다) "DEcombinate"를 사용하십시오.
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=16진수:
+;Hex:
 HiQual=고품질
 ;HiQual
 HiQual1=HiQual 1
@@ -1719,6 +1761,8 @@ InsideColor=내부 색상
 ;Inside color
 InsideRender=내부 렌더링
 ;Inside render
+InstalledFormulasWithASimilarName=이름이 비슷한 설치된 공식: {}
+;Installed formulas with a similar name: {}
 Int=강도:
 ;Int.:
 Int64=Int64
@@ -2031,6 +2075,8 @@ MMBWheelZoom=MMB/휠: 확대/축소
 ;MMB/Wheel: zoom
 MRelObj=맵 물체 기준
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=mb3d-rs {}로 제작(Windows, Linux, macOS용 Mandelbulb3D)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=주 계산 시간:
 ;Main calc time:
 MainParas=메인 매개변수
@@ -2047,6 +2093,8 @@ MakeSureThatNoLightWill=비혼합 모드에서 빛이 빠지지 않도록 합니
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=하드 섀도우와 앰비언트 섀도우를 반영하려면 해당\n'자동 계산' 옵션이 설정되어 있는지 확인하십시오.
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=파일 만들기
+;Make the files
 MakeTheLightOfThatPicture=그 이미지의 조명을 더 따뜻하게 해서 다시 렌더링해 주세요.
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=앰비언트와 배경 색상의 위-아래 그라데이션을\n물체의 좌표계 기준으로 만듭니다.\n애니메이션에서 조명을 장면에 고정하려면 사용하십시오.
@@ -2065,6 +2113,8 @@ MapNumber2=맵 번호:
 ;Map Number:
 MapNumberColon=맵 번호:
 ;Map number:
+MapNumberRightClickToChoose=맵 번호. 오른쪽 클릭으로 이미지를 선택합니다. 이름과 폴더는 상관없습니다(번호를 붙여 맵 폴더에 복사되므로 다음에도, MB3D에서도 파라미터가 찾을 수 있습니다)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=출력 벡터에 맵 적용
 ;Map on output vector
 MapSequences=맵 시퀀스
@@ -2267,6 +2317,8 @@ N360Orbit=360° 궤도
 ;360° orbit
 N360Panorama=360 파노라마
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=360 사진: Facebook이 찾는 카메라 태그
+;360 photos: the camera tag Facebook looks for
 N360VR=360° VR
 ;360° VR
 N3DAnalyticFormula=3D 해석적 포뮬러
@@ -2387,6 +2439,8 @@ NoiseFilterStrength=노이즈 필터: 강도 {}
 ;Noise filter: strength {}
 None=없음
 ;none
+NoneOfTheFormulaSlotsHolds=프랙탈을 만드는 공식이 들어 있는 슬롯이 없습니다. 모든 슬롯이 비어 있거나, 반복 횟수가 0이거나, 공간만 바꾸는 공식({})이 들어 있습니다.\n\nInteger Power나 Amazing Box 같은 프랙탈 공식을 슬롯에 넣고 반복 횟수를 1 이상으로 설정하십시오.
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=보통
 ;Normal
 NormalStatusForThisFormula=이 공식을 보통 상태로
@@ -2535,6 +2589,8 @@ OpenTextParameters=텍스트 파라미터 열기
 ;Open text parameters
 OpenTheAnimationMaker=애니메이션 메이커를 엽니다
 ;Open the animation maker
+OpenTheFolder=폴더 열기
+;Open the folder
 OpenTheFolderOfTheFile=파일이 있는 폴더를 엽니다
 ;Open the folder of the file
 OpenTheFolderOfTheLog=로그 파일 폴더를 엽니다(하루에 하나, 30일 동안 보관)
@@ -2633,6 +2689,12 @@ Parameter=매개변수
 ;Parameter
 Parameters=파라미터
 ;Parameters
+ParametersAndLights=파라미터와 조명
+;Parameters and lights
+ParametersAsATextFileTxt=파라미터 텍스트 파일(.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=파라미터: {} (첨부)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=매개변수를 클립보드에 복사했습니다.
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=매개변수를 불러왔습니다. 렌더링하려면 "3D 계산"을 누르십시오.
@@ -2659,6 +2721,8 @@ PercentOfLocalDE=국소 DE의 백분율
 ;Percent of local DE
 Picture=이미지
 ;picture
+PictureJPEG=이미지(JPEG)
+;Picture (JPEG)
 Pictures=이미지
 ;pictures
 PicturesAndFilesTheAssistantMakes=어시스턴트가 만든 이미지와 파일은 {}에 저장되며, 아무것도 삭제되지 않습니다. 4K보다 큰 이미지는 동의한 경우에만 만들어지고, 계산은 10분 후에 멈춥니다. 어시스턴트가 하는 모든 작업은 로그에 남습니다.
@@ -2703,6 +2767,8 @@ PostProcessingColon=후처리:
 ;Post processing:
 PostProcessingLower=후처리
 ;post processing
+PostText=게시물 텍스트:
+;Post text:
 Postprocess=후처리
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: 밑을 임의의 지수로 거듭제곱합니다.
@@ -2829,6 +2895,8 @@ RecalculateASelection=\s선택 영역 재계산
 ;\sRecalculate a Selection
 RecalculatingTheSelection=선택 영역 다시 계산 중
 ;recalculating the selection
+RecentColours=최근 색상:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=비행의 키프레임 {}개를 기록했습니다
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=비행 기록: 버튼이 눌려 있는 동안 내비게이터의 새 시점 (최대 초당 2회) 이 애니메이션의 다음 키프레임이 됩니다
@@ -3043,6 +3111,8 @@ SaveAsImageAtTheLocation=지정한 위치에 이미지로 저장합니다.
 ;Save as image at the location you specify
 SaveBtrace2=btrace2 저장...
 ;Save btrace2...
+SaveColors=색상 저장...
+;Save colors...
 SaveCompleteM3I=전체 M3I를 저장합니다
 ;Save complete M3I
 SaveExit=저장 + 종료
@@ -3099,6 +3169,8 @@ SavedOpenEXRFloatingPointColoursAnd={} 저장됨 (OpenEXR, 부동소수점 색�
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} 저장됨 (투명 배경)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=이 색상이 들어간 조명을 조명 파일(.m3l, MB3D에서도 사용 가능)로 저장합니다. "파일에서 색상"으로 다시 색상을 가져올 수 있습니다.
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=저장:
 ;Saving:
 SavingSucceeded=저장 성공
@@ -3135,6 +3207,8 @@ SecantSearchForTheSurface=시컨트 방식으로 표면 탐색
 ;Secant search for the surface
 SecantSearchmode=시컨트 탐색 모드:
 ;Secant searchmode:
+Second=두 번째
+;second
 SecondFocusPointIfDifferentFrom=두 번째 초점 지점으로, 첫 번째와 다르면\n초점 지점 대신 초점 선이 됩니다.\n(물리적으로 그리 현실적이지는 않지만 유용합니다)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=메인 창 '색상' 탭의 맵 색상 옵션도 참고하십시오.
@@ -3177,6 +3251,8 @@ SessionsAndCrashes=세션과 비정상 종료
 ;Sessions and crashes
 Set=설정
 ;Set
+SetItUpNowTheFormulas=지금 설정하시겠습니까? 공식은 슬롯에 그대로 있습니다. 첫 번째 부분은 {}, 두 번째 부분은 {}를 사용하고 min(두 개체 모두)으로 결합합니다.
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=조명 함수를 코사인으로 설정
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=맵의 방향을 물체 기준으로 설정합니다.\n애니메이션에서 조명을 장면에 고정하려면 사용하십시오.
@@ -3185,6 +3261,8 @@ SetTheVisualThemeOfThe=응용 프로그램의 시각 테마를 설정합니다
 ;Set the visual theme of the application
 SetTo0=0으로
 ;set to 0
+SetUpDECombination=DE 조합 설정
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=섀도우를 계산할 때 해당 조명 함수를\n자동으로 코사인으로 설정합니다.\n코사인 및 이차 코사인 함수가 섀도우와 잘 어울립니다.
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=시각 테마 설정
@@ -3193,12 +3271,18 @@ ShadersCompiling=셰이더 컴파일 중
 ;shaders compiling
 ShadowsAndAO=그림자 및 AO
 ;shadows and AO
+Share=공유
+;Share
 ShareRenderingBetweenYourComputersThrough=공유 폴더를 통해 여러 컴퓨터가 렌더링을 분담합니다
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=공유: 이미지, 그 파라미터 텍스트 파일, 게시물 텍스트를 그룹에 올릴 수 있게 준비합니다
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=이 컴퓨터 공유: 폴더의 작업을 렌더링하고, 내 작업을 스웜에 넘깁니다
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=공유 폴더:
 ;Shared folder:
+SharedInThePostTextIs="{}" 폴더에 저장했습니다. 게시물 텍스트는 클립보드에 있습니다.
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=공유 중이지만 아직 스웜에 다른 컴퓨터가 없습니다. 렌더링은 이 컴퓨터에서만 실행됩니다
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=공유 중지됨: {}
@@ -3265,6 +3349,10 @@ Sliding=슬라이딩
 ;Sliding
 SlidingWalkingStep=슬라이딩+걷기 단계:
 ;Sliding+Walking step:
+Slot=슬롯 {}
+;slot {}
+SlotsTo=슬롯 {}~{}
+;slots {} to {}
 SmoothDEcomb=Smooth DEcomb:
 ;Smooth DEcomb:
 SmoothImageOnLoad=불러올 때 이미지 부드럽게
@@ -3431,6 +3519,10 @@ SwitchBackToTheDefaultTheme=기본 테마로 되돌립니다
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=기록에서 항목을 뺍니다(계산한 이미지의 파라미터와 썸네일은 삭제되고, 다른 파일은 그 자리에 그대로 남습니다)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=클립보드에 있는 파라미터(예: 게시물에서 복사한 것)에서 색상만 가져옵니다.
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=파라미터 파일(.m3p, .m3i, 텍스트)이나 조명 파일(.m3l)에서 색상(표면 팔레트, 그 투명도, 내부 색상)만 가져옵니다. 조명, 프랙탈, 시점은 그대로 유지됩니다.
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=대상 맵 슬롯
 ;Target Map Slot
 TargetMapSlotUseThisNumber=대상 맵 슬롯입니다. 애니메이션 맵을 만들려면 프랙탈에서 이 번호를 맵(예: 하이트맵)으로 사용하십시오
@@ -3455,6 +3547,8 @@ TheBTracer2CacheFormatIsNot2=BTracer2 캐시 형식은 지원되지 않아 메�
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=배경 이미지를 불러올 수 없습니다.
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=배경 이미지 {}를 맵 폴더에 복사했습니다: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=탈출 시간 공식의 bailout 값입니다.\n반복 중 3D 값이 이 값을 넘으면\n현재 점은 물체에 속하지 않습니다.
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=블러 반경이 이 값으로 제한됩니다.\n이미지 일부에서 반경이 매우 커질 때 렌더링 속도를 높일 수 있습니다.
@@ -3471,10 +3565,14 @@ TheCameraLeftTheFractal=카메라가 프랙탈을 벗어났습니다
 ;the camera left the fractal
 TheChosenValueOverAllFrames=애니메이션 모든 프레임에서 고른 값: 키프레임의 사각형을 위아래로 끌거나, 클릭해서 값을 입력합니다
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=16진수 RGB로 나타낸 색상, #RRGGBB 형식(#는 생략 가능, #RGB도 가능)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=깊은 물의 색: 물 자체의 빛이자 물속의 것이 깊이에 따라 띠는 색 (클릭하여 변경)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=명령줄 프로그램 mb3d가 이 프로그램과 같은 위치에 없습니다. 프로그램을 다시 설치하십시오.
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=여기 있는 dIFS 공식({})은 공간을 변환하기만 합니다(이동, 회전, 접기, 반복). dIFS 체인에는 그 뒤에 실제로 모양을 그리는 dIFS 도형 공식(boxIFS, cylinderIFS, HeightMapIFS 등)도 필요합니다.
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=기본 번호 매기기는 X와 Y로 나뉜 두 개의 번호를 사용합니다.\n이 옵션을 선택하면 번호가 하나만 붙으며,\n각 열에서 증가하고 다음 행으로 이어집니다.
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=기본 출력은 물체가 흰색, 바깥 영역이 검은색입니다.\n색을 반전하려면 이 옵션을 선택하십시오.
@@ -3551,6 +3649,8 @@ TheNewestJobSoFarRendered=지금까지의 최신 작업: 렌더링된 부분, �
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=매개변수가 더 이상 완료되지 않은 계산과 일치하지 않습니다. 계산하려면 "3D 계산"을 누르십시오.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=DE 조합의 {} 부분에 dIFS 공식({})과 다른 공식({})이 섞여 있습니다. 각 부분은 한 종류만 계산합니다. dIFS 공식은 한 부분에, 다른 공식은 다른 부분에 넣으십시오(두 번째 부분이 시작되는 위치는 공식 창의 "DEcombinate" 탭에서 정합니다).
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=이미지가 계산 내용과 일치하지 않습니다. 다시 계산하십시오.
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=다른 모든 패스 다음에 하는 이미지 마무리: 노출, 밝은 빛 주변의 글로우, 필름 톤 매핑, 색 보정, 비네트, 색수차
@@ -3595,6 +3695,8 @@ Themes=테마
 ;Themes
 ThereIsAFileAlready=파일 {}이(가) 이미 있습니다.
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=이 파라미터는 공식 "{}"를 사용하지만 여기에는 설치되어 있지 않습니다.\n\n공식은 .m3f로 끝나는 파일입니다. {}.m3f를 구해서(파라미터와 함께, 그룹의 파일이나 공식 팩으로 공유되는 경우가 많습니다) 공식 폴더 중 하나에 넣으십시오:\n{}\n\n그런 다음 파라미터를 다시 열거나 붙여 넣으십시오.
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=어시스턴트에게 요청할 수 있는 일
 ;Things to ask the assistant
 ThisComputer=이 컴퓨터:
@@ -3611,6 +3713,8 @@ ThisRenderKeepsNoImage=이 렌더링은 이미지를 보관하지 않습니다.
 ;This render keeps no image.
 ThisRenderKeptNoParameters=이 렌더링에는 보관된 매개변수가 없습니다.
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=이 장면은 하나의 공식 체인에 두 종류의 공식을 섞고 있습니다:\n- dIFS 공식({})은 거리로부터 바로 모양을 만들고,\n- 다른 공식({})은 단계별로 반복하는 프랙탈(탈출 시간)입니다.\n하나의 체인으로 두 종류를 동시에 계산할 수는 없습니다.\n\n둘 다 보이게 하려면 DE 조합으로 결합하십시오. 첫 번째 부분이 한 종류를, 두 번째 부분이 다른 종류를 계산하고 두 개체를 결합합니다(min: 두 개체 모두, max: 겹치는 곳만, smooth: 부드러운 이음매). 공식 창 위쪽의 "DEcombinate" 탭입니다.
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=이 세션 (실시간)
 ;This session (live)
 ThreadPriority=스레드\n우선순위
@@ -3653,6 +3757,8 @@ Tiling=타일 분할:
 ;Tiling:
 TimeNeeded=필요 시간:
 ;Time needed:
+Title=제목:
+;Title:
 ToCalculateABetterHardShadow=더 나은 하드 섀도우를 계산합니다. H.S.가 1개만 선택된 경우에만 사용하십시오!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=클립보드로
@@ -3707,6 +3813,8 @@ Turned=회전:
 ;Turned:
 Turntable=턴테이블
 ;Turntable
+TweakOfParametersBy={}의 파라미터를 수정
+;Tweak of parameters by {}
 Type=유형:
 ;Type:
 Type2=유형
@@ -3845,6 +3953,8 @@ WarningMustRecalculateTheWholeImage=경고: 되돌리려면 전체 이미지를 
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=경고와 오류
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={}를 맵 {}(으)로 맵 폴더에 복사했습니다: {}
+;{} was copied into the maps folder as map {}: {}
 Water=물:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3877,6 +3987,10 @@ White=흰색
 ;white
 WhiteOutside=바깥을 흰색으로
 ;White outside
+WhoseParametersYouStartedFromGroups=바탕으로 삼은 파라미터의 작가: 그룹에서는 원작가를 밝히도록 요청합니다(예: Tweak of "Pipe Organ" by Marije)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=계산을 시작할 수 없는 이유
+;Why the calculation cannot start
 Width=너비:
 ;Width:
 Windows=창

@@ -62,6 +62,8 @@ AOCalcTime=Tempo calcolo AO:
 ;AO calc time:
 ASineIntegerPowerBulbWith=Un bulb seno a potenza intera con piegature preliminari, come nell'Amazing Box.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=Un panorama sferico riceve la fotocamera EXIF di una fotocamera 360 (RICOH THETA S) oltre ai tag Photo Sphere, così Facebook lo mostra come foto 360. Per ogni immagine 360 salvata dal programma.
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=Un render fermato o interrotto conserva quanto ha calcolato; Calcola 3D con gli stessi parametri lo continua.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=Uno sfondo trasparente richiede fotogrammi PNG: scegliere PNG come formato di uscita.
@@ -194,6 +196,8 @@ Amount=Quantità:
 ;Amount:
 AnAIAssistantOnThisComputer=Un assistente IA su questo computer può usare Mandelbulb 3D: chiedigli a parole semplici, o a voce, di descrivere, modificare e renderizzare le tue immagini, di creare variazioni o di renderizzare ciò su cui hai lavorato per ultimo. Mandelbulb 3D resta offline: è l'app dell'assistente ad avviarlo su questo computer.
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=Un ibrido di interpolazione (la scheda "Interpola" della finestra delle formule) fonde due formule frattali passo dopo passo; le formule dIFS non si possono fondere. Per loro usa "Alterna" o "DEcombinate".
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=È stato conservato un calcolo non terminato di questa immagine ({}).\n\nContinuarlo?  "No" lo ricalcola dall'inizio.
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=È stato conservato un render Monte Carlo non terminato di questi parametri ({}).\n\nContinuarlo?  "No" lo renderizza di nuovo dall'inizio.
@@ -264,6 +268,8 @@ Around=Attorno a:
 ;Around:
 AroundTheMiddleAnObject=Attorno al centro (un oggetto)
 ;Around the middle (an object)
+Artist=Artista:
+;Artist:
 AsFullBackgroundSphere=Come sfera di sfondo completa:
 ;As full background sphere:
 Aspect=Proporz.:
@@ -396,6 +402,8 @@ BulbTracer2SettingsBtrace2=Impostazioni BulbTracer2 (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=Da
 ;By
+By2={} di {}
+;{} by {}
 ByOfDone={} ({}, di {}): {} di {} {} fatti
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -414,6 +422,8 @@ Calculate3DAndTheBatchWindow=Calcola 3D e la finestra Batch con lo sciame, in
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Calcola rapidamente un'immagine a blocchi 8x8 senza illuminazione corretta
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=Calcola prima un'immagine, oppure togli la spunta all'immagine.
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=Calcola O.A. automaticamente
 ;Calculate A.S. automatically
 CalculateColors=Calcola colori
@@ -550,6 +560,8 @@ ClearTheWholeList=Svuota tutto l'elenco
 ;Clear the whole list
 ClickAButtonToChangeA=(Clic su un pulsante per cambiare una cartella)
 ;(Click a button to change a directory)
+ClickAColourEsc=Clicca un colore (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=Clicca sull'intestazione di una colonna per ordinare.
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=Fare clic su una lingua per passare le finestre a quella lingua
@@ -574,6 +586,8 @@ ClickOnTheButtonAndAfterwards3=Clicca sul pulsante e poi sull'oggetto nell'immag
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Clicca sull'oggetto nell'immagine da centrare.\nLa direzione della camera non cambia; usa le opzioni\ndi rotazione per ruotare attorno al punto centrale.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=Clicca qui, poi su un pixel qualsiasi delle finestre del programma (l'immagine, una mappa, una tavolozza, un'altra finestra) per prenderne il colore. Esc interrompe.
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Clic per passare da Nebbia dinamica su iterazioni a Colore su iterazioni
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=Fare clic per scegliere il file di output
@@ -658,6 +672,10 @@ ColorStart=Colore inizio
 ;Color start
 Coloring=Colorazione
 ;Coloring
+ColorsFromFile=Colori da file...
+;Colors from file...
+ColorsTakenFrom=Colori presi da {}
+;Colors taken from {}
 Colour0Grey1AsIt=Colore: 0 grigio, 1 così com'è, 2 il doppio più colorato
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=Frange colore
@@ -722,6 +740,8 @@ CopyParamsToClipboard=Copia parametri negli appunti
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=Copia il comando, da incollare in un terminale
 ;Copy the command, to paste it into a terminal
+CopyThePostText=Copia il testo
+;Copy the post text
 CopyTheSelectedLineOrAll=Copia la riga selezionata, o tutte le righe mostrate se nessuna è selezionata
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Copia i valori
@@ -780,6 +800,8 @@ CreateLanguageFile=Crea file di lingua
 ;Create language file
 CreateMeshes=Crea mesh
 ;Create Meshes
+Credit=Crediti:
+;Credit:
 CrossEyedPreview=Anteprima a occhi incrociati
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Da Ctrl+1 a Ctrl+7 nell'ordine della lista, Ctrl+W per chiudere
@@ -1168,12 +1190,18 @@ ExtractingAmbientInformationFromTheOriginal=Estrazione delle informazioni ambien
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ Test dei valori estremi }
 ;{ Extreme testing }
+Eyedropper=Contagocce
+;Eyedropper
 FFmpegCommand=Comando FFmpeg
 ;FFmpeg command
 FNr=N. form.:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Dimensione Facebook (2048 px, foto 360 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook trasforma in link i parametri incollati in un post, e i gruppi li chiedono come file di testo: pubblica questo file con l'immagine o mettilo nei file del gruppo.
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=Importazione dei parametri del frattale non riuscita. Tutte le altre impostazioni sono state importate.
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=Nebbia prof. lontana
@@ -1226,6 +1254,8 @@ FinishedTracingObject=Tracciamento dell'oggetto terminato.
 ;Finished tracing object.
 Finishing=Rifinitura
 ;Finishing
+First=prima
+;first
 First4RaysNoisy=primi 4 raggi (rumorosi)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=Primo calcolo di questa combinazione di formule: gli shader della scheda grafica vengono compilati (10-30 s, solo una volta: il driver li conserva). Nel frattempo calcola la CPU, la scheda si aggiunge quando sono pronti.
@@ -1262,6 +1292,8 @@ FogOffset=Offset nebbia
 ;Fog offset
 Folder=Cartella
 ;Folder
+Folder2=Cartella:
+;Folder:
 FolderOfTheLanguageFiles=Cartella dei file di lingua:
 ;Folder of the language files:
 FollowTheNewest=Segui le più recenti
@@ -1288,12 +1320,16 @@ FormulaName=Nome formula:
 ;Formula name:
 FormulaNotFound=Formula '{}' non trovata.
 ;Formula '{}' not found.
+FormulaNotInstalled=Formula non installata
+;Formula not installed
 FormulaNrWhereThe2ndPart=Formula n. da cui inizia la 2ª parte dell'ibrido
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=Valori formula:
 ;Formula values:
 Formulas=Formule
 ;Formulas
+Formulas2=Formule: {}
+;Formulas: {}
 FormulasColon=Formule:
 ;Formulas:
 Forward=In avanti
@@ -1328,6 +1364,8 @@ FromTheCameraAllAroundA=Dalla fotocamera, tutto intorno (una scena vista dall'in
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=File immagine completi M3I:
 ;Full M3I image files:
+FullSize=Dimensione piena
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1526,6 +1564,10 @@ HeightMapGeneratorPreview=Anteprima generatore HeightMap
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=Utile ad esempio per rifare un disegno non voluto.
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=Qui le formule dIFS e le altre si alternano negli slot: prima sposta le formule dIFS dopo le altre (un clic destro su una scheda formula della finestra delle formule sposta e copia le formule), poi usa "DEcombinate".
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=Hex:
+;Hex:
 HiQual=Alta qual.
 ;HiQual
 HiQual1=HiQual 1
@@ -1718,6 +1760,8 @@ InsideColor=Colore interno
 ;Inside color
 InsideRender=Render interno
 ;Inside render
+InstalledFormulasWithASimilarName=Formule installate con un nome simile: {}
+;Installed formulas with a similar name: {}
 Int=Int.:
 ;Int.:
 Int64=Int64
@@ -2030,6 +2074,8 @@ MMBWheelZoom=MMB/Rotella: zoom
 ;MMB/Wheel: zoom
 MRelObj=M.rel.ogg.
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=Realizzato con mb3d-rs {} (Mandelbulb3D per Windows, Linux e macOS)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=Tempo calcolo princ.:
 ;Main calc time:
 MainParas=param. principali
@@ -2046,6 +2092,8 @@ MakeSureThatNoLightWill=Assicura che nessuna luce venga sottratta in modalità s
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=Assicurarsi che le opzioni 'Calcola... automaticamente' delle ombre nette\ne ambientali siano impostate, se si desidera tenerne conto.
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=Crea i file
+;Make the files
 MakeTheLightOfThatPicture=Rendi più calda la luce di quell'immagine e renderizzala di nuovo.
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=Rende il gradiente alto-basso dei colori ambientali e di sfondo\nrelativo al sistema di coordinate dell'oggetto.\nUsalo nelle animazioni per fissare le luci alla scena.
@@ -2064,6 +2112,8 @@ MapNumber2=Numero mappa:
 ;Map Number:
 MapNumberColon=Numero mappa:
 ;Map number:
+MapNumberRightClickToChoose=Numero della mappa. Clic destro per scegliere un'immagine: qualsiasi nome, qualsiasi cartella (viene copiata nella cartella delle mappe con un numero, così i parametri la ritrovano la prossima volta e in MB3D)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=Mappa sul vettore di uscita
 ;Map on output vector
 MapSequences=Sequenze mappe
@@ -2266,6 +2316,8 @@ N360Orbit=Orbita a 360°
 ;360° orbit
 N360Panorama=Panorama 360
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=Foto 360: il tag della fotocamera che Facebook cerca
+;360 photos: the camera tag Facebook looks for
 N360VR=VR 360°
 ;360° VR
 N3DAnalyticFormula=Formula 3D analitica
@@ -2386,6 +2438,8 @@ NoiseFilterStrength=Filtro rumore: intensità {}
 ;Noise filter: strength {}
 None=nessuna
 ;none
+NoneOfTheFormulaSlotsHolds=Nessuno slot delle formule contiene una formula che crea un frattale: ognuno è vuoto, ha 0 iterazioni o contiene una formula che cambia solo lo spazio ({}).\n\nMetti una formula frattale, come Integer Power o Amazing Box, in uno slot e dalle almeno 1 iterazione.
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normale
 ;Normal
 NormalStatusForThisFormula=Stato normale per questa formula
@@ -2534,6 +2588,8 @@ OpenTextParameters=Apri parametri come testo
 ;Open text parameters
 OpenTheAnimationMaker=Apri il creatore di animazioni
 ;Open the animation maker
+OpenTheFolder=Apri la cartella
+;Open the folder
 OpenTheFolderOfTheFile=Apre la cartella del file
 ;Open the folder of the file
 OpenTheFolderOfTheLog=Apre la cartella dei file di registro (uno al giorno, conservati 30 giorni)
@@ -2632,6 +2688,12 @@ Parameter=Parametri
 ;Parameter
 Parameters=Parametri
 ;Parameters
+ParametersAndLights=Parametri e luci
+;Parameters and lights
+ParametersAsATextFileTxt=Parametri come file di testo (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=Parametri: {} (allegato)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=Parametri copiati negli appunti.
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=Parametri caricati, premere "Calcola 3D" per renderizzare.
@@ -2658,6 +2720,8 @@ PercentOfLocalDE=Percentuale della DE locale
 ;Percent of local DE
 Picture=immagine
 ;picture
+PictureJPEG=Immagine (JPEG)
+;Picture (JPEG)
 Pictures=immagini
 ;pictures
 PicturesAndFilesTheAssistantMakes=Le immagini e i file creati dall'assistente finiscono in {}; nulla viene eliminato. Le immagini più grandi di 4K vengono create solo con il tuo consenso, e un calcolo si ferma dopo 10 minuti. Tutto ciò che fa è nel registro.
@@ -2702,6 +2766,8 @@ PostProcessingColon=Postelaborazione:
 ;Post processing:
 PostProcessingLower=postelaborazione
 ;post processing
+PostText=Testo del post:
+;Post text:
 Postprocess=Postelaborazione
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: eleva la base a una potenza qualsiasi.
@@ -2828,6 +2894,8 @@ RecalculateASelection=\sRicalcola una selezione
 ;\sRecalculate a Selection
 RecalculatingTheSelection=ricalcolo della selezione
 ;recalculating the selection
+RecentColours=Colori recenti:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=Registrati {} fotogrammi chiave del volo
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=Registra un volo: finché il pulsante è premuto, ogni nuova vista del Navigatore (al massimo due al secondo) diventa il fotogramma chiave successivo dell'animazione
@@ -3042,6 +3110,8 @@ SaveAsImageAtTheLocation=Salva come immagine nella posizione specificata
 ;Save as image at the location you specify
 SaveBtrace2=Salva btrace2...
 ;Save btrace2...
+SaveColors=Salva colori...
+;Save colors...
 SaveCompleteM3I=Salva M3I completo
 ;Save complete M3I
 SaveExit=Salva + esci
@@ -3098,6 +3168,8 @@ SavedOpenEXRFloatingPointColoursAnd=Salvato {} (OpenEXR, colori in virgola mobil
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Salvato {} (sfondo trasparente)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=Salva l'illuminazione con questi colori come file di luci (.m3l, anche per MB3D); "Colori da file" ne riprende i colori.
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=Salvataggio:
 ;Saving:
 SavingSucceeded=Salvataggio riuscito
@@ -3134,6 +3206,8 @@ SecantSearchForTheSurface=Ricerca della superficie per secante
 ;Secant search for the surface
 SecantSearchmode=Ricerca con secanti:
 ;Secant searchmode:
+Second=seconda
+;second
 SecondFocusPointIfDifferentFrom=Secondo punto di fuoco; se diverso dal primo\nsi ottiene una linea di fuoco invece di un punto.\n(fisicamente poco realistico, ma utile)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=Vedi anche le opzioni di colorazione mappa nella scheda 'Colorazione' della finestra principale.
@@ -3176,6 +3250,8 @@ SessionsAndCrashes=Sessioni e arresti anomali
 ;Sessions and crashes
 Set=Imposta
 ;Set
+SetItUpNowTheFormulas=Impostarla ora? Le formule restano nei loro slot: la prima parte prende {}, la seconda {}, unite con min (entrambi gli oggetti).
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=Funzione luce su coseno
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Imposta l'orientamento della mappa relativo all'oggetto.\nUsalo nelle animazioni per fissare le luci alla scena.
@@ -3184,6 +3260,8 @@ SetTheVisualThemeOfThe=Imposta il tema visivo dell'applicazione
 ;Set the visual theme of the application
 SetTo0=azzera
 ;set to 0
+SetUpDECombination=Imposta combinazione DE
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=Imposta automaticamente la funzione luce corrispondente su coseno\nquando viene calcolata l'ombra.\nLe funzioni coseno e coseno quadratico funzionano bene con l'ombra.
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=Impostazione del tema visivo
@@ -3192,12 +3270,18 @@ ShadersCompiling=compilazione degli shader
 ;shaders compiling
 ShadowsAndAO=ombre e AO
 ;shadows and AO
+Share=Condividi
+;Share
 ShareRenderingBetweenYourComputersThrough=Condividi il rendering tra i tuoi computer tramite una cartella condivisa
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=Condividi: l'immagine, i suoi parametri come file di testo e il testo di un post, pronti per un gruppo
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=Condividi questo computer: renderizza i lavori della cartella e affida i miei allo sciame
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=Cartella condivisa:
 ;Shared folder:
+SharedInThePostTextIs=Salvato nella cartella "{}"; il testo del post è negli appunti.
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=Condiviso, ma nello sciame non c'è ancora nessun altro computer: i render vengono eseguiti solo su questo computer
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=condivisione fermata: {}
@@ -3264,6 +3348,10 @@ Sliding=Scorrimento
 ;Sliding
 SlidingWalkingStep=Passo scorrimento+camminata:
 ;Sliding+Walking step:
+Slot=slot {}
+;slot {}
+SlotsTo=slot da {} a {}
+;slots {} to {}
 SmoothDEcomb=DEcomb morbido:
 ;Smooth DEcomb:
 SmoothImageOnLoad=Leviga immagine al caricamento
@@ -3430,6 +3518,10 @@ SwitchBackToTheDefaultTheme=Torna al tema predefinito
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=Toglie la voce dalla cronologia (i parametri e la miniatura di un'immagine calcolata vengono eliminati; gli altri file restano dove sono)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=Prende solo i colori dai parametri negli appunti (copiati da un post, per esempio).
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=Prende solo i colori (la tavolozza della superficie, la sua trasparenza e i colori interni) da un file di parametri (.m3p, .m3i, testo) o da un file di luci (.m3l): le luci, il frattale e la vista restano come sono.
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=Slot mappa di destinazione
 ;Target Map Slot
 TargetMapSlotUseThisNumber=Slot mappa di destinazione. Usare questo numero come mappa nel frattale, ad es. come heightmap, per avere una mappa animata
@@ -3454,6 +3546,8 @@ TheBTracer2CacheFormatIsNot2=Il formato cache BTracer2 non è supportato, la mes
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=Impossibile caricare l'immagine di sfondo.
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=L'immagine di sfondo {} è stata copiata nella cartella delle mappe: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=Il valore di bailout per le formule escapetime.\nSe il valore 3D supera questo valore durante l'iterazione,\nil punto corrente non appartiene all'oggetto.
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=Il raggio di sfocatura viene limitato a questo valore.\nPuò accelerare il rendering quando il raggio diventa enorme in alcune parti dell'immagine.
@@ -3470,10 +3564,14 @@ TheCameraLeftTheFractal=la fotocamera è uscita dal frattale
 ;the camera left the fractal
 TheChosenValueOverAllFrames=Il valore scelto su tutti i fotogrammi dell'animazione: trascinate il quadrato di un fotogramma chiave in su o in giù, oppure cliccatelo e scrivetene il valore
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=Il colore in RGB esadecimale, come #RRGGBB (il # è facoltativo; anche #RGB funziona)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=Il colore dell'acqua profonda: la luce propria dell'acqua e il colore che prende ciò che sta sotto con la profondità (clic per cambiare)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=Il programma a riga di comando mb3d non si trova accanto a questo programma: reinstalla il programma.
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=Le formule dIFS qui ({}) trasformano solo lo spazio: lo spostano, lo ruotano, lo piegano o lo ripetono. Una catena dIFS ha bisogno anche, dopo di loro, di una formula di forma dIFS che disegni qualcosa, come boxIFS, cylinderIFS o HeightMapIFS.
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=La numerazione predefinita usa 2 numeri, separati per X e Y.\nCon questa opzione la numerazione è un solo numero,\nche cresce lungo ogni colonna e prosegue nella riga successiva.
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=Per impostazione predefinita l'oggetto è bianco e l'area esterna è nera.\nScegliere questa opzione per invertire i colori.
@@ -3550,6 +3648,8 @@ TheNewestJobSoFarRendered=Il lavoro più recente: parti renderizzate, parti in c
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=I parametri non corrispondono più al calcolo non terminato: premere "Calcola 3D" per calcolarli.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=La {} parte della combinazione DE mescola formule dIFS ({}) con altre ({}). Ogni parte calcola un solo tipo: metti le formule dIFS in una parte e le altre nell'altra (la scheda "DEcombinate" della finestra delle formule stabilisce dove inizia la seconda parte).
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=L'immagine non corrisponde al suo calcolo: calcolarla di nuovo.
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=La rifinitura dell'immagine dopo tutti gli altri passaggi: esposizione, alone attorno alla luce intensa, tone mapping filmico, correzione colore, una vignettatura e frange di colore
@@ -3594,6 +3694,8 @@ Themes=Temi
 ;Themes
 ThereIsAFileAlready=Esiste già un file {}.
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=Questi parametri usano la formula "{}", che qui non è installata.\n\nLe formule sono file che finiscono in .m3f. Procurati {}.m3f (spesso è condiviso insieme ai parametri, nei file di un gruppo o in un pacchetto di formule) e mettilo in una delle cartelle delle formule:\n{}\n\nPoi apri o incolla di nuovo i parametri.
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=Cose da chiedere all'assistente
 ;Things to ask the assistant
 ThisComputer=Questo computer:
@@ -3610,6 +3712,8 @@ ThisRenderKeepsNoImage=Questo render non conserva alcuna immagine.
 ;This render keeps no image.
 ThisRenderKeptNoParameters=Questo render non ha conservato parametri.
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=Questa scena mescola due tipi di formule in un'unica catena:\n- le formule dIFS ({}) costruiscono una forma direttamente dalle distanze,\n- le altre ({}) sono frattali iterati passo dopo passo (tempo di fuga).\nUna catena non può calcolare entrambi i tipi insieme.\n\nPer mostrarli tutti e due, uniscili con una combinazione DE: la prima parte calcola un tipo, la seconda l'altro, e i due oggetti vengono uniti (min: entrambi gli oggetti, max: solo dove si sovrappongono, smooth: con una giunzione morbida). È la scheda "DEcombinate" in alto nella finestra delle formule.
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=Questa sessione (in diretta)
 ;This session (live)
 ThreadPriority=Priorità\nthread
@@ -3652,6 +3756,8 @@ Tiling=Suddivisione:
 ;Tiling:
 TimeNeeded=Tempo necessario:
 ;Time needed:
+Title=Titolo:
+;Title:
 ToCalculateABetterHardShadow=Per calcolare un'ombra netta migliore, solo se è selezionata 1 sola O.N.!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=Negli appunti
@@ -3706,6 +3812,8 @@ Turned=Ruotata:
 ;Turned:
 Turntable=Piatto girevole
 ;Turntable
+TweakOfParametersBy=Rielaborazione dei parametri di {}
+;Tweak of parameters by {}
 Type=Tipo:
 ;Type:
 Type2=Tipo
@@ -3844,6 +3952,8 @@ WarningMustRecalculateTheWholeImage=Attenzione: per annullare occorre ricalcolar
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=Avvisi ed errori
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} è stata copiata nella cartella delle mappe come mappa {}: {}
+;{} was copied into the maps folder as map {}: {}
 Water=Acqua:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3876,6 +3986,10 @@ White=bianco
 ;white
 WhiteOutside=Esterno bianco
 ;White outside
+WhoseParametersYouStartedFromGroups=Di chi sono i parametri da cui sei partito: i gruppi chiedono di citare l'artista (per esempio: Rielaborazione di "Pipe Organ" di Marije)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=Perché il calcolo non può partire
+;Why the calculation cannot start
 Width=Larghezza:
 ;Width:
 Windows=Finestre

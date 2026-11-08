@@ -63,6 +63,8 @@ AOCalcTime=AO गणना समय:
 ;AO calc time:
 ASineIntegerPowerBulbWith=पहले फ़ोल्डिंग वाला साइन पूर्णांक घात बल्ब, जैसा अमेज़िंग बॉक्स में होता है।
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=गोलाकार पैनोरमा को Photo Sphere टैग के साथ एक 360 कैमरे (RICOH THETA S) का EXIF कैमरा भी मिलता है, ताकि Facebook उसे 360 फ़ोटो की तरह दिखाए। प्रोग्राम द्वारा सहेजे गए हर 360 चित्र के लिए।
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=रोका गया या बाधित रेंडर अपनी गणना रखता है; उन्हीं पैरामीटर की 3D गणना उसे जारी रखती है।
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=पारदर्शी पृष्ठभूमि के लिए PNG फ़्रेम चाहिए: आउटपुट फ़ॉर्मैट के रूप में PNG चुनें।
@@ -195,6 +197,8 @@ Amount=मात्रा:
 ;Amount:
 AnAIAssistantOnThisComputer=इस कंप्यूटर पर एक AI सहायक Mandelbulb 3D का उपयोग कर सकता है: उससे सरल शब्दों में या बोलकर कहें कि वह आपके चित्रों का वर्णन करे, उन्हें बदले और रेंडर करे, विविधताएँ बनाए या आपका पिछला काम रेंडर करे। Mandelbulb 3D ऑफ़लाइन रहता है: सहायक का ऐप इसे इसी कंप्यूटर पर शुरू करता है।
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=इंटरपोलेशन हाइब्रिड (फ़ॉर्मूला विंडो का "इंटरपोलेट" टैब) दो फ़्रैक्टल फ़ॉर्मूलों को क़दम-दर-क़दम मिलाता है; dIFS फ़ॉर्मूले मिलाए नहीं जा सकते। उनके लिए "बारी-बारी" या "DE संयोजन" का उपयोग करें।
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=इस चित्र की एक अधूरी गणना रखी गई थी ({})।\n\nइसे जारी रखें?  "नहीं" इसकी शुरू से फिर गणना करता है।
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=इन पैरामीटरों का एक अधूरा Monte Carlo रेंडर रखा गया था ({})।\n\nइसे जारी रखें?  "नहीं" इसे शुरू से फिर रेंडर करता है।
@@ -265,6 +269,8 @@ Around=किसके चारों ओर:
 ;Around:
 AroundTheMiddleAnObject=केंद्र के चारों ओर (एक वस्तु)
 ;Around the middle (an object)
+Artist=कलाकार:
+;Artist:
 AsFullBackgroundSphere=पूर्ण पृष्ठभूमि गोले के रूप में:
 ;As full background sphere:
 Aspect=अनुपात:
@@ -397,6 +403,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2 सेटिंग्स (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=द्वारा
 ;By
+By2={}, {} द्वारा
+;{} by {}
 ByOfDone={} ({}, {} द्वारा): {} / {} {} पूर्ण
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -415,6 +423,8 @@ Calculate3DAndTheBatchWindow=3D गणना और बैच विंडो �
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=सही प्रकाश व्यवस्था के बिना एक तेज़ 8x8 ब्लॉकी छवि की गणना करें
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=पहले चित्र की गणना करें, या चित्र का निशान हटाएँ।
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=प.छा. की स्वतः गणना करें
 ;Calculate A.S. automatically
 CalculateColors=रंगों की गणना करें
@@ -551,6 +561,8 @@ ClearTheWholeList=पूरी सूची साफ़ करें
 ;Clear the whole list
 ClickAButtonToChangeA=(फ़ोल्डर बदलने के लिए किसी बटन पर क्लिक करें)
 ;(Click a button to change a directory)
+ClickAColourEsc=रंग पर क्लिक करें (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=क्रमबद्ध करने के लिए किसी कॉलम शीर्षक पर क्लिक करें।
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=विंडो को किसी भाषा में बदलने के लिए उस भाषा पर क्लिक करें
@@ -575,6 +587,8 @@ ClickOnTheButtonAndAfterwards3=बटन पर और फिर छवि म�
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=छवि में उस वस्तु पर क्लिक करें जिसे केंद्र में लाना है।\nकैमरे की दिशा नहीं बदलेगी, मध्य बिंदु के चारों ओर घुमाने के लिए\nघुमाव विकल्पों का उपयोग करें।
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=क्लिक करें, फिर प्रोग्राम की विंडो में किसी भी पिक्सेल पर क्लिक करें (चित्र, मैप, पैलेट, कोई अन्य विंडो) ताकि उसका रंग लिया जा सके। Esc से रुकता है।
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn="Dynfog on its" और "Color on its" के बीच बदलने के लिए क्लिक करें
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=आउटपुट फ़ाइल चुनने के लिए क्लिक करें
@@ -659,6 +673,10 @@ ColorStart=रंग आरंभ
 ;Color start
 Coloring=रंगाई
 ;Coloring
+ColorsFromFile=फ़ाइल से रंग...
+;Colors from file...
+ColorsTakenFrom=रंग {} से लिए गए
+;Colors taken from {}
 Colour0Grey1AsIt=रंग: 0 धूसर, 1 जैसा है, 2 दोगुना रंगीन
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=रंगीन किनारे
@@ -723,6 +741,8 @@ CopyParamsToClipboard=पैरामीटर क्लिपबोर्ड �
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=कमांड कॉपी करें, ताकि उसे टर्मिनल में पेस्ट किया जा सके
 ;Copy the command, to paste it into a terminal
+CopyThePostText=पोस्ट टेक्स्ट कॉपी करें
+;Copy the post text
 CopyTheSelectedLineOrAll=चुनी गई पंक्ति कॉपी करें, या कोई न चुनी हो तो दिखाई गई सभी पंक्तियाँ
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=मान कॉपी करें
@@ -781,6 +801,8 @@ CreateLanguageFile=भाषा फ़ाइल बनाएँ
 ;Create language file
 CreateMeshes=मेश बनाएँ
 ;Create Meshes
+Credit=श्रेय:
+;Credit:
 CrossEyedPreview=क्रॉस-आई पूर्वावलोकन
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 से Ctrl+7 सूची के क्रम में, बंद करने के लिए Ctrl+W
@@ -1169,12 +1191,18 @@ ExtractingAmbientInformationFromTheOriginal=मूल M3I फ़ाइल से
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ चरम मान परीक्षण }
 ;{ Extreme testing }
+Eyedropper=आईड्रॉपर
+;Eyedropper
 FFmpegCommand=FFmpeg कमांड
 ;FFmpeg command
 FNr=फ़ॉ.सं.:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Facebook आकार (2048 px, 360 फ़ोटो 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook पोस्ट में चिपकाए गए पैरामीटरों को लिंक बना देता है, और समूह उन्हें टेक्स्ट फ़ाइल के रूप में माँगते हैं: यह फ़ाइल चित्र के साथ पोस्ट करें या समूह की फ़ाइलों में डालें।
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=फ़्रैक्टल पैरामीटर आयात करने में विफल। बाकी सभी सेटिंग्स आयात हो गईं?
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=दूर गहराई कोहरा
@@ -1227,6 +1255,8 @@ FinishedTracingObject=वस्तु ट्रेसिंग पूरी ह�
 ;Finished tracing object.
 Finishing=फ़िनिशिंग
 ;Finishing
+First=पहला
+;first
 First4RaysNoisy=पहली 4 किरणें (शोरयुक्त)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=इस फ़ॉर्मूला संयोजन की पहली गणना: ग्राफ़िक्स कार्ड के शेडर कंपाइल हो रहे हैं (10-30 s, केवल एक बार - ड्राइवर उन्हें रखता है)। इस बीच CPU गणना करता है, तैयार होने पर कार्ड जुड़ जाता है।
@@ -1263,6 +1293,8 @@ FogOffset=कोहरा ऑफ़सेट
 ;Fog offset
 Folder=फ़ोल्डर
 ;Folder
+Folder2=फ़ोल्डर:
+;Folder:
 FolderOfTheLanguageFiles=भाषा फ़ाइलों का फ़ोल्डर:
 ;Folder of the language files:
 FollowTheNewest=नवीनतम का अनुसरण करें
@@ -1289,12 +1321,16 @@ FormulaName=फ़ॉर्मूला नाम:
 ;Formula name:
 FormulaNotFound=फ़ॉर्मूला '{}' नहीं मिला।
 ;Formula '{}' not found.
+FormulaNotInstalled=फ़ॉर्मूला इंस्टॉल नहीं है
+;Formula not installed
 FormulaNrWhereThe2ndPart=फ़ॉर्मूला क्रमांक जहाँ से हाइब्रिड का दूसरा भाग शुरू होता है
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=फ़ॉर्मूला मान:
 ;Formula values:
 Formulas=फ़ॉर्मूले
 ;Formulas
+Formulas2=फ़ॉर्मूले: {}
+;Formulas: {}
 FormulasColon=फ़ॉर्मूले:
 ;Formulas:
 Forward=आगे-की-ओर
@@ -1329,6 +1365,8 @@ FromTheCameraAllAroundA=कैमरे से, हर दिशा में (�
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=पूर्ण M3I छवि फ़ाइलें:
 ;Full M3I image files:
+FullSize=पूरा आकार
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1527,6 +1565,10 @@ HeightMapGeneratorPreview=HeightMap जनरेटर पूर्वावल�
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=उपयोगी है, उदाहरण के लिए, यदि आप किसी अनचाहे चित्रण को दोबारा करना चाहते हैं।
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=यहाँ dIFS फ़ॉर्मूले और बाकी फ़ॉर्मूले स्लॉट में बारी-बारी से आते हैं: पहले dIFS फ़ॉर्मूलों को बाकी के बाद ले जाएँ (फ़ॉर्मूला विंडो के किसी फ़ॉर्मूला टैब पर दायाँ क्लिक फ़ॉर्मूलों को खिसकाता और कॉपी करता है), फिर "DE संयोजन" का उपयोग करें।
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=हेक्स:
+;Hex:
 HiQual=उच्च गुणवत्ता
 ;HiQual
 HiQual1=HiQual 1
@@ -1719,6 +1761,8 @@ InsideColor=अंदर का रंग
 ;Inside color
 InsideRender=अंदर रेंडर
 ;Inside render
+InstalledFormulasWithASimilarName=मिलते-जुलते नाम वाले इंस्टॉल फ़ॉर्मूले: {}
+;Installed formulas with a similar name: {}
 Int=तीव्र.:
 ;Int.:
 Int64=Int64
@@ -2031,6 +2075,8 @@ MMBWheelZoom=MMB/व्हील: ज़ूम
 ;MMB/Wheel: zoom
 MRelObj=मैप व.सा.
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=mb3d-rs {} से बनाया गया (Windows, Linux और macOS के लिए Mandelbulb3D)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=मुख्य गणना समय:
 ;Main calc time:
 MainParas=मुख्य पैरामीटर
@@ -2047,6 +2093,8 @@ MakeSureThatNoLightWill=सुनिश्चित करें कि नॉ�
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=यदि आप कठोर और परिवेश छायाओं को शामिल करना चाहते हैं, तो सुनिश्चित करें कि\nउनके 'स्वतः गणना' विकल्प सेट हों।
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=फ़ाइलें बनाएँ
+;Make the files
 MakeTheLightOfThatPicture=उस चित्र का प्रकाश गर्म करो और उसे फिर से रेंडर करो।
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=परिवेश और पृष्ठभूमि रंगों के ऊपर-नीचे ग्रेडिएंट को\nवस्तु की निर्देशांक प्रणाली के सापेक्ष बनाएँ।\nएनिमेशन में प्रकाशों को दृश्य से जोड़े रखने के लिए इसका उपयोग करें।
@@ -2065,6 +2113,8 @@ MapNumber2=मैप संख्या:
 ;Map Number:
 MapNumberColon=मैप संख्या:
 ;Map number:
+MapNumberRightClickToChoose=मैप संख्या। चित्र चुनने के लिए दायाँ क्लिक करें: कोई भी नाम, कोई भी फ़ोल्डर (यह एक संख्या के साथ मैप फ़ोल्डर में कॉपी हो जाता है, ताकि पैरामीटर इसे अगली बार और MB3D में ढूँढ सकें)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=आउटपुट वेक्टर पर मैप
 ;Map on output vector
 MapSequences=मैप अनुक्रम
@@ -2267,6 +2317,8 @@ N360Orbit=360° परिक्रमा
 ;360° orbit
 N360Panorama=360 पैनोरमा
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=360 फ़ोटो: वह कैमरा टैग जिसे Facebook खोजता है
+;360 photos: the camera tag Facebook looks for
 N360VR=360° वीआर
 ;360° VR
 N3DAnalyticFormula=3D विश्लेषणात्मक फ़ॉर्मूला
@@ -2387,6 +2439,8 @@ NoiseFilterStrength=शोर फ़िल्टर: तीव्रता {}
 ;Noise filter: strength {}
 None=कोई नहीं
 ;none
+NoneOfTheFormulaSlotsHolds=किसी भी फ़ॉर्मूला स्लॉट में फ़्रैक्टल बनाने वाला फ़ॉर्मूला नहीं है: हर स्लॉट खाली है, उसकी पुनरावृत्तियाँ 0 हैं, या उसमें ऐसा फ़ॉर्मूला है जो केवल स्पेस बदलता है ({})।\n\nकिसी स्लॉट में Integer Power या Amazing Box जैसा फ़्रैक्टल फ़ॉर्मूला रखें और उसे कम से कम 1 पुनरावृत्ति दें।
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=सामान्य
 ;Normal
 NormalStatusForThisFormula=इस फ़ॉर्मूले की सामान्य स्थिति
@@ -2535,6 +2589,8 @@ OpenTextParameters=टेक्स्ट पैरामीटर खोले�
 ;Open text parameters
 OpenTheAnimationMaker=एनिमेशन मेकर खोलें
 ;Open the animation maker
+OpenTheFolder=फ़ोल्डर खोलें
+;Open the folder
 OpenTheFolderOfTheFile=फ़ाइल का फ़ोल्डर खोलें
 ;Open the folder of the file
 OpenTheFolderOfTheLog=लॉग फ़ाइलों का फ़ोल्डर खोलें (हर दिन एक, 30 दिन तक रखी जाती हैं)
@@ -2633,6 +2689,12 @@ Parameter=पैरामीटर
 ;Parameter
 Parameters=पैरामीटर
 ;Parameters
+ParametersAndLights=पैरामीटर और प्रकाश
+;Parameters and lights
+ParametersAsATextFileTxt=पैरामीटर टेक्स्ट फ़ाइल के रूप में (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=पैरामीटर: {} (संलग्न)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=पैरामीटर क्लिपबोर्ड पर कॉपी किए गए।
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=पैरामीटर लोड हो गए, रेंडर करने के लिए "Calculate 3D" दबाएँ।
@@ -2659,6 +2721,8 @@ PercentOfLocalDE=स्थानीय DE का प्रतिशत
 ;Percent of local DE
 Picture=चित्र
 ;picture
+PictureJPEG=चित्र (JPEG)
+;Picture (JPEG)
 Pictures=चित्र
 ;pictures
 PicturesAndFilesTheAssistantMakes=सहायक जो चित्र और फ़ाइलें बनाता है, वे {} में जाती हैं; कुछ भी हटाया नहीं जाता। 4K से बड़े चित्र आपकी सहमति के बाद ही बनते हैं, और कोई गणना 10 मिनट बाद रुक जाती है। वह जो कुछ करता है, सब लॉग में है।
@@ -2703,6 +2767,8 @@ PostProcessingColon=पोस्ट प्रोसेस:
 ;Post processing:
 PostProcessingLower=पोस्ट प्रोसेसिंग
 ;post processing
+PostText=पोस्ट टेक्स्ट:
+;Post text:
 Postprocess=पोस्ट प्रोसेस
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: आधार को किसी भी घात तक बढ़ाएँ।
@@ -2829,6 +2895,8 @@ RecalculateASelection=\sचयन की पुनर्गणना
 ;\sRecalculate a Selection
 RecalculatingTheSelection=चयन की पुनर्गणना हो रही है
 ;recalculating the selection
+RecentColours=हाल के रंग:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=उड़ान के {} कीफ़्रेम रिकॉर्ड हुए
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=उड़ान रिकॉर्ड करता है: जब तक बटन दबा है, नेविगेटर का हर नया दृश्य (अधिकतम दो प्रति सेकंड) एनिमेशन का अगला कीफ़्रेम बनता है
@@ -3043,6 +3111,8 @@ SaveAsImageAtTheLocation=आपके द्वारा बताए गए स
 ;Save as image at the location you specify
 SaveBtrace2=btrace2 सहेजें...
 ;Save btrace2...
+SaveColors=रंग सहेजें...
+;Save colors...
 SaveCompleteM3I=पूर्ण M3I सहेजें
 ;Save complete M3I
 SaveExit=सहेजें + बाहर
@@ -3099,6 +3169,8 @@ SavedOpenEXRFloatingPointColoursAnd={} सहेजा गया (OpenEXR, फ�
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} सहेजा गया (पारदर्शी पृष्ठभूमि)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=इन रंगों के साथ प्रकाश व्यवस्था को लाइट फ़ाइल (.m3l, MB3D के लिए भी) के रूप में सहेजता है; "फ़ाइल से रंग" उससे रंग वापस लेता है।
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=सहेजना:
 ;Saving:
 SavingSucceeded=सफलतापूर्वक सहेजा गया
@@ -3135,6 +3207,8 @@ SecantSearchForTheSurface=सतह की सीकेंट खोज
 ;Secant search for the surface
 SecantSearchmode=सीकेंट खोज मोड:
 ;Secant searchmode:
+Second=दूसरा
+;second
 SecondFocusPointIfDifferentFrom=दूसरा फ़ोकस बिंदु, यदि पहले से अलग हो तो\nफ़ोकस बिंदु के बजाय फ़ोकस रेखा मिलती है।\n(भौतिक रूप से बहुत यथार्थवादी नहीं, पर होना अच्छा है)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=मुख्य विंडो के 'रंगाई' टैब में मैप रंगाई विकल्प भी देखें।
@@ -3177,6 +3251,8 @@ SessionsAndCrashes=सत्र और क्रैश
 ;Sessions and crashes
 Set=सेट करें
 ;Set
+SetItUpNowTheFormulas=अभी सेट करें? फ़ॉर्मूले अपने स्लॉट में रहते हैं: पहला भाग {} लेता है, दूसरा भाग {}, और दोनों min से जुड़ते हैं (दोनों वस्तुएँ)।
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=प्रकाश फ़ंक्शन कोसाइन करें
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=मैप की दिशा को वस्तु के सापेक्ष सेट करें।\nएनिमेशन में प्रकाशों को दृश्य से जोड़े रखने के लिए इसका उपयोग करें।
@@ -3185,6 +3261,8 @@ SetTheVisualThemeOfThe=एप्लिकेशन की दृश्य थी
 ;Set the visual theme of the application
 SetTo0=0 करें
 ;set to 0
+SetUpDECombination=DE संयोजन सेट करें
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=छाया की गणना होने पर संबंधित प्रकाश फ़ंक्शन को\nस्वतः कोसाइन पर सेट करता है।\nकोसाइन और द्विघात कोसाइन फ़ंक्शन छाया के साथ अच्छा काम करते हैं।
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=विज़ुअल थीम सेट करना
@@ -3193,12 +3271,18 @@ ShadersCompiling=शेडर कंपाइल हो रहे हैं
 ;shaders compiling
 ShadowsAndAO=छायाएँ और AO
 ;shadows and AO
+Share=साझा करें
+;Share
 ShareRenderingBetweenYourComputersThrough=साझा फ़ोल्डर के ज़रिए अपने कंप्यूटरों के बीच रेंडरिंग बाँटें
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=साझा करें: चित्र, उसके पैरामीटर टेक्स्ट फ़ाइल के रूप में और पोस्ट का टेक्स्ट, समूह के लिए तैयार
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=यह कंप्यूटर साझा करें: फ़ोल्डर के जॉब रेंडर करें, और मेरे जॉब स्वार्म को दें
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=साझा फ़ोल्डर:
 ;Shared folder:
+SharedInThePostTextIs=फ़ोल्डर "{}" में सहेजा गया; पोस्ट टेक्स्ट क्लिपबोर्ड पर है।
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=साझा, पर स्वार्म में अभी कोई अन्य कंप्यूटर नहीं है: रेंडर केवल इसी कंप्यूटर पर चलते हैं
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=साझा करना रुका: {}
@@ -3265,6 +3349,10 @@ Sliding=खिसकना
 ;Sliding
 SlidingWalkingStep=खिसकने+चलने का कदम:
 ;Sliding+Walking step:
+Slot=स्लॉट {}
+;slot {}
+SlotsTo=स्लॉट {} से {}
+;slots {} to {}
 SmoothDEcomb=स्मूथ DEcomb:
 ;Smooth DEcomb:
 SmoothImageOnLoad=लोड पर छवि को स्मूद करें
@@ -3431,6 +3519,10 @@ SwitchBackToTheDefaultTheme=डिफ़ॉल्ट थीम पर वाप�
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=प्रविष्टि को इतिहास से हटाएँ (गणना किए गए चित्र के पैरामीटर और थंबनेल मिटा दिए जाते हैं; अन्य फ़ाइलें अपनी जगह रहती हैं)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=क्लिपबोर्ड पर मौजूद पैरामीटरों से केवल रंग लेता है (उदाहरण के लिए किसी पोस्ट से कॉपी किए गए)।
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=पैरामीटर फ़ाइल (.m3p, .m3i, टेक्स्ट) या लाइट फ़ाइल (.m3l) से केवल रंग लेता है (सतह का पैलेट, उसकी पारदर्शिता और अंदर के रंग): प्रकाश, फ़्रैक्टल और दृश्य जैसे हैं वैसे रहते हैं।
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=लक्ष्य मैप स्लॉट
 ;Target Map Slot
 TargetMapSlotUseThisNumber=लक्ष्य मैप स्लॉट। एनिमेटेड मैप पाने के लिए इस संख्या को अपने फ़्रैक्टल में मैप के रूप में उपयोग करें, जैसे हाइटमैप के रूप में।
@@ -3455,6 +3547,8 @@ TheBTracer2CacheFormatIsNot2=BTracer2 कैश फ़ॉर्मेट सम�
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=पृष्ठभूमि छवि लोड नहीं की जा सकी।
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=पृष्ठभूमि चित्र {} मैप फ़ोल्डर में कॉपी किया गया: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=एस्केपटाइम फ़ॉर्मूलों के लिए बेलआउट मान।\nयदि पुनरावृत्ति के दौरान 3D मान इस मान से अधिक हो जाए,\nतो वर्तमान बिंदु वस्तु का भाग नहीं है।
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=धुंधलापन त्रिज्या इस मान पर सीमित होगी।\nजब कुछ छवि भागों में त्रिज्या बहुत बड़ी हो जाए तो रेंडरिंग तेज़ हो सकती है।
@@ -3471,10 +3565,14 @@ TheCameraLeftTheFractal=कैमरा फ़्रैक्टल से ब�
 ;the camera left the fractal
 TheChosenValueOverAllFrames=एनिमेशन के सभी फ़्रेमों पर चुना गया मान: किसी की-फ़्रेम का वर्ग ऊपर या नीचे खींचें, या उस पर क्लिक करके मान लिखें
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=रंग हेक्साडेसिमल RGB में, #RRGGBB के रूप में (# वैकल्पिक है; #RGB भी चलता है)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=गहरे पानी का रंग: पानी का अपना प्रकाश, और वह रंग जो नीचे की चीज़ें गहराई के साथ लेती हैं (बदलने के लिए क्लिक करें)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=कमांड लाइन प्रोग्राम mb3d इस प्रोग्राम के पास नहीं मिला: प्रोग्राम को फिर से इंस्टॉल करें।
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=यहाँ के dIFS फ़ॉर्मूले ({}) केवल स्पेस को बदलते हैं: उसे खिसकाते, घुमाते, मोड़ते या दोहराते हैं। dIFS शृंखला को उनके बाद एक dIFS आकार फ़ॉर्मूला भी चाहिए जो कुछ बनाए, जैसे boxIFS, cylinderIFS या HeightMapIFS।
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=डिफ़ॉल्ट क्रमांकन में 2 संख्याएँ होती हैं, X और Y के लिए अलग।\nयह विकल्प चुनने पर क्रमांकन केवल एक संख्या होगी,\nजो हर कॉलम में बढ़ती है और अगली पंक्ति में जारी रहती है।
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=डिफ़ॉल्ट आउटपुट में वस्तु सफ़ेद और बाहरी क्षेत्र काला होता है।\nरंग उलटने के लिए यह विकल्प चुनें।
@@ -3551,6 +3649,8 @@ TheNewestJobSoFarRendered=अब तक का सबसे नया जॉब:
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=पैरामीटर अब अधूरी गणना से मेल नहीं खाते: उनकी गणना के लिए "Calculate 3D" दबाएँ।
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=DE संयोजन का {} भाग dIFS फ़ॉर्मूलों ({}) को अन्य ({}) के साथ मिलाता है। हर भाग केवल एक प्रकार की गणना करता है: dIFS फ़ॉर्मूले एक भाग में और बाकी दूसरे भाग में रखें (फ़ॉर्मूला विंडो का "DE संयोजन" टैब तय करता है कि दूसरा भाग कहाँ से शुरू हो)।
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=चित्र अपनी गणना से मेल नहीं खाता: इसकी फिर से गणना करें।
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=बाकी सभी चरणों के बाद चित्र की फ़िनिशिंग: एक्सपोज़र, तेज़ रोशनी के चारों ओर दमक, फ़िल्मी टोन मैपिंग, रंग ग्रेडिंग, विनेट और रंगीन किनारे
@@ -3595,6 +3695,8 @@ Themes=थीम
 ;Themes
 ThereIsAFileAlready=फ़ाइल {} पहले से मौजूद है।
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=ये पैरामीटर फ़ॉर्मूला "{}" का उपयोग करते हैं, जो यहाँ इंस्टॉल नहीं है।\n\nफ़ॉर्मूले .m3f पर ख़त्म होने वाली फ़ाइलें हैं। {}.m3f प्राप्त करें (यह अक्सर पैरामीटरों के साथ, किसी समूह की फ़ाइलों में या किसी फ़ॉर्मूला पैक में साझा होता है) और इसे फ़ॉर्मूला फ़ोल्डरों में से किसी एक में रखें:\n{}\n\nफिर पैरामीटर दोबारा खोलें या चिपकाएँ।
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=सहायक से पूछने योग्य बातें
 ;Things to ask the assistant
 ThisComputer=यह कंप्यूटर:
@@ -3611,6 +3713,8 @@ ThisRenderKeepsNoImage=यह रेंडर कोई छवि नहीं �
 ;This render keeps no image.
 ThisRenderKeptNoParameters=इस रेंडर ने कोई पैरामीटर नहीं रखे।
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=यह दृश्य एक फ़ॉर्मूला शृंखला में दो प्रकार के फ़ॉर्मूले मिलाता है:\n- dIFS फ़ॉर्मूले ({}) दूरियों से सीधे एक आकार बनाते हैं,\n- अन्य ({}) फ़्रैक्टल हैं जो क़दम-दर-क़दम दोहराए जाते हैं (एस्केपटाइम)।\nएक शृंखला दोनों प्रकारों की गणना एक साथ नहीं कर सकती।\n\nदोनों दिखाने के लिए उन्हें DE संयोजन से जोड़ें: पहला भाग एक प्रकार की गणना करता है, दूसरा भाग दूसरे की, और दोनों वस्तुएँ जुड़ जाती हैं (min: दोनों वस्तुएँ, max: केवल जहाँ वे एक-दूसरे पर आती हैं, smooth: मुलायम जोड़ के साथ)। यह फ़ॉर्मूला विंडो के ऊपर "DE संयोजन" टैब है।
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=यह सत्र (लाइव)
 ;This session (live)
 ThreadPriority=थ्रेड\nप्राथमिकता
@@ -3653,6 +3757,8 @@ Tiling=टाइलिंग:
 ;Tiling:
 TimeNeeded=आवश्यक समय:
 ;Time needed:
+Title=शीर्षक:
+;Title:
 ToCalculateABetterHardShadow=बेहतर कठोर छाया की गणना के लिए, केवल यदि 1 HS चुना हो!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=क्लिपबोर्ड में
@@ -3707,6 +3813,8 @@ Turned=घुमाया:
 ;Turned:
 Turntable=पूरा चक्कर
 ;Turntable
+TweakOfParametersBy={} के पैरामीटरों में बदलाव
+;Tweak of parameters by {}
 Type=प्रकार:
 ;Type:
 Type2=प्रकार
@@ -3845,6 +3953,8 @@ WarningMustRecalculateTheWholeImage=चेतावनी: इसे पूर�
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=चेतावनियाँ और त्रुटियाँ
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} मैप फ़ोल्डर में मैप {} के रूप में कॉपी किया गया: {}
+;{} was copied into the maps folder as map {}: {}
 Water=पानी:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3877,6 +3987,10 @@ White=सफ़ेद
 ;white
 WhiteOutside=बाहर सफ़ेद
 ;White outside
+WhoseParametersYouStartedFromGroups=जिनके पैरामीटरों से आपने शुरू किया: समूह कलाकार को श्रेय देने को कहते हैं (उदाहरण: Marije के "Pipe Organ" में बदलाव)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=गणना क्यों शुरू नहीं हो सकती
+;Why the calculation cannot start
 Width=चौड़ाई:
 ;Width:
 Windows=विंडो

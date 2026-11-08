@@ -62,6 +62,8 @@ AOCalcTime=Waktu hitung AO:
 ;AO calc time:
 ASineIntegerPowerBulbWith=Bulb sinus pangkat bilangan bulat dengan pelipatan sebelumnya, seperti pada amazing box.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=Panorama bola mendapat kamera EXIF dari kamera 360 (RICOH THETA S) selain tag Photo Sphere, sehingga Facebook menampilkannya sebagai foto 360. Untuk setiap gambar 360 yang disimpan program.
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=Render yang dihentikan atau terputus menyimpan apa yang sudah dihitung; Hitung 3D dengan parameter yang sama akan melanjutkannya.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=Latar belakang transparan memerlukan frame PNG: pilih PNG sebagai format keluaran.
@@ -194,6 +196,8 @@ Amount=Jumlah:
 ;Amount:
 AnAIAssistantOnThisComputer=Asisten AI di komputer ini dapat menggunakan Mandelbulb 3D: mintalah dengan kata-kata biasa, atau dengan suara, untuk mendeskripsikan, mengubah, dan merender gambar Anda, membuat variasi, atau merender apa yang terakhir Anda kerjakan. Mandelbulb 3D tetap offline: aplikasi asisten menjalankannya di komputer ini.
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=Hybrid interpolasi (tab "Interpolasi" di jendela Formula) memadukan dua formula fraktal langkah demi langkah; formula dIFS tidak bisa dipadukan. Untuk formula itu gunakan "Alternatif" atau "DEcombinate".
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=Perhitungan gambar ini yang belum selesai telah disimpan ({}).\n\nLanjutkan?  "Tidak" menghitungnya lagi dari awal.
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=Render Monte Carlo yang belum selesai dengan parameter ini telah disimpan ({}).\n\nLanjutkan?  "Tidak" merendernya lagi dari awal.
@@ -264,6 +268,8 @@ Around=Mengelilingi:
 ;Around:
 AroundTheMiddleAnObject=Mengelilingi titik tengah (sebuah objek)
 ;Around the middle (an object)
+Artist=Seniman:
+;Artist:
 AsFullBackgroundSphere=Sebagai bola latar penuh:
 ;As full background sphere:
 Aspect=Aspek:
@@ -396,6 +402,8 @@ BulbTracer2SettingsBtrace2=Pengaturan BulbTracer2 (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=Oleh
 ;By
+By2={} oleh {}
+;{} by {}
 ByOfDone={} ({}, oleh {}): {} dari {} {} selesai
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -414,6 +422,8 @@ Calculate3DAndTheBatchWindow=Hitung 3D dan jendela Batch dengan swarm, di
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Hitung gambar kotak-kotak 8x8 yang cepat tanpa pencahayaan yang tepat
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=Hitung gambar dulu, atau hapus centang gambar.
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=Hitung A.S. otomatis
 ;Calculate A.S. automatically
 CalculateColors=Hitung Warna
@@ -550,6 +560,8 @@ ClearTheWholeList=Kosongkan seluruh daftar
 ;Clear the whole list
 ClickAButtonToChangeA=(Klik tombol untuk mengubah direktori)
 ;(Click a button to change a directory)
+ClickAColourEsc=Klik warna (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=Klik judul kolom untuk mengurutkan.
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=Klik bahasa untuk mengganti bahasa jendela
@@ -574,6 +586,8 @@ ClickOnTheButtonAndAfterwards3=Klik tombol lalu klik objek di gambar untuk menga
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Klik objek di gambar untuk dijadikan pusat.\nArah kamera tidak diubah, gunakan opsi rotasi\nuntuk berputar di sekitar titik tengah.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=Klik, lalu klik piksel mana pun di jendela program (gambar, peta, palet, jendela lain) untuk mengambil warnanya. Esc menghentikan.
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Klik untuk beralih antara Dynfog pada its dan Warna pada its
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=Klik untuk memilih file keluaran
@@ -658,6 +672,10 @@ ColorStart=Warna awal
 ;Color start
 Coloring=Pewarnaan
 ;Coloring
+ColorsFromFile=Warna dari file...
+;Colors from file...
+ColorsTakenFrom=Warna diambil dari {}
+;Colors taken from {}
 Colour0Grey1AsIt=Warna: 0 abu-abu, 1 apa adanya, 2 dua kali lebih berwarna
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=Pinggiran warna
@@ -722,6 +740,8 @@ CopyParamsToClipboard=Salin Param ke Clipboard
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=Salin perintah untuk ditempel di terminal
 ;Copy the command, to paste it into a terminal
+CopyThePostText=Salin teks postingan
+;Copy the post text
 CopyTheSelectedLineOrAll=Salin baris yang dipilih, atau semua baris yang ditampilkan jika tidak ada yang dipilih
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Salin nilai
@@ -780,6 +800,8 @@ CreateLanguageFile=Buat file bahasa
 ;Create language file
 CreateMeshes=Buat Mesh
 ;Create Meshes
+Credit=Kredit:
+;Credit:
 CrossEyedPreview=Pratinjau cross-eyed
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 sampai Ctrl+7 sesuai urutan daftar, Ctrl+W untuk menutup
@@ -1168,12 +1190,18 @@ ExtractingAmbientInformationFromTheOriginal=Mengekstrak informasi ambien dari fi
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ Pengujian ekstrem }
 ;{ Extreme testing }
+Eyedropper=Pipet warna
+;Eyedropper
 FFmpegCommand=Perintah FFmpeg
 ;FFmpeg command
 FNr=No.F:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Ukuran Facebook (2048 px, foto 360 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook mengubah parameter yang ditempel di postingan menjadi tautan, dan grup memintanya sebagai file teks: posting file ini bersama gambar atau taruh di file grup.
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=Gagal mengimpor parameter fraktal. Semua pengaturan lain sudah diimpor?
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=Kabut kedalaman jauh
@@ -1226,6 +1254,8 @@ FinishedTracingObject=Penelusuran objek selesai.
 ;Finished tracing object.
 Finishing=Penyelesaian
 ;Finishing
+First=pertama
+;first
 First4RaysNoisy=4 sinar pertama (berderau)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=Perhitungan pertama kombinasi formula ini: shader kartu grafis sedang dikompilasi (10-30 d, hanya sekali - driver menyimpannya). Sementara itu CPU menghitung, kartu bergabung setelah siap.
@@ -1262,6 +1292,8 @@ FogOffset=Offset kabut
 ;Fog offset
 Folder=Folder
 ;Folder
+Folder2=Folder:
+;Folder:
 FolderOfTheLanguageFiles=Folder file bahasa:
 ;Folder of the language files:
 FollowTheNewest=Ikuti yang terbaru
@@ -1288,12 +1320,16 @@ FormulaName=Nama formula:
 ;Formula name:
 FormulaNotFound=Formula '{}' tidak ditemukan.
 ;Formula '{}' not found.
+FormulaNotInstalled=Formula tidak terpasang
+;Formula not installed
 FormulaNrWhereThe2ndPart=Nomor formula tempat bagian ke-2 hybrid dimulai
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=Nilai formula:
 ;Formula values:
 Formulas=Formula
 ;Formulas
+Formulas2=Formula: {}
+;Formulas: {}
 FormulasColon=Formula:
 ;Formulas:
 Forward=Maju
@@ -1328,6 +1364,8 @@ FromTheCameraAllAroundA=Dari kamera, ke segala arah (adegan yang dilihat dari da
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=File gambar M3I lengkap:
 ;Full M3I image files:
+FullSize=Ukuran penuh
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1526,6 +1564,10 @@ HeightMapGeneratorPreview=Pratinjau Generator HeightMap
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=Berguna jika Anda ingin mengulang gambar yang tidak diinginkan, misalnya.
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=Di sini formula dIFS dan formula lain bergantian di slot: pindahkan dulu formula dIFS ke belakang formula lain (klik kanan pada tab formula di jendela Formula menggeser dan menyalin formula), lalu gunakan "DEcombinate".
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=Hex:
+;Hex:
 HiQual=HiQual
 ;HiQual
 HiQual1=HiQual 1
@@ -1718,6 +1760,8 @@ InsideColor=Warna dalam
 ;Inside color
 InsideRender=Render dalam
 ;Inside render
+InstalledFormulasWithASimilarName=Formula terpasang dengan nama mirip: {}
+;Installed formulas with a similar name: {}
 Int=Int.:
 ;Int.:
 Int64=Int64
@@ -2030,6 +2074,8 @@ MMBWheelZoom=TMT/Roda: zoom
 ;MMB/Wheel: zoom
 MRelObj=M.rel.obj.
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=Dibuat dengan mb3d-rs {} (Mandelbulb3D untuk Windows, Linux, dan macOS)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=Waktu hitung utama:
 ;Main calc time:
 MainParas=param utama
@@ -2046,6 +2092,8 @@ MakeSureThatNoLightWill=Pastikan tidak ada cahaya yang dikurangi dalam mode tanp
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=Pastikan opsi 'Hitung... otomatis.' untuk bayangan keras\ndan ambien sudah diatur, jika Anda ingin memperhitungkannya.
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=Buat file
+;Make the files
 MakeTheLightOfThatPicture=Buat cahaya gambar itu lebih hangat dan render lagi.
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=Buat gradien atas-bawah warna ambien dan latar\nrelatif terhadap sistem koordinat objek.\nGunakan dalam animasi untuk menambatkan cahaya pada pemandangan.
@@ -2064,6 +2112,8 @@ MapNumber2=Nomor Peta:
 ;Map Number:
 MapNumberColon=Nomor peta:
 ;Map number:
+MapNumberRightClickToChoose=Nomor peta. Klik kanan untuk memilih gambar: nama apa pun, folder mana pun (gambar disalin ke folder peta dengan sebuah nomor, sehingga parameter menemukannya lain kali dan di MB3D)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=Peta pada vektor keluaran
 ;Map on output vector
 MapSequences=Urutan Peta
@@ -2266,6 +2316,8 @@ N360Orbit=Orbit 360°
 ;360° orbit
 N360Panorama=Panorama 360
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=Foto 360: tag kamera yang dicari Facebook
+;360 photos: the camera tag Facebook looks for
 N360VR=VR 360°
 ;360° VR
 N3DAnalyticFormula=Formula 3D analitis
@@ -2386,6 +2438,8 @@ NoiseFilterStrength=Filter derau: kekuatan {}
 ;Noise filter: strength {}
 None=tidak ada
 ;none
+NoneOfTheFormulaSlotsHolds=Tidak ada slot formula yang berisi formula pembentuk fraktal: setiap slot kosong, iterasinya 0, atau berisi formula yang hanya mengubah ruang ({}).\n\nTaruh formula fraktal, seperti Integer Power atau Amazing Box, di sebuah slot dan beri setidaknya 1 iterasi.
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normal
 ;Normal
 NormalStatusForThisFormula=Status normal untuk formula ini
@@ -2534,6 +2588,8 @@ OpenTextParameters=Buka parameter teks
 ;Open text parameters
 OpenTheAnimationMaker=Buka pembuat animasi
 ;Open the animation maker
+OpenTheFolder=Buka folder
+;Open the folder
 OpenTheFolderOfTheFile=Buka folder file
 ;Open the folder of the file
 OpenTheFolderOfTheLog=Buka folder file log (satu per hari, disimpan 30 hari)
@@ -2632,6 +2688,12 @@ Parameter=Parameter
 ;Parameter
 Parameters=Parameter
 ;Parameters
+ParametersAndLights=Parameter dan cahaya
+;Parameters and lights
+ParametersAsATextFileTxt=Parameter sebagai file teks (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=Parameter: {} (terlampir)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=Parameter disalin ke clipboard.
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=Parameter dimuat, tekan "Hitung 3D" untuk merender.
@@ -2658,6 +2720,8 @@ PercentOfLocalDE=Persen dari DE lokal
 ;Percent of local DE
 Picture=gambar
 ;picture
+PictureJPEG=Gambar (JPEG)
+;Picture (JPEG)
 Pictures=gambar
 ;pictures
 PicturesAndFilesTheAssistantMakes=Gambar dan file yang dibuat asisten masuk ke {}; tidak ada yang dihapus. Gambar lebih besar dari 4K hanya dibuat setelah Anda setuju, dan perhitungan berhenti setelah 10 menit. Semua yang dilakukannya ada di log.
@@ -2702,6 +2766,8 @@ PostProcessingColon=Pascaproses:
 ;Post processing:
 PostProcessingLower=pascaproses
 ;post processing
+PostText=Teks postingan:
+;Post text:
 Postprocess=Pascaproses
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: Pangkatkan basis dengan pangkat apa pun.
@@ -2828,6 +2894,8 @@ RecalculateASelection=\sHitung Ulang Pilihan
 ;\sRecalculate a Selection
 RecalculatingTheSelection=menghitung ulang pilihan
 ;recalculating the selection
+RecentColours=Warna terakhir:
+;Recent colors:
 RecordedSKeyframesOfTheFlight={} keyframe penerbangan direkam
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=Merekam penerbangan: selama tombol ditekan, setiap tampilan baru dari navigator (paling banyak dua per detik) menjadi keyframe berikutnya dari animasi
@@ -3042,6 +3110,8 @@ SaveAsImageAtTheLocation=Simpan sebagai gambar di lokasi yang Anda tentukan
 ;Save as image at the location you specify
 SaveBtrace2=Simpan btrace2...
 ;Save btrace2...
+SaveColors=Simpan warna...
+;Save colors...
 SaveCompleteM3I=Simpan M3I lengkap
 ;Save complete M3I
 SaveExit=Simpan + keluar
@@ -3098,6 +3168,8 @@ SavedOpenEXRFloatingPointColoursAnd=Disimpan {} (OpenEXR, warna floating point d
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=Disimpan {} (latar transparan)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=Menyimpan pencahayaan dengan warna ini sebagai file cahaya (.m3l, juga untuk MB3D); "Warna dari file" mengambil kembali warnanya dari file itu.
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=Menyimpan:
 ;Saving:
 SavingSucceeded=Berhasil disimpan
@@ -3134,6 +3206,8 @@ SecantSearchForTheSurface=Pencarian secant untuk permukaan
 ;Secant search for the surface
 SecantSearchmode=Mode cari secant:
 ;Secant searchmode:
+Second=kedua
+;second
 SecondFocusPointIfDifferentFrom=Titik fokus kedua, jika berbeda dari yang pertama\nAnda mendapatkan garis fokus alih-alih titik fokus.\n(secara fisik tidak terlalu realistis, tetapi berguna)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=Lihat juga opsi pewarnaan peta di tab 'Pewarnaan' jendela utama.
@@ -3176,6 +3250,8 @@ SessionsAndCrashes=Sesi dan crash
 ;Sessions and crashes
 Set=Atur
 ;Set
+SetItUpNowTheFormulas=Atur sekarang? Formula tetap di slotnya: bagian pertama mengambil {}, bagian kedua {}, digabung dengan min (kedua objek).
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=Atur fungsi cahaya ke kosinus
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Atur orientasi peta relatif terhadap objek.\nGunakan dalam animasi untuk menambatkan cahaya pada pemandangan.
@@ -3184,6 +3260,8 @@ SetTheVisualThemeOfThe=Atur tema visual aplikasi
 ;Set the visual theme of the application
 SetTo0=atur ke 0
 ;set to 0
+SetUpDECombination=Atur kombinasi DE
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=Mengatur fungsi cahaya yang bersangkutan ke kosinus secara otomatis,\nsaat bayangan dihitung.\nFungsi kosinus dan kosinus kuadrat bekerja baik dengan bayangan.
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=Pengaturan Tema Visual
@@ -3192,12 +3270,18 @@ ShadersCompiling=shader dikompilasi
 ;shaders compiling
 ShadowsAndAO=bayangan dan AO
 ;shadows and AO
+Share=Bagikan
+;Share
 ShareRenderingBetweenYourComputersThrough=Bagi render di antara komputer Anda melalui folder bersama
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=Bagikan: gambar, parameternya sebagai file teks, dan teks postingan, siap untuk grup
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=Bagikan komputer ini: render tugas di folder, dan berikan tugas saya ke swarm
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=Folder bersama:
 ;Shared folder:
+SharedInThePostTextIs=Disimpan di folder "{}"; teks postingan ada di clipboard.
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=Berbagi, tetapi belum ada komputer lain di swarm: render berjalan hanya di komputer ini
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=berbagi dihentikan: {}
@@ -3264,6 +3348,10 @@ Sliding=Meluncur
 ;Sliding
 SlidingWalkingStep=Langkah luncur+jalan:
 ;Sliding+Walking step:
+Slot=slot {}
+;slot {}
+SlotsTo=slot {} sampai {}
+;slots {} to {}
 SmoothDEcomb=DEcomb halus:
 ;Smooth DEcomb:
 SmoothImageOnLoad=Haluskan gambar saat dimuat
@@ -3430,6 +3518,10 @@ SwitchBackToTheDefaultTheme=Kembali ke tema bawaan
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=Keluarkan entri dari riwayat (parameter dan thumbnail gambar yang dihitung dihapus; file lain tetap di tempatnya)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=Hanya mengambil warna dari parameter di clipboard (misalnya yang disalin dari postingan).
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=Hanya mengambil warna (palet permukaan, transparansinya, dan warna bagian dalam) dari file parameter (.m3p, .m3i, teks) atau file cahaya (.m3l): cahaya, fraktal, dan tampilan tetap seperti semula.
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=Slot Peta Tujuan
 ;Target Map Slot
 TargetMapSlotUseThisNumber=Slot Peta Tujuan. Gunakan nomor ini sebagai peta di fraktal Anda, mis. sebagai heightmap, agar petanya beranimasi
@@ -3454,6 +3546,8 @@ TheBTracer2CacheFormatIsNot2=Format cache BTracer2 tidak didukung, mesh tidak di
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=Gambar latar tidak dapat dimuat.
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=Gambar latar {} disalin ke folder peta: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=Nilai bailout untuk formula escapetime.\nJika nilai 3d melebihi nilai ini selama iterasi,\ntitik saat ini bukan bagian dari objek.
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=Radius blur akan dibatasi pada nilai ini.\nDapat mempercepat render saat radius menjadi sangat besar di beberapa bagian gambar.
@@ -3470,10 +3564,14 @@ TheCameraLeftTheFractal=kamera keluar dari fraktal
 ;the camera left the fractal
 TheChosenValueOverAllFrames=Nilai yang dipilih di semua frame animasi: seret kotak keyframe ke atas atau ke bawah, atau klik lalu ketik nilainya
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=Warna sebagai RGB heksadesimal, dalam bentuk #RRGGBB (# boleh dihilangkan; #RGB juga bisa)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=Warna air dalam: cahaya air itu sendiri, dan warna yang diambil benda di bawahnya seiring kedalaman (klik untuk mengubah)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=Program baris perintah mb3d tidak ditemukan di samping program ini: pasang ulang program.
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=Formula dIFS di sini ({}) hanya mengubah ruang: menggeser, memutar, melipat, atau mengulangnya. Rantai dIFS juga butuh formula bentuk dIFS sesudahnya yang menggambar sesuatu, seperti boxIFS, cylinderIFS, atau HeightMapIFS.
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=Penomoran bawaan terdiri dari 2 angka, terpisah untuk X dan Y.\nJika Anda memilih opsi ini, penomoran hanya satu angka,\nbertambah di setiap kolom dan berlanjut ke baris berikutnya.
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=Keluaran bawaan putih untuk objek dan hitam untuk area luar.\nPilih opsi ini untuk membalik warna.
@@ -3550,6 +3648,8 @@ TheNewestJobSoFarRendered=Tugas terbaru sejauh ini: bagian yang sudah dirender, 
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=Parameter tidak lagi cocok dengan perhitungan yang belum selesai: tekan "Hitung 3D" untuk menghitungnya.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=Bagian {} dari kombinasi DE mencampur formula dIFS ({}) dengan formula lain ({}). Setiap bagian hanya menghitung satu jenis: taruh formula dIFS di satu bagian dan yang lain di bagian lainnya (tab "DEcombinate" di jendela Formula menentukan di mana bagian kedua dimulai).
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=Gambar tidak cocok dengan perhitungannya: hitung lagi.
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=Penyelesaian gambar setelah semua tahap lain: eksposur, pendar di sekitar cahaya terang, tone mapping filmik, gradasi warna, vinyet dan pinggiran warna
@@ -3594,6 +3694,8 @@ Themes=Tema
 ;Themes
 ThereIsAFileAlready=Sudah ada file {}.
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=Parameter ini memakai formula "{}", yang tidak terpasang di sini.\n\nFormula adalah file berakhiran .m3f. Dapatkan {}.m3f (sering dibagikan bersama parameternya, di file grup atau dalam paket formula) dan taruh di salah satu folder formula:\n{}\n\nLalu buka atau tempel parameternya lagi.
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=Hal yang dapat ditanyakan ke asisten
 ;Things to ask the assistant
 ThisComputer=Komputer ini:
@@ -3610,6 +3712,8 @@ ThisRenderKeepsNoImage=Render ini tidak menyimpan gambar.
 ;This render keeps no image.
 ThisRenderKeptNoParameters=Render ini tidak menyimpan parameter.
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=Adegan ini mencampur dua jenis formula dalam satu rantai formula:\n- formula dIFS ({}) membangun bentuk langsung dari jarak,\n- yang lain ({}) adalah fraktal yang diiterasi langkah demi langkah (escape time).\nSatu rantai tidak bisa menghitung kedua jenis sekaligus.\n\nUntuk menampilkan keduanya, gabungkan dengan kombinasi DE: bagian pertama menghitung satu jenis, bagian kedua jenis lainnya, dan kedua objek digabung (min: kedua objek, max: hanya tempat keduanya bertumpuk, smooth: dengan sambungan halus). Itu tab "DEcombinate" di bagian atas jendela Formula.
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=Sesi ini (langsung)
 ;This session (live)
 ThreadPriority=Prioritas\nThread
@@ -3652,6 +3756,8 @@ Tiling=Tiling:
 ;Tiling:
 TimeNeeded=Waktu diperlukan:
 ;Time needed:
+Title=Judul:
+;Title:
 ToCalculateABetterHardShadow=Untuk menghitung bayangan keras yang lebih baik, hanya jika 1 HS dipilih!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=Ke Clipboard
@@ -3706,6 +3812,8 @@ Turned=Diputar:
 ;Turned:
 Turntable=Putaran
 ;Turntable
+TweakOfParametersBy=Olahan parameter dari {}
+;Tweak of parameters by {}
 Type=Jenis:
 ;Type:
 Type2=Jenis
@@ -3844,6 +3952,8 @@ WarningMustRecalculateTheWholeImage=Peringatan: Harus menghitung ulang seluruh g
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=Peringatan dan galat
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} disalin ke folder peta sebagai peta {}: {}
+;{} was copied into the maps folder as map {}: {}
 Water=Air:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3876,6 +3986,10 @@ White=putih
 ;white
 WhiteOutside=Luar putih
 ;White outside
+WhoseParametersYouStartedFromGroups=Parameter siapa yang menjadi titik awal Anda: grup meminta kredit untuk senimannya (contoh: Olahan "Pipe Organ" dari Marije)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=Mengapa perhitungan tidak bisa dimulai
+;Why the calculation cannot start
 Width=Lebar:
 ;Width:
 Windows=Jendela

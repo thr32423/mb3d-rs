@@ -1,11 +1,16 @@
 //! The screenshots of docs/COMMUNITY_WISHES.md, without windows:
-//! `communityshots OUTDIR [STEP ...]`.
+//! `communityshots OUTDIR STEP ...`, the steps in this order for the
+//! documentation: calc main share eyedropper colordlg colorform2 maps difs
+//! missing pano.  The files the steps make go to a temporary folder.
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let out = std::path::PathBuf::from(&args[0]);
     std::fs::create_dir_all(&out).unwrap();
     let steps: Vec<String> = args[1..].to_vec();
+    // the files the steps make (shares, a picture, a parameter file)
+    let tmp = std::env::temp_dir().join(format!("communityshots-{}", std::process::id()));
+    std::fs::create_dir_all(&tmp).unwrap();
     let (mut ui, mut app) = mb3d::app::build(&[]).unwrap().unwrap();
     let wait = |ui: &mut mb3d::vcl::Ui, app: &mut mb3d::app::Mb3d| {
         for _ in 0..1200 {
@@ -64,7 +69,7 @@ fn main() {
                 let mut data = mb3d::m3p::write(&sc);
                 let at = data.windows(10).position(|w| w == b"SphereTree").unwrap();
                 data[at..at + 10].copy_from_slice(b"SphereTrex");
-                let f = out.join("needs_a_formula.m3p");
+                let f = tmp.join("needs_a_formula.m3p");
                 std::fs::write(&f, data).unwrap();
                 mb3d::app::main_form::open_file(&mut app, &mut ui, &f);
                 app.process(&mut ui);
@@ -97,7 +102,7 @@ fn main() {
                 ui.post("ShareFrm", "TitleEdit", "FieldChange", mb3d::vcl::Ev::Change);
                 app.process(&mut ui);
                 ui.save_form_png("ShareFrm", &out.join("share_window.png"), 1.0).unwrap();
-                let dir = out.join("share-out");
+                let dir = tmp.join("share-out");
                 ui.set_text("ShareFrm", "FolderEdit", &dir.display().to_string());
                 ui.click("ShareFrm", "MakeBtn");
                 app.process(&mut ui);
@@ -119,13 +124,13 @@ fn main() {
                 ui.show("ShareFrm");
                 app.process(&mut ui);
                 ui.set_text("ShareFrm", "TitleEdit", "Machine Hall");
-                ui.set_text("ShareFrm", "FolderEdit", &out.join("share-out").display().to_string());
+                ui.set_text("ShareFrm", "FolderEdit", &tmp.join("share-out").display().to_string());
                 ui.click("ShareFrm", "MakeBtn");
                 app.process(&mut ui);
             }
             // a picture of any name chosen as a map
             "maps" => {
-                let src_dir = out.join("pictures");
+                let src_dir = tmp.join("pictures");
                 std::fs::create_dir_all(&src_dir).unwrap();
                 let (w, h) = (256usize, 256usize);
                 let rgb: Vec<u8> = (0..w * h)
@@ -136,6 +141,14 @@ fn main() {
                     })
                     .collect();
                 let pic = src_dir.join("Brick wall (rough).png");
+                // (a copy from an earlier run would be reused: the step shows the copying)
+                for d in mb3d::maps::map_dir_list() {
+                    for e in std::fs::read_dir(&d).into_iter().flatten().flatten() {
+                        if e.file_name().to_string_lossy().ends_with(" Brick wall (rough).png") {
+                            let _ = std::fs::remove_file(e.path());
+                        }
+                    }
+                }
                 std::fs::write(&pic, mb3d::png::encode_rgb(w, h, &rgb)).unwrap();
                 ui.show("LightAdjustForm");
                 app.process(&mut ui);
@@ -146,7 +159,15 @@ fn main() {
                 ui.post("", "light:map:Edit21", "", mb3d::vcl::Ev::DialogResult(mb3d::vcl::DialogResult::File(Some(pic.clone()))));
                 app.process(&mut ui);
                 eprintln!("diffuse map: {}", ui.text("LightAdjustForm", "Edit21"));
+                // the picture painted again with the map
+                for _ in 0..30 {
+                    std::thread::sleep(std::time::Duration::from_millis(100));
+                    mb3d::vcl::App::idle(&mut app, &mut ui);
+                    app.process(&mut ui);
+                }
+                wait(&mut ui, &mut app);
                 ui.save_form_png("LightAdjustForm", &out.join("maps_light_window.png"), 1.0).unwrap();
+                eprintln!("messages:\n{}", ui.text("Mand3DForm", "Memo1"));
                 ui.save_form_png("Mand3DForm", &out.join("maps_main.png"), 1.0).unwrap();
                 // a height map formula: the hint of its map number
                 mb3d::formulas::add_formula_dir(std::path::PathBuf::from("M3Formulas-community"));

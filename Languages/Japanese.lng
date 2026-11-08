@@ -63,6 +63,8 @@ AOCalcTime=AO 計算時間:
 ;AO calc time:
 ASineIntegerPowerBulbWith=アメイジングボックスのように、先に折りたたみを行うサイン整数べき乗バルブ。
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=球面パノラマには Photo Sphere タグに加えて 360 カメラ (RICOH THETA S) の EXIF カメラ情報が書き込まれ、Facebook で 360 写真として表示されます。プログラムが保存するすべての 360 画像が対象です。
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=停止または中断されたレンダリングは計算済みの部分を保持します。同じパラメータで3D計算を行うと続きから再開されます。
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=透明な背景には PNG フレームが必要です。出力形式に PNG を選んでください。
@@ -195,6 +197,8 @@ Amount=量:
 ;Amount:
 AnAIAssistantOnThisComputer=このコンピュータ上の AI アシスタントが Mandelbulb 3D を使えます: 普段の言葉や音声で頼むと、画像の説明、変更、レンダリング、バリエーションの作成、最後に作業したもののレンダリングを行います。Mandelbulb 3D はオフラインのままです: アシスタントのアプリがこのコンピュータ上で起動します。
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=補間ハイブリッド (数式ウィンドウの「補間」タブ) は 2 つのフラクタル数式を段階的に混ぜ合わせます。dIFS 数式は混ぜ合わせられません。その場合は「交互」か「DEcombinate」を使ってください。
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=この画像の未完了の計算が保存されています ({})。\n\n続行しますか?  「いいえ」を選ぶと最初から計算し直します。
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=このパラメータの未完了のモンテカルロレンダリングが保存されています ({})。\n\n続行しますか?  「いいえ」を選ぶと最初からレンダリングし直します。
@@ -265,6 +269,8 @@ Around=中心:
 ;Around:
 AroundTheMiddleAnObject=中心の周り（物体）
 ;Around the middle (an object)
+Artist=作者:
+;Artist:
 AsFullBackgroundSphere=全天球の背景として:
 ;As full background sphere:
 Aspect=縦横比:
@@ -397,6 +403,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2 設定 (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=依頼元
 ;By
+By2={} 作: {}
+;{} by {}
 ByOfDone={} ({}、担当 {}): {} / {} {} 完了
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -415,6 +423,8 @@ Calculate3DAndTheBatchWindow=3D計算とバッチウィンドウをスウォー�
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=適切なライティングなしで、8x8 のブロック状画像を高速に計算します
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=先に画像を計算するか、画像のチェックを外してください。
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=A.S.を自動的に計算
 ;Calculate A.S. automatically
 CalculateColors=色を計算
@@ -551,6 +561,8 @@ ClearTheWholeList=リストをすべて消去
 ;Clear the whole list
 ClickAButtonToChangeA=(ボタンをクリックしてフォルダを変更)
 ;(Click a button to change a directory)
+ClickAColourEsc=色をクリック (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=列見出しをクリックすると並べ替えます。
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=言語をクリックすると、ウィンドウがその言語に切り替わります。
@@ -575,6 +587,8 @@ ClickOnTheButtonAndAfterwards3=ボタンをクリックした後、画像内の�
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=画像内で中心にしたいオブジェクトをクリックします。\nカメラの向きは変わりません。中心点の周りを回転させるには\n回転オプションを使用してください。
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=ここをクリックしてから、プログラムのウィンドウ (画像、マップ、パレット、ほかのウィンドウ) の任意のピクセルをクリックすると、その色を取得します。Esc で終了します。
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=クリックで「反復数の動的フォグ」と「反復数の色」を切り替えます。
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=クリックして出力ファイルを選択します。
@@ -659,6 +673,10 @@ ColorStart=色の開始
 ;Color start
 Coloring=カラーリング
 ;Coloring
+ColorsFromFile=ファイルから色...
+;Colors from file...
+ColorsTakenFrom={} から取得した色
+;Colors taken from {}
 Colour0Grey1AsIt=色: 0 灰色、1 そのまま、2 2倍鮮やか
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=色収差
@@ -723,6 +741,8 @@ CopyParamsToClipboard=パラメータをクリップボードにコピー
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=コマンドをコピーして、ターミナルに貼り付けます
 ;Copy the command, to paste it into a terminal
+CopyThePostText=投稿テキストをコピー
+;Copy the post text
 CopyTheSelectedLineOrAll=選択した行をコピーします。選択がない場合は表示中のすべての行をコピーします
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=値をコピー
@@ -781,6 +801,8 @@ CreateLanguageFile=言語ファイルを作成
 ;Create language file
 CreateMeshes=メッシュを作成します
 ;Create Meshes
+Credit=クレジット:
+;Credit:
 CrossEyedPreview=交差法プレビュー
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 から Ctrl+7 はリストの順、Ctrl+W で閉じる
@@ -1169,12 +1191,18 @@ ExtractingAmbientInformationFromTheOriginal=元の M3I ファイルから環境�
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ 極値の判定 }
 ;{ Extreme testing }
+Eyedropper=スポイト
+;Eyedropper
 FFmpegCommand=FFmpegコマンド
 ;FFmpeg command
 FNr=数式No.:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Facebook サイズ (2048 px、360 写真は 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook は投稿に貼り付けたパラメータをリンクに変えてしまうため、グループではテキストファイルでの共有が求められます。このファイルを画像と一緒に投稿するか、グループのファイルに入れてください。
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=フラクタルパラメータの読み込みに失敗しました。その他の設定は読み込まれました。
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=遠方の深度フォグ
@@ -1227,6 +1255,8 @@ FinishedTracingObject=オブジェクトのトレースが完了しました。
 ;Finished tracing object.
 Finishing=仕上げ
 ;Finishing
+First=第 1
+;first
 First4RaysNoisy=最初の 4 レイ (ノイズあり)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=この数式の組み合わせの初回計算です。グラフィックカードのシェーダーをコンパイルしています (10-30 秒、初回のみ - ドライバーが保持します)。その間は CPU が計算し、準備ができるとカードも加わります。
@@ -1263,6 +1293,8 @@ FogOffset=フォグオフセット
 ;Fog offset
 Folder=フォルダー
 ;Folder
+Folder2=フォルダー:
+;Folder:
 FolderOfTheLanguageFiles=言語ファイルのフォルダ:
 ;Folder of the language files:
 FollowTheNewest=最新を追う
@@ -1289,12 +1321,16 @@ FormulaName=式の名前:
 ;Formula name:
 FormulaNotFound=数式 '{}' が見つかりません。
 ;Formula '{}' not found.
+FormulaNotInstalled=数式がインストールされていません
+;Formula not installed
 FormulaNrWhereThe2ndPart=ハイブリッドの第 2 部が始まる数式番号
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=数式の値:
 ;Formula values:
 Formulas=数式
 ;Formulas
+Formulas2=数式: {}
+;Formulas: {}
 FormulasColon=数式:
 ;Formulas:
 Forward=前方
@@ -1329,6 +1365,8 @@ FromTheCameraAllAroundA=カメラから全方向（内側から見たシーン�
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=M3I フル画像ファイル:
 ;Full M3I image files:
+FullSize=フルサイズ
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1527,6 +1565,10 @@ HeightMapGeneratorPreview=ハイトマップ生成プレビュー
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=例えば、不要な描き込みをやり直したい場合に便利です。
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=ここでは dIFS 数式とほかの数式がスロットに交互に並んでいます。まず dIFS 数式をほかの数式の後ろへ移動し (数式ウィンドウの数式タブを右クリックすると数式を移動・コピーできます)、それから「DEcombinate」を使ってください。
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=16 進数:
+;Hex:
 HiQual=高品質
 ;HiQual
 HiQual1=HiQual 1
@@ -1719,6 +1761,8 @@ InsideColor=内側の色
 ;Inside color
 InsideRender=内側レンダー
 ;Inside render
+InstalledFormulasWithASimilarName=似た名前のインストール済み数式: {}
+;Installed formulas with a similar name: {}
 Int=強度:
 ;Int.:
 Int64=Int64
@@ -2031,6 +2075,8 @@ MMBWheelZoom=中ボタン/ホイール: ズーム
 ;MMB/Wheel: zoom
 MRelObj=マップをObj基準
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=mb3d-rs {} で作成 (Windows、Linux、macOS 用の Mandelbulb3D)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=メイン計算時間:
 ;Main calc time:
 MainParas=メインパラメータ
@@ -2047,6 +2093,8 @@ MakeSureThatNoLightWill=非ブレンドモードでライトが減算されな�
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=ハードシャドウとアンビエントシャドウを考慮したい場合は、\nそれらの「自動的に計算」オプションが設定されていることを確認してください。
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=ファイルを作成
+;Make the files
 MakeTheLightOfThatPicture=その画像のライトを暖かくして、もう一度レンダリングして。
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=アンビエントと背景の色の上下グラデーションを\nオブジェクトの座標系基準にします。\nアニメーションでライトをシーンに固定するために使います。
@@ -2065,6 +2113,8 @@ MapNumber2=マップ番号:
 ;Map Number:
 MapNumberColon=マップ番号:
 ;Map number:
+MapNumberRightClickToChoose=マップ番号。右クリックで画像を選択: 名前もフォルダーも自由です (番号付きでマップフォルダーにコピーされるので、次回も MB3D でもパラメータから見つかります)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=出力ベクトルにマップ
 ;Map on output vector
 MapSequences=マップシーケンス
@@ -2267,6 +2317,8 @@ N360Orbit=360° 周回
 ;360° orbit
 N360Panorama=360 パノラマ
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=360 写真: Facebook が探すカメラタグ
+;360 photos: the camera tag Facebook looks for
 N360VR=360° VR
 ;360° VR
 N3DAnalyticFormula=3D解析的数式
@@ -2387,6 +2439,8 @@ NoiseFilterStrength=ノイズフィルター: 強さ {}
 ;Noise filter: strength {}
 None=なし
 ;none
+NoneOfTheFormulaSlotsHolds=どの数式スロットにもフラクタルを作る数式が入っていません。どれも空か、反復回数が 0 か、空間を変えるだけの数式 ({}) です。\n\nInteger Power や Amazing Box などのフラクタル数式をスロットに入れ、反復回数を 1 以上にしてください。
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=通常
 ;Normal
 NormalStatusForThisFormula=この数式を通常状態にする
@@ -2535,6 +2589,8 @@ OpenTextParameters=テキストパラメータを開く
 ;Open text parameters
 OpenTheAnimationMaker=アニメーションメーカーを開きます
 ;Open the animation maker
+OpenTheFolder=フォルダーを開く
+;Open the folder
 OpenTheFolderOfTheFile=ファイルのフォルダを開きます
 ;Open the folder of the file
 OpenTheFolderOfTheLog=ログファイルのフォルダを開きます (1 日 1 ファイル、30 日間保持)
@@ -2633,6 +2689,12 @@ Parameter=パラメータ
 ;Parameter
 Parameters=パラメータ
 ;Parameters
+ParametersAndLights=パラメータとライト
+;Parameters and lights
+ParametersAsATextFileTxt=パラメータのテキストファイル (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=パラメータ: {} (添付)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=パラメータをクリップボードにコピーしました。
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=パラメータを読み込みました。「3D計算」を押すとレンダリングします。
@@ -2659,6 +2721,8 @@ PercentOfLocalDE=局所DEに対する割合 (%) です。
 ;Percent of local DE
 Picture=画像
 ;picture
+PictureJPEG=画像 (JPEG)
+;Picture (JPEG)
 Pictures=画像
 ;pictures
 PicturesAndFilesTheAssistantMakes=アシスタントが作った画像とファイルは {} に保存され、何も削除されません。4K より大きい画像はあなたの同意があったときだけ作られ、計算は 10 分で止まります。アシスタントの操作はすべてログに残ります。
@@ -2703,6 +2767,8 @@ PostProcessingColon=ポストプロセス:
 ;Post processing:
 PostProcessingLower=ポストプロセス
 ;post processing
+PostText=投稿テキスト:
+;Post text:
 Postprocess=ポストプロセス
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: 底を任意の数で累乗します。
@@ -2829,6 +2895,8 @@ RecalculateASelection=\s選択範囲の再計算
 ;\sRecalculate a Selection
 RecalculatingTheSelection=選択範囲を再計算中
 ;recalculating the selection
+RecentColours=最近の色:
+;Recent colors:
 RecordedSKeyframesOfTheFlight=飛行のキーフレームを {} 個記録しました
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=飛行を記録: ボタンが押されている間、ナビゲーターの新しい視点 (最大で毎秒 2 回) がアニメーションの次のキーフレームになります
@@ -3043,6 +3111,8 @@ SaveAsImageAtTheLocation=指定した場所に画像として保存します。
 ;Save as image at the location you specify
 SaveBtrace2=btrace2を保存...
 ;Save btrace2...
+SaveColors=色を保存...
+;Save colors...
 SaveCompleteM3I=完全な M3I を保存します
 ;Save complete M3I
 SaveExit=保存して終了
@@ -3099,6 +3169,8 @@ SavedOpenEXRFloatingPointColoursAnd={} を保存しました (OpenEXR、浮動�
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} を保存しました (透明背景)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=これらの色を含むライティングをライトファイル (.m3l、MB3D でも使用可) として保存します。「ファイルから色」でそこから色を読み戻せます。
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=保存:
 ;Saving:
 SavingSucceeded=保存に成功しました
@@ -3135,6 +3207,8 @@ SecantSearchForTheSurface=セカント法で表面を探索
 ;Secant search for the surface
 SecantSearchmode=セカント探索モード:
 ;Secant searchmode:
+Second=第 2
+;second
 SecondFocusPointIfDifferentFrom=第2の焦点です。第1の焦点と異なる値にすると\n焦点が一点ではなく線になります。\n(物理的にはあまり現実的ではありませんが、あると便利です)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=メインウィンドウの「カラーリング」タブにあるマップ着色オプションも参照してください。
@@ -3177,6 +3251,8 @@ SessionsAndCrashes=セッションとクラッシュ
 ;Sessions and crashes
 Set=設定
 ;Set
+SetItUpNowTheFormulas=今すぐ設定しますか? 数式はスロットに残ったままです: 第 1 部は {}、第 2 部は {} を使い、min (両方のオブジェクト) で結合します。
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=ライト関数をコサインに
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=マップの向きをオブジェクト基準にします。\nアニメーションでライトをシーンに固定するために使います。
@@ -3185,6 +3261,8 @@ SetTheVisualThemeOfThe=アプリケーションの表示テーマを設定しま
 ;Set the visual theme of the application
 SetTo0=0に設定
 ;set to 0
+SetUpDECombination=DE 組み合わせを設定
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=シャドウを計算するときに、対応するライト関数を\n自動的にコサインに設定します。\nコサインと二乗コサイン関数はシャドウとよく合います。
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=ビジュアルテーマの設定
@@ -3193,12 +3271,18 @@ ShadersCompiling=シェーダーをコンパイル中
 ;shaders compiling
 ShadowsAndAO=シャドウと AO
 ;shadows and AO
+Share=共有
+;Share
 ShareRenderingBetweenYourComputersThrough=共有フォルダーを通じて複数のコンピューターでレンダリングを分担します
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=共有: 画像、そのパラメータのテキストファイル、投稿テキストを、グループ向けにまとめて用意します
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=このコンピュータを共有: フォルダのジョブをレンダリングし、自分のジョブをスウォームに渡す
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=共有フォルダ:
 ;Shared folder:
+SharedInThePostTextIs=フォルダー「{}」に保存しました。投稿テキストはクリップボードにあります。
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=共有中ですが、スウォームに他のコンピュータがまだいません: レンダリングはこのコンピュータだけで行われます
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=共有を停止しました: {}
@@ -3265,6 +3349,10 @@ Sliding=スライド
 ;Sliding
 SlidingWalkingStep=スライド+移動の歩幅:
 ;Sliding+Walking step:
+Slot=スロット {}
+;slot {}
+SlotsTo=スロット {}～{}
+;slots {} to {}
 SmoothDEcomb=Smooth DEcomb:
 ;Smooth DEcomb:
 SmoothImageOnLoad=読み込み時に画像を滑らかに
@@ -3431,6 +3519,10 @@ SwitchBackToTheDefaultTheme=既定のテーマに戻します
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=項目を履歴から取り除きます (計算した画像のパラメータとサムネイルは削除されます。その他のファイルはそのまま残ります)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=クリップボードのパラメータ (投稿からコピーしたものなど) から色だけを取り込みます。
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=パラメータファイル (.m3p、.m3i、テキスト) またはライトファイル (.m3l) から色 (表面のパレット、その透明度、内側の色) だけを取り込みます。ライト、フラクタル、視点はそのままです。
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=対象マップスロット
 ;Target Map Slot
 TargetMapSlotUseThisNumber=対象のマップスロットです。マップをアニメーションさせるには、この番号をフラクタル内でマップとして (例: ハイトマップとして) 使います。
@@ -3455,6 +3547,8 @@ TheBTracer2CacheFormatIsNot2=BTracer2 キャッシュ形式はサポートされ
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=背景画像を読み込めませんでした。
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=背景画像 {} をマップフォルダーにコピーしました: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=エスケープタイム数式のバイルアウト値です。\n反復中に 3D 値がこの値を超えると、\n現在の点はオブジェクトに属しません。
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=ぼかし半径はこの値で制限されます。\n画像の一部で半径が非常に大きくなる場合にレンダリングを高速化できます。
@@ -3471,10 +3565,14 @@ TheCameraLeftTheFractal=カメラがフラクタルを離れました
 ;the camera left the fractal
 TheChosenValueOverAllFrames=アニメーション全フレームでの選んだ値: キーフレームの四角を上下にドラッグするか、クリックして値を入力します
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=色を 16 進数の RGB で #RRGGBB の形式で指定します (# は省略可、#RGB も使えます)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=深い水の色: 水自身の光であり、水中のものが深さとともに近づく色 (クリックで変更)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=コマンドラインプログラム mb3d がこのプログラムと同じ場所に見つかりません。プログラムを再インストールしてください。
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=ここの dIFS 数式 ({}) は空間を変換するだけです (移動、回転、折りたたみ、繰り返し)。dIFS チェーンには、その後ろに形を描く dIFS 形状数式 (boxIFS、cylinderIFS、HeightMapIFS など) も必要です。
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=既定の番号付けはXとYに分かれた2つの数字です。\nこのオプションを選ぶと番号は1つだけになり、\n各列で増えていき次の行へ続きます。
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=既定の出力はオブジェクトが白、外側の領域が黒です。\n色を反転するにはこのオプションを選んでください。
@@ -3551,6 +3649,8 @@ TheNewestJobSoFarRendered=現時点で最新のジョブ: レンダリング済�
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=パラメータが未完了の計算と一致しなくなりました。「3D計算」を押して計算してください。
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=DE 組み合わせの{}部で dIFS 数式 ({}) とほかの数式 ({}) が混ざっています。各部は 1 種類しか計算できません。dIFS 数式を一方の部に、ほかの数式をもう一方の部に入れてください (第 2 部の開始位置は数式ウィンドウの「DEcombinate」タブで設定します)。
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=画像が計算内容と一致しません。もう一度計算してください。
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=他のすべてのパスの後に行う画像の仕上げ: 露出、明るい光の周りのグロー、フィルミックトーンマッピング、カラーグレーディング、周辺減光、色収差
@@ -3595,6 +3695,8 @@ Themes=テーマ
 ;Themes
 ThereIsAFileAlready=ファイル {} は既に存在します。
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=このパラメータは数式「{}」を使っていますが、ここにはインストールされていません。\n\n数式は .m3f で終わるファイルです。{}.m3f を入手し (パラメータと一緒に、グループのファイルや数式パックで共有されていることがよくあります)、数式フォルダーのいずれかに入れてください:\n{}\n\nその後、パラメータをもう一度開くか貼り付けてください。
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=アシスタントへの頼み方の例
 ;Things to ask the assistant
 ThisComputer=このコンピュータ:
@@ -3611,6 +3713,8 @@ ThisRenderKeepsNoImage=このレンダリングは画像を保持しません。
 ;This render keeps no image.
 ThisRenderKeptNoParameters=このレンダリングにはパラメータが保存されていません。
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=このシーンでは 1 つの数式チェーンに 2 種類の数式が混ざっています:\n- dIFS 数式 ({}) は距離から直接形を作ります。\n- ほかの数式 ({}) は段階的に反復するフラクタル (エスケープタイム) です。\n1 つのチェーンで両方を同時に計算することはできません。\n\n両方を表示するには DE 組み合わせで結合します。第 1 部で一方の種類を、第 2 部でもう一方を計算し、2 つのオブジェクトを結合します (min: 両方のオブジェクト、max: 重なる部分のみ、smooth: 柔らかい継ぎ目)。数式ウィンドウ上部の「DEcombinate」タブです。
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=このセッション (ライブ)
 ;This session (live)
 ThreadPriority=スレッド\n優先度
@@ -3653,6 +3757,8 @@ Tiling=タイル分割:
 ;Tiling:
 TimeNeeded=所要時間:
 ;Time needed:
+Title=タイトル:
+;Title:
 ToCalculateABetterHardShadow=より良いハードシャドウを計算します。HS を 1 つだけ選択している場合のみ!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=クリップボードへ
@@ -3707,6 +3813,8 @@ Turned=回転:
 ;Turned:
 Turntable=ターンテーブル
 ;Turntable
+TweakOfParametersBy={} のパラメータをアレンジ
+;Tweak of parameters by {}
 Type=型:
 ;Type:
 Type2=種類
@@ -3845,6 +3953,8 @@ WarningMustRecalculateTheWholeImage=警告: 取り消すには画像全体を再
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=警告とエラー
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} をマップ {} としてマップフォルダーにコピーしました: {}
+;{} was copied into the maps folder as map {}: {}
 Water=水:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3877,6 +3987,10 @@ White=白
 ;white
 WhiteOutside=外側を白に
 ;White outside
+WhoseParametersYouStartedFromGroups=元にしたパラメータの作者: グループでは作者のクレジットが求められます (例: Tweak of "Pipe Organ" by Marije)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=計算を開始できない理由
+;Why the calculation cannot start
 Width=幅:
 ;Width:
 Windows=ウィンドウ

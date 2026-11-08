@@ -62,6 +62,8 @@ AOCalcTime=AO-rekentijd:
 ;AO calc time:
 ASineIntegerPowerBulbWith=Een sinusbulb met gehele macht en voorafgaande vouwingen, zoals in de Amazing Box.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=Een bolvormig panorama krijgt naast de Photo Sphere-tags de EXIF-camera van een 360-camera (RICOH THETA S), zodat Facebook het als 360-foto toont. Voor elke 360-afbeelding die het programma opslaat.
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=Een gestopte of onderbroken render bewaart wat hij heeft berekend; 3D berekenen met dezelfde parameters zet hem voort.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=Een transparante achtergrond vereist PNG-frames: kies PNG als uitvoerformaat.
@@ -194,6 +196,8 @@ Amount=Hoeveelheid:
 ;Amount:
 AnAIAssistantOnThisComputer=Een AI-assistent op deze computer kan Mandelbulb 3D gebruiken: vraag hem in gewone woorden, of met uw stem, uw afbeeldingen te beschrijven, te wijzigen en te renderen, variaties te maken of te renderen waar u het laatst aan werkte. Mandelbulb 3D blijft offline: de app van de assistent start het op deze computer.
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=Een interpolatiehybride (het tabblad "Interpoleren" van het formulevenster) mengt twee fractalformules stap voor stap; dIFS-formules kunnen niet gemengd worden. Gebruik daarvoor "Afwisselend" of "DEcombinate".
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=Er is een onvoltooide berekening van deze afbeelding bewaard ({}).\n\nDaarmee verdergaan?  "Nee" berekent opnieuw vanaf het begin.
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=Er is een onvoltooide Monte Carlo-rendering van deze parameters bewaard ({}).\n\nDaarmee verdergaan?  "Nee" rendert opnieuw vanaf het begin.
@@ -264,6 +268,8 @@ Around=Rond:
 ;Around:
 AroundTheMiddleAnObject=Rond het midden (een object)
 ;Around the middle (an object)
+Artist=Artiest:
+;Artist:
 AsFullBackgroundSphere=Als volledige achtergrondbol:
 ;As full background sphere:
 Aspect=Verhouding:
@@ -396,6 +402,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2-instellingen (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=Door
 ;By
+By2={} door {}
+;{} by {}
 ByOfDone={} ({}, door {}): {} van {} {} klaar
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -414,6 +422,8 @@ Calculate3DAndTheBatchWindow=3D berekenen en het batchvenster met de zwerm, in
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Berekent snel een blokkerige 8x8-afbeelding zonder echte belichting
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=Bereken eerst een afbeelding, of vink de afbeelding uit.
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=A.S. automatisch berekenen
 ;Calculate A.S. automatically
 CalculateColors=Kleuren berekenen
@@ -550,6 +560,8 @@ ClearTheWholeList=De hele lijst wissen
 ;Clear the whole list
 ClickAButtonToChangeA=(Klik op een knop om een map te wijzigen)
 ;(Click a button to change a directory)
+ClickAColourEsc=Klik een kleur (Esc)
+;Click a color (Esc)
 ClickAColumnHeaderToSort=Klik op een kolomkop om te sorteren.
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=Klik op een taal om de vensters naar die taal om te schakelen
@@ -574,6 +586,8 @@ ClickOnTheButtonAndAfterwards3=Klik op de knop en daarna op het object in de afb
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Klik op het object in de afbeelding dat gecentreerd moet worden.\nDe camerarichting verandert niet; gebruik de rotatie-\nopties om rond het middelpunt te draaien.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=Klik hier en klik dan op een pixel in de vensters van het programma (de afbeelding, een map, een palet, een ander venster) om de kleur over te nemen. Esc stopt.
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Klik om te wisselen tussen Dyn. mist op its en Kleur op its
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=Klik om het uitvoerbestand te kiezen
@@ -658,6 +672,10 @@ ColorStart=Kleur begin
 ;Color start
 Coloring=Kleuring
 ;Coloring
+ColorsFromFile=Kleuren uit bestand...
+;Colors from file...
+ColorsTakenFrom=Kleuren overgenomen uit {}
+;Colors taken from {}
 Colour0Grey1AsIt=Kleur: 0 grijs, 1 zoals het is, 2 twee keer zo kleurrijk
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=Kleurranden
@@ -722,6 +740,8 @@ CopyParamsToClipboard=Parameters naar klembord kopiëren
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=De opdracht kopiëren, om die in een terminal te plakken
 ;Copy the command, to paste it into a terminal
+CopyThePostText=Posttekst kopiëren
+;Copy the post text
 CopyTheSelectedLineOrAll=De geselecteerde regel kopiëren, of alle getoonde regels als er geen is geselecteerd
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Waarden kopiëren
@@ -780,6 +800,8 @@ CreateLanguageFile=Taalbestand aanmaken
 ;Create language file
 CreateMeshes=Meshes maken
 ;Create Meshes
+Credit=Bron:
+;Credit:
 CrossEyedPreview=Kruislings voorbeeld
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 tot Ctrl+7 in de volgorde van de lijst, Ctrl+W om te sluiten
@@ -1168,12 +1190,18 @@ ExtractingAmbientInformationFromTheOriginal=Omgevingsinformatie uit het oorspron
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ Testen op extreme waarden }
 ;{ Extreme testing }
+Eyedropper=Pipet
+;Eyedropper
 FFmpegCommand=FFmpeg-opdracht
 ;FFmpeg command
 FNr=F.nr:
 ;F.nr:
 FOVy=FOVy:
 ;FOVy:
+FacebookSize2048Px360Photos=Facebook-formaat (2048 px, 360-foto's 6000 px)
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook maakt van parameters die in een bericht geplakt worden links, en groepen vragen ze als tekstbestand: plaats dit bestand bij de afbeelding of zet het bij de bestanden van de groep.
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=Importeren van de fractalparameters mislukt. Alle andere instellingen zijn geïmporteerd.
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=Verre dieptemist
@@ -1226,6 +1254,8 @@ FinishedTracingObject=Traceren van het object voltooid.
 ;Finished tracing object.
 Finishing=Afwerking
 ;Finishing
+First=eerste
+;first
 First4RaysNoisy=eerste 4 stralen (ruis)
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=Eerste berekening van deze formulecombinatie: de shaders van de grafische kaart worden gecompileerd (10-30 s, slechts eenmaal - het stuurprogramma bewaart ze). De CPU rekent intussen, de kaart doet mee zodra ze klaar zijn.
@@ -1262,6 +1292,8 @@ FogOffset=Mist-offset
 ;Fog offset
 Folder=Map
 ;Folder
+Folder2=Map:
+;Folder:
 FolderOfTheLanguageFiles=Map met de taalbestanden:
 ;Folder of the language files:
 FollowTheNewest=Nieuwste volgen
@@ -1288,12 +1320,16 @@ FormulaName=Formulenaam:
 ;Formula name:
 FormulaNotFound=Formule '{}' niet gevonden.
 ;Formula '{}' not found.
+FormulaNotInstalled=Formule niet geïnstalleerd
+;Formula not installed
 FormulaNrWhereThe2ndPart=Formulenr. waar het 2e deel van de hybride begint
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=Formulewaarden:
 ;Formula values:
 Formulas=Formules
 ;Formulas
+Formulas2=Formules: {}
+;Formulas: {}
 FormulasColon=Formules:
 ;Formulas:
 Forward=Voorwaarts
@@ -1328,6 +1364,8 @@ FromTheCameraAllAroundA=Vanuit de camera, rondom (een scène van binnenuit)
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=Volledige M3I-afbeeldingsbestanden:
 ;Full M3I image files:
+FullSize=Volledige grootte
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1526,6 +1564,10 @@ HeightMapGeneratorPreview=Voorbeeld hoogtemapgenerator
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=Handig als u bijvoorbeeld een ongewenste tekening wilt overdoen.
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=Hier wisselen de dIFS-formules en de andere elkaar af in de slots: zet eerst de dIFS-formules achter de andere (een rechterklik op een formuletabblad van het formulevenster verschuift en kopieert formules) en gebruik dan "DEcombinate".
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=Hex:
+;Hex:
 HiQual=HiQual
 ;HiQual
 HiQual1=HiQual 1
@@ -1718,6 +1760,8 @@ InsideColor=Binnenkleur
 ;Inside color
 InsideRender=Binnenkant renderen
 ;Inside render
+InstalledFormulasWithASimilarName=Geïnstalleerde formules met een vergelijkbare naam: {}
+;Installed formulas with a similar name: {}
 Int=Int.:
 ;Int.:
 Int64=Int64
@@ -2030,6 +2074,8 @@ MMBWheelZoom=MMK/wiel: zoomen
 ;MMB/Wheel: zoom
 MRelObj=M.rel.obj.
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=Gemaakt met mb3d-rs {} (Mandelbulb3D voor Windows, Linux en macOS)
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=Hoofdrekentijd:
 ;Main calc time:
 MainParas=hoofdparameters
@@ -2046,6 +2092,8 @@ MakeSureThatNoLightWill=Zorgt ervoor dat in de niet-mengmodus geen licht wordt a
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=Zorg dat de opties 'Automatisch berekenen' voor de harde\nen omgevingsschaduwen zijn ingesteld als u die wilt meenemen.
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=Bestanden maken
+;Make the files
 MakeTheLightOfThatPicture=Maak het licht van die afbeelding warmer en render hem opnieuw.
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=Maakt het boven-ondergradiënt van de ambient- en achtergrondkleuren\nrelatief t.o.v. het coördinatenstelsel van het object.\nGebruik dit in animaties om de lichten aan de scène te koppelen.
@@ -2064,6 +2112,8 @@ MapNumber2=Kaartnummer:
 ;Map Number:
 MapNumberColon=Mapnummer:
 ;Map number:
+MapNumberRightClickToChoose=Mapnummer. Rechtsklik om een afbeelding te kiezen: elke naam, elke map (ze wordt met een nummer naar de map met maps gekopieerd, zodat de parameters haar de volgende keer en in MB3D vinden)
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=Map op uitvoervector
 ;Map on output vector
 MapSequences=Map-reeksen
@@ -2266,6 +2316,8 @@ N360Orbit=360°-omloop
 ;360° orbit
 N360Panorama=360 Panorama
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=360-foto's: de cameratag waar Facebook naar kijkt
+;360 photos: the camera tag Facebook looks for
 N360VR=360° VR
 ;360° VR
 N3DAnalyticFormula=3D analytische formule
@@ -2386,6 +2438,8 @@ NoiseFilterStrength=Ruisfilter: sterkte {}
 ;Noise filter: strength {}
 None=geen
 ;none
+NoneOfTheFormulaSlotsHolds=Geen van de formuleslots bevat een formule die een fractal maakt: elk is leeg, heeft 0 iteraties of bevat een formule die alleen de ruimte verandert ({}).\n\nZet een fractalformule, zoals Integer Power of Amazing Box, in een slot en geef die minstens 1 iteratie.
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normaal
 ;Normal
 NormalStatusForThisFormula=Normale status voor deze formule
@@ -2534,6 +2588,8 @@ OpenTextParameters=Tekstparameters openen
 ;Open text parameters
 OpenTheAnimationMaker=Open de animatiemaker
 ;Open the animation maker
+OpenTheFolder=Map openen
+;Open the folder
 OpenTheFolderOfTheFile=De map van het bestand openen
 ;Open the folder of the file
 OpenTheFolderOfTheLog=De map met de logbestanden openen (één per dag, 30 dagen bewaard)
@@ -2632,6 +2688,12 @@ Parameter=Parameter
 ;Parameter
 Parameters=Parameters
 ;Parameters
+ParametersAndLights=Parameters en lichten
+;Parameters and lights
+ParametersAsATextFileTxt=Parameters als tekstbestand (.txt)
+;Parameters as a text file (.txt)
+ParametersAttached=Parameters: {} (bijgevoegd)
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=Parameters naar het klembord gekopieerd.
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=Parameters geladen, druk op "3D berekenen" om te renderen.
@@ -2658,6 +2720,8 @@ PercentOfLocalDE=Procent van de lokale DE
 ;Percent of local DE
 Picture=afbeelding
 ;picture
+PictureJPEG=Afbeelding (JPEG)
+;Picture (JPEG)
 Pictures=afbeeldingen
 ;pictures
 PicturesAndFilesTheAssistantMakes=Afbeeldingen en bestanden die de assistent maakt, komen in {}; er wordt niets verwijderd. Afbeeldingen groter dan 4K worden alleen gemaakt als u akkoord gaat, en een berekening stopt na 10 minuten. Alles wat hij doet, staat in het logboek.
@@ -2702,6 +2766,8 @@ PostProcessingColon=Nabewerking:
 ;Post processing:
 PostProcessingLower=nabewerking
 ;post processing
+PostText=Posttekst:
+;Post text:
 Postprocess=Nabewerking
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power: verheft het grondtal tot een willekeurige macht.
@@ -2828,6 +2894,8 @@ RecalculateASelection=\sEen selectie herberekenen
 ;\sRecalculate a Selection
 RecalculatingTheSelection=selectie herberekenen
 ;recalculating the selection
+RecentColours=Recente kleuren:
+;Recent colors:
 RecordedSKeyframesOfTheFlight={} keyframes van de vlucht opgenomen
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=Neemt een vlucht op: zolang de knop ingedrukt is, wordt elk nieuw beeld van de navigator (hoogstens twee per seconde) het volgende keyframe van de animatie
@@ -3042,6 +3110,8 @@ SaveAsImageAtTheLocation=Opslaan als afbeelding op een locatie naar keuze
 ;Save as image at the location you specify
 SaveBtrace2=btrace2 opslaan...
 ;Save btrace2...
+SaveColors=Kleuren opslaan...
+;Save colors...
 SaveCompleteM3I=Volledige M3I opslaan
 ;Save complete M3I
 SaveExit=Opslaan + afsluiten
@@ -3098,6 +3168,8 @@ SavedOpenEXRFloatingPointColoursAnd={} opgeslagen (OpenEXR, kleuren in drijvende
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground={} opgeslagen (transparante achtergrond)
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=Slaat de belichting met deze kleuren op als lichtbestand (.m3l, ook voor MB3D); "Kleuren uit bestand" haalt de kleuren er weer uit.
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=Opslaan:
 ;Saving:
 SavingSucceeded=Opslaan geslaagd
@@ -3134,6 +3206,8 @@ SecantSearchForTheSurface=Oppervlak zoeken met de secantmethode
 ;Secant search for the surface
 SecantSearchmode=Secans-zoekmodus:
 ;Secant searchmode:
+Second=tweede
+;second
 SecondFocusPointIfDifferentFrom=Tweede focuspunt; als dit afwijkt van het eerste\nkrijgt u een focuslijn in plaats van een focuspunt.\n(fysisch niet erg realistisch, maar handig)\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=Zie ook de map-kleuropties op het tabblad 'Kleuring' van het hoofdvenster.
@@ -3176,6 +3250,8 @@ SessionsAndCrashes=Sessies en crashes
 ;Sessions and crashes
 Set=Zetten
 ;Set
+SetItUpNowTheFormulas=Nu instellen? De formules blijven in hun slots: het eerste deel krijgt {}, het tweede deel {}, samengevoegd met min (beide objecten).
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=Lichtfunctie op cosinus zetten
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=Stelt de oriëntatie van de map in relatief t.o.v. het object.\nGebruik dit in animaties om de lichten aan de scène te koppelen.
@@ -3184,6 +3260,8 @@ SetTheVisualThemeOfThe=Het visuele thema van het programma instellen
 ;Set the visual theme of the application
 SetTo0=op 0 zetten
 ;set to 0
+SetUpDECombination=DE-combinatie instellen
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=Zet de bijbehorende lichtfunctie automatisch op cosinus\nwanneer de schaduw wordt berekend.\nDe cosinus- en de kwadratische cosinusfunctie werken goed met de schaduw.
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=Visueel thema instellen
@@ -3192,12 +3270,18 @@ ShadersCompiling=shaders compileren
 ;shaders compiling
 ShadowsAndAO=schaduwen en AO
 ;shadows and AO
+Share=Delen
+;Share
 ShareRenderingBetweenYourComputersThrough=Het renderen over uw computers verdelen via een gedeelde map
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=Delen: de afbeelding, de parameters als tekstbestand en de tekst van een bericht, klaar voor een groep
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=Deze computer delen: de taken uit de map renderen en de mijne aan de zwerm geven
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=Gedeelde map:
 ;Shared folder:
+SharedInThePostTextIs=Opgeslagen in de map "{}"; de posttekst staat op het klembord.
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=Gedeeld, maar er is nog geen andere computer in de zwerm: renderings lopen alleen op deze computer
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=delen gestopt: {}
@@ -3264,6 +3348,10 @@ Sliding=Schuiven
 ;Sliding
 SlidingWalkingStep=Schuif+loopstap:
 ;Sliding+Walking step:
+Slot=slot {}
+;slot {}
+SlotsTo=slots {} tot {}
+;slots {} to {}
 SmoothDEcomb=Vloeiende DEcomb:
 ;Smooth DEcomb:
 SmoothImageOnLoad=Afbeelding gladmaken bij laden
@@ -3430,6 +3518,10 @@ SwitchBackToTheDefaultTheme=Terug naar het standaardthema
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=Het item uit de geschiedenis halen (de parameters en de miniatuur van een berekende afbeelding worden verwijderd; andere bestanden blijven waar ze zijn)
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=Neemt alleen de kleuren over uit de parameters op het klembord (bijvoorbeeld gekopieerd uit een bericht).
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=Neemt alleen de kleuren (het oppervlaktepalet, de transparantie ervan en de binnenkleuren) over uit een parameterbestand (.m3p, .m3i, tekst) of een lichtbestand (.m3l): de lichten, de fractal en het beeld blijven zoals ze zijn.
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=Doel-mapslot
 ;Target Map Slot
 TargetMapSlotUseThisNumber=Doel-mapslot. Gebruik dit nummer als map in uw fractal, bijv. als hoogtemap, om een geanimeerde map te krijgen
@@ -3454,6 +3546,8 @@ TheBTracer2CacheFormatIsNot2=Het BTracer2-cacheformaat wordt niet ondersteund, d
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=De achtergrondafbeelding kon niet worden geladen.
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=De achtergrondafbeelding {} is naar de map met maps gekopieerd: {}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=De bailout-waarde voor escapetime-formules.\nAls de 3D-waarde deze waarde tijdens het itereren overschrijdt,\nbehoort het huidige punt niet tot het object.
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=De vervagingsstraal wordt tot deze waarde beperkt.\nKan het renderen versnellen wanneer de straal in sommige delen van de afbeelding erg groot wordt.
@@ -3470,10 +3564,14 @@ TheCameraLeftTheFractal=de camera heeft het fractal verlaten
 ;the camera left the fractal
 TheChosenValueOverAllFrames=De gekozen waarde over alle frames van de animatie: sleep het vierkantje van een keyframe omhoog of omlaag, of klik erop en typ de waarde
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=De kleur als hexadecimale RGB, als #RRGGBB (de # is niet verplicht; #RGB werkt ook)
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=De kleur van diep water: het eigen licht van het water en de kleur die wat eronder ligt met de diepte krijgt (klik om te wijzigen)
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=Het opdrachtregelprogramma mb3d staat niet naast dit programma: installeer het programma opnieuw.
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=De dIFS-formules hier ({}) veranderen alleen de ruimte: ze verplaatsen, draaien, vouwen of herhalen die. Een dIFS-keten heeft daarna ook een dIFS-vormformule nodig die iets tekent, zoals boxIFS, cylinderIFS of HeightMapIFS.
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=De standaardnummering bestaat uit 2 getallen, gescheiden in X en Y.\nMet deze optie bestaat de nummering uit één getal,\ndat in elke kolom oploopt en op de volgende rij doorgaat.
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=Standaard is de uitvoer wit voor het object en zwart voor het gebied erbuiten.\nKies deze optie om de kleuren om te keren.
@@ -3550,6 +3648,8 @@ TheNewestJobSoFarRendered=De nieuwste taak tot nu toe: gerenderde delen, delen i
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=De parameters passen niet meer bij de onvoltooide berekening: druk op "3D berekenen" om ze te berekenen.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=Het {} deel van de DE-combinatie mengt dIFS-formules ({}) met andere ({}). Elk deel berekent maar één soort: zet de dIFS-formules in het ene deel en de andere in het andere deel (het tabblad "DEcombinate" van het formulevenster bepaalt waar het tweede deel begint).
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=De afbeelding past niet bij haar berekening: bereken haar opnieuw.
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=De afwerking van het beeld na alle andere passes: belichting, gloed rond fel licht, filmische tone mapping, kleurcorrectie, een vignet en kleurranden
@@ -3594,6 +3694,8 @@ Themes=Thema's
 ;Themes
 ThereIsAFileAlready=Er bestaat al een bestand {}.
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=Deze parameters gebruiken de formule "{}", die hier niet geïnstalleerd is.\n\nFormules zijn bestanden die eindigen op .m3f. Zoek {}.m3f (die wordt vaak samen met de parameters gedeeld, bij de bestanden van een groep of in een formulepakket) en zet die in een van de formulemappen:\n{}\n\nOpen of plak de parameters daarna opnieuw.
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=Wat u de assistent kunt vragen
 ;Things to ask the assistant
 ThisComputer=Deze computer:
@@ -3610,6 +3712,8 @@ ThisRenderKeepsNoImage=Deze rendering bewaart geen afbeelding.
 ;This render keeps no image.
 ThisRenderKeptNoParameters=Deze rendering heeft geen parameters bewaard.
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=Deze scène mengt twee soorten formules in één formuleketen:\n- dIFS-formules ({}) bouwen een vorm direct uit afstanden,\n- de andere ({}) zijn fractals die stap voor stap geïtereerd worden (escape time).\nEén keten kan niet beide soorten tegelijk berekenen.\n\nOm beide te tonen voegt u ze samen met een DE-combinatie: het eerste deel berekent de ene soort, het tweede deel de andere, en de twee objecten worden samengevoegd (min: beide objecten, max: alleen waar ze overlappen, smooth: met een zachte naad). Dat is het tabblad "DEcombinate" bovenaan het formulevenster.
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=Deze sessie (live)
 ;This session (live)
 ThreadPriority=Thread-\nprioriteit
@@ -3652,6 +3756,8 @@ Tiling=Tegelindeling:
 ;Tiling:
 TimeNeeded=Benodigde tijd:
 ;Time needed:
+Title=Titel:
+;Title:
 ToCalculateABetterHardShadow=Voor een betere harde schaduw, alleen als 1 HS is geselecteerd!
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=Naar klembord
@@ -3706,6 +3812,8 @@ Turned=Gedraaid:
 ;Turned:
 Turntable=Draaitafel
 ;Turntable
+TweakOfParametersBy=Bewerking van parameters van {}
+;Tweak of parameters by {}
 Type=Type:
 ;Type:
 Type2=Type
@@ -3844,6 +3952,8 @@ WarningMustRecalculateTheWholeImage=Waarschuwing: om dit ongedaan te maken moet 
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=Waarschuwingen en fouten
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} is als map {} naar de map met maps gekopieerd: {}
+;{} was copied into the maps folder as map {}: {}
 Water=Water:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3876,6 +3986,10 @@ White=wit
 ;white
 WhiteOutside=Wit buiten
 ;White outside
+WhoseParametersYouStartedFromGroups=Van wie de parameters zijn waarmee u begon: groepen vragen om de artiest te vermelden (bijvoorbeeld: Bewerking van "Pipe Organ" van Marije)
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=Waarom de berekening niet kan starten
+;Why the calculation cannot start
 Width=Breedte:
 ;Width:
 Windows=Vensters

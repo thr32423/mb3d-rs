@@ -63,6 +63,8 @@ AOCalcTime=AO 計算時間：
 ;AO calc time:
 ASineIntegerPowerBulbWith=帶有前置摺疊的正弦整數冪球莖，與神奇盒子中的相同。
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphericalPanoramaGetsTheEXIF=球面全景圖除了 Photo Sphere 標籤外，還會寫入 360 相機（RICOH THETA S）的 EXIF 相機資訊，讓 Facebook 將它顯示為 360 相片。程式儲存的每張 360 圖片都會這樣處理。
+;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=停止或中斷的渲染會保留已計算的部分；對相同參數執行「計算 3D」即可繼續。
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ATransparentBackgroundNeedsPNGFrames=透明背景需要 PNG 影格：請選擇 PNG 作為輸出格式。
@@ -195,6 +197,8 @@ Amount=強度：
 ;Amount:
 AnAIAssistantOnThisComputer=這台電腦上的 AI 助理可以使用 Mandelbulb 3D：用一般的話或語音請它描述、修改及渲染您的圖片、製作變化版本，或渲染您上次處理的內容。Mandelbulb 3D 保持離線：由助理的應用程式在這台電腦上啟動它。
 ;An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
+AnInterpolationHybridTheInterpolateTab=插值混合（公式視窗的「插值」分頁）會將兩個碎形公式逐步融合；dIFS 公式無法融合。請對它們使用「交替」或「DEcombinate」。
+;An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
 AnUnfinishedCalculationOfThisPicture=已保留這張圖片未完成的計算（{}）。\n\n要繼續嗎？選「否」會從頭重新計算。
 ;An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 AnUnfinishedMonteCarloRenderOf=已保留這些參數未完成的蒙地卡羅渲染（{}）。\n\n要繼續嗎？選「否」會從頭重新渲染。
@@ -265,6 +269,8 @@ Around=繞：
 ;Around:
 AroundTheMiddleAnObject=環繞中心（物體）
 ;Around the middle (an object)
+Artist=作者：
+;Artist:
 AsFullBackgroundSphere=作為完整背景球面：
 ;As full background sphere:
 Aspect=長寬比：
@@ -397,6 +403,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2 設定 (*.btrace2)
 ;BulbTracer2 settings (*.btrace2)
 By=來自
 ;By
+By2={}，作者：{}
+;{} by {}
 ByOfDone={}（{}，由 {} 執行）：{} / {} {} 已完成
 ;{} ({}, by {}): {} of {} {} done
 CPU=CPU
@@ -415,6 +423,8 @@ Calculate3DAndTheBatchWindow=計算 3D 與批次視窗交由 swarm 處理，分�
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=快速計算 8x8 方塊狀影像，不含正確光照
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirstOrUntick=請先計算一張圖片，或取消勾選該圖片。
+;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=自動計算環境陰影
 ;Calculate A.S. automatically
 CalculateColors=計算顏色
@@ -551,6 +561,8 @@ ClearTheWholeList=清除整個清單
 ;Clear the whole list
 ClickAButtonToChangeA=（點擊按鈕以變更目錄）
 ;(Click a button to change a directory)
+ClickAColourEsc=按一下取色（Esc）
+;Click a color (Esc)
 ClickAColumnHeaderToSort=按一下欄標題即可排序。
 ;Click a column header to sort.
 ClickALanguageToSwitchThe=按一下某個語言，即可將視窗切換為該語言
@@ -575,6 +587,8 @@ ClickOnTheButtonAndAfterwards3=點擊此按鈕，然後點擊影像中的物件�
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=點擊影像中要置中的物件。\n相機方向不會改變，請使用旋轉\n選項繞中點旋轉。
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickThenClickAnyPixelIn=先按一下這裡，再按一下程式視窗中的任一像素（圖片、貼圖、調色盤或其他視窗）來取得它的顏色。按 Esc 停止。
+;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=點擊以在「動態霧依迭代」與「顏色依迭代」之間切換
 ;Click to change between Dynfog on its and Color on its
 ClickToChooseTheOutputFile=按一下以選擇輸出檔案
@@ -659,6 +673,10 @@ ColorStart=色彩起點
 ;Color start
 Coloring=著色
 ;Coloring
+ColorsFromFile=從檔案取顏色...
+;Colors from file...
+ColorsTakenFrom=顏色取自 {}
+;Colors taken from {}
 Colour0Grey1AsIt=顏色：0 灰色，1 原樣，2 兩倍鮮豔
 ;Colour: 0 grey, 1 as it is, 2 twice as colourful
 ColourFringes=色差
@@ -723,6 +741,8 @@ CopyParamsToClipboard=複製參數至剪貼簿
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=複製指令，以便貼到終端機中
 ;Copy the command, to paste it into a terminal
+CopyThePostText=複製貼文文字
+;Copy the post text
 CopyTheSelectedLineOrAll=複製選取的那一行；未選取時複製所有顯示的行
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=複製數值
@@ -781,6 +801,8 @@ CreateLanguageFile=建立語言檔案
 ;Create language file
 CreateMeshes=建立網格
 ;Create Meshes
+Credit=致謝：
+;Credit:
 CrossEyedPreview=交叉眼預覽
 ;Cross-eyed preview
 Ctrl1ToCtrl7In=Ctrl+1 到 Ctrl+7 依清單順序，Ctrl+W 關閉
@@ -1169,12 +1191,18 @@ ExtractingAmbientInformationFromTheOriginal=正在從原始 M3I 檔案擷取環�
 ;Extracting ambient information from the original M3I file, please wait:
 ExtremeTesting={ 極值檢測 }
 ;{ Extreme testing }
+Eyedropper=滴管
+;Eyedropper
 FFmpegCommand=FFmpeg 指令
 ;FFmpeg command
 FNr=公式編號：
 ;F.nr:
 FOVy=FOVy：
 ;FOVy:
+FacebookSize2048Px360Photos=Facebook 尺寸（2048 px，360 相片 6000 px）
+;Facebook size (2048 px, 360 photos 6000 px)
+FacebookTurnsParametersPastedIntoA=Facebook 會把貼到貼文裡的參數變成連結，所以社團要求以文字檔提供參數：將這個檔案和圖片一起發佈，或放進社團的檔案中。
+;Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
 FailedToImportFractalParametersAll=匯入分形參數失敗。其他所有設定均已匯入。
 ;Failed to import fractal parameters. All other settings where imported?
 FarDepthFog=遠處深度霧
@@ -1227,6 +1255,8 @@ FinishedTracingObject=物件追蹤完成。
 ;Finished tracing object.
 Finishing=修飾
 ;Finishing
+First=第一
+;first
 First4RaysNoisy=前 4 條光線（有雜訊）
 ;first 4 rays (noisy)
 FirstCalculationOfThisFormulaCombination=首次計算此公式組合：正在編譯顯示卡的著色器（10-30 秒，僅需一次，驅動程式會保留）。期間由 CPU 計算，著色器就緒後顯示卡便會加入。
@@ -1263,6 +1293,8 @@ FogOffset=霧偏移
 ;Fog offset
 Folder=資料夾
 ;Folder
+Folder2=資料夾：
+;Folder:
 FolderOfTheLanguageFiles=語言檔案的資料夾：
 ;Folder of the language files:
 FollowTheNewest=跟隨最新
@@ -1289,12 +1321,16 @@ FormulaName=公式名稱：
 ;Formula name:
 FormulaNotFound=找不到公式「{}」。
 ;Formula '{}' not found.
+FormulaNotInstalled=公式未安裝
+;Formula not installed
 FormulaNrWhereThe2ndPart=混合第 2 部分開始的公式編號
 ;Formula nr where the 2nd part of the hybrid starts
 FormulaValues=公式值：
 ;Formula values:
 Formulas=公式
 ;Formulas
+Formulas2=公式：{}
+;Formulas: {}
 FormulasColon=公式:
 ;Formulas:
 Forward=順向
@@ -1329,6 +1365,8 @@ FromTheCameraAllAroundA=從相機向四周（從內部看的場景）
 ;From the camera, all around (a scene seen from inside)
 FullM3IImageFiles=完整 M3I 影像檔：
 ;Full M3I image files:
+FullSize=原尺寸
+;Full size
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;function ArcCos(const X : Double) : Double;
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -1527,6 +1565,10 @@ HeightMapGeneratorPreview=高度圖產生器預覽
 ;HeightMap Generator Preview
 HelpfulIfYouWantToRedo=例如想重做一次不滿意的繪製時很有用。
 ;Helpful if you want to redo an unwanted drawing for example.
+HereTheDIFSFormulasAndThe=這裡 dIFS 公式和其他公式在插槽中交錯排列：請先將 dIFS 公式移到其他公式之後（在公式視窗的公式分頁上按右鍵可移動及複製公式），然後使用「DEcombinate」。
+;Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+Hex=十六進位：
+;Hex:
 HiQual=高品質
 ;HiQual
 HiQual1=HiQual 1
@@ -1719,6 +1761,8 @@ InsideColor=內部顏色
 ;Inside color
 InsideRender=內部渲染
 ;Inside render
+InstalledFormulasWithASimilarName=已安裝且名稱相似的公式：{}
+;Installed formulas with a similar name: {}
 Int=強度：
 ;Int.:
 Int64=Int64
@@ -2031,6 +2075,8 @@ MMBWheelZoom=中鍵／滾輪：縮放
 ;MMB/Wheel: zoom
 MRelObj=貼圖相對物件
 ;M.rel.obj.
+MadeWithMb3dRsMandelbulb3DFor=以 mb3d-rs {} 製作（適用於 Windows、Linux 和 macOS 的 Mandelbulb3D）
+;Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
 MainCalcTime=主計算時間：
 ;Main calc time:
 MainParas=主參數
@@ -2047,6 +2093,8 @@ MakeSureThatNoLightWill=確保在非混合模式下不會減去任何光線
 ;Make sure that no light will be subtracted in non-blend mode
 MakeSureThatTheCalcAutomatic=若希望納入硬陰影與環境陰影，請確認已設定\n其「自動計算」選項。
 ;Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
+MakeTheFiles=產生檔案
+;Make the files
 MakeTheLightOfThatPicture=把那張圖片的光線調暖一些，然後重新渲染。
 ;Make the light of that picture warmer and render it again.
 MakeTheTopBottomGradientOf=使環境與背景色彩的上下漸層\n相對於物件的座標系。\n在動畫中使用，將燈光固定於場景。
@@ -2065,6 +2113,8 @@ MapNumber2=貼圖編號：
 ;Map Number:
 MapNumberColon=貼圖編號：
 ;Map number:
+MapNumberRightClickToChoose=貼圖編號。按右鍵選擇一張圖片：任何名稱、任何資料夾（它會加上編號複製到貼圖資料夾，讓參數下次以及在 MB3D 中都找得到它）
+;Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
 MapOnOutputVector=貼圖於輸出向量
 ;Map on output vector
 MapSequences=貼圖序列
@@ -2267,6 +2317,8 @@ N360Orbit=360° 環繞
 ;360° orbit
 N360Panorama=360 全景
 ;360 Panorama
+N360PhotosTheCameraTagFacebook=360 相片：Facebook 會辨識的相機標籤
+;360 photos: the camera tag Facebook looks for
 N360VR=360° VR
 ;360° VR
 N3DAnalyticFormula=3D 解析公式
@@ -2387,6 +2439,8 @@ NoiseFilterStrength=雜訊濾波：強度 {}
 ;Noise filter: strength {}
 None=無
 ;none
+NoneOfTheFormulaSlotsHolds=沒有任何公式插槽含有能產生碎形的公式：每個插槽不是空的、迭代次數為 0，就是只含有改變空間的公式（{}）。\n\n請將一個碎形公式（例如 Integer Power 或 Amazing Box）放入插槽，並設定至少 1 次迭代。
+;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=一般
 ;Normal
 NormalStatusForThisFormula=將此公式設為一般狀態
@@ -2535,6 +2589,8 @@ OpenTextParameters=開啟文字參數
 ;Open text parameters
 OpenTheAnimationMaker=開啟動畫製作器
 ;Open the animation maker
+OpenTheFolder=開啟資料夾
+;Open the folder
 OpenTheFolderOfTheFile=開啟檔案所在的資料夾
 ;Open the folder of the file
 OpenTheFolderOfTheLog=開啟記錄檔所在的資料夾（每天一個，保留 30 天）
@@ -2633,6 +2689,12 @@ Parameter=參數
 ;Parameter
 Parameters=參數
 ;Parameters
+ParametersAndLights=參數與光照
+;Parameters and lights
+ParametersAsATextFileTxt=參數文字檔（.txt）
+;Parameters as a text file (.txt)
+ParametersAttached=參數：{}（附件）
+;Parameters: {} (attached)
 ParametersCopiedToTheClipboard=參數已複製到剪貼簿。
 ;Parameters copied to the clipboard.
 ParametersLoadedPressCalculate3DTo=參數已載入，請按「計算 3D」開始渲染。
@@ -2659,6 +2721,8 @@ PercentOfLocalDE=局部 DE 的百分比
 ;Percent of local DE
 Picture=張圖片
 ;picture
+PictureJPEG=圖片（JPEG）
+;Picture (JPEG)
 Pictures=張圖片
 ;pictures
 PicturesAndFilesTheAssistantMakes=助理產生的圖片與檔案會存到 {}；不會刪除任何內容。大於 4K 的圖片只有在您同意後才會產生，計算會在 10 分鐘後停止。助理所做的一切都會寫入記錄。
@@ -2703,6 +2767,8 @@ PostProcessingColon=後製處理:
 ;Post processing:
 PostProcessingLower=後製處理
 ;post processing
+PostText=貼文文字：
+;Post text:
 Postprocess=後製處理
 ;Postprocess
 PowerRaiseBaseToAnyPower={ Power：將底數提升至任意次方。
@@ -2829,6 +2895,8 @@ RecalculateASelection=\s重新計算選取範圍
 ;\sRecalculate a Selection
 RecalculatingTheSelection=正在重新計算選取範圍
 ;recalculating the selection
+RecentColours=最近的顏色：
+;Recent colors:
 RecordedSKeyframesOfTheFlight=已記錄飛行的 {} 個關鍵影格
 ;Recorded {} keyframes of the flight
 RecordsAFlightWhileTheButton=錄製飛行：按鈕按下期間，導航器的每個新視角（每秒最多兩次）都會成為動畫的下一個關鍵影格
@@ -3043,6 +3111,8 @@ SaveAsImageAtTheLocation=儲存為影像，存放於您指定的位置
 ;Save as image at the location you specify
 SaveBtrace2=儲存 btrace2...
 ;Save btrace2...
+SaveColors=儲存顏色...
+;Save colors...
 SaveCompleteM3I=儲存完整的 M3I
 ;Save complete M3I
 SaveExit=儲存並離開
@@ -3099,6 +3169,8 @@ SavedOpenEXRFloatingPointColoursAnd=已儲存 {}（OpenEXR，浮點色彩與圖�
 ;Saved {} (OpenEXR, floating point colours and layers)
 SavedTransparentBackground=已儲存 {}（透明背景）
 ;Saved {} (transparent background)
+SavesTheLightingWithTheseColors=將帶有這些顏色的光照儲存為光照檔（.m3l，MB3D 也能用）；「從檔案取顏色」可以從中取回這些顏色。
+;Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
 Saving=儲存：
 ;Saving:
 SavingSucceeded=儲存成功
@@ -3135,6 +3207,8 @@ SecantSearchForTheSurface=以正割法搜尋表面
 ;Secant search for the surface
 SecantSearchmode=正割搜尋模式：
 ;Secant searchmode:
+Second=第二
+;second
 SecondFocusPointIfDifferentFrom=第二個焦點，若與第一個不同，\n會得到一條焦線而非單一焦點。\n（物理上不太真實，但很實用）\s
 ;Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 SeeAlsoTheMapColoringOptions=另請參閱主視窗「著色」分頁中的貼圖著色選項。
@@ -3177,6 +3251,8 @@ SessionsAndCrashes=工作階段與當機
 ;Sessions and crashes
 Set=設定
 ;Set
+SetItUpNowTheFormulas=現在設定嗎？公式留在原本的插槽：第一部分使用{}，第二部分使用{}，以 min 結合（兩個物件都顯示）。
+;Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
 SetLightfuncToCosine=將光照函數設為 cosine
 ;Set lightfunc to cosine
 SetTheMapsOrientationRelativeTo=將貼圖方向設為相對於物件。\n在動畫中使用，將燈光固定於場景。
@@ -3185,6 +3261,8 @@ SetTheVisualThemeOfThe=設定應用程式的視覺主題
 ;Set the visual theme of the application
 SetTo0=設為 0
 ;set to 0
+SetUpDECombination=設定 DE 組合
+;Set up DE combination
 SetsAutomaticallyTheCorrespondendingLightFunctio=計算陰影時，自動將對應的光照函數\n設為 cosine。\ncosine 與 quadratic cosine 函數與陰影搭配的效果良好。
 ;Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 SettingTheVisualTheme=設定視覺主題
@@ -3193,12 +3271,18 @@ ShadersCompiling=正在編譯著色器
 ;shaders compiling
 ShadowsAndAO=陰影與 AO
 ;shadows and AO
+Share=分享
+;Share
 ShareRenderingBetweenYourComputersThrough=透過共用資料夾在您的多台電腦之間分攤渲染工作
 ;Share rendering between your computers through a shared folder
+ShareThePictureItsParametersAs=分享：圖片、參數文字檔和貼文文字，可直接發到社團
+;Share: the picture, its parameters as a text file and the text of a post, ready for a group
 ShareThisComputerRenderTheJobs=共享這台電腦：渲染資料夾中的工作，並把我的工作交給 swarm
 ;Share this computer: render the jobs of the folder, and give mine to the swarm
 SharedFolder=共享資料夾：
 ;Shared folder:
+SharedInThePostTextIs=已儲存到資料夾「{}」；貼文文字已複製到剪貼簿。
+;Saved in the folder "{}"; the post text is on the clipboard.
 SharingButNoOtherComputerIs=已共享，但 swarm 中尚無其他電腦：渲染只在這台電腦上執行
 ;Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 SharingStopped=已停止共享：{}
@@ -3265,6 +3349,10 @@ Sliding=平移
 ;Sliding
 SlidingWalkingStep=平移+行走步長：
 ;Sliding+Walking step:
+Slot=插槽 {}
+;slot {}
+SlotsTo=插槽 {} 到 {}
+;slots {} to {}
 SmoothDEcomb=平滑 DEcomb：
 ;Smooth DEcomb:
 SmoothImageOnLoad=載入時平滑影像
@@ -3431,6 +3519,10 @@ SwitchBackToTheDefaultTheme=切換回預設主題
 ;Switch back to the default theme
 TakeTheEntryOutOfThe=從歷程記錄中移除此項目（已計算圖片的參數與縮圖會被刪除；其他檔案則留在原處）
 ;Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
+TakesOnlyTheColorsFromThe=只從剪貼簿上的參數（例如從貼文複製的）讀取顏色。
+;Takes only the colors from the parameters on the clipboard (copied from a post, for example).
+TakesOnlyTheColorsTheSurface=只從參數檔（.m3p、.m3i、文字）或光照檔（.m3l）讀取顏色（表面調色盤、其透明度和內部顏色）：光源、碎形和視角保持不變。
+;Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
 TargetMapSlot=目標貼圖插槽
 ;Target Map Slot
 TargetMapSlotUseThisNumber=目標貼圖插槽。在碎形中以此編號作為貼圖使用（例如作為高度圖），即可得到動態貼圖
@@ -3455,6 +3547,8 @@ TheBTracer2CacheFormatIsNot2=不支援 BTracer2 快取格式，網格未儲存�
 ;The BTracer2 cache format is not supported, the mesh was not saved.
 TheBackgroundImageCouldNotBe=無法載入背景影像。
 ;The background image could not be loaded.
+TheBackgroundPictureWasCopiedInto=背景圖片 {} 已複製到貼圖資料夾：{}
+;The background picture {} was copied into the maps folder: {}
 TheBailoutValueForEscapetimeFormulas=逃逸時間公式的逃逸值。\n若 3D 值在迭代過程中超過此值，\n則目前的點不屬於物件。
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=模糊半徑會被限制在此值。\n當某些影像區域的半徑變得非常大時，可加快算圖。
@@ -3471,10 +3565,14 @@ TheCameraLeftTheFractal=相機離開了碎形
 ;the camera left the fractal
 TheChosenValueOverAllFrames=所選數值在動畫所有影格上的變化：上下拖曳關鍵影格的方塊，或點擊它並輸入數值
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
+TheColourAsHexadecimalRGBAs=以十六進位 RGB 表示的顏色，格式為 #RRGGBB（# 可省略；#RGB 也可以）
+;The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
 TheColourOfDeepWaterThe=深水的顏色：水自身的光，也是水下物體隨深度變成的顏色（點擊更改）
 ;The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 TheCommandLineProgramMb3dWas=在本程式所在位置找不到命令列程式 mb3d：請重新安裝本程式。
 ;The command line program mb3d was not found next to this program: install the program again.
+TheDIFSFormulasHereOnlyTransform=這裡的 dIFS 公式（{}）只會變換空間：移動、旋轉、摺疊或重複空間。dIFS 鏈在它們之後還需要一個真正繪製形狀的 dIFS 形狀公式，例如 boxIFS、cylinderIFS 或 HeightMapIFS。
+;The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 TheDefaultNumberingIncludes2Numbers=預設編號包含 2 個數字，分別代表 X 與 Y。\n若選擇此選項，則只用一個數字編號，\n在每一欄中遞增，並接續到下一列。
 ;The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 TheDefaultOutputIsWhiteFor=預設輸出為物體白色、外部區域黑色。\n選擇此選項可反轉顏色。
@@ -3551,6 +3649,8 @@ TheNewestJobSoFarRendered=目前最新的工作：已渲染的部分、進行中
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=參數已與未完成的計算不符：請按「計算 3D」重新計算。
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfTheDECombination=DE 組合的{}部分將 dIFS 公式（{}）和其他公式（{}）混在一起。每個部分只能計算一類：請將 dIFS 公式放在一個部分，其他公式放在另一個部分（公式視窗的「DEcombinate」分頁可設定第二部分從哪裡開始）。
+;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=圖片與其計算不符：請重新計算。
 ;The picture does not match its calculation: calculate it again.
 ThePictureSFinishingAfterAll=在所有其他處理之後對圖片的修飾：曝光、強光周圍的光暈、電影感色調映射、調色、暗角和色邊
@@ -3595,6 +3695,8 @@ Themes=主題
 ;Themes
 ThereIsAFileAlready=檔案 {} 已存在。
 ;There is a file {} already.
+TheseParametersUseTheFormulaWhich=這些參數使用了公式「{}」，但這裡沒有安裝。\n\n公式是副檔名為 .m3f 的檔案。取得 {}.m3f（它通常和參數一起分享，在社團的檔案中或公式包裡），並放入其中一個公式資料夾：\n{}\n\n然後重新開啟或貼上參數。
+;These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
 ThingsToAskTheAssistant=可以詢問助理的事
 ;Things to ask the assistant
 ThisComputer=這台電腦：
@@ -3611,6 +3713,8 @@ ThisRenderKeepsNoImage=此渲染不保留影像。
 ;This render keeps no image.
 ThisRenderKeptNoParameters=此渲染未保留參數。
 ;This render kept no parameters.
+ThisSceneMixesTwoKindsOf=這個場景在一條公式鏈中混用了兩類公式：\n- dIFS 公式（{}）直接根據距離建構形狀，\n- 其他公式（{}）是逐步迭代的碎形（逸出時間）。\n一條鏈無法同時計算這兩類。\n\n若要同時顯示兩者，請用 DE 組合將它們結合：第一部分計算一類，第二部分計算另一類，兩個物件再合併（min：兩個物件都顯示，max：只顯示重疊的地方，smooth：帶有柔和的接縫）。它就是公式視窗頂端的「DEcombinate」分頁。
+;This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ThisSessionLive=此工作階段（即時）
 ;This session (live)
 ThreadPriority=執行緒\n優先權
@@ -3653,6 +3757,8 @@ Tiling=分塊：
 ;Tiling:
 TimeNeeded=所需時間：
 ;Time needed:
+Title=標題：
+;Title:
 ToCalculateABetterHardShadow=計算品質更好的硬陰影，僅在只選取 1 個硬陰影時有效！
 ;To calculate a better hard shadow, only if 1 HS selected!
 ToClipboard=到剪貼簿
@@ -3707,6 +3813,8 @@ Turned=旋轉：
 ;Turned:
 Turntable=轉盤
 ;Turntable
+TweakOfParametersBy=改編自 {} 的參數
+;Tweak of parameters by {}
 Type=類型：
 ;Type:
 Type2=類型
@@ -3845,6 +3953,8 @@ WarningMustRecalculateTheWholeImage=警告：若要復原，必須重新計算�
 ;Warning: Must recalculate the whole image to undo it!
 WarningsAndErrors=警告與錯誤
 ;Warnings and errors
+WasCopiedIntoTheMapsFolder={} 已作為貼圖 {} 複製到貼圖資料夾：{}
+;{} was copied into the maps folder as map {}: {}
 Water=水：
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)
@@ -3877,6 +3987,10 @@ White=白色
 ;white
 WhiteOutside=外部為白色
 ;White outside
+WhoseParametersYouStartedFromGroups=你是以誰的參數為基礎創作的：社團要求註明原作者（例如：Tweak of "Pipe Organ" by Marije）
+;Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+WhyTheCalculationCannotStart=無法開始計算的原因
+;Why the calculation cannot start
 Width=寬度：
 ;Width:
 Windows=視窗

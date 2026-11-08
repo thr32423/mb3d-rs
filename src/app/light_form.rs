@@ -1772,6 +1772,25 @@ fn make_depth_col_list(ui: &mut Ui) {
     }
 }
 
+/// The map number of a picture chosen for a map ([`crate::maps::import_picture`]),
+/// with a message when it was copied into the maps folder; None (and the
+/// reason as a message) when it cannot be a map.
+pub fn choose_map(app: &Mb3d, ui: &mut Ui, p: &std::path::Path) -> Option<i32> {
+    match crate::maps::import_picture(p, &app.ini.dir(super::ini::DIR_MAPS)) {
+        Ok(m) => {
+            if m.copied {
+                let name = p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+                app.message(ui, &trf("@MB:WasCopiedIntoTheMapsFolder", &[&name, &m.nr, &m.file.display()]));
+            }
+            Some(m.nr)
+        }
+        Err(e) => {
+            app.message(ui, &e);
+            None
+        }
+    }
+}
+
 /// `GetLightParaFile`: a .m3l file (TLightingParas9).
 fn load_light_file(app: &mut Mb3d, ui: &mut Ui, p: &std::path::Path) -> bool {
     let Ok(d) = std::fs::read(p) else {
@@ -1837,10 +1856,23 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
         ("bgpic", DialogResult::File(r)) => {
             match r {
                 Some(p) => {
-                    if let Some(d) = p.parent() {
-                        crate::maps::add_map_dir(d.to_path_buf());
-                    }
-                    app.scene.lighting.bg_image = p.file_name().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+                    // a picture from outside the map folders goes into the
+                    // maps folder, so the scene finds it next time too
+                    app.scene.lighting.bg_image = match crate::maps::import_background(p, &app.ini.dir(super::ini::DIR_MAPS)) {
+                        Ok((name, copied)) => {
+                            if copied {
+                                app.message(ui, &trf("@MB:TheBackgroundPictureWasCopiedInto", &[&name, &app.ini.dir(super::ini::DIR_MAPS).display()]));
+                            }
+                            name
+                        }
+                        Err(e) => {
+                            app.message(ui, &e);
+                            if let Some(d) = p.parent() {
+                                crate::maps::add_map_dir(d.to_path_buf());
+                            }
+                            p.file_name().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default()
+                        }
+                    };
                     if crate::maps::by_name(&app.scene.lighting.bg_image).is_none() {
                         app.message(ui, &tr("@MB:TheBackgroundImageCouldNotBe"));
                         app.scene.lighting.bg_image.clear();
@@ -1860,13 +1892,12 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
         }
         (w, DialogResult::File(Some(p))) if w.starts_with("map:") => {
             let edit = &w[4..];
-            let stem = p.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
-            let num: String = stem.chars().skip_while(|c| !c.is_ascii_digit()).take_while(|c| c.is_ascii_digit()).collect();
-            if !num.is_empty() {
-                if let Some(d) = p.parent() {
-                    crate::maps::add_map_dir(d.to_path_buf());
-                }
-                ui.set_text(F, edit, &num.trim_start_matches('0').to_string());
+            // any picture: parameters refer to maps by number, so one whose
+            // name gives none (or another file's) is copied into the maps
+            // folder with a number (MB3D took the number of the name only,
+            // and nothing happened for a picture without one)
+            if let Some(nr) = choose_map(app, ui, p) {
+                ui.set_text(F, edit, &nr.to_string());
                 let h = if edit == "Edit2" { "SpinEdit1Change" } else { "SpinEdit2Change" };
                 ui.post(F, edit, h, Ev::Change);
             }

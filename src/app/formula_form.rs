@@ -416,6 +416,8 @@ pub fn tab_control1_change(app: &mut Mb3d, ui: &mut Ui) {
             ui.set_text(F, &e, &fts(opts[i].1));
             ui.cm(F, &e).font = None;
             ui.set_caption(F, &l, &opts[i].0);
+            // a map number: a right click chooses the picture
+            ui.cm(F, &e).hint = if is_map_option(&opts[i].0) { tr("@MB:MapNumberRightClickToChoose") } else { String::new() };
         }
     }
     ui.set_visible(F, "Panel3", st.hybrid == 2);
@@ -426,6 +428,13 @@ pub fn tab_control1_change(app: &mut Mb3d, ui: &mut Ui) {
     ui.set_visible(F, "Button3", false);
     radio_group1_click(app, ui);
     app.formula.user_change = true;
+}
+
+/// Is a formula option the number of a map (`Map nr`, `Map number` of the
+/// height map formulas)?
+pub(crate) fn is_map_option(name: &str) -> bool {
+    let l = name.trim().to_ascii_lowercase();
+    l == "map" || l.starts_with("map nr") || l.starts_with("map number") || l.starts_with("mapnr")
 }
 
 /// `Check4DandInfo`: the 4D rotation panel for 4D formulas, the
@@ -793,6 +802,23 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                         let f = crate::vcl::font::Font { color: 0xFF80_0000, custom_color: true, ..Default::default() };
                         ui.cm(F, &e.sender).font = Some(f);
                     }
+                }
+            }
+        }
+        "EditParamMouseDown" => {
+            if let Ev::MouseDown { button: crate::vcl::MouseButton::Right, .. } = e.ev {
+                let i = e.sender.trim_start_matches("Edit").parse::<usize>().unwrap_or(1).saturating_sub(1);
+                let t = tab(ui);
+                let map = app.formula.slots[t].as_ref().and_then(|f| f.options().get(i).map(|o| o.0.clone())).is_some_and(|n| is_map_option(&n));
+                if map {
+                    let o = crate::vcl::dialogs::FileOptions {
+                        title: tr("@MB:ChooseAMap"),
+                        filter: format!("{}|*.png;*.jpg;*.jpeg;*.bmp;*.hdr|{}|*.*", tr("@MB:Images"), tr("@MB:AllFilesParen")),
+                        initial_dir: Some(app.ini.dir(super::ini::DIR_MAPS)),
+                        preview: false,
+                        ..Default::default()
+                    };
+                    ui.open_dialog(&format!("formula:map:{}", e.sender), &o);
                 }
             }
         }
@@ -1198,6 +1224,13 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
 }
 
 pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
+    if let (Some(edit), DialogResult::File(Some(p))) = (what.strip_prefix("map:"), r) {
+        if let Some(nr) = super::light_form::choose_map(app, ui, p) {
+            ui.set_text(F, edit, &nr.to_string());
+            ui.post(F, edit, "Edit1Change", Ev::Change);
+        }
+        return;
+    }
     match (what, r) {
         ("loadm3f", DialogResult::File(Some(p))) => {
             let dir = app.ini.dir(super::ini::DIR_FORMULAS);
@@ -1262,6 +1295,16 @@ mod tests {
         assert!(excluded_formula("_IFS-Tess", &files));
         assert!(!excluded_formula("_FlipXYc", &files));
         assert!(!excluded_formula("TrafasselQuat", &std::collections::HashSet::new()));
+    }
+
+    #[test]
+    fn map_options_are_recognised() {
+        for n in ["Map nr", "Map number", "map nr (1..)", "MapNr"] {
+            assert!(super::is_map_option(n), "{n}");
+        }
+        for n in ["Map channel (0..2)", "Map height", "Map scale", "Log2MapPower (0 to 7)"] {
+            assert!(!super::is_map_option(n), "{n}");
+        }
     }
 
     #[test]

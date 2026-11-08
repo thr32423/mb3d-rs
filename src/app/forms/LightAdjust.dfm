@@ -1007,7 +1007,7 @@ object LightAdjustForm: TLightAdjustForm
           Top = 5
           Width = 37
           Height = 21
-          Hint = '@MB:MapNumber'
+          Hint = '@MB:MapNumberRightClickToChoose'
           MaxLength = 5
           NumbersOnly = True
           ParentShowHint = False
@@ -1430,6 +1430,7 @@ object LightAdjustForm: TLightAdjustForm
           Top = 4
           Width = 37
           Height = 21
+          Hint = '@MB:MapNumberRightClickToChoose'
           MaxLength = 5
           NumbersOnly = True
           ParentShowHint = False

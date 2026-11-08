@@ -575,6 +575,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object ComboEdit1: TEdit
       Left = 7
@@ -626,6 +627,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit14: TEdit
       Tag = 13
@@ -643,6 +645,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit13: TEdit
       Tag = 12
@@ -660,6 +663,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit12: TEdit
       Tag = 11
@@ -677,6 +681,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit11: TEdit
       Tag = 10
@@ -694,6 +699,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit10: TEdit
       Tag = 9
@@ -711,6 +717,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit9: TEdit
       Tag = 8
@@ -728,6 +735,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit8: TEdit
       Tag = 7
@@ -745,6 +753,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit7: TEdit
       Tag = 6
@@ -762,6 +771,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit6: TEdit
       Tag = 5
@@ -779,6 +789,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit5: TEdit
       Tag = 4
@@ -796,6 +807,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit4: TEdit
       Tag = 3
@@ -813,6 +825,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit3: TEdit
       Tag = 2
@@ -830,6 +843,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit2: TEdit
       Tag = 1
@@ -847,6 +861,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '-1'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object Edit1: TEdit
       Left = 148
@@ -863,6 +878,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '8'
       Visible = False
       OnChange = Edit1Change
+      OnMouseDown = EditParamMouseDown
     end
     object RichEdit1: TRichEdit
       Left = 7

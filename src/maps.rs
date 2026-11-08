@@ -482,6 +482,151 @@ pub fn find_map_file(nr: i32) -> Option<PathBuf> {
     None
 }
 
+/// The map number a file name gives (MB3D's `FindHeightMap`): the digits
+/// it starts with, followed by a non-digit (or nothing but the extension),
+/// as 1..=32000.  `12 brick.png` and `0012.jpg` are map 12, `brick2.png`
+/// has none.
+pub fn number_in_name(name: &str) -> Option<i32> {
+    let stem = std::path::Path::new(name).file_stem()?.to_string_lossy().into_owned();
+    let digits: String = stem.chars().take_while(|c| c.is_ascii_digit()).collect();
+    if digits.is_empty() {
+        return None;
+    }
+    let n: i32 = digits.trim_start_matches('0').parse().unwrap_or(0);
+    (1..=32000).contains(&n).then_some(n)
+}
+
+/// The numbers the map folders hold.
+pub fn used_numbers() -> Vec<i32> {
+    let mut v: Vec<i32> = Vec::new();
+    for d in search_dirs() {
+        let Ok(rd) = std::fs::read_dir(&d) else { continue };
+        for e in rd.flatten() {
+            let p = e.path();
+            if !p.extension().is_some_and(|e| EXTS.iter().any(|x| e.eq_ignore_ascii_case(x))) {
+                continue;
+            }
+            if let Some(n) = p.file_name().and_then(|n| number_in_name(&n.to_string_lossy())) {
+                v.push(n);
+            }
+        }
+    }
+    v.sort_unstable();
+    v.dedup();
+    v
+}
+
+/// A picture made a map by [`import_picture`].
+#[derive(Clone, Debug, PartialEq)]
+pub struct Imported {
+    /// the map number the scene refers to it by
+    pub nr: i32,
+    /// the file the number finds
+    pub file: PathBuf,
+    /// it was copied into the maps folder (under this name)
+    pub copied: bool,
+}
+
+/// Is the file at `p` the same picture as the one at `q` (same bytes)?
+fn same_file(p: &std::path::Path, q: &std::path::Path) -> bool {
+    if let (Ok(a), Ok(b)) = (std::fs::canonicalize(p), std::fs::canonicalize(q)) {
+        if a == b {
+            return true;
+        }
+    }
+    match (std::fs::metadata(p), std::fs::metadata(q)) {
+        (Ok(a), Ok(b)) if a.len() == b.len() => std::fs::read(p).ok().is_some_and(|x| std::fs::read(q).ok().is_some_and(|y| x == y)),
+        _ => false,
+    }
+}
+
+/// Makes the picture `p` (any file name, any folder) a map: parameters
+/// refer to maps by number, as in MB3D, so a picture whose name gives no
+/// number, or whose number finds another file, is copied into `maps_dir`
+/// as `<number> <its name>` with the first free number (its own when that
+/// is free).  A picture the map folders hold already (the same bytes under
+/// a number) keeps that number, nothing is copied.  The copy never
+/// replaces a file.  The maps of the number are loaded again.
+pub fn import_picture(p: &std::path::Path, maps_dir: &std::path::Path) -> Result<Imported, String> {
+    if !p.is_file() {
+        return Err(format!("{}: not a file", p.display()));
+    }
+    let name = p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+    let own = number_in_name(&name);
+    // already a map under its own number
+    if let Some(n) = own {
+        if let Some(f) = find_map_file(n) {
+            if same_file(&f, p) {
+                return Ok(Imported { nr: n, file: f, copied: false });
+            }
+        }
+    }
+    // the same picture in the map folders under some number
+    for d in search_dirs() {
+        let Ok(rd) = std::fs::read_dir(&d) else { continue };
+        let mut names: Vec<PathBuf> = rd.flatten().map(|e| e.path()).collect();
+        names.sort();
+        for q in names {
+            let Some(n) = q.file_name().and_then(|f| number_in_name(&f.to_string_lossy())) else { continue };
+            if find_map_file(n).is_some_and(|f| f == q) && same_file(&q, p) {
+                return Ok(Imported { nr: n, file: q, copied: false });
+            }
+        }
+    }
+    let used = used_numbers();
+    let nr = match own {
+        Some(n) if !used.contains(&n) => n,
+        _ => (1..=32000).find(|n| *n > used.last().copied().unwrap_or(0)).or_else(|| (1..=32000).find(|n| !used.contains(n))).ok_or("all map numbers (1 to 32000) are used")?,
+    };
+    std::fs::create_dir_all(maps_dir).map_err(|e| format!("{}: {e}", maps_dir.display()))?;
+    let target_name = if own == Some(nr) { name.clone() } else { format!("{nr} {name}") };
+    let target = maps_dir.join(&target_name);
+    if target.exists() {
+        return Err(format!("{}: exists already", target.display()));
+    }
+    std::fs::copy(p, &target).map_err(|e| format!("{} to {}: {e}", p.display(), target.display()))?;
+    if !search_dirs().iter().any(|d| std::fs::canonicalize(d).ok() == std::fs::canonicalize(maps_dir).ok()) {
+        add_map_dir(maps_dir.to_path_buf());
+    }
+    forget(nr);
+    Ok(Imported { nr, file: target, copied: true })
+}
+
+/// A background picture (referred to by its file name) from any folder:
+/// a picture outside the map folders is copied into `maps_dir` (under its
+/// name, or `<n> <name>` when that name is taken by another picture), so
+/// the scene finds it next time and on another computer with the maps.
+/// Returns the name to keep in the scene and whether it was copied.
+pub fn import_background(p: &std::path::Path, maps_dir: &std::path::Path) -> Result<(String, bool), String> {
+    let name = p.file_name().map(|n| n.to_string_lossy().into_owned()).ok_or("no file name")?;
+    if let Some(q) = search_dirs().into_iter().map(|d| d.join(&name)).find(|q| q.is_file()) {
+        if same_file(&q, p) {
+            return Ok((name, false));
+        }
+    }
+    std::fs::create_dir_all(maps_dir).map_err(|e| format!("{}: {e}", maps_dir.display()))?;
+    let mut target_name = name.clone();
+    let mut k = 2;
+    while search_dirs().iter().any(|d| d.join(&target_name).exists()) || maps_dir.join(&target_name).exists() {
+        target_name = format!("{k} {name}");
+        k += 1;
+    }
+    let target = maps_dir.join(&target_name);
+    std::fs::copy(p, &target).map_err(|e| format!("{} to {}: {e}", p.display(), target.display()))?;
+    if !search_dirs().iter().any(|d| std::fs::canonicalize(d).ok() == std::fs::canonicalize(maps_dir).ok()) {
+        add_map_dir(maps_dir.to_path_buf());
+    }
+    cache().lock().unwrap().remove(&format!("f:{target_name}"));
+    GENERATION.fetch_add(1, std::sync::atomic::Ordering::Release);
+    Ok((target_name, true))
+}
+
+/// Drops map number `nr` from the caches (a new file for it).
+fn forget(nr: i32) {
+    cache().lock().unwrap().remove(&format!("#{nr}"));
+    GENERATION.fetch_add(1, std::sync::atomic::Ordering::Release);
+}
+
 type Cache = Mutex<HashMap<String, Option<Arc<LightMap>>>>;
 
 fn cache() -> &'static Cache {
@@ -686,6 +831,72 @@ pub fn missing() -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_number_comes_from_the_start_of_the_name() {
+        assert_eq!(number_in_name("12 brick.png"), Some(12));
+        assert_eq!(number_in_name("0012.jpg"), Some(12));
+        assert_eq!(number_in_name("7_wood.bmp"), Some(7));
+        assert_eq!(number_in_name("brick2.png"), None);
+        assert_eq!(number_in_name("brick.png"), None);
+        assert_eq!(number_in_name("0.png"), None);
+        assert_eq!(number_in_name("40000 big.png"), None);
+    }
+
+    /// A folder of its own for a test (the map folders are global: the
+    /// tests' pictures have names no other test uses).
+    fn test_dir(name: &str) -> PathBuf {
+        let d = std::env::temp_dir().join(format!("mb3d-maps-{name}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&d);
+        std::fs::create_dir_all(&d).unwrap();
+        d
+    }
+
+    fn picture(p: &std::path::Path, shade: u8) {
+        std::fs::write(p, crate::png::encode_rgb(4, 4, &[shade; 48])).unwrap();
+    }
+
+    #[test]
+    fn a_picture_of_any_name_becomes_a_numbered_map() {
+        let maps = test_dir("import-maps");
+        let elsewhere = test_dir("import-src");
+        let src = elsewhere.join("Brick wall (rough).png");
+        picture(&src, 77);
+        let a = import_picture(&src, &maps).unwrap();
+        assert!(a.copied);
+        assert_eq!(a.file, maps.join(format!("{} Brick wall (rough).png", a.nr)));
+        assert_eq!(find_map_file(a.nr).as_deref(), Some(a.file.as_path()));
+        assert!(by_number(a.nr).is_some());
+        // chosen again: the same number, no second copy
+        let b = import_picture(&src, &maps).unwrap();
+        assert_eq!((b.nr, b.copied), (a.nr, false));
+        // the copy itself chosen: the same number
+        let c = import_picture(&a.file, &maps).unwrap();
+        assert_eq!((c.nr, c.copied), (a.nr, false));
+        // another picture with a name that starts with the taken number
+        let other = elsewhere.join(format!("{} other.png", a.nr));
+        picture(&other, 12);
+        let d = import_picture(&other, &maps).unwrap();
+        assert!(d.copied && d.nr != a.nr);
+        assert!(d.file.file_name().unwrap().to_string_lossy().ends_with(&format!("{} other.png", a.nr)));
+    }
+
+    #[test]
+    fn a_background_from_elsewhere_is_copied_under_its_name() {
+        let maps = test_dir("bg-maps");
+        let elsewhere = test_dir("bg-src");
+        let src = elsewhere.join("sky for import test.png");
+        picture(&src, 200);
+        let (n, copied) = import_background(&src, &maps).unwrap();
+        assert_eq!((n.as_str(), copied), ("sky for import test.png", true));
+        assert!(by_name(&n).is_some());
+        assert_eq!(import_background(&src, &maps).unwrap(), (n.clone(), false));
+        // another picture of that name
+        let src2 = test_dir("bg-src2").join("sky for import test.png");
+        picture(&src2, 10);
+        let (n2, copied2) = import_background(&src2, &maps).unwrap();
+        assert!(copied2 && n2 != n && n2.ends_with("sky for import test.png"));
+    }
 
     #[test]
     fn map_sequence_names() {

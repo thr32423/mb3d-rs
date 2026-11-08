@@ -2064,6 +2064,8 @@ MapNumber2=Map Number:
 ;HeightMapGenFrm.Label1.Caption
 MapNumberColon=Map number:
 ;LightAdjustForm.Label34.Caption
+MapNumberRightClickToChoose=Map number. Right-click to choose a picture: any name, any folder (it is copied into the maps folder with a number, so the parameters find it next time and in MB3D)
+;not used
 MapOnOutputVector=Map on output vector
 ;Mand3DForm.RadioGroup1.Items
 MapSequences=Map Sequences
@@ -3099,7 +3101,7 @@ SavedOpenEXRFloatingPointColoursAnd=Saved {} (OpenEXR, floating point colours an
 SavedTransparentBackground=Saved {} (transparent background)
 ;the program
 Saving=Saving:
-;TilingForm.Label5.Caption
+;TilingForm.Label5.Caption; the program
 SavingSucceeded=Saving succeeded
 ;the program
 Scale=Scale:
@@ -3454,6 +3456,8 @@ TheBTracer2CacheFormatIsNot2=The BTracer2 cache format is not supported, the mes
 ;the program
 TheBackgroundImageCouldNotBe=The background image could not be loaded.
 ;the program
+TheBackgroundPictureWasCopiedInto=The background picture {} was copied into the maps folder: {}
+;not used
 TheBailoutValueForEscapetimeFormulas=The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 ;FormulaGUIForm.RBailoutEdit.Hint
 TheBlurRadiusWillBeLimited=The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
@@ -3844,6 +3848,8 @@ WarningMustRecalculateTheWholeImage=Warning: Must recalculate the whole image to
 ;PostProForm.Label7.Caption
 WarningsAndErrors=Warnings and errors
 ;LogFrm.ComboBox1.Items
+WasCopiedIntoTheMapsFolder={} was copied into the maps folder as map {}: {}
+;not used
 Water=Water:
 ;Mand3DForm.Label92.Caption
 WavefrontOBJObj=Wavefront OBJ (*.obj)

@@ -351,3 +351,42 @@ fn both_parts_of_a_de_combination_use_their_compiled_loops() {
     }
     assert!(near_part2 > 1000 && deep[0] > 100 && deep[1] > 100, "{near_part2} {deep:?}");
 }
+
+/// The Droste effect changes the picture, leaves the G-buffer alone, is
+/// the same from any number of threads, and `off` is the picture without
+/// the key byte for byte; a tile (a part of the picture) gets none.
+#[test]
+fn droste_effect_on_the_whole_picture_only() {
+    let mut a = small("Integer Power");
+    a.width = 120;
+    a.height = 90;
+    let plain = mb3d::render(&a, &|_, _| {}).unwrap();
+    let mut b = a.clone();
+    b.droste = Some(mb3d::droste::Droste::default());
+    let on = mb3d::render(&b, &|_, _| {}).unwrap();
+    assert_eq!(plain.gbuffer, on.gbuffer);
+    assert_ne!(plain.rgb, on.rgb);
+    let mut c = b.clone();
+    c.threads = 3;
+    let on3 = mb3d::render(&c, &|_, _| {}).unwrap();
+    assert_eq!(on.rgb, on3.rgb);
+    let off = b.clone().apply("droste = off").unwrap();
+    assert_eq!(mb3d::render(&off, &|_, _| {}).unwrap().rgb, plain.rgb);
+    // a part of the picture: the effect needs the whole one
+    let mut t = b.clone();
+    t.calc_rect = Some([0, 0, 60, 90]);
+    let mut tp = a.clone();
+    tp.calc_rect = Some([0, 0, 60, 90]);
+    assert_eq!(mb3d::render(&t, &|_, _| {}).unwrap().rgb, mb3d::render(&tp, &|_, _| {}).unwrap().rgb);
+    // the picture before the effect comes with it
+    let p = mb3d::calc::CalcParams::new(&b).unwrap();
+    // (painted in floating point as the finishing is, so it can differ
+    // from the 8 bit painting by rounding)
+    let (rgb, before) = mb3d::render::paint_plain(&b, &p, &on.gbuffer);
+    assert_eq!(rgb, on.rgb);
+    let before = before.unwrap();
+    assert_eq!(before.len(), plain.rgb.len());
+    let worst = before.iter().zip(&plain.rgb).map(|(x, y)| (*x as i32 - *y as i32).abs()).max().unwrap();
+    assert!(worst <= 2, "{worst}");
+    assert_eq!(mb3d::render::paint_plain(&a, &p, &on.gbuffer).1, None);
+}

@@ -133,3 +133,21 @@ fn stereo_animation_writes_both_eyes() {
     assert_eq!(anim.frame_file(1).file_name().unwrap(), "st000002.png");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// The Droste effect's settings blend between keyframes (the phase from 0
+/// to 1 is the endless zoom); a keyframe without the effect takes the
+/// base keyframe's.
+#[test]
+fn droste_phase_blends_between_keyframes() {
+    let mut a = small();
+    let mut b = small();
+    a.droste = Some(mb3d::droste::Droste { phase: 0.0, twist: 1.0, ..Default::default() });
+    b.droste = Some(mb3d::droste::Droste { phase: 1.0, twist: 0.0, ..Default::default() });
+    let m = interpolate_linear(&a, &b, 0.25).droste.unwrap();
+    assert!((m.phase - 0.25).abs() < 1e-6 && (m.twist - 0.75).abs() < 1e-6);
+    b.droste = None;
+    let m = interpolate_linear(&a, &b, 0.5).droste.unwrap();
+    assert_eq!(m, a.droste.unwrap());
+    a.droste = None;
+    assert!(interpolate_linear(&a, &b, 0.5).droste.is_none());
+}

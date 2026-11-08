@@ -831,6 +831,35 @@ możesz sprawdzić sam:
   renderze złożonym z osobnych obrazów kafelków każdy kafelek świeci osobno.
 
   </details>
+* **Efekt Droste**: obraz powtórzony w sobie samym, jak w *Galerii grafik* Eschera, wzdłuż spirali Eschera albo jako kopie współśrodkowe, i nieskończone przybliżanie, gdy animuje się fazę.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="Przykład Dodeca Torus mix tak, jak go obliczono, i z efektem Droste: fraktal zwija się spiralnie w siebie ku środkowi"></a>
+
+  <details><summary>Więcej</summary>
+
+  Okno Post processing, sekcja *Finishing*, przycisk *Efekt Droste...*: okno
+  pokazuje obliczony obraz w pomniejszeniu z efektem, na żywo. Zaznacz
+  *Powtórz obraz w nim samym*, kliknij lub przeciągnij na podglądzie, aby
+  ustawić środek, pokręć kółkiem myszy nad nim, aby zmienić promień
+  zewnętrzny (z Shift wewnętrzny), a *Maluj teraz* maluje go w pełnym
+  rozmiarze. Pierścień między dwoma promieniami to jedyna zachowana część
+  obrazu: powtarza się ku środkowi i na zewnątrz, coraz mniejszy i coraz
+  większy. *Skręt* 1 łączy kopie wzdłuż spirali Eschera, 0 daje kopie
+  współśrodkowe; *przenikanie* miesza sąsiednie kopie tam, gdzie wewnętrzna
+  krawędź pierścienia spotyka zewnętrzną; *faza* przybliża o jeden krok, a
+  obraz w fazie 1 jest tym z fazy 0, więc animacja fazy od 0 do 1 to
+  nieskończone, bezszwowe przybliżanie z jednego obliczonego obrazu.
+  Najlepiej działa z obiektem pośrodku obrazu albo widokiem w głąb otworu;
+  horyzont przecinający pierścień pokazuje krawędzie kopii. Klucze sceny
+  `droste = środek x, środek y, promień wewnętrzny, promień zewnętrzny`
+  (części rozmiaru obrazu, albo `off`), `droste_twist`, `droste_phase`,
+  `droste_blend`; są zapisywane z parametrami i interpolowane między
+  klatkami kluczowymi. Efekt potrzebuje całego obrazu, więc kafelki Big
+  Render i widoki Bulb Tracera go nie dostają; panorama 360 go nie ma.
+  Matematyka pochodzi od Barta de Smita i Hendrika Lenstry (2003), elementy
+  sterujące filtra idą za Joshem Sommersem i Tomem Beddardem.
+
+  </details>
 * **Drobna rzeźba na powierzchni**: szorstka, kamień (grzbiety i pęknięcia)
   albo ziarno, drobniejsza niż szczegół obliczeń, ze zmiennością koloru.
 

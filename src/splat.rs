@@ -210,6 +210,7 @@ pub fn prepare(sc: &Scene, size: i32) -> Scene {
     s.dof = None;
     s.clouds = None;
     s.ground = None;
+    s.droste = None;
     s.slice_2d = 0;
     if let Some(f) = s.finish.as_mut() {
         f.glow = 0.0;

@@ -868,6 +868,35 @@ pontos permitem que você confira mais por conta própria:
   grande feito de imagens separadas em blocos, cada bloco brilha por si.
 
   </details>
+* **O efeito Droste**: a imagem repetida dentro de si mesma, como na *Galeria de gravuras* de Escher, com a espiral de Escher ou como cópias concêntricas, e um zoom sem fim quando a fase é animada.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="O exemplo Dodeca Torus mix tal como calculado, e com o efeito Droste: o fractal enrola-se em espiral dentro de si mesmo em direção ao centro"></a>
+
+  <details><summary>Saiba mais</summary>
+
+  Janela Post processing, secção *Finishing*, botão *Efeito Droste...*: a
+  janela mostra a imagem calculada em tamanho reduzido com o efeito, ao
+  vivo. Marque *Repetir a imagem dentro de si mesma*, clique ou arraste na
+  pré-visualização para fixar o centro, rode a roda do rato sobre ela para o
+  raio exterior (com Shift o interior) e *Pintar agora* pinta-o em tamanho
+  completo. O anel entre os dois raios é a única parte da imagem que fica:
+  repete-se em direção ao centro e para fora, cada vez menor e cada vez
+  maior. Uma *torção* de 1 une as cópias ao longo da espiral de Escher, 0 dá
+  cópias concêntricas; a *fusão* mistura cópias vizinhas onde a borda
+  interior do anel encontra a exterior; a *fase* avança um passo, e a imagem
+  na fase 1 é a da fase 0, pelo que uma animação da fase de 0 a 1 é um zoom
+  sem fim e sem emendas feito de uma única imagem calculada. Resulta melhor
+  com um objeto no meio da imagem ou uma vista para dentro de um buraco; um
+  horizonte a atravessar o anel mostra as bordas das cópias. Chaves de cena
+  `droste = centro x, centro y, raio interior, raio exterior` (frações do
+  tamanho da imagem, ou `off`), `droste_twist`, `droste_phase`,
+  `droste_blend`; são guardadas com os parâmetros e interpoladas entre
+  quadros-chave. O efeito precisa da imagem inteira, por isso os mosaicos de
+  um Big Render e as vistas do Bulb Tracer não o recebem; um panorama 360
+  não o tem. A matemática é de Bart de Smit e Hendrik Lenstra (2003), os
+  controlos do filtro seguem Josh Sommers e Tom Beddard.
+
+  </details>
 * **Um relevo fino na superfície**: áspero, pedra (cristas e rachaduras) ou
   grão, mais fino que o detalhe do cálculo, com uma variação de cor.
 

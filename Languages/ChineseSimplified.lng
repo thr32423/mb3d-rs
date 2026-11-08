@@ -563,6 +563,10 @@ CautionTheProcessingsBelowMustBe=注意：下列处理必须按从上到下的�
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil：>= X 的最小整数，|X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=中心 x:
+;Centre x:
+CentreY=中心 y:
+;Centre y:
 Change=更改
 ;Change
 ChangeParams=更改
@@ -633,6 +637,8 @@ ClickOnTheButtonAndAfterwards3=点击此按钮，然后点击图像中的物体�
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=点击图像中要居中的物体。\n相机方向不会改变，请使用旋转\n选项围绕中点旋转。
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=在预览上点击或拖动以设定中心；在其上滚动鼠标滚轮改变外半径，按住 Shift 则改变内半径。\n\n两半径之间的环向中心和向外不断重复，越来越小，越来越大。扭转 1 使各复制沿埃舍尔螺旋相接，0 得到同心复制。相位缩放一级：从 0 到 1 的动画就是无尽缩放。
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=先点击这里，再点击程序窗口中的任意像素（图像、贴图、调色板或其他窗口）来获取它的颜色。按 Esc 停止。
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=点击在“按迭代的动态雾”和“按迭代着色”之间切换
@@ -855,6 +861,8 @@ Credit=致谢：
 ;Credit:
 CrossEyedPreview=交叉眼预览
 ;Cross-eyed preview
+Crossfade=交叉渐变:
+;Crossfade:
 Ctrl1ToCtrl7In=Ctrl+1 到 Ctrl+7 按列表顺序，Ctrl+W 关闭
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=曲线
@@ -1125,6 +1133,10 @@ DownscaleSpecular=降低高光
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=丢弃三角形数少于最大部分此比例（百分比）的零散部分；0 保留全部
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=德罗斯特效应
+;Droste effect
+DrosteEffect2=德罗斯特效应...
+;Droste effect...
 Ds=Ds：
 ;Ds:
 DunnoDoNothing=不确定，什么都不做
@@ -1805,6 +1817,8 @@ Infos=信息
 ;Infos
 IniDirs=Ini 目录
 ;Ini Dirs
+InnerRadius=内半径:
+;Inner radius:
 Input=输入
 ;Input
 InputTheHeightDivisor=输入高度除数：
@@ -2741,6 +2755,8 @@ OriginalParameterSizeWidthHeight=原始参数尺寸（宽，高）：
 ;Original parameter size (width, height):
 OtherFiles=其他文件
 ;Other files
+OuterRadius=外半径:
+;Outer radius:
 OutputFile=输出文件：
 ;Output file:
 OutputFolder=输出文件夹：
@@ -2837,6 +2853,8 @@ PausingOnNextFrame=将在下一帧暂停...
 ;Pausing on next frame...
 PercentOfLocalDE=局部 DE 的百分比
 ;Percent of local DE
+Phase=相位:
+;Phase:
 Picture=张图像
 ;picture
 PictureJPEG=图像（JPEG）
@@ -3123,6 +3141,8 @@ RendersTheMiddleOfThePicture=仅用主通道在三种步长设置下渲染画面
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=从此处重复
 ;Repeat from here
+RepeatThePictureInItself=在图像中重复图像自身（德罗斯特效应）
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=重新渲染所有关键帧预览图
 ;Rerender all keyframe preview images
 Reset=重置
@@ -3717,6 +3737,8 @@ TheCameraFliesOnIntoThe=相机持续飞入分形内部，缩放随与它的距�
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=相机离开了分形
 ;the camera left the fractal
+TheCentreAsAPartOf=中心，以图像宽度和高度的比例表示；0.5 为正中
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=所选数值在动画所有帧上的变化：上下拖动关键帧的方块，或点击它并输入数值
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=以十六进制 RGB 表示的颜色，格式为 #RRGGBB（# 可省略；#RGB 也可以）
@@ -3817,14 +3839,22 @@ TheNewestJobSoFarRendered=目前最新的任务：已渲染的部分、进行中
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=参数已与未完成的计算不再匹配：请按“计算 3D”重新计算。
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=0 到 1：相邻复制相互渐变所占一级的比例；0 保留硬边
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=DE 组合的{}部分把 dIFS 公式（{}）和其他公式（{}）混在一起。每个部分只能计算一类：请把 dIFS 公式放在一个部分，其他公式放在另一个部分（公式窗口的“DEcombinate”选项卡设置第二部分从哪里开始）。
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=图像与其计算不匹配：请重新计算。
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=如埃舍尔的《版画画廊》那样，图像在自身中不断重复：对整幅图像的最后一道处理，随参数一起保存
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=在所有其他处理之后对图片的修饰：曝光、强光周围的辉光、胶片色调映射、调色、暗角和色边
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=平面的颜色（点击更改）
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=预览是缩小后的已计算图像。"立即绘制"以全尺寸绘制该效应；效应随参数保存，并用于动画帧。
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=半径，以图像短边的比例表示：两半径之间的环是保留下来的图像部分
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=球折叠内球的半径；内部会被放大；0.5 是经典值，0 则关闭
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=旋转围绕中点 (Xmid, Ymid, Zmid) 进行
@@ -3837,6 +3867,8 @@ TheSelectionMustBeBiggerThan=选区的宽度和高度都必须大于 2 像素。
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=选区的宽度和高度都必须大于 2 像素
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=设置恢复为初始值
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=集群的共享文件夹
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=可使用任意幂值的正弦球茎，计算比整数幂慢。\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3899,6 +3931,8 @@ ThreadsForJobs0AllCores=任务线程数（0 = 全部核心）：
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=阈值降至 0：
 ;Threshold to 0:
+TickRepeatThePictureIn=勾选"在图像中重复图像自身"即可在已计算的图像上看到效应。
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..距下次更新
 ;..til next update
 TileCountHorizontal=图块数量，水平：
@@ -3989,10 +4023,14 @@ TurnOnOffTheJuliaMode=打开/关闭 Julia 模式
 ;Turn on/off the julia mode
 Turned=旋转：
 ;Turned:
+TurnsOfTheSpiralPerStep=每一级缩小对应的螺旋圈数：0 为同心复制，1 为埃舍尔螺旋，2 更陡，负值反向
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=转盘
 ;Turntable
 TweakOfParametersBy=改编自 {} 的参数
 ;Tweak of parameters by {}
+TwistTurns=扭转（圈数）:
+;Twist (turns):
 Type=类型：
 ;Type:
 Type2=类型
@@ -4287,6 +4325,8 @@ Zoom=缩放：
 ;Zoom:
 Zoom2=缩放
 ;Zoom
+ZoomsThroughOneShrinkStep=缩放一级：1 与 0 看起来相同。从 0 到 1 做动画即得到无尽缩放
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Z 位置
 ;Zpos
 Zrot=Z 旋转

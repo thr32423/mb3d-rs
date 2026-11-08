@@ -687,6 +687,7 @@ pub fn set_edits_from_header(app: &mut Mb3d, ui: &mut Ui) {
     let sc = app.scene.clone();
     super::experimental_form::show_values(app, ui);
     super::steps_form::show_values(app, ui);
+    super::droste_form::show_values(app, ui);
     // the statistics of the calculation the parameters come from (none
     // known: the labels stay empty, as at MB3D's start)
     let st = sc.stats;

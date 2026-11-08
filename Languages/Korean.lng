@@ -563,6 +563,10 @@ CautionTheProcessingsBelowMustBe=주의:  아래의 처리는 위에서 아래 �
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: X 이상의 가장 작은 정수, |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=중심 x:
+;Centre x:
+CentreY=중심 y:
+;Centre y:
 Change=Julia 모드
 ;Change
 ChangeParams=수식의
@@ -633,6 +637,8 @@ ClickOnTheButtonAndAfterwards3=버튼을 클릭한 다음 이미지의 물체를
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=이미지에서 중심에 놓을 물체를 클릭하십시오.\n카메라 방향은 바뀌지 않습니다. 중심점을 기준으로 회전하려면\n회전 옵션을 사용하십시오.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=미리보기를 클릭하거나 끌어 중심을 정합니다. 그 위에서 마우스 휠을 돌리면 바깥 반지름이, Shift와 함께면 안쪽 반지름이 바뀝니다.\n\n두 반지름 사이의 고리가 중심을 향해, 그리고 바깥으로 점점 작게, 점점 크게 반복됩니다. 비틀림 1은 복제들을 에셔의 나선을 따라 잇고, 0은 동심원 복제를 만듭니다. 위상은 한 단계만큼 확대합니다. 0에서 1로의 애니메이션이 끝없는 줌입니다.
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=이 버튼을 클릭한 다음 프로그램 창(이미지, 맵, 팔레트, 다른 창)의 아무 픽셀이나 클릭하면 그 색을 가져옵니다. Esc로 중지합니다.
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=클릭하여 반복 기준 Dynfog와 반복 기준 색상 사이를 전환합니다
@@ -855,6 +861,8 @@ Credit=출처:
 ;Credit:
 CrossEyedPreview=교차시 미리보기
 ;Cross-eyed preview
+Crossfade=크로스페이드:
+;Crossfade:
 Ctrl1ToCtrl7In=Ctrl+1부터 Ctrl+7까지 목록 순서대로, Ctrl+W로 닫기
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=곡선
@@ -1125,6 +1133,10 @@ DownscaleSpecular=스페큘러 줄이기
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=가장 큰 조각의 삼각형 수 대비 이 비율(퍼센트)보다 작은 떨어진 조각을 버립니다. 0이면 모두 유지
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=드로스테 효과
+;Droste effect
+DrosteEffect2=드로스테 효과...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=모르겠음, 그대로 두기
@@ -1805,6 +1817,8 @@ Infos=정보
 ;Infos
 IniDirs=Ini 폴더
 ;Ini Dirs
+InnerRadius=안쪽 반지름:
+;Inner radius:
 Input=입력
 ;Input
 InputTheHeightDivisor=높이 제수를 입력하십시오:
@@ -2741,6 +2755,8 @@ OriginalParameterSizeWidthHeight=원본 파라미터 크기(너비, 높이):
 ;Original parameter size (width, height):
 OtherFiles=기타 파일
 ;Other files
+OuterRadius=바깥 반지름:
+;Outer radius:
 OutputFile=출력 파일:
 ;Output file:
 OutputFolder=출력 폴더:
@@ -2837,6 +2853,8 @@ PausingOnNextFrame=다음 프레임에서 일시 정지합니다...
 ;Pausing on next frame...
 PercentOfLocalDE=국소 DE의 백분율
 ;Percent of local DE
+Phase=위상:
+;Phase:
 Picture=이미지
 ;picture
 PictureJPEG=이미지(JPEG)
@@ -3123,6 +3141,8 @@ RendersTheMiddleOfThePicture=그림의 중앙을 메인 패스만으로 세 가�
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=여기서부터 반복
 ;Repeat from here
+RepeatThePictureInItself=그림을 그림 안에 반복 (드로스테 효과)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=모든 키프레임 미리보기 이미지 다시 렌더링
 ;Rerender all keyframe preview images
 Reset=초기화
@@ -3717,6 +3737,8 @@ TheCameraFliesOnIntoThe=카메라는 프랙탈 안으로 계속 날아가고, �
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=카메라가 프랙탈을 벗어났습니다
 ;the camera left the fractal
+TheCentreAsAPartOf=그림의 너비와 높이에 대한 비율로 나타낸 중심. 0.5가 가운데
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=애니메이션 모든 프레임에서 고른 값: 키프레임의 사각형을 위아래로 끌거나, 클릭해서 값을 입력합니다
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=16진수 RGB로 나타낸 색상, #RRGGBB 형식(#는 생략 가능, #RGB도 가능)
@@ -3817,14 +3839,22 @@ TheNewestJobSoFarRendered=지금까지의 최신 작업: 렌더링된 부분, �
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=매개변수가 더 이상 완료되지 않은 계산과 일치하지 않습니다. 계산하려면 "3D 계산"을 누르십시오.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=0에서 1: 이웃한 복제가 서로 섞이는 한 단계의 비율. 0이면 경계가 선명하게 남습니다
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=DE 조합의 {} 부분에 dIFS 공식({})과 다른 공식({})이 섞여 있습니다. 각 부분은 한 종류만 계산합니다. dIFS 공식은 한 부분에, 다른 공식은 다른 부분에 넣으십시오(두 번째 부분이 시작되는 위치는 공식 창의 "DEcombinate" 탭에서 정합니다).
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=이미지가 계산 내용과 일치하지 않습니다. 다시 계산하십시오.
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=에셔의 「판화 화랑」처럼 그림을 그 안에 반복합니다. 그림 전체에 대한 마지막 처리이며 매개변수와 함께 저장됩니다
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=다른 모든 패스 다음에 하는 이미지 마무리: 노출, 밝은 빛 주변의 글로우, 필름 톤 매핑, 색 보정, 비네트, 색수차
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=평면의 색 (클릭하여 변경)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=미리보기는 계산된 그림을 축소한 것입니다. 「지금 그리기」가 효과를 원래 크기로 그립니다. 효과는 매개변수와 함께 저장되고 애니메이션 프레임에도 쓰입니다.
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=그림의 짧은 변에 대한 비율로 나타낸 반지름. 두 반지름 사이의 고리가 남는 부분
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=구 접기의 안쪽 구 반지름. 그 안은 부풀려집니다. 0.5가 고전적인 값이고 0은 끕니다
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=회전은 중심점(Xmid, Ymid, Zmid)을 기준으로 수행됩니다
@@ -3837,6 +3867,8 @@ TheSelectionMustBeBiggerThan=선택 영역은 너비와 높이가 2픽셀보다 
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=선택 영역은 너비와 높이가 2픽셀보다 커야 합니다
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=설정을 처음 값으로 되돌립니다
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=스웜의 공유 폴더
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=임의의 거듭제곱 값을 사용할 수 있는 사인 벌브로, 정수 거듭제곱보다 계산이 느립니다.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3899,6 +3931,8 @@ ThreadsForJobs0AllCores=작업용 스레드 수(0 = 모든 코어):
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=임계값을 0으로:
 ;Threshold to 0:
+TickRepeatThePictureIn=「그림을 그림 안에 반복」에 표시하면 계산된 그림에 효과가 보입니다.
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..다음 업데이트까지
 ;..til next update
 TileCountHorizontal=타일 수,  가로:
@@ -3989,10 +4023,14 @@ TurnOnOffTheJuliaMode=Julia 모드를 켜거나 끕니다
 ;Turn on/off the julia mode
 Turned=회전:
 ;Turned:
+TurnsOfTheSpiralPerStep=축소 한 단계당 나선의 회전 수. 0은 동심원 복제, 1은 에셔의 나선, 2는 더 가파른 나선, 음수는 반대 방향
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=턴테이블
 ;Turntable
 TweakOfParametersBy={}의 파라미터를 수정
 ;Tweak of parameters by {}
+TwistTurns=비틀림 (회전 수):
+;Twist (turns):
 Type=유형:
 ;Type:
 Type2=유형
@@ -4287,6 +4325,8 @@ Zoom=확대/축소:
 ;Zoom:
 Zoom2=줌
 ;Zoom
+ZoomsThroughOneShrinkStep=축소 한 단계만큼 확대합니다. 1은 0과 같아 보입니다. 0에서 1로 애니메이션하면 끝없는 줌이 됩니다
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Z위치
 ;Zpos
 Zrot=Z회전

@@ -862,6 +862,38 @@ you check further on your own:
   render made of separate tile pictures each tile glows on its own.
 
   </details>
+* **The Droste effect**: the picture repeated in itself, as in Escher's
+  *Print Gallery*, with Escher's spiral or as concentric copies, and an
+  endless zoom when the phase is animated.
+
+  <a href="docs/img/droste.jpg"><img src="docs/img/droste.jpg" width="760" alt="The Dodeca Torus mix example as calculated, and with the Droste effect: the fractal spirals into itself towards the middle"></a>
+
+  <details><summary>Read more</summary>
+
+  Post processing window, section *Finishing*, button *Droste effect...*:
+  the window shows the calculated picture at a reduced size with the
+  effect, live. Tick *Repeat the picture in itself*, click or drag on the
+  preview to set the centre, turn the mouse wheel over it for the outer
+  radius (with Shift the inner one), then *Paint now* paints it at full
+  size. The ring between the two radii is the only part of the picture
+  kept: it is repeated towards the centre and outwards, ever smaller and
+  ever larger. A *twist* of 1 joins the copies along Escher's spiral, 0
+  gives concentric copies; the *crossfade* blends neighbouring copies
+  where the ring's inner edge meets its outer one; the *phase* zooms
+  through one step, and the picture at phase 1 is the one at phase 0, so
+  an animation of the phase from 0 to 1 is a seamless endless zoom made
+  from one calculated picture. It works best with an object in the
+  middle of the picture or a view into a hole; a horizon through the ring
+  shows the copies' edges. Scene keys `droste = centre x, centre y, inner
+  radius, outer radius` (parts of the picture's size, or `off`),
+  `droste_twist`, `droste_phase`, `droste_blend`; they are saved with the
+  parameters and blended between keyframes. The effect needs the whole
+  picture, so the tiles of a big render and the Bulb Tracer's views do not
+  get it; a 360 panorama has none. The mathematics is Bart de Smit's and
+  Hendrik Lenstra's (2003), the filter's controls follow Josh Sommers's
+  and Tom Beddard's.
+
+  </details>
 * **A fine relief on the surface**: rough, stone (ridges and cracks) or
   grain, finer than the calculation's detail, with a colour variation.
 

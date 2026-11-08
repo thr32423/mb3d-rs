@@ -115,6 +115,11 @@ Finishing (not in MB3D; a last pass over the picture, cheap to change)
   glow = strength, radius, threshold (e.g. 0.6, 0.02, 0.8: glow around bright light),
   finish_contrast -1..1, finish_saturation (1 = as is), finish_warmth -1..1 (orange / blue),
   vignette 0..1 (darker corners), chromatic 0..1 (a lens's colour fringes).
+Droste effect (not in MB3D; the picture repeated in itself, after the finishing)
+- droste = 0.5, 0.5, 0.12, 0.45 (centre x, y as parts of the width and height; inner and outer
+  radius as parts of the shorter side: the ring kept) or off; droste_twist (1 Escher's spiral,
+  0 concentric copies), droste_phase (0..1 zooms through one step; animate it for an endless
+  zoom), droste_blend 0..1 (crossfade of neighbouring copies). Best with an object in the middle.
 Surface detail (not in MB3D): detail = rough | stone | grain, strength, size, fineness
   (e.g. stone, 1.5, 0.05, 0.5; size in fractal units, about 1/20 of what the view shows) or off;
   detail_color 0..1: the colour varies with it.

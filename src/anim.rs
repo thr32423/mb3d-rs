@@ -418,6 +418,23 @@ fn interpolate_header(base: &Scene, h: &[&Scene], w: &[f64], rot: Quat, bezier: 
             glow: lin(&|x| m(x).glow as f64) as f32,
         });
     }
+    // the Droste effect (mb3d-rs): blended when the base keyframe has it,
+    // a keyframe without one as the base's (the phase from 0 to 1 is the
+    // endless zoom)
+    if let Some(d0) = base.droste {
+        let dv = |x: &Scene| x.droste.unwrap_or(d0);
+        s.droste = Some(
+            crate::droste::Droste {
+                center: [lin(&|x| dv(x).center[0] as f64) as f32, lin(&|x| dv(x).center[1] as f64) as f32],
+                inner: lin(&|x| dv(x).inner as f64) as f32,
+                outer: lin(&|x| dv(x).outer as f64) as f32,
+                twist: lin(&|x| dv(x).twist as f64) as f32,
+                phase: lin(&|x| dv(x).phase as f64) as f32,
+                blend: lin(&|x| dv(x).blend as f64) as f32,
+            }
+            .clamped(),
+        );
+    }
     // the clouds (mb3d-rs): blended when every keyframe has them across
     // the same axis (an offset moving between keyframes: drifting clouds)
     if let Some(c0) = base.clouds {

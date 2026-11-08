@@ -563,6 +563,10 @@ CautionTheProcessingsBelowMustBe=எச்சரிக்கை:  கீழே �
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: X ஐ விடப் பெரிய அல்லது சமமான சிறிய முழு எண், |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=மையம் x:
+;Centre x:
+CentreY=மையம் y:
+;Centre y:
 Change=மாற்று
 ;Change
 ChangeParams=அளவுருக்களை மாற்று
@@ -633,6 +637,8 @@ ClickOnTheButtonAndAfterwards3=பொத்தானைக் கிளிக்
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=மையப்படுத்த படத்தில் உள்ள பொருளைக் கிளிக் செய்யவும்.\nகேமரா திசை மாறாது, நடுப்புள்ளியைச் சுற்றிச் சுழற்ற\nசுழற்சி விருப்பங்களைப் பயன்படுத்தவும்.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=மையத்தை அமைக்க முன்னோட்டத்தில் சொடுக்கவும் அல்லது இழுக்கவும்; அதன் மீது சுட்டி உருளை வெளி ஆரத்தை மாற்றும், Shift உடன் உள் ஆரத்தை.\n\nஇரு ஆரங்களுக்கு இடையிலான வளையம் மையத்தை நோக்கியும் வெளியேயும், மேலும் சிறியதாகவும் மேலும் பெரியதாகவும் மீண்டும் வருகிறது. முறுக்கு 1 படிகளை எஷரின் சுருள் வழியே இணைக்கிறது, 0 ஒரே மையப் படிகளைத் தருகிறது. கட்டம் ஒரு படி அளவு பெரிதாக்குகிறது: 0 முதல் 1 வரையிலான அசைவூட்டம் முடிவற்ற பெரிதாக்கல்.
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=சொடுக்கி, பிறகு நிரலின் சாளரங்களில் (படம், வரைபடம், வண்ணத்தட்டு, வேறு சாளரம்) எந்தப் பிக்சலையும் சொடுக்கி அதன் வண்ணத்தை எடுக்கவும். Esc நிறுத்தும்.
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Dynfog on its மற்றும் Color on its இடையே மாற்றக் கிளிக் செய்யவும்
@@ -855,6 +861,8 @@ Credit=நன்றி:
 ;Credit:
 CrossEyedPreview=குறுக்குப் பார்வை முன்னோட்டம்
 ;Cross-eyed preview
+Crossfade=ஊடுகலப்பு:
+;Crossfade:
 Ctrl1ToCtrl7In=பட்டியலின் வரிசையில் Ctrl+1 முதல் Ctrl+7 வரை, மூட Ctrl+W
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=வளைவுகள்
@@ -1125,6 +1133,10 @@ DownscaleSpecular=specular ஐக் கீழ்அளவிடு
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=மிகப்பெரிய துண்டின் முக்கோணங்களில் இந்தப் பங்கை விடச் சிறிய தளர்ந்த துண்டுகளை நீக்கு (சதவீதம்); 0 எல்லாத் துண்டுகளையும் வைத்திருக்கும்
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=ட்ரோஸ்டே விளைவு
+;Droste effect
+DrosteEffect2=ட்ரோஸ்டே விளைவு...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=தெரியவில்லை, எதுவும் செய்யாதே
@@ -1805,6 +1817,8 @@ Infos=தகவல்கள்
 ;Infos
 IniDirs=Ini கோப்பகங்கள்
 ;Ini Dirs
+InnerRadius=உள் ஆரம்:
+;Inner radius:
 Input=உள்ளீடு
 ;Input
 InputTheHeightDivisor=உயர வகுத்தியை உள்ளிடு:
@@ -2741,6 +2755,8 @@ OriginalParameterSizeWidthHeight=அசல் அளவுரு அளவு (�
 ;Original parameter size (width, height):
 OtherFiles=பிற கோப்புகள்
 ;Other files
+OuterRadius=வெளி ஆரம்:
+;Outer radius:
 OutputFile=வெளியீட்டுக் கோப்பு:
 ;Output file:
 OutputFolder=வெளியீட்டுக் கோப்புறை:
@@ -2837,6 +2853,8 @@ PausingOnNextFrame=அடுத்த பிரேமில் இடைநி�
 ;Pausing on next frame...
 PercentOfLocalDE=உள்ளூர் DE இன் சதவீதம்
 ;Percent of local DE
+Phase=கட்டம்:
+;Phase:
 Picture=படம்
 ;picture
 PictureJPEG=படம் (JPEG)
@@ -3123,6 +3141,8 @@ RendersTheMiddleOfThePicture=படத்தின் நடுவை முத�
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=இங்கிருந்து மீண்டும்
 ;Repeat from here
+RepeatThePictureInItself=படத்தை அதற்குள்ளேயே மீண்டும் காட்டு (ட்ரோஸ்டே விளைவு)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=எல்லா முக்கிய பிரேம் முன்னோட்டப் படங்களையும் மீண்டும் ரெண்டர் செய்
 ;Rerender all keyframe preview images
 Reset=மீட்டமை
@@ -3717,6 +3737,8 @@ TheCameraFliesOnIntoThe=கேமரா ஃபிராக்டலுக்க�
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=கேமரா ஃபிராக்டலை விட்டு வெளியேறியது
 ;the camera left the fractal
+TheCentreAsAPartOf=படத்தின் அகலம் மற்றும் உயரத்தின் பங்காக மையம்; 0.5 என்பது நடு
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=அனிமேஷனின் எல்லா பிரேம்களிலும் தேர்ந்த மதிப்பு: முக்கிய பிரேமின் சதுரத்தை மேலே அல்லது கீழே இழுக்கவும், அல்லது கிளிக் செய்து அதன் மதிப்பைத் தட்டச்சு செய்யவும்
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=வண்ணம் பதினாறடிமான RGB ஆக, #RRGGBB (# விருப்பத்தேர்வு; #RGB உம் வேலை செய்யும்)
@@ -3817,14 +3839,22 @@ TheNewestJobSoFarRendered=இதுவரை புதிய பணி: ரெ�
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=அளவுருக்கள் இனி முடிக்கப்படாத கணக்கீட்டுடன் பொருந்தவில்லை: கணக்கிட "Calculate 3D" ஐ அழுத்துங்கள்.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=0 முதல் 1: அருகிலுள்ள படிகள் ஒன்றோடொன்று கலக்கும் படியின் பங்கு; 0 கூர்மையான விளிம்புகளை விடுகிறது
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=DE இணைப்பின் {} பகுதி dIFS சூத்திரங்களை ({}) மற்றவற்றுடன் ({}) கலக்கிறது. ஒவ்வொரு பகுதியும் ஒரு வகையை மட்டுமே கணக்கிடும்: dIFS சூத்திரங்களை ஒரு பகுதியிலும் மற்றவற்றை மற்றொரு பகுதியிலும் வைக்கவும் (சூத்திரச் சாளரத்தின் "DEcombinate" தாவல் இரண்டாம் பகுதி எங்கு தொடங்கும் என்பதை அமைக்கும்).
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=படம் அதன் கணக்கீட்டுடன் பொருந்தவில்லை: மீண்டும் கணக்கிடுங்கள்.
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=எஷரின் «அச்சுப் படக்கூடம்» போல, படம் தனக்குள்ளேயே மீண்டும் மீண்டும் வருகிறது: முழுப் படத்தின் மீதான கடைசிப் படி, அளவுருக்களுடன் சேமிக்கப்படுகிறது
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=மற்ற எல்லா பாஸ்களுக்கும் பின் படத்தின் முடித்தல்: வெளிப்பாடு, பிரகாசமான ஒளியைச் சுற்றி ஒளிர்வு, filmic டோன் மேப்பிங், நிறத் தரப்படுத்தல், ஒரு vignette மற்றும் நிற விளிம்புகள்
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=தளத்தின் நிறம் (மாற்றக் கிளிக் செய்யவும்)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=முன்னோட்டம் என்பது கணக்கிடப்பட்ட படம் சிறிய அளவில். «இப்போது வரை» விளைவை முழு அளவில் வரைகிறது; அது அளவுருக்களுடன் சேமிக்கப்பட்டு அசைவூட்டச் சட்டங்களுக்குப் பயன்படுகிறது.
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=படத்தின் குறுகிய பக்கத்தின் பங்குகளாக ஆரங்கள்: அவற்றுக்கு இடையிலான வளையமே படத்தின் வைத்துக்கொள்ளப்படும் பகுதி
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=கோள மடிப்பின் உள் கோளத்தின் ஆரம்; உள்ளே இருப்பது ஊதப்படும்; 0.5 பாரம்பரிய மதிப்பு, 0 அணைக்கும்
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=சுழற்சி நடுப்புள்ளியைச் (Xmid, Ymid, Zmid) சுற்றிச் செய்யப்படுகிறது
@@ -3837,6 +3867,8 @@ TheSelectionMustBeBiggerThan=தேர்வு அகலத்திலும�
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=தேர்வு அகலத்திலும் உயரத்திலும் 2 பிக்சல்களை விடப் பெரிதாக இருக்க வேண்டும்
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=அமைப்புகள் அவற்றின் தொடக்க மதிப்புகளுக்குத் திரும்பும்
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=ஸ்வார்மின் பகிர்ந்த கோப்புறை
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=எந்த அடுக்கு மதிப்புகளையும் பயன்படுத்தக்கூடிய சைன் பல்ப், கணக்கீடு முழு எண் அடுக்குகளை விட மெதுவானது.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3899,6 +3931,8 @@ ThreadsForJobs0AllCores=பணிகளுக்கான திரிகள் 
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=வரம்பு 0 வரை:
 ;Threshold to 0:
+TickRepeatThePictureIn=கணக்கிடப்பட்ட படத்தில் விளைவைக் காண «படத்தை அதற்குள்ளேயே மீண்டும் காட்டு» என்பதைத் தேர்வு செய்க.
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..அடுத்த புதுப்பிப்பு வரை
 ;..til next update
 TileCountHorizontal=ஓடு எண்ணிக்கை,  கிடைமட்டம்:
@@ -3989,10 +4023,14 @@ TurnOnOffTheJuliaMode=ஜூலியா முறையை இயக்கு/�
 ;Turn on/off the julia mode
 Turned=திருப்பப்பட்டது:
 ;Turned:
+TurnsOfTheSpiralPerStep=ஒரு சுருக்கப் படிக்கு சுருளின் சுற்றுகள்: 0 ஒரே மையப் படிகள், 1 எஷரின் சுருள், 2 செங்குத்தானது, எதிர்மறை எதிர்த் திசை
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=சுழல் மேசை
 ;Turntable
 TweakOfParametersBy={} இன் அளவுருக்களின் மாற்றம்
 ;Tweak of parameters by {}
+TwistTurns=முறுக்கு (சுற்றுகள்):
+;Twist (turns):
 Type=வகை:
 ;Type:
 Type2=வகை
@@ -4287,6 +4325,8 @@ Zoom=பெரிதாக்கம்:
 ;Zoom:
 Zoom2=பெரிதாக்கம்
 ;Zoom
+ZoomsThroughOneShrinkStep=ஒரு சுருக்கப் படி அளவு பெரிதாக்குகிறது: 1 என்பது 0 போலவே தெரியும். முடிவற்ற பெரிதாக்கலுக்கு 0 முதல் 1 வரை அசைவூட்டுக
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Zpos
 ;Zpos
 Zrot=Zrot

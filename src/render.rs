@@ -2495,12 +2495,40 @@ pub fn paint_reporting(
     paint_with::<u8>(sc, p, gbuf, true, progress, stage, cancel)
 }
 
+/// [`paint_reporting`], and the picture before the Droste effect when the
+/// scene has it (None otherwise).
+pub fn paint_reporting_plain(
+    sc: &Scene,
+    p: &CalcParams,
+    gbuf: &[SiLight],
+    progress: &(dyn Fn(usize, usize) + Sync),
+    stage: &(dyn Fn(&str) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+) -> (Vec<u8>, Option<f64>, Option<Vec<u8>>) {
+    let ((rgb, refl), plain) = paint_with_plain::<u8>(sc, p, gbuf, true, progress, stage, cancel);
+    (rgb, refl, plain)
+}
+
 /// [`paint`] without the reflections and the depth of field: the preview
 /// of the rows calculated so far (both need the whole image, and the
 /// reflections march again, taking as long as the calculation itself),
 /// and MB3D's `PaintRows` of a recalculated selection.
 pub fn paint_preview(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> Vec<u8> {
     paint_with::<u8>(sc, p, gbuf, false, &|_, _| {}, &no_stage, &|| false).0
+}
+
+/// [`paint_preview`], and the picture before the Droste effect when the
+/// scene has it.
+pub fn paint_preview_plain(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> (Vec<u8>, Option<Vec<u8>>) {
+    let ((rgb, _), plain) = paint_with_plain::<u8>(sc, p, gbuf, false, &|_, _| {}, &no_stage, &|| false);
+    (rgb, plain)
+}
+
+/// [`paint`], and the picture before the Droste effect when the scene has
+/// it.
+pub fn paint_plain(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> (Vec<u8>, Option<Vec<u8>>) {
+    let ((rgb, _), plain) = paint_with_plain::<u8>(sc, p, gbuf, true, &|_, _| {}, &no_stage, &|| false);
+    (rgb, plain)
 }
 
 /// The live picture of a calculation at the size it is shown (every
@@ -2566,20 +2594,44 @@ fn paint_with<S: crate::lighting::Sample>(
     stage: &(dyn Fn(&str) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
 ) -> (Vec<S>, Option<f64>) {
-    let Some(f) = sc.finish_for_camera().filter(|f| !f.is_neutral() && p.slice_2d == 0) else {
-        return paint_core::<S>(sc, p, gbuf, full, progress, stage, cancel);
-    };
+    paint_with_plain::<S>(sc, p, gbuf, full, progress, stage, cancel).0
+}
+
+/// [`paint_with`], and with the Droste effect on also the picture before
+/// it (8 bit; the Droste window's live preview works on that one).
+fn paint_with_plain<S: crate::lighting::Sample>(
+    sc: &Scene,
+    p: &CalcParams,
+    gbuf: &[SiLight],
+    full: bool,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    stage: &(dyn Fn(&str) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+) -> ((Vec<S>, Option<f64>), Option<Vec<u8>>) {
+    let [x0, y0, w, h] = p.rect;
+    let cam = paint_camera(sc, p);
+    let fin = sc.finish_for_camera().filter(|f| !f.is_neutral());
+    // the Droste effect needs the whole picture: not on a tile or a part
+    let dro = sc.droste_for_camera().filter(|_| x0 == 0 && y0 == 0 && w == cam.width && h == cam.height);
+    if (fin.is_none() && dro.is_none()) || p.slice_2d != 0 {
+        return (paint_core::<S>(sc, p, gbuf, full, progress, stage, cancel), None);
+    }
     // the finishing: painted in floating point (the light above white
     // kept for the tone mapping), then on the whole picture
     let (mut v, refl_s) = paint_core::<f32>(sc, p, gbuf, full, progress, stage, cancel);
+    let mut plain = None;
     if !cancel() {
         stage("finishing");
-        let [x0, y0, w, h] = p.rect;
-        let cam = paint_camera(sc, p);
         let threads = thread_count(sc).min(h.max(1) as usize).max(1);
-        crate::finish::apply(&mut v, w as usize, h as usize, [x0, y0], [cam.width as usize, cam.height as usize], &f, threads);
+        if let Some(f) = fin {
+            crate::finish::apply(&mut v, w as usize, h as usize, [x0, y0], [cam.width as usize, cam.height as usize], &f, threads);
+        }
+        if let Some(d) = dro {
+            plain = Some(v.iter().map(|&x| <u8 as crate::lighting::Sample>::from_dof(x * 255.0)).collect());
+            crate::droste::apply(&mut v, w as usize, h as usize, &d, threads);
+        }
     }
-    (v.into_iter().map(|x| S::from_dof(x * 255.0)).collect(), refl_s)
+    ((v.into_iter().map(|x| S::from_dof(x * 255.0)).collect(), refl_s), plain)
 }
 
 fn paint_core<S: crate::lighting::Sample>(

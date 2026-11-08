@@ -562,6 +562,10 @@ CautionTheProcessingsBelowMustBe=Perhatian:  Pemrosesan di bawah harus dihitung\
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: Bilangan bulat terkecil >= X, |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=Pusat x:
+;Centre x:
+CentreY=Pusat y:
+;Centre y:
 Change=Ubah
 ;Change
 ChangeParams=Ubah Param
@@ -632,6 +636,8 @@ ClickOnTheButtonAndAfterwards3=Klik tombol lalu klik objek di gambar untuk menga
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Klik objek di gambar untuk dijadikan pusat.\nArah kamera tidak diubah, gunakan opsi rotasi\nuntuk berputar di sekitar titik tengah.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=Klik atau seret pada pratinjau untuk menetapkan pusat; roda tetikus di atasnya mengubah jari-jari luar, dengan Shift jari-jari dalam.\n\nCincin di antara kedua jari-jari diulang ke arah pusat dan ke luar, semakin kecil dan semakin besar. Puntiran 1 menyambung salinan sepanjang spiral Escher, 0 memberi salinan sepusat. Fase memperbesar satu langkah: animasi dari 0 ke 1 adalah zoom tanpa akhir.
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=Klik, lalu klik piksel mana pun di jendela program (gambar, peta, palet, jendela lain) untuk mengambil warnanya. Esc menghentikan.
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Klik untuk beralih antara Dynfog pada its dan Warna pada its
@@ -854,6 +860,8 @@ Credit=Kredit:
 ;Credit:
 CrossEyedPreview=Pratinjau cross-eyed
 ;Cross-eyed preview
+Crossfade=Pembauran:
+;Crossfade:
 Ctrl1ToCtrl7In=Ctrl+1 sampai Ctrl+7 sesuai urutan daftar, Ctrl+W untuk menutup
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=Kurva
@@ -1124,6 +1132,10 @@ DownscaleSpecular=Perkecil spekular
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=Buang potongan lepas yang lebih kecil dari bagian segitiga potongan terbesar ini (persen); 0 menyimpan semua
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=Efek Droste
+;Droste effect
+DrosteEffect2=Efek Droste...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Entahlah, jangan lakukan apa-apa
@@ -1804,6 +1816,8 @@ Infos=Info
 ;Infos
 IniDirs=Ini Dirs
 ;Ini Dirs
+InnerRadius=Jari-jari dalam:
+;Inner radius:
 Input=Masukan
 ;Input
 InputTheHeightDivisor=Masukkan pembagi tinggi:
@@ -2740,6 +2754,8 @@ OriginalParameterSizeWidthHeight=Ukuran parameter asli (lebar, tinggi):
 ;Original parameter size (width, height):
 OtherFiles=File lain
 ;Other files
+OuterRadius=Jari-jari luar:
+;Outer radius:
 OutputFile=File keluaran:
 ;Output file:
 OutputFolder=Folder keluaran:
@@ -2836,6 +2852,8 @@ PausingOnNextFrame=Berhenti sejenak pada frame berikutnya...
 ;Pausing on next frame...
 PercentOfLocalDE=Persen dari DE lokal
 ;Percent of local DE
+Phase=Fase:
+;Phase:
 Picture=gambar
 ;picture
 PictureJPEG=Gambar (JPEG)
@@ -3122,6 +3140,8 @@ RendersTheMiddleOfThePicture=Merender bagian tengah gambar dengan tahap utama sa
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Ulangi dari sini
 ;Repeat from here
+RepeatThePictureInItself=Ulangi gambar di dalam dirinya sendiri (efek Droste)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=Render ulang semua gambar pratinjau keyframe
 ;Rerender all keyframe preview images
 Reset=reset
@@ -3716,6 +3736,8 @@ TheCameraFliesOnIntoThe=Kamera terus terbang masuk ke fraktal, zoom mengikuti ja
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=kamera keluar dari fraktal
 ;the camera left the fractal
+TheCentreAsAPartOf=Pusat sebagai bagian dari lebar dan tinggi gambar; 0,5 adalah tengah
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=Nilai yang dipilih di semua frame animasi: seret kotak keyframe ke atas atau ke bawah, atau klik lalu ketik nilainya
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=Warna sebagai RGB heksadesimal, dalam bentuk #RRGGBB (# boleh dihilangkan; #RGB juga bisa)
@@ -3816,14 +3838,22 @@ TheNewestJobSoFarRendered=Tugas terbaru sejauh ini: bagian yang sudah dirender, 
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=Parameter tidak lagi cocok dengan perhitungan yang belum selesai: tekan "Hitung 3D" untuk menghitungnya.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=0 sampai 1: bagian dari satu langkah tempat salinan bertetangga membaur; 0 meninggalkan tepi tajam
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=Bagian {} dari kombinasi DE mencampur formula dIFS ({}) dengan formula lain ({}). Setiap bagian hanya menghitung satu jenis: taruh formula dIFS di satu bagian dan yang lain di bagian lainnya (tab "DEcombinate" di jendela Formula menentukan di mana bagian kedua dimulai).
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=Gambar tidak cocok dengan perhitungannya: hitung lagi.
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=Gambar diulang di dalam dirinya sendiri, seperti Print Gallery karya Escher: langkah terakhir atas seluruh gambar, disimpan bersama parameter
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=Penyelesaian gambar setelah semua tahap lain: eksposur, pendar di sekitar cahaya terang, tone mapping filmik, gradasi warna, vinyet dan pinggiran warna
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=Warna bidang (klik untuk mengubah)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=Pratinjau adalah gambar yang dihitung dalam ukuran kecil. Lukis sekarang melukis efek dalam ukuran penuh; efek disimpan bersama parameter dan dipakai untuk bingkai animasi.
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=Jari-jari sebagai bagian dari sisi gambar yang lebih pendek: cincin di antaranya adalah bagian gambar yang dipertahankan
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=jari-jari bola dalam dari lipatan bola; yang di dalamnya dikembangkan; 0,5 nilai klasik, 0 mematikannya
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=Rotasi dilakukan di sekitar Titik tengah (Xmid, Ymid, Zmid)
@@ -3836,6 +3866,8 @@ TheSelectionMustBeBiggerThan=Pilihan harus lebih besar dari 2 piksel dalam lebar
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=pilihan harus lebih besar dari 2 piksel dalam lebar dan tinggi
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=Pengaturan kembali ke nilai awalnya
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=Folder bersama swarm
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=Bulb sinus yang dapat memakai nilai pangkat sembarang, perhitungannya lebih lambat daripada pangkat bilangan bulat.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3898,6 +3930,8 @@ ThreadsForJobs0AllCores=Thread untuk tugas (0 = semua core):
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=Ambang ke 0:
 ;Threshold to 0:
+TickRepeatThePictureIn=Centang "Ulangi gambar di dalam dirinya sendiri" untuk melihat efeknya pada gambar yang dihitung.
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..hingga pembaruan berikutnya
 ;..til next update
 TileCountHorizontal=Jumlah tile,  horizontal:
@@ -3988,10 +4022,14 @@ TurnOnOffTheJuliaMode=Aktifkan/nonaktifkan mode julia
 ;Turn on/off the julia mode
 Turned=Diputar:
 ;Turned:
+TurnsOfTheSpiralPerStep=Putaran spiral per langkah pengecilan: 0 salinan sepusat, 1 spiral Escher, 2 yang lebih curam, negatif arah sebaliknya
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=Putaran
 ;Turntable
 TweakOfParametersBy=Olahan parameter dari {}
 ;Tweak of parameters by {}
+TwistTurns=Puntiran (putaran):
+;Twist (turns):
 Type=Jenis:
 ;Type:
 Type2=Jenis
@@ -4286,6 +4324,8 @@ Zoom=Zoom:
 ;Zoom:
 Zoom2=Zoom
 ;Zoom
+ZoomsThroughOneShrinkStep=Memperbesar melalui satu langkah pengecilan: 1 tampak seperti 0. Animasikan dari 0 ke 1 untuk zoom tanpa akhir
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Zpos
 ;Zpos
 Zrot=Zrot

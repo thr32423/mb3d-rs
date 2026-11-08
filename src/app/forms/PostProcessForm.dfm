@@ -1994,7 +1994,7 @@ object PostProForm: TPostProForm
     Left = 0
     Top = 1508
     Width = 255
-    Height = 218
+    Height = 246
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 13
@@ -2181,6 +2181,18 @@ object PostProForm: TPostProForm
       ShowHint = True
       TabOrder = 11
       OnClick = FinishNowBtnClick
+    end
+    object DrosteBtn: TButton
+      Left = 11
+      Top = 218
+      Width = 227
+      Height = 21
+      Hint = '@MB:ThePictureRepeatedInItself'
+      Caption = '@MB:DrosteEffect2'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 12
+      OnClick = DrosteBtnClick
     end
   end
 end

@@ -562,6 +562,10 @@ CautionTheProcessingsBelowMustBe=Let op:  de bewerkingen hieronder moeten van bo
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: kleinste geheel getal >= X, |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=Middelpunt x:
+;Centre x:
+CentreY=Middelpunt y:
+;Centre y:
 Change=Wijzigen van
 ;Change
 ChangeParams=Parameters wijzigen
@@ -632,6 +636,8 @@ ClickOnTheButtonAndAfterwards3=Klik op de knop en daarna op het object in de afb
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Klik op het object in de afbeelding dat gecentreerd moet worden.\nDe camerarichting verandert niet; gebruik de rotatie-\nopties om rond het middelpunt te draaien.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=Klik of sleep in het voorbeeld om het middelpunt te zetten; het muiswiel erboven wijzigt de buitenstraal, met Shift de binnenstraal.\n\nDe ring tussen de twee stralen wordt naar het midden en naar buiten herhaald, steeds kleiner en steeds groter. Een draaiing van 1 voegt de kopieën langs Eschers spiraal aaneen, 0 geeft concentrische kopieën. De fase zoomt door één stap: een animatie van 0 tot 1 is een eindeloze zoom.
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=Klik hier en klik dan op een pixel in de vensters van het programma (de afbeelding, een map, een palet, een ander venster) om de kleur over te nemen. Esc stopt.
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Klik om te wisselen tussen Dyn. mist op its en Kleur op its
@@ -854,6 +860,8 @@ Credit=Bron:
 ;Credit:
 CrossEyedPreview=Kruislings voorbeeld
 ;Cross-eyed preview
+Crossfade=Overvloeiing:
+;Crossfade:
 Ctrl1ToCtrl7In=Ctrl+1 tot Ctrl+7 in de volgorde van de lijst, Ctrl+W om te sluiten
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=Curven
@@ -1124,6 +1132,10 @@ DownscaleSpecular=Speculair verkleinen
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=Losse stukken weglaten die kleiner zijn dan dit aandeel van de driehoeken van het grootste stuk (procent); 0 houdt alles
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=Droste-effect
+;Droste effect
+DrosteEffect2=Droste-effect...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Weet niet, niets doen
@@ -1804,6 +1816,8 @@ Infos=Info
 ;Infos
 IniDirs=Ini-mappen
 ;Ini Dirs
+InnerRadius=Binnenstraal:
+;Inner radius:
 Input=Invoer
 ;Input
 InputTheHeightDivisor=Voer de hoogtedeler in:
@@ -2740,6 +2754,8 @@ OriginalParameterSizeWidthHeight=Originele parametergrootte (breedte, hoogte):
 ;Original parameter size (width, height):
 OtherFiles=Andere bestanden
 ;Other files
+OuterRadius=Buitenstraal:
+;Outer radius:
 OutputFile=Uitvoerbestand:
 ;Output file:
 OutputFolder=Uitvoermap:
@@ -2836,6 +2852,8 @@ PausingOnNextFrame=Pauzeren bij het volgende beeld...
 ;Pausing on next frame...
 PercentOfLocalDE=Procent van de lokale DE
 ;Percent of local DE
+Phase=Fase:
+;Phase:
 Picture=afbeelding
 ;picture
 PictureJPEG=Afbeelding (JPEG)
@@ -3122,6 +3140,8 @@ RendersTheMiddleOfThePicture=Rendert het midden van het beeld met alleen de hoof
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Herhalen vanaf hier
 ;Repeat from here
+RepeatThePictureInItself=De afbeelding in zichzelf herhalen (Droste-effect)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=Alle keyframe-voorbeelden opnieuw renderen
 ;Rerender all keyframe preview images
 Reset=terugzetten
@@ -3716,6 +3736,8 @@ TheCameraFliesOnIntoThe=De camera vliegt verder het fractal in, de zoom volgt de
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=de camera heeft het fractal verlaten
 ;the camera left the fractal
+TheCentreAsAPartOf=Het middelpunt als deel van de breedte en hoogte van de afbeelding; 0,5 is het midden
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=De gekozen waarde over alle frames van de animatie: sleep het vierkantje van een keyframe omhoog of omlaag, of klik erop en typ de waarde
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=De kleur als hexadecimale RGB, als #RRGGBB (de # is niet verplicht; #RGB werkt ook)
@@ -3816,14 +3838,22 @@ TheNewestJobSoFarRendered=De nieuwste taak tot nu toe: gerenderde delen, delen i
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=De parameters passen niet meer bij de onvoltooide berekening: druk op "3D berekenen" om ze te berekenen.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=0 tot 1: het deel van een stap waarover naburige kopieën in elkaar overvloeien; 0 laat harde randen
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=Het {} deel van de DE-combinatie mengt dIFS-formules ({}) met andere ({}). Elk deel berekent maar één soort: zet de dIFS-formules in het ene deel en de andere in het andere deel (het tabblad "DEcombinate" van het formulevenster bepaalt waar het tweede deel begint).
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=De afbeelding past niet bij haar berekening: bereken haar opnieuw.
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=De afbeelding herhaald in zichzelf, zoals in Eschers Prentententoonstelling: een laatste bewerking over de hele afbeelding, opgeslagen met de parameters
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=De afwerking van het beeld na alle andere passes: belichting, gloed rond fel licht, filmische tone mapping, kleurcorrectie, een vignet en kleurranden
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=De kleur van het vlak (klik om te wijzigen)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=Het voorbeeld is de berekende afbeelding op verkleinde grootte. Nu tekenen tekent het effect op volle grootte; het wordt met de parameters opgeslagen en gebruikt voor animatiebeelden.
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=De stralen als delen van de kortste zijde van de afbeelding: de ring ertussen is het deel van de afbeelding dat blijft
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=de straal van de binnenbol van de bolvouw; wat erin ligt wordt opgeblazen; 0,5 is de klassieke waarde, 0 schakelt haar uit
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=De rotatie wordt uitgevoerd rond het middelpunt (Xmid, Ymid, Zmid)
@@ -3836,6 +3866,8 @@ TheSelectionMustBeBiggerThan=De selectie moet in breedte en hoogte groter zijn d
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=de selectie moet in breedte en hoogte groter zijn dan 2 pixels
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=De instellingen terug naar hun beginwaarden
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=De gedeelde map van de zwerm
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=De sinusbulb waarbij willekeurige machtswaarden kunnen worden gebruikt; de berekening is langzamer dan bij gehele machten.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3898,6 +3930,8 @@ ThreadsForJobs0AllCores=Threads voor taken (0 = alle kernen):
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=Drempel naar 0:
 ;Threshold to 0:
+TickRepeatThePictureIn=Vink „De afbeelding in zichzelf herhalen” aan om het effect op de berekende afbeelding te zien.
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..tot volgende update
 ;..til next update
 TileCountHorizontal=Aantal tegels,  horizontaal:
@@ -3988,10 +4022,14 @@ TurnOnOffTheJuliaMode=Julia-modus in-/uitschakelen
 ;Turn on/off the julia mode
 Turned=Gedraaid:
 ;Turned:
+TurnsOfTheSpiralPerStep=Omwentelingen van de spiraal per verkleiningsstap: 0 concentrische kopieën, 1 Eschers spiraal, 2 een steilere, negatief andersom
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=Draaitafel
 ;Turntable
 TweakOfParametersBy=Bewerking van parameters van {}
 ;Tweak of parameters by {}
+TwistTurns=Draaiing (omwentelingen):
+;Twist (turns):
 Type=Type:
 ;Type:
 Type2=Type
@@ -4286,6 +4324,8 @@ Zoom=Zoom:
 ;Zoom:
 Zoom2=Zoom
 ;Zoom
+ZoomsThroughOneShrinkStep=Zoomt door één verkleiningsstap: 1 ziet eruit als 0. Animeer van 0 tot 1 voor een eindeloze zoom
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Zpos
 ;Zpos
 Zrot=Zrot

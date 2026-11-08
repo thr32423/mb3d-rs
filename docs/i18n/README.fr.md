@@ -886,6 +886,37 @@ Voici de quoi vérifier plus loin par vous-même :
   tuile brille pour elle-même.
 
   </details>
+* **L'effet Droste**: l'image répétée dans elle-même, comme dans la *Galerie d'estampes* d'Escher, avec la spirale d'Escher ou en copies concentriques, et un zoom sans fin quand la phase est animée.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="L'exemple Dodeca Torus mix tel que calculé, et avec l'effet Droste : la fractale s'enroule dans elle-même vers le centre"></a>
+
+  <details><summary>En savoir plus</summary>
+
+  Fenêtre Post processing, section *Finishing*, bouton *Effet Droste...* :
+  la fenêtre montre l'image calculée en taille réduite avec l'effet, en
+  direct. Cochez *Répéter l'image dans elle-même*, cliquez ou faites glisser
+  sur l'aperçu pour placer le centre, tournez la molette au-dessus pour le
+  rayon extérieur (avec Maj le rayon intérieur), puis *Peindre maintenant*
+  la peint en taille réelle. L'anneau entre les deux rayons est la seule
+  partie de l'image conservée : il se répète vers le centre et vers
+  l'extérieur, toujours plus petit et toujours plus grand. Une *torsion* de
+  1 relie les copies le long de la spirale d'Escher, 0 donne des copies
+  concentriques ; le *fondu* mêle les copies voisines là où le bord
+  intérieur de l'anneau rencontre son bord extérieur ; la *phase* avance
+  d'un pas, et l'image à la phase 1 est celle de la phase 0, de sorte qu'une
+  animation de la phase de 0 à 1 est un zoom sans fin et sans raccord fait
+  d'une seule image calculée. L'effet réussit le mieux avec un objet au
+  milieu de l'image ou une vue dans un trou ; un horizon qui traverse
+  l'anneau montre les bords des copies. Clés de scène `droste = centre x,
+  centre y, rayon intérieur, rayon extérieur` (fractions de la taille de
+  l'image, ou `off`), `droste_twist`, `droste_phase`, `droste_blend` ;
+  elles sont enregistrées avec les paramètres et interpolées entre les
+  images clés. L'effet a besoin de l'image entière : les tuiles d'un Big
+  Render et les vues du Bulb Tracer ne l'ont pas, ni un panorama 360. Les
+  mathématiques sont celles de Bart de Smit et Hendrik Lenstra (2003), les
+  réglages du filtre suivent Josh Sommers et Tom Beddard.
+
+  </details>
 * **Un relief fin sur la surface** : rugueux, pierre (arêtes et fissures) ou
   grain, plus fin que le détail du calcul, avec une variation de couleur.
 

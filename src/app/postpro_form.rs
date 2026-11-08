@@ -536,6 +536,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
     match h {
         "NoiseFilterNowBtnClick" => super::main_form::denoise_picture(app, ui, noise_sigma(ui)),
         "NoiseAutoCbxClick" | "CloudsCbxClick" | "MaterialCbxClick" | "FinishCbxClick" => update_captions(ui),
+        "DrosteBtnClick" => super::droste_form::open(app, ui),
         "FinishNowBtnClick" => {
             app.make_scene(ui);
             repaint(app, ui, &tr("@MB:Finishing"));

@@ -135,6 +135,9 @@ pub struct Base {
 pub struct Output {
     /// the image (full size RGB)
     pub rgb: Option<Arc<Vec<u8>>>,
+    /// the image before the Droste effect, when the scene has it (the
+    /// Droste window's preview works on this one)
+    pub plain: Option<Arc<Vec<u8>>>,
     pub w: usize,
     pub h: usize,
     /// bumped when `rgb` changes
@@ -458,6 +461,7 @@ impl Engine {
         *self.0.base.lock().unwrap() = None;
         let mut o = self.0.out.lock().unwrap();
         o.rgb = None;
+        o.plain = None;
         o.ver += 1;
         // a job that finished but was not taken yet is of the old parameters too
         o.cancelled = true;
@@ -471,10 +475,11 @@ impl Engine {
             return Err(tr("@MB:TheImageBufferHasTheWrong"));
         }
         let raw = Arc::new(gbuf);
-        let rgb = crate::render::paint(sc, &p, &raw);
+        let (rgb, plain) = crate::render::paint_plain(sc, &p, &raw);
         *self.0.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(sc), w, h }));
         let mut o = self.0.out.lock().unwrap();
         o.rgb = Some(Arc::new(rgb));
+        o.plain = plain.map(Arc::new);
         o.w = w;
         o.h = h;
         o.ver += 1;
@@ -490,8 +495,15 @@ impl Inner {
     }
 
     fn publish(&self, rgb: Vec<u8>, w: usize, h: usize, stage: &str, stats: Option<Stats>) {
+        self.publish_plain(rgb, None, w, h, stage, stats);
+    }
+
+    /// [`publish`] with the picture before the Droste effect (None: the
+    /// scene has none).
+    fn publish_plain(&self, rgb: Vec<u8>, plain: Option<Vec<u8>>, w: usize, h: usize, stage: &str, stats: Option<Stats>) {
         let mut o = self.out.lock().unwrap();
         o.rgb = Some(Arc::new(rgb));
+        o.plain = plain.map(Arc::new);
         o.w = w;
         o.h = h;
         o.ver += 1;
@@ -689,14 +701,14 @@ fn swarm_tiles(e: &Arc<Inner>, sc: &Scene, dir: &std::path::Path, cols: u32, row
         e.progress.store(0, Ordering::Relaxed);
     };
     let progress = |d: usize, t: usize| e.progress.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
-    let (rgb, refl_s) = crate::render::paint_reporting(&sc, &p, &raw, &progress, &stage, cancel);
+    let (rgb, refl_s, plain) = crate::render::paint_reporting_plain(&sc, &p, &raw, &progress, &stage, cancel);
     if cancel() {
         return Err("cancelled".into());
     }
     let mut stats = stats_of(&raw, &p, t0.elapsed().as_secs_f64(), 0.0);
     stats.stages.reflections = refl_s;
     *e.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(&sc), w, h }));
-    e.publish(rgb, w, h, "done (swarm)", Some(stats));
+    e.publish_plain(rgb, plain, w, h, "done (swarm)", Some(stats));
     Ok(())
 }
 
@@ -785,7 +797,7 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, resume: crate::checkpoint::Policy, nam
         return Err("cancelled".into());
     }
     let t2 = Instant::now();
-    let (rgb, refl_s) = crate::render::paint_reporting(&sc, &p, &post, &progress, &stage, cancel);
+    let (rgb, refl_s, plain) = crate::render::paint_reporting_plain(&sc, &p, &post, &progress, &stage, cancel);
     if cancel() {
         return Err("cancelled".into());
     }
@@ -793,7 +805,7 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, resume: crate::checkpoint::Policy, nam
     let post_s = if needs_post(&sc, &p) { (t2 - t1).as_secs_f64() } else { 0.0 };
     let mut stats = stats_of(&post, &p, (t1 - t0).as_secs_f64(), post_s);
     stats.stages = stages;
-    e.publish(rgb, w, h, "", Some(stats));
+    e.publish_plain(rgb, plain, w, h, "", Some(stats));
     *e.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw, post, post_sig: post_sig(&sc), w, h }));
     if let Some(ck) = ck {
         ck.finish();
@@ -817,9 +829,9 @@ fn blocky(e: &Inner, sc: &Scene, cancel: &(dyn Fn() -> bool + Sync)) -> Result<(
     let (p, g) = crate::render::calculate_blocky(&sc, &progress, cancel, &sink)?;
     *e.partial.lock().unwrap() = None;
     // painted without the post calculations, as MB3D's PaintRowsNoThreadBlocky
-    let rgb = crate::render::paint_preview(&sc, &p, &g);
+    let (rgb, plain) = crate::render::paint_preview_plain(&sc, &p, &g);
     let stats = stats_of(&g, &p, t0.elapsed().as_secs_f64(), 0.0);
-    e.publish(rgb, w, h, "", Some(stats));
+    e.publish_plain(rgb, plain, w, h, "", Some(stats));
     let g = Arc::new(g);
     *e.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: g.clone(), post: g, post_sig: post_sig(&sc), w, h }));
     Ok(())
@@ -846,9 +858,9 @@ fn preview(e: &Inner, sc: &Scene, cancel: &(dyn Fn() -> bool + Sync)) -> Result<
         if cancel() {
             return Err("cancelled".into());
         }
-        let rgb = crate::render::paint(&ps, &p, &g);
+        let (rgb, plain) = crate::render::paint_plain(&ps, &p, &g);
         let (pw, ph) = (ps.width as usize, ps.height as usize);
-        e.publish(rgb, pw, ph, "", None);
+        e.publish_plain(rgb, plain, pw, ph, "", None);
         if div == 1 {
             let g = Arc::new(g);
             *e.base.lock().unwrap() = Some(Arc::new(Base { scene: ps.clone(), params: p, raw: g.clone(), post: g, post_sig: post_sig(&ps), w: pw, h: ph }));
@@ -935,11 +947,11 @@ fn repaint(e: &Inner, sc: &Scene, opts: (bool, Option<PostStep>, u8), cancel: &(
     if let Some(h) = &mut paint.shadows {
         h.lights &= !hs_off;
     }
-    let rgb = crate::render::paint_reporting(&paint, &b.params, &post, &progress, &stage, cancel).0;
+    let (rgb, _, plain) = crate::render::paint_reporting_plain(&paint, &b.params, &post, &progress, &stage, cancel);
     if cancel() {
         return Err("cancelled".into());
     }
-    e.publish(rgb, b.w, b.h, "", None);
+    e.publish_plain(rgb, plain, b.w, b.h, "", None);
     let mut g = e.base.lock().unwrap();
     // (the buffers painted on meanwhile ("Paint on image") are kept: their
     // own repaint follows)

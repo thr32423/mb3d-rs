@@ -825,6 +825,37 @@ kunt u zelf verder controleren:
   tegel op zichzelf.
 
   </details>
+* **Het Droste-effect**: de afbeelding herhaald in zichzelf, zoals in Eschers *Prentententoonstelling*, langs Eschers spiraal of als concentrische kopieën, en een eindeloze zoom wanneer de fase wordt geanimeerd.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="Het voorbeeld Dodeca Torus mix zoals berekend, en met het Droste-effect: de fractal draait spiraalsgewijs in zichzelf naar het midden"></a>
+
+  <details><summary>Meer lezen</summary>
+
+  Venster Post processing, sectie *Finishing*, knop *Droste-effect...*:
+  het venster toont de berekende afbeelding verkleind met het effect, live.
+  Vink *De afbeelding in zichzelf herhalen* aan, klik of sleep in het
+  voorbeeld om het middelpunt te zetten, draai het muiswiel erboven voor de
+  buitenstraal (met Shift de binnenstraal), en *Nu tekenen* tekent het op
+  volle grootte. De ring tussen de twee stralen is het enige deel van de
+  afbeelding dat blijft: hij wordt naar het midden en naar buiten herhaald,
+  steeds kleiner en steeds groter. Een *draaiing* van 1 voegt de kopieën
+  langs Eschers spiraal aaneen, 0 geeft concentrische kopieën; de
+  *overvloeiing* mengt naburige kopieën waar de binnenrand van de ring zijn
+  buitenrand raakt; de *fase* zoomt door één stap, en de afbeelding bij fase
+  1 is die bij fase 0, zodat een animatie van de fase van 0 tot 1 een
+  naadloze eindeloze zoom is uit één berekende afbeelding. Het werkt het best
+  met een object in het midden van de afbeelding of een blik in een gat; een
+  horizon door de ring toont de randen van de kopieën. Scènesleutels
+  `droste = middelpunt x, middelpunt y, binnenstraal, buitenstraal` (delen
+  van de afbeeldingsgrootte, of `off`), `droste_twist`, `droste_phase`,
+  `droste_blend`; ze worden met de parameters opgeslagen en tussen keyframes
+  overvloeid. Het effect heeft de hele afbeelding nodig, dus de tegels van
+  een Big Render en de aanzichten van de Bulb Tracer krijgen het niet; een
+  360-panorama heeft het niet. De wiskunde is van Bart de Smit en Hendrik
+  Lenstra (2003), de regelaars van het filter volgen Josh Sommers en Tom
+  Beddard.
+
+  </details>
 * **Een fijn reliëf op het oppervlak**: ruw, steen (ribbels en barsten) of
   korrel, fijner dan het detail van de berekening, met een kleurvariatie.
 

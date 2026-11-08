@@ -829,6 +829,34 @@ sprawdzëc sóm:
   wiôldżim renderze z òsóbnëch òbrôzków kafelków kòżdi kafel swiécy sóm.
 
   </details>
+* **Efekt Droste**: òbrôz pòwtórzony w se samim, jak w *Galerii grafików* Eschera, wedle spiralë Eschera abò jakno wespółstrzódkòwé kòpie, ë nieskùńczoné przëbliżanié, czej animùje sã fazã.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="Przikłôd Dodeca Torus mix tak, jak gò wërechòwóno, ë z efektã Droste: fraktal zwijô sã spiralno w se kù westrzódkòwi"></a>
+
+  <details><summary>Czëtôj wicy</summary>
+
+  Òkno Post processing, dzél *Finishing*, knąpa *Efekt Droste...*: òkno
+  pòkazywô wërechòwóny òbrôz w pòmniészenim z efektã, na żiwò. Zaznaczë
+  *Pòwtórzë òbrôz w nim samim*, klikni abò przecygni na pòdzérkù, bë
+  ùstawic westrzódk, pòkrãcë kółkã mëszë nad nim dlô bùtnowégò promienia (ze
+  Shift bënowégò), a *Malëj terô* malëje gò w fùl wiôlgòscë. Pierscéń midzë
+  dwùma promieniama to jedurny zachòwóny dzél òbrazu: pòwtôrzô sã kù
+  westrzódkòwi ë na bùten, corôz mniészi ë corôz wikszi. *Skrãt* 1 łączi
+  kòpie wedle spiralë Eschera, 0 dôwô wespółstrzódkòwé kòpie; *przenikanié*
+  miészô sąsedné kòpie tam, dze bënowô kanta pierscenia pòtikô bùtnową;
+  *faza* przëbliżô ò jeden krok, a òbrôz w fazie 1 je tim z fazë 0, tej
+  animacjô fazë òd 0 do 1 to nieskùńczoné, bezszwòwé przëbliżanié z jednégò
+  wërechòwónégò òbrazu. Nôlepi dzejô z òbiektã westrzódkù òbrazu abò wezdrzenim
+  w głąb dzurë; hòrizont przez pierscéń pòkazywô kantë kòpiów. Klucze scenë
+  `droste = westrzódk x, westrzódk y, bënowi promiéń, bùtnowi promiéń`
+  (dzéle wiôlgòscë òbrazu, abò `off`), `droste_twist`, `droste_phase`,
+  `droste_blend`; są zapisywóné z paramétrama ë przenikóné midzë kluczowima
+  klatkama. Efekt brëkùje całégò òbrazu, tej kafelczi Big Render ë widoczi
+  Bulb Tracera gò nie dostôwają; panorama 360 gò ni mô. Matematika je òd
+  Barta de Smita ë Hendrika Lenstrë (2003), regùlatorë filtra jidą za Joshã
+  Sommersã ë Tomã Beddardã.
+
+  </details>
 * **Drobnô rzezba na pòwierzchni**: chropawô, kamień (grzbietë ë pãkniãcô)
   abò zôrno, drobniészô jak detal rechòwaniô, ze zmianą farwë.
 

@@ -857,6 +857,37 @@ können Sie selbst weiter prüfen:
   großen Rendering aus einzelnen Kachelbildern glüht jede Kachel für sich.
 
   </details>
+* **Der Droste-Effekt**: das Bild in sich selbst wiederholt, wie in Eschers *Prentententoonstelling*, entlang Eschers Spirale oder als konzentrische Kopien, und ein endloser Zoom, wenn die Phase animiert wird.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="Das Beispiel Dodeca Torus mix wie berechnet, und mit dem Droste-Effekt: das Fraktal windet sich zur Mitte hin in sich selbst"></a>
+
+  <details><summary>Mehr lesen</summary>
+
+  Fenster Post processing, Abschnitt *Finishing*, Schaltfläche *Droste-Effekt...*:
+  das Fenster zeigt das berechnete Bild verkleinert mit dem Effekt, live.
+  Haken Sie *Das Bild in sich selbst wiederholen* an, klicken oder ziehen Sie
+  in der Vorschau, um die Mitte zu setzen, drehen Sie das Mausrad darüber für
+  den äußeren Radius (mit Umschalt den inneren), dann malt *Jetzt malen* es
+  in voller Größe. Der Ring zwischen den beiden Radien ist der einzige Teil
+  des Bildes, der bleibt: er wird zur Mitte hin und nach außen wiederholt,
+  immer kleiner und immer größer. Eine *Drehung* von 1 fügt die Kopien
+  entlang Eschers Spirale zusammen, 0 ergibt konzentrische Kopien; die
+  *Überblendung* lässt benachbarte Kopien dort ineinander übergehen, wo die
+  innere Kante des Rings auf seine äußere trifft; die *Phase* zoomt durch
+  einen Schritt, und das Bild bei Phase 1 ist das bei Phase 0, so dass eine
+  Animation der Phase von 0 bis 1 ein nahtloser endloser Zoom aus einem
+  einzigen berechneten Bild ist. Am besten wirkt es mit einem Objekt in der
+  Bildmitte oder einem Blick in ein Loch; ein Horizont durch den Ring zeigt
+  die Kanten der Kopien. Szenenschlüssel `droste = Mitte x, Mitte y,
+  innerer Radius, äußerer Radius` (Anteile der Bildgröße, oder `off`),
+  `droste_twist`, `droste_phase`, `droste_blend`; sie werden mit den
+  Parametern gespeichert und zwischen Keyframes überblendet. Der Effekt
+  braucht das ganze Bild, daher bekommen ihn die Kacheln eines Big Render
+  und die Ansichten des Bulb Tracers nicht; ein 360-Grad-Panorama hat
+  keinen. Die Mathematik stammt von Bart de Smit und Hendrik Lenstra (2003),
+  die Regler des Filters folgen Josh Sommers und Tom Beddard.
+
+  </details>
 * **Ein feines Relief auf der Oberfläche**: rau, Stein (Grate und Risse) oder
   Körnung, feiner als die Details der Berechnung, mit einer Farbvariation.
 

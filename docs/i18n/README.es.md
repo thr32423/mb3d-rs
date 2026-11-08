@@ -885,6 +885,37 @@ esto puede comprobar más por su cuenta:
   su cuenta.
 
   </details>
+* **El efecto Droste**: la imagen repetida dentro de sí misma, como en la *Galería de grabados* de Escher, con la espiral de Escher o como copias concéntricas, y un zoom sin fin cuando se anima la fase.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="El ejemplo Dodeca Torus mix tal como se calculó, y con el efecto Droste: el fractal gira en espiral dentro de sí mismo hacia el centro"></a>
+
+  <details><summary>Más información</summary>
+
+  Ventana Post processing, sección *Finishing*, botón *Efecto Droste...*:
+  la ventana muestra la imagen calculada a tamaño reducido con el efecto,
+  en vivo. Marque *Repetir la imagen dentro de sí misma*, haga clic o
+  arrastre en la vista previa para fijar el centro, gire la rueda del ratón
+  sobre ella para el radio exterior (con Mayús el interior) y *Pintar ahora*
+  la pinta a tamaño completo. El anillo entre los dos radios es la única
+  parte de la imagen que se conserva: se repite hacia el centro y hacia
+  fuera, cada vez más pequeño y cada vez más grande. Un *giro* de 1 une las
+  copias a lo largo de la espiral de Escher, 0 da copias concéntricas; el
+  *fundido* mezcla las copias vecinas donde el borde interior del anillo se
+  encuentra con el exterior; la *fase* avanza un paso, y la imagen en la
+  fase 1 es la de la fase 0, así que una animación de la fase de 0 a 1 es un
+  zoom sin fin y sin costuras hecho de una sola imagen calculada. Funciona
+  mejor con un objeto en el centro de la imagen o una vista hacia un hueco;
+  un horizonte que cruce el anillo muestra los bordes de las copias. Claves
+  de escena `droste = centro x, centro y, radio interior, radio exterior`
+  (fracciones del tamaño de la imagen, o `off`), `droste_twist`,
+  `droste_phase`, `droste_blend`; se guardan con los parámetros y se
+  interpolan entre fotogramas clave. El efecto necesita la imagen completa,
+  así que las teselas de un Big Render y las vistas del Bulb Tracer no lo
+  reciben; un panorama 360 no lo tiene. Las matemáticas son de Bart de Smit
+  y Hendrik Lenstra (2003); los controles del filtro siguen a Josh Sommers y
+  Tom Beddard.
+
+  </details>
 * **Un relieve fino en la superficie**: rugoso, piedra (crestas y grietas) o
   grano, más fino que el detalle del cálculo, con una variación de color.
 

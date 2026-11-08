@@ -10,6 +10,7 @@ pub const ALL: &[(&str, &str)] = &[
     ("ColorOptionForm", include_str!("forms/ColorOptionForm.dfm")),
     ("ColorPick", include_str!("forms/ColorPick.dfm")),
     ("Curves", include_str!("forms/Curves.dfm")),
+    ("Droste", include_str!("forms/Droste.dfm")),
     ("FormulaGUI", include_str!("forms/FormulaGUI.dfm")),
     ("FormulaParser", include_str!("forms/FormulaParser.dfm")),
     ("HeightMapGenUI", include_str!("forms/HeightMapGenUI.dfm")),

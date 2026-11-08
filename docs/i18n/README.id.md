@@ -865,6 +865,35 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   besar yang terdiri dari gambar tile terpisah, setiap tile berpendar sendiri.
 
   </details>
+* **Efek Droste**: gambar diulang di dalam dirinya sendiri, seperti *Print Gallery* karya Escher, dengan spiral Escher atau sebagai salinan sepusat, dan zoom tanpa akhir bila fasenya dianimasikan.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="Contoh Dodeca Torus mix seperti dihitung, dan dengan efek Droste: fraktal berpilin ke dalam dirinya sendiri menuju tengah"></a>
+
+  <details><summary>Selengkapnya</summary>
+
+  Jendela Post processing, bagian *Finishing*, tombol *Efek Droste...*:
+  jendela menampilkan gambar yang dihitung dalam ukuran kecil dengan efeknya,
+  langsung. Centang *Ulangi gambar di dalam dirinya sendiri*, klik atau
+  seret pada pratinjau untuk menetapkan pusat, putar roda tetikus di atasnya
+  untuk jari-jari luar (dengan Shift jari-jari dalam), lalu *Lukis sekarang*
+  melukisnya dalam ukuran penuh. Cincin di antara kedua jari-jari adalah
+  satu-satunya bagian gambar yang dipertahankan: diulang ke arah pusat dan
+  ke luar, semakin kecil dan semakin besar. *Puntiran* 1 menyambung salinan
+  sepanjang spiral Escher, 0 memberi salinan sepusat; *pembauran* membaurkan
+  salinan bertetangga di tempat tepi dalam cincin bertemu tepi luarnya;
+  *fase* memperbesar satu langkah, dan gambar pada fase 1 sama dengan fase
+  0, sehingga animasi fase dari 0 ke 1 adalah zoom tanpa akhir yang mulus
+  dari satu gambar yang dihitung. Paling baik dengan objek di tengah gambar
+  atau pandangan ke dalam lubang; cakrawala yang melintasi cincin
+  memperlihatkan tepi salinan. Kunci adegan `droste = pusat x, pusat y,
+  jari-jari dalam, jari-jari luar` (bagian dari ukuran gambar, atau `off`),
+  `droste_twist`, `droste_phase`, `droste_blend`; disimpan bersama parameter
+  dan dibaurkan di antara bingkai kunci. Efek ini memerlukan seluruh gambar,
+  sehingga ubin Big Render dan tampilan Bulb Tracer tidak mendapatkannya;
+  panorama 360 tidak memilikinya. Matematikanya dari Bart de Smit dan Hendrik
+  Lenstra (2003), kendali filternya mengikuti Josh Sommers dan Tom Beddard.
+
+  </details>
 * **Relief halus di permukaan**: kasar, batu (punggungan dan retakan), atau
   butiran, lebih halus dari detail perhitungan, dengan variasi warna.
 

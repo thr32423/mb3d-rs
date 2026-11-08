@@ -562,6 +562,10 @@ CautionTheProcessingsBelowMustBe=Bôczënk:  Niżi pòdóné òbrôbiania mùsz�
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: Nômniészô całownô lëczba >= X, |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=Westrzódk x:
+;Centre x:
+CentreY=Westrzódk y:
+;Centre y:
 Change=Zmieni
 ;Change
 ChangeParams=Zmieni parametrë
@@ -632,6 +636,8 @@ ClickOnTheButtonAndAfterwards3=Klikni na knąpã, a pòtemù na òbiekt w òbrô
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Klikni na òbiekt w òbrôzkù, jaczi mô bëc wëstrzódkòwóny.\nCzerënk kamerë sã nie zmieni, brëkùj òpcjów òbrôcaniô,\nżebë òbracac wkół strzódka.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=Klikni abò przecygni na pòdzérkù, bë ùstawic westrzódk; kółkò mëszë nad nim zmieniwô bùtnowi promiéń, ze Shift bënowi.\n\nPierscéń midzë dwùma promieniama pòwtôrzô sã kù westrzódkòwi ë na bùten, corôz mniészi ë corôz wikszi. Skrãt 1 łączi kòpie wedle spiralë Eschera, 0 dôwô wespółstrzódkòwé kòpie. Faza przëbliżô ò jeden krok: animacjô òd 0 do 1 to nieskùńczoné przëbliżanié.
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=Klikni, a pòtemù klikni równo jaczi piksel w òknach programë (òbrôzk, mapa, paletka, jinszé òkno), żebë wząc jegò farwã. Esc òprzestôwô.
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Klikni, żebë przełączëc midzë dinamiczną dôką na it. i farwą na it.
@@ -854,6 +860,8 @@ Credit=Zdrój:
 ;Credit:
 CrossEyedPreview=Pòdzérk na krziż
 ;Cross-eyed preview
+Crossfade=Przenikanié:
+;Crossfade:
 Ctrl1ToCtrl7In=Ctrl+1 do Ctrl+7 w pòrządkù lëstë, Ctrl+W zamikô
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=Krzëwé
@@ -1124,6 +1132,10 @@ DownscaleSpecular=Zmniészë òdbłësk
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=Òdrzucë lózné sztëczczi mniészé jak ten dzél trójkątów nôwikszégò sztëczka (procent); 0 zachòwiwô wszëtczé
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=Efekt Droste
+;Droste effect
+DrosteEffect2=Efekt Droste...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Nie wiém, nick nie rób
@@ -1804,6 +1816,8 @@ Infos=Infòrmacje
 ;Infos
 IniDirs=Katalodżi
 ;Ini Dirs
+InnerRadius=Bënowi promiéń:
+;Inner radius:
 Input=Wpisënk
 ;Input
 InputTheHeightDivisor=Wpiszë dzelnik wësokòscë:
@@ -2740,6 +2754,8 @@ OriginalParameterSizeWidthHeight=Òriginalnô wiôlgòsc parametrów (szérzawa,
 ;Original parameter size (width, height):
 OtherFiles=Jiné lopczi
 ;Other files
+OuterRadius=Bùtnowi promiéń:
+;Outer radius:
 OutputFile=Lopk wińdzeniô:
 ;Output file:
 OutputFolder=Katalog docelowi:
@@ -2836,6 +2852,8 @@ PausingOnNextFrame=Zatrzimanié przë nôslédnym òbrôzkù...
 ;Pausing on next frame...
 PercentOfLocalDE=Procent lokalnégò DE
 ;Percent of local DE
+Phase=Faza:
+;Phase:
 Picture=òbrôzk
 ;picture
 PictureJPEG=Òbrôzk (JPEG)
@@ -3122,6 +3140,8 @@ RendersTheMiddleOfThePicture=Renderëje strzódk òbrazu samim przédnym przebie
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Pòwtórz òd tuwò
 ;Repeat from here
+RepeatThePictureInItself=Pòwtórzë òbrôz w nim samim (efekt Droste)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=Renderuj znowa wszëtczé pòdzérczi kluczowëch klatków
 ;Rerender all keyframe preview images
 Reset=wëzerëj
@@ -3716,6 +3736,8 @@ TheCameraFliesOnIntoThe=Kamera leci dali w głãbiã fraktala, zoom jidze za òd
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=kamera òpùscëła fraktal
 ;the camera left the fractal
+TheCentreAsAPartOf=Westrzódk jakno dzél szérzë ë wësokòscë òbrazu; 0,5 to westrzódk òbrazu
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=Wëbróné wôrtnota we wszëtczich klatkach animacji: przecygni kwadrat klucznégò ùjęcô w górã abò w dół, abò klëknij gò ë wpiszë wôrtnotã
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=Farwa jakno szesnôstkòwé RGB, jakno #RRGGBB (# nie je nót; #RGB téż dzejô)
@@ -3816,14 +3838,22 @@ TheNewestJobSoFarRendered=Nônowszô robòta donëchczôs: wërenderowóné dzé
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=Parametrë ju nie pasëją do nieskùńczonégò rechòwaniô: wcësni "Rechùj 3D", bë je wërechòwac.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=Òd 0 do 1: dzél krokù, na jaczim sąsedné kòpie sã przenikają; 0 òstôwiô òstré kantë
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=W kòmbinacji DE dzél {} mieszô fòrmùłë dIFS ({}) z jinszima ({}). Kòżdi dzél rechùje leno jeden ôrt: wstôw fòrmùłë dIFS w jeden dzél, a jinszé w drëdżi (karta "DEcombinate" w òknie fòrmùłów òznôczô, dze zaczinô sã drëdżi dzél).
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=Òbrôzk nie pasëje do swòjégò rechòwaniô: wërechùj gò znowa.
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=Òbrôz pòwtórzony w se samim, jak w Galerii grafików Eschera: slédny przebiég pò całim òbrazu, zapisywóny z paramétrama
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=Wëkùńczenié òbrôzka pò wszëtczich jinszich przebiegach: ekspozycjô, pòswiata wkół jasnégò swiatła, filmòwé mapòwanié tónów, kòrekcjô farwów, winieta ë farwné òbrąbczi
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=Farwa płaszczëznë (klëknij, żebë zmienic)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=Pòdzérk to wërechòwóny òbrôz w pòmniészenim. Malëj terô malëje efekt w fùl wiôlgòscë; je zapisywóny z paramétrama ë brëkòwóny w klatkach animacji.
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=Promienie jakno dzéle krótszégò bòkù òbrazu: pierscéń midzë nima to zachòwóny dzél òbrazu
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=promiéń bënowi kùlë sfericznégò zgibu; co leżi bëne, je rozdmùchiwóné; 0,5 to klasycznô wôrtnota, 0 gò wëłącziwô
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=Òbrôcanié je wëkònywóné wkół strzódka (Xmid, Ymid, Zmid)
@@ -3836,6 +3866,8 @@ TheSelectionMustBeBiggerThan=Wëbiérk mùszi bëc wikszi jak 2 piksle w szérzi
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=wëbiérk mùszi bëc wikszi jak 2 piksle w szérzi ë wësokòscë
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=Ùstôwë wrôcają do zôczątkòwëch wôrtnotów
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=Dzelony katalog roju
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=Sinusowi bulb, w chtërnym mòże bëc ùżëwóné lëbòwné wôrtnotë pòtãdżi; rechòwanié je pòwòlniészé jak przë całkòwitëch pòtãdżach.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3898,6 +3930,8 @@ ThreadsForJobs0AllCores=Wątczi dlô robòtów (0 = wszëtczé jądra):
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=Próg do 0:
 ;Threshold to 0:
+TickRepeatThePictureIn=Zaznaczë „Pòwtórzë òbrôz w nim samim”, bë ùzdrzec efekt na wërechòwónym òbrazu.
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..do pòsobnégò òdswiéżeniô
 ;..til next update
 TileCountHorizontal=Lëczba kachlów,  pòzémno:
@@ -3988,10 +4022,14 @@ TurnOnOffTheJuliaMode=Włączô/wëłączô trib Julia
 ;Turn on/off the julia mode
 Turned=Òbrócony:
 ;Turned:
+TurnsOfTheSpiralPerStep=Òbrotë spiralë na jeden krok pòmniészeniô: 0 wespółstrzódkòwé kòpie, 1 spirala Eschera, 2 barżi stromô, ùjemné w drëgą stronã
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=Òbrotnica
 ;Turntable
 TweakOfParametersBy=Przeróbka parametrów òd {}
 ;Tweak of parameters by {}
+TwistTurns=Skrãt (òbrotë):
+;Twist (turns):
 Type=Ôrt:
 ;Type:
 Type2=Ôrt
@@ -4286,6 +4324,8 @@ Zoom=Zblëżenié:
 ;Zoom:
 Zoom2=Zoom
 ;Zoom
+ZoomsThroughOneShrinkStep=Przëbliżô ò jeden krok pòmniészeniô: 1 wëzdrzi jak 0. Animùj òd 0 do 1, bë dostac nieskùńczoné przëbliżanié
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Pòz. Z
 ;Zpos
 Zrot=Òbr. Z

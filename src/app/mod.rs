@@ -43,6 +43,7 @@ pub mod formula_book_form;
 pub mod steps_form;
 pub mod bench_form;
 pub mod texture_form;
+pub mod droste_form;
 pub mod util;
 pub mod voxel_form;
 
@@ -54,7 +55,7 @@ use std::path::PathBuf;
 pub const FORMS: &[&str] = &[
     "Mand", "FormulaGUI", "LightAdjust", "PostProcessForm", "Navigator", "Animation", "AniPreviewWindow", "AniProcess",
     "BatchForm", "BRInfoWindow", "ColorOptionForm", "ColorPick", "FormulaParser", "IniDirsForm", "MapSequencesGUI",
-    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "Share", "FormulaBook", "Steps", "Benchmark", "TextureExport", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
+    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "Share", "FormulaBook", "Steps", "Benchmark", "TextureExport", "Droste", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
     "VoxelExport", "ZBuf16BitGenUI", "Curves", "BulbTracer2UI", "HeightMapGenUI", "JITFormulaEditGUI", "MeshPreviewUI", "LanguageGUI", "HotkeysGUI",
 ];
 
@@ -89,6 +90,7 @@ pub struct Mb3d {
     pub steps: steps_form::State,
     pub bench: bench_form::State,
     pub texture: texture_form::State,
+    pub droste: droste_form::State,
     pub voxel: voxel_form::State,
     pub btracer: bulbtracer_form::State,
     pub splat: splat_form::State,
@@ -256,6 +258,7 @@ impl App for Mb3d {
             "StepsFrm" => steps_form::event(self, ui, e),
             "BenchFrm" => bench_form::event(self, ui, e),
             "TextureFrm" => texture_form::event(self, ui, e),
+            "DrosteFrm" => droste_form::event(self, ui, e),
             "AiConnectFrm" => ai_form::event(self, ui, e),
             "ExperimentalFrm" => experimental_form::event(self, ui, e),
             "AnimTemplatesFrm" => anim_templates_form::event(self, ui, e),
@@ -315,6 +318,7 @@ impl App for Mb3d {
         file_preview::idle(self, ui);
         steps_form::idle(self, ui);
         bench_form::idle(self, ui);
+        droste_form::idle(self, ui);
         history_form::idle(self, ui);
         log_form::idle(self, ui);
     }
@@ -453,6 +457,7 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         steps: Default::default(),
         bench: Default::default(),
         texture: Default::default(),
+        droste: Default::default(),
         voxel: voxel_form::State::default(),
         btracer: bulbtracer_form::State::default(),
         splat: splat_form::State::default(),

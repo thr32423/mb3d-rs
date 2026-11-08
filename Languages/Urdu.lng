@@ -563,6 +563,10 @@ CautionTheProcessingsBelowMustBe=احتیاط:  نیچے دی گئی پروسی�
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: سب سے چھوٹا عدد صحیح >= X, |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=مرکز x:
+;Centre x:
+CentreY=مرکز y:
+;Centre y:
 Change=تبدیل
 ;Change
 ChangeParams=پیرامیٹرز بدلیں
@@ -633,6 +637,8 @@ ClickOnTheButtonAndAfterwards3=بٹن پر کلک کریں اور پھر تصو�
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=تصویر میں جس شے کو مرکز میں لانا ہو اس پر کلک کریں۔\nکیمرے کی سمت نہیں بدلے گی، درمیانی نقطے کے گرد گھمانے\nکے لیے گردش کے اختیارات استعمال کریں۔
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=مرکز مقرر کرنے کے لیے پیش منظر پر کلک کریں یا گھسیٹیں؛ اس پر ماؤس وہیل بیرونی رداس بدلتا ہے، Shift کے ساتھ اندرونی۔\n\nدونوں رداسوں کے درمیان کا حلقہ مرکز کی طرف اور باہر کی طرف دہرایا جاتا ہے، چھوٹا ہوتا جاتا اور بڑا ہوتا جاتا۔ 1 کا بل نقلوں کو ایشر کے مرغولے کے ساتھ جوڑتا ہے، 0 ہم مرکز نقلیں دیتا ہے۔ مرحلہ ایک قدم زوم کرتا ہے: 0 سے 1 تک کی حرکت ایک لامتناہی زوم ہے۔
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=کلک کریں، پھر پروگرام کی ونڈوز میں کسی بھی پکسل پر کلک کریں (تصویر، نقشہ، پیلیٹ، کوئی اور ونڈو) تاکہ اس کا رنگ لیا جائے۔ Esc روک دیتا ہے۔
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Dynfog on its اور Color on its کے درمیان بدلنے کے لیے کلک کریں
@@ -855,6 +861,8 @@ Credit=کریڈٹ:
 ;Credit:
 CrossEyedPreview=کراس آئیڈ پیش منظر
 ;Cross-eyed preview
+Crossfade=آمیزش:
+;Crossfade:
 Ctrl1ToCtrl7In=فہرست کی ترتیب میں Ctrl+1 سے Ctrl+7، بند کرنے کے لیے Ctrl+W
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=خم
@@ -1125,6 +1133,10 @@ DownscaleSpecular=اسپیکولر چھوٹا کریں
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=سب سے بڑے ٹکڑے کی مثلثوں کے اس حصے (فیصد) سے چھوٹے ڈھیلے ٹکڑے ہٹائیں؛ 0 سب رکھتا ہے
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=ڈروستے اثر
+;Droste effect
+DrosteEffect2=ڈروستے اثر...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=پتا نہیں، کچھ نہ کریں
@@ -1805,6 +1817,8 @@ Infos=معلومات
 ;Infos
 IniDirs=Ini Dirs
 ;Ini Dirs
+InnerRadius=اندرونی رداس:
+;Inner radius:
 Input=ان پٹ
 ;Input
 InputTheHeightDivisor=اونچائی کا مقسوم علیہ درج کریں:
@@ -2741,6 +2755,8 @@ OriginalParameterSizeWidthHeight=اصل پیرامیٹر سائز (چوڑائی�
 ;Original parameter size (width, height):
 OtherFiles=دوسری فائلیں
 ;Other files
+OuterRadius=بیرونی رداس:
+;Outer radius:
 OutputFile=آؤٹ پٹ فائل:
 ;Output file:
 OutputFolder=آؤٹ پٹ فولڈر:
@@ -2837,6 +2853,8 @@ PausingOnNextFrame=اگلے فریم پر رک جائے گا...
 ;Pausing on next frame...
 PercentOfLocalDE=مقامی DE کا فیصد
 ;Percent of local DE
+Phase=مرحلہ:
+;Phase:
 Picture=تصویر
 ;picture
 PictureJPEG=تصویر (JPEG)
@@ -3123,6 +3141,8 @@ RendersTheMiddleOfThePicture=تصویر کے درمیان کو صرف مرکزی
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=یہاں سے دہرائیں
 ;Repeat from here
+RepeatThePictureInItself=تصویر کو اسی کے اندر دہرائیں (ڈروستے اثر)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=تمام کی فریم پیش منظر تصاویر دوبارہ رینڈر کریں
 ;Rerender all keyframe preview images
 Reset=ری سیٹ
@@ -3717,6 +3737,8 @@ TheCameraFliesOnIntoThe=کیمرہ فریکٹل کے اندر اڑتا رہتا 
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=کیمرہ فریکٹل سے باہر نکل گیا
 ;the camera left the fractal
+TheCentreAsAPartOf=مرکز تصویر کی چوڑائی اور اونچائی کے حصے کے طور پر؛ 0.5 درمیان ہے
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=اینیمیشن کے تمام فریموں پر چنی گئی قدر: کسی کی فریم کا مربع اوپر یا نیچے گھسیٹیں، یا اس پر کلک کر کے قدر لکھیں
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=رنگ ہیکساڈیسیمل RGB میں، بطور #RRGGBB (# اختیاری ہے؛ #RGB بھی چلتا ہے)
@@ -3817,14 +3839,22 @@ TheNewestJobSoFarRendered=اب تک کا تازہ ترین کام: رینڈر ش
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=پیرامیٹرز اب نامکمل حساب سے میل نہیں کھاتے: ان کا حساب کرنے کے لیے "3D حساب کریں" دبائیں۔
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=0 سے 1: قدم کا وہ حصہ جس پر پڑوسی نقلیں آپس میں گھلتی ہیں؛ 0 سخت کنارے چھوڑتا ہے
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=DE امتزاج کا {} حصہ dIFS فارمولوں ({}) کو دوسروں ({}) کے ساتھ ملاتا ہے۔ ہر حصہ صرف ایک قسم کا حساب کرتا ہے: dIFS فارمولے ایک حصے میں اور باقی دوسرے حصے میں رکھیں (فارمولا ونڈو کا "DE امتزاج" ٹیب طے کرتا ہے کہ دوسرا حصہ کہاں سے شروع ہو)۔
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=تصویر اپنے حساب سے میل نہیں کھاتی: اس کا دوبارہ حساب کریں۔
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=تصویر اپنے ہی اندر دہرائی گئی، جیسے ایشر کی «پرنٹ گیلری» میں: پوری تصویر پر آخری مرحلہ، پیرامیٹرز کے ساتھ محفوظ ہوتا ہے
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=باقی تمام مراحل کے بعد تصویر کی تکمیل: ایکسپوژر، تیز روشنی کے گرد دمک، فلمی ٹون میپنگ، رنگ کی درجہ بندی، وگنیٹ اور رنگین کنارے
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=سطح کا رنگ (بدلنے کے لیے کلک کریں)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=پیش منظر حساب کی گئی تصویر چھوٹے سائز میں ہے۔ «ابھی پینٹ کریں» اثر کو پورے سائز میں پینٹ کرتا ہے؛ یہ پیرامیٹرز کے ساتھ محفوظ ہوتا ہے اور حرکت پذیری کے فریموں میں استعمال ہوتا ہے۔
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=رداس تصویر کے چھوٹے پہلو کے حصوں کے طور پر: ان کے درمیان کا حلقہ تصویر کا وہ حصہ ہے جو رکھا جاتا ہے
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=کروی تہ کے اندرونی گولے کا نصف قطر؛ اس کے اندر جو ہے وہ پھلایا جاتا ہے؛ 0.5 کلاسک قدر ہے، 0 اسے بند کرتا ہے
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=گردش درمیانی نقطے (Xmid, Ymid, Zmid) کے گرد ہوتی ہے
@@ -3837,6 +3867,8 @@ TheSelectionMustBeBiggerThan=منتخب حصہ چوڑائی اور اونچائ�
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=منتخب حصہ چوڑائی اور اونچائی میں 2 پکسلز سے بڑا ہونا چاہیے
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=ترتیبات واپس اپنی ابتدائی قدروں پر
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=سوارم کا مشترکہ فولڈر
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=سائن بلب جس میں من مانی پاور قدریں استعمال ہو سکتی ہیں، حساب انٹیجر پاورز کے مقابلے میں سست ہے۔\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3899,6 +3931,8 @@ ThreadsForJobs0AllCores=کاموں کے لیے تھریڈز (0 = تمام کور
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=حد 0 تک:
 ;Threshold to 0:
+TickRepeatThePictureIn=حساب کی گئی تصویر پر اثر دیکھنے کے لیے «تصویر کو اسی کے اندر دہرائیں» پر نشان لگائیں۔
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..اگلی اپ ڈیٹ تک
 ;..til next update
 TileCountHorizontal=ٹائلز کی تعداد،  افقی:
@@ -3989,10 +4023,14 @@ TurnOnOffTheJuliaMode=جولیا موڈ چالو/بند کریں
 ;Turn on/off the julia mode
 Turned=گھمایا:
 ;Turned:
+TurnsOfTheSpiralPerStep=ہر تصغیری قدم پر مرغولے کے چکر: 0 ہم مرکز نقلیں، 1 ایشر کا مرغولہ، 2 زیادہ تیز، منفی الٹی سمت
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=پورا چکر
 ;Turntable
 TweakOfParametersBy={} کے پیرامیٹرز میں ترمیم
 ;Tweak of parameters by {}
+TwistTurns=بل (چکر):
+;Twist (turns):
 Type=قسم:
 ;Type:
 Type2=قسم
@@ -4287,6 +4325,8 @@ Zoom=زوم:
 ;Zoom:
 Zoom2=زوم
 ;Zoom
+ZoomsThroughOneShrinkStep=ایک تصغیری قدم سے زوم کرتا ہے: 1 ویسا ہی لگتا ہے جیسا 0۔ لامتناہی زوم کے لیے اسے 0 سے 1 تک متحرک کریں
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Zpos
 ;Zpos
 Zrot=Zrot

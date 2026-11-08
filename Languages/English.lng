@@ -562,6 +562,10 @@ CautionTheProcessingsBelowMustBe=Caution:  The processings below must be calcula
 ;PostProForm.Label3.Caption
 CeilSmallestIntegerXXMaxInt={ Ceil: Smallest integer >= X, |X| < MaxInt }
 ;JITFormulaEditorForm.SupportedFunctionsEdit.Lines
+CentreX=Centre x:
+;DrosteFrm.CxLabel.Caption
+CentreY=Centre y:
+;DrosteFrm.CyLabel.Caption
 Change=Change
 ;MutaGenFrm.Label7.Caption, MutaGenFrm.Label11.Caption
 ChangeParams=Change Params
@@ -632,6 +636,8 @@ ClickOnTheButtonAndAfterwards3=Click on the button and afterwards on the object 
 ;Mand3DForm.Button17.Hint
 ClickOnTheObjectInThe=Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
 ;Mand3DForm.SpeedButton30.Hint
+ClickOrDragOnThePreview=Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
+;DrosteFrm.NoteLabel.Caption
 ClickThenClickAnyPixelIn=Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ;the program
 ClickToChangeBetweenDynfogOn=Click to change between Dynfog on its and Color on its
@@ -671,7 +677,7 @@ ClickToTypeTheZoomIt=Click to type the zoom (it stays: fixed zoom).
 ClippingR=ClippingR:
 ;PostProForm.Label2.Caption
 Close=Close
-;AiConnectFrm.Button3.Caption, AnimTemplatesFrm.CloseBtn.Caption, BenchFrm.CloseBtn.Caption and 12 more
+;AiConnectFrm.Button3.Caption, AnimTemplatesFrm.CloseBtn.Caption, BenchFrm.CloseBtn.Caption and 13 more
 CloseMesh=Close Mesh
 ;BulbTracer2Frm.CloseMeshCheckbox.Caption
 CloseTheCurrentWindow=Close the current window:
@@ -854,6 +860,8 @@ Credit=Credit:
 ;ShareFrm.Label3.Caption
 CrossEyedPreview=Cross-eyed preview
 ;Mand3DForm.StereoCrossCheck.Caption
+Crossfade=Crossfade:
+;DrosteFrm.BlendLabel.Caption
 Ctrl1ToCtrl7In=Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 ;HotkeysFrm.DefaultsBtn.Hint
 Curves=Curves
@@ -1124,6 +1132,10 @@ DownscaleSpecular=Downscale specular
 ;FColorOptions.Button3.Caption
 DropTheLoosePiecesSmallerThan=Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 ;BulbTracer2Frm.IslandsLbl.Hint, BulbTracer2Frm.IslandsEdit.Hint
+DrosteEffect=Droste effect
+;DrosteFrm.Caption
+DrosteEffect2=Droste effect...
+;PostProForm.DrosteBtn.Caption
 Ds=Ds:
 ;FormulaGUIForm.Label18.Caption; the program
 DunnoDoNothing=Dunno, do nothing
@@ -1804,6 +1816,8 @@ Infos=Infos
 ;Mand3DForm.TabSheet5.Caption
 IniDirs=Ini Dirs
 ;Mand3DForm.IniDirsBtn.Caption
+InnerRadius=Inner radius:
+;DrosteFrm.InnerLabel.Caption
 Input=Input
 ;the program
 InputTheHeightDivisor=Input the height divisor:
@@ -2740,6 +2754,8 @@ OriginalParameterSizeWidthHeight=Original parameter size (width, height):
 ;TilingForm.Label2.Caption
 OtherFiles=Other files
 ;HistoryFrm.ComboBox1.Items
+OuterRadius=Outer radius:
+;DrosteFrm.OuterLabel.Caption
 OutputFile=Output file:
 ;BulbTracer2Frm.SelectOutputFilenameBtn.Caption, SplatFrm.FileLabel.Caption
 OutputFolder=Output folder:
@@ -2785,13 +2801,13 @@ PNGTransparentBackgroundPng=PNG transparent background (*.png)
 PaintClouds=Paint clouds
 ;PostProForm.CloudsCbx.Caption
 PaintNow=Paint now
-;PostProForm.CloudsNowBtn.Caption, PostProForm.MaterialNowBtn.Caption, PostProForm.FinishNowBtn.Caption
+;DrosteFrm.PaintBtn.Caption, PostProForm.CloudsNowBtn.Caption, PostProForm.MaterialNowBtn.Caption and 1 more
 PaintOnImage=Paint on image
 ;ColorForm.CheckBox3.Caption
 PaintingAPreview=painting a preview
 ;the program
 PaintsThePictureAgainWithThe=Paints the picture again with the clouds as set here
-;PostProForm.CloudsNowBtn.Hint, PostProForm.MaterialNowBtn.Hint, PostProForm.FinishNowBtn.Hint
+;DrosteFrm.PaintBtn.Hint, PostProForm.CloudsNowBtn.Hint, PostProForm.MaterialNowBtn.Hint and 1 more
 Pano=pano.
 ;FNavigator.RadioGroup2.Items
 PanoramaModeTheFOVIsChoosen=Panorama mode:\n- The FOV is choosen automatically\n- Use the 24bit SSAO or DEAO for ambient shadows\n- A 2:1 aspect ratio is recommended, but not necessary.
@@ -2836,6 +2852,8 @@ PausingOnNextFrame=Pausing on next frame...
 ;the program
 PercentOfLocalDE=Percent of local DE
 ;FNavigator.Edit1.Hint
+Phase=Phase:
+;DrosteFrm.PhaseLabel.Caption
 Picture=picture
 ;the program
 PictureJPEG=Picture (JPEG)
@@ -3122,6 +3140,8 @@ RendersTheMiddleOfThePicture=Renders the middle of the picture with the main pas
 ;StepsFrm.DoctorNote.Caption
 RepeatFromHere=Repeat from here
 ;FormulaGUIForm.CheckBox1.Caption
+RepeatThePictureInItself=Repeat the picture in itself (the Droste effect)
+;DrosteFrm.OnCheck.Caption
 RerenderAllKeyframePreviewImages=Rerender all keyframe preview images
 ;AniProcessForm.Button5.Caption
 Reset=reset
@@ -3129,7 +3149,7 @@ Reset=reset
 Reset0=Reset 0
 ;Mand3DForm.ButtonR0.Caption
 Reset2=Reset
-;FormulaGUIForm.SpeedButton3.Caption
+;DrosteFrm.ResetBtn.Caption, FormulaGUIForm.SpeedButton3.Caption
 ResetNow=Reset now
 ;PostProForm.Button16.Caption
 ResetOffsetScale=Reset offset+scale
@@ -3716,6 +3736,8 @@ TheCameraFliesOnIntoThe=The camera flies on into the fractal, the zoom following
 ;the program
 TheCameraLeftTheFractal=the camera left the fractal
 ;the program
+TheCentreAsAPartOf=The centre as a part of the picture's width and height; 0.5 is the middle
+;DrosteFrm.CxEdit.Hint, DrosteFrm.CyEdit.Hint
 TheChosenValueOverAllFrames=The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 ;AnimationForm.CurvesBtn.Hint, CurvesFrm.Image1.Hint
 TheColourAsHexadecimalRGBAs=The color as hexadecimal RGB, as #RRGGBB (the # is optional; #RGB works too)
@@ -3816,14 +3838,22 @@ TheNewestJobSoFarRendered=The newest job so far: rendered parts, parts under way
 ;SwarmFrm.Image1.Hint
 TheParametersDoNotMatchThe=The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ;the program
+ThePartOfAStepOverWhich=0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
+;DrosteFrm.BlendEdit.Hint
 ThePartOfTheDECombination=The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ;the program
 ThePictureDoesNotMatchIts=The picture does not match its calculation: calculate it again.
 ;the program
+ThePictureRepeatedInItself=The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
+;DrosteFrm.OnCheck.Hint, PostProForm.DrosteBtn.Hint
 ThePictureSFinishingAfterAll=The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ;PostProForm.FinishCbx.Hint
 ThePlaneSColourClickTo=The plane's colour (click to change)
 ;Mand3DForm.GroundColBtn.Hint
+ThePreviewIsTheCalculatedPicture=The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+;the program
+TheRadiiAsPartsOfThe=The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
+;DrosteFrm.InnerEdit.Hint, DrosteFrm.OuterEdit.Hint
 TheRadiusOfTheSphericalFold=the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 ;the program
 TheRotationIsPerformedAroundThe=The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
@@ -3836,6 +3866,8 @@ TheSelectionMustBeBiggerThan=The selection must be bigger than 2 pixels in width
 ;the program
 TheSelectionMustBeBiggerThanLower=the selection must be bigger than 2 pixels in width and height
 ;the program
+TheSettingsBackToTheirStart=The settings back to their starting values
+;DrosteFrm.ResetBtn.Hint
 TheSharedFolderOfTheSwarm=The shared folder of the swarm
 ;the program
 TheSineBulbWhereArbitraryPower=The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3898,6 +3930,8 @@ ThreadsForJobs0AllCores=Threads for jobs (0 = all cores):
 ;SwarmFrm.Label3.Caption
 ThresholdTo0=Threshold to 0:
 ;PostProForm.CheckBox12.Caption
+TickRepeatThePictureIn=Tick "Repeat the picture in itself" to see the effect on the calculated picture.
+;the program
 TilNextUpdate=..til next update
 ;MCForm.Label8.Caption; the program
 TileCountHorizontal=Tile count,  horizontal:
@@ -3988,10 +4022,14 @@ TurnOnOffTheJuliaMode=Turn on/off the julia mode
 ;FNavigator.CheckBox7.Hint
 Turned=Turned:
 ;FormulaGUIForm.Part2TurnLbl.Caption
+TurnsOfTheSpiralPerStep=Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
+;DrosteFrm.TwistEdit.Hint
 Turntable=Turntable
 ;AnimationForm.OrbitBtn.Caption
 TweakOfParametersBy=Tweak of parameters by {}
 ;the program
+TwistTurns=Twist (turns):
+;DrosteFrm.TwistLabel.Caption
 Type=Type:
 ;ParamValueEditFrm.Label1.Caption
 Type2=Type
@@ -4286,6 +4324,8 @@ Zoom=Zoom:
 ;Mand3DForm.Label5.Caption, FNavigator.Label23.Caption
 Zoom2=Zoom
 ;the program
+ZoomsThroughOneShrinkStep=Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
+;DrosteFrm.PhaseEdit.Hint, DrosteFrm.PhaseBar.Hint
 Zpos=Zpos
 ;LightAdjustForm.Label15.Caption
 Zrot=Zrot

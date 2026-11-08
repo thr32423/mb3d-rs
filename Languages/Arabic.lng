@@ -563,6 +563,10 @@ CautionTheProcessingsBelowMustBe=تنبيه:  المعالجات أدناه يج
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: أصغر عدد صحيح >= X، |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=المركز x:
+;Centre x:
+CentreY=المركز y:
+;Centre y:
 Change=تغيير
 ;Change
 ChangeParams=تغيير المعاملات
@@ -633,6 +637,8 @@ ClickOnTheButtonAndAfterwards3=انقر الزر ثم انقر الجسم في �
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=انقر الجسم في الصورة لجعله في المركز.\nلن يتغير اتجاه الكاميرا، استخدم خيارات\nالدوران للدوران حول نقطة المنتصف.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=انقر أو اسحب على المعاينة لتحديد المركز؛ عجلة الفأرة فوقها تغيّر نصف القطر الخارجي، ومع Shift الداخلي.\n\nتتكرر الحلقة بين نصفي القطر نحو المركز وإلى الخارج، أصغر فأصغر وأكبر فأكبر. التواء بقيمة 1 يصل النسخ على طول لولب إيشر، و0 يعطي نسخًا متحدة المركز. الطور يقرّب عبر خطوة واحدة: تحريكه من 0 إلى 1 هو تقريب لا نهائي.
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=انقر، ثم انقر أي بكسل في نوافذ البرنامج (الصورة، خريطة، لوحة ألوان، نافذة أخرى) لأخذ لونه. Esc يوقف.
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=انقر للتبديل بين Dynfog حسب التكرارات واللون حسب التكرارات
@@ -855,6 +861,8 @@ Credit=نسب الفضل:
 ;Credit:
 CrossEyedPreview=معاينة بالعينين المتقاطعتين
 ;Cross-eyed preview
+Crossfade=التمازج:
+;Crossfade:
 Ctrl1ToCtrl7In=من Ctrl+1 إلى Ctrl+7 بترتيب القائمة، وCtrl+W للإغلاق
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=المنحنيات
@@ -1125,6 +1133,10 @@ DownscaleSpecular=تصغير اللمعان
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=إسقاط القطع المنفصلة الأصغر من هذه النسبة من مثلثات أكبر قطعة (بالمئة)؛ 0 يبقي الكل
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=تأثير دروستة
+;Droste effect
+DrosteEffect2=تأثير دروستة...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=لا أدري، لا تفعل شيئًا
@@ -1805,6 +1817,8 @@ Infos=معلومات
 ;Infos
 IniDirs=مجلدات Ini
 ;Ini Dirs
+InnerRadius=نصف القطر الداخلي:
+;Inner radius:
 Input=الإدخال
 ;Input
 InputTheHeightDivisor=أدخل قاسم الارتفاع:
@@ -2741,6 +2755,8 @@ OriginalParameterSizeWidthHeight=حجم المعاملات الأصلي (الع�
 ;Original parameter size (width, height):
 OtherFiles=ملفات أخرى
 ;Other files
+OuterRadius=نصف القطر الخارجي:
+;Outer radius:
 OutputFile=ملف الإخراج:
 ;Output file:
 OutputFolder=مجلد الإخراج:
@@ -2837,6 +2853,8 @@ PausingOnNextFrame=سيتوقف مؤقتًا عند الإطار التالي...
 ;Pausing on next frame...
 PercentOfLocalDE=نسبة مئوية من DE المحلي
 ;Percent of local DE
+Phase=الطور:
+;Phase:
 Picture=صورة
 ;picture
 PictureJPEG=الصورة (JPEG)
@@ -3123,6 +3141,8 @@ RendersTheMiddleOfThePicture=يرسم وسط الصورة بالمرحلة ال�
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=التكرار من هنا
 ;Repeat from here
+RepeatThePictureInItself=تكرار الصورة داخل نفسها (تأثير دروستة)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=إعادة تصيير كل صور معاينة الإطارات المفتاحية
 ;Rerender all keyframe preview images
 Reset=إعادة تعيين
@@ -3717,6 +3737,8 @@ TheCameraFliesOnIntoThe=تواصل الكاميرا الطيران داخل ال
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=غادرت الكاميرا الكسورية
 ;the camera left the fractal
+TheCentreAsAPartOf=المركز كجزء من عرض الصورة وارتفاعها؛ 0.5 هو الوسط
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=القيمة المختارة عبر كل إطارات الحركة: اسحب مربع إطار مفتاحي لأعلى أو لأسفل، أو انقره واكتب قيمته
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=اللون بصيغة RGB ست عشرية، مثل #RRGGBB (العلامة # اختيارية؛ و#RGB يعمل أيضًا)
@@ -3817,14 +3839,22 @@ TheNewestJobSoFarRendered=أحدث مهمة حتى الآن: الأجزاء ال
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=لم تعد المعاملات تطابق الحساب غير المكتمل: اضغط «احسب ثلاثي الأبعاد» لحسابها.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=من 0 إلى 1: الجزء من الخطوة الذي تتمازج فيه النسخ المتجاورة؛ 0 يترك حوافًا حادة
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=الجزء {} من دمج DE يخلط صيغ dIFS ({}) بصيغ أخرى ({}). كل جزء يحسب نوعًا واحدًا فقط: ضع صيغ dIFS في جزء والأخرى في الجزء الآخر (تبويب "دمج DE" في نافذة الصيغ يحدد أين يبدأ الجزء الثاني).
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=الصورة لا تطابق حسابها: احسبها من جديد.
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=الصورة مكررة داخل نفسها كما في «معرض المطبوعات» لإيشر: مرور أخير على الصورة كلها، يُحفظ مع المعاملات
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=إنهاء الصورة بعد كل المراحل الأخرى: التعريض، التوهج حول الضوء الساطع، تعيين الدرجات السينمائي، تدريج الألوان، تظليل الحواف والحواف الملونة
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=لون المستوى (انقر للتغيير)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=المعاينة هي الصورة المحسوبة بحجم مصغّر. «ارسم الآن» يرسم التأثير بالحجم الكامل؛ ويُحفظ مع المعاملات ويُستعمل في إطارات الرسوم المتحركة.
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=نصفا القطر كجزأين من ضلع الصورة الأقصر: الحلقة بينهما هي الجزء المحتفظ به من الصورة
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=نصف قطر الكرة الداخلية للطيّ الكروي؛ ما بداخلها يُضخَّم؛ 0.5 هي القيمة الكلاسيكية، و0 تعطّله
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=يجري الدوران حول نقطة المنتصف (Xmid، Ymid، Zmid)
@@ -3837,6 +3867,8 @@ TheSelectionMustBeBiggerThan=يجب أن يكون الجزء المحدد أكب
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=يجب أن يكون الجزء المحدد أكبر من 2 بكسل عرضًا وارتفاعًا
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=إعادة الإعدادات إلى قيمها الأولى
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=المجلد المشترك للسرب
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=البصلة الجيبية التي يمكن فيها استخدام قيم قوة اعتباطية، والحساب فيها أبطأ منه مع القوى الصحيحة.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3899,6 +3931,8 @@ ThreadsForJobs0AllCores=خيوط المهام (0 = كل الأنوية):
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=العتبة إلى 0:
 ;Threshold to 0:
+TickRepeatThePictureIn=علّم «تكرار الصورة داخل نفسها» لرؤية التأثير على الصورة المحسوبة.
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..حتى التحديث التالي
 ;..til next update
 TileCountHorizontal=عدد البلاطات،  أفقيًا:
@@ -3989,10 +4023,14 @@ TurnOnOffTheJuliaMode=تشغيل/إيقاف وضع جوليا
 ;Turn on/off the julia mode
 Turned=مُدار:
 ;Turned:
+TurnsOfTheSpiralPerStep=دورات اللولب لكل خطوة تصغير: 0 نسخ متحدة المركز، 1 لولب إيشر، 2 لولب أشد انحدارًا، القيم السالبة بالاتجاه المعاكس
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=دوران كامل
 ;Turntable
 TweakOfParametersBy=تعديل على معاملات {}
 ;Tweak of parameters by {}
+TwistTurns=الالتواء (دورات):
+;Twist (turns):
 Type=النوع:
 ;Type:
 Type2=النوع
@@ -4287,6 +4325,8 @@ Zoom=التكبير:
 ;Zoom:
 Zoom2=التكبير
 ;Zoom
+ZoomsThroughOneShrinkStep=يقرّب عبر خطوة تصغير واحدة: 1 يبدو مثل 0. حرّكه من 0 إلى 1 لتقريب لا نهائي
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=موضع Z
 ;Zpos
 Zrot=دوران Z

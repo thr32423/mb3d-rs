@@ -563,6 +563,10 @@ CautionTheProcessingsBelowMustBe=注意:  以下の処理は上から下の順�
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: X 以上の最小の整数、|X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=中心 x:
+;Centre x:
+CentreY=中心 y:
+;Centre y:
 Change=Juliaモードの
 ;Change
 ChangeParams=フォーミュラの
@@ -633,6 +637,8 @@ ClickOnTheButtonAndAfterwards3=ボタンをクリックした後、画像内の�
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=画像内で中心にしたいオブジェクトをクリックします。\nカメラの向きは変わりません。中心点の周りを回転させるには\n回転オプションを使用してください。
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=プレビューをクリックまたはドラッグして中心を決めます。その上でマウスホイールを回すと外側の半径が、Shift を押しながらでは内側の半径が変わります。\n\n二つの半径の間の環が、中心へ向かって、また外側へ、どこまでも小さく、どこまでも大きく繰り返されます。ねじれ 1 では複製がエッシャーの螺旋に沿ってつながり、0 では同心円の複製になります。位相は一段分ズームします。0 から 1 へのアニメーションが無限ズームです。
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=ここをクリックしてから、プログラムのウィンドウ (画像、マップ、パレット、ほかのウィンドウ) の任意のピクセルをクリックすると、その色を取得します。Esc で終了します。
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=クリックで「反復数の動的フォグ」と「反復数の色」を切り替えます。
@@ -855,6 +861,8 @@ Credit=クレジット:
 ;Credit:
 CrossEyedPreview=交差法プレビュー
 ;Cross-eyed preview
+Crossfade=クロスフェード:
+;Crossfade:
 Ctrl1ToCtrl7In=Ctrl+1 から Ctrl+7 はリストの順、Ctrl+W で閉じる
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=カーブ
@@ -1125,6 +1133,10 @@ DownscaleSpecular=スペキュラを縮小
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=最大の部分の三角形数に対してこの割合（パーセント）より小さい離れた部分を捨てます。0 ですべて残します
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=ドロステ効果
+;Droste effect
+DrosteEffect2=ドロステ効果...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=わからない、何もしない
@@ -1805,6 +1817,8 @@ Infos=情報
 ;Infos
 IniDirs=Ini フォルダー
 ;Ini Dirs
+InnerRadius=内側の半径:
+;Inner radius:
 Input=入力
 ;Input
 InputTheHeightDivisor=高さの除数を入力してください:
@@ -2741,6 +2755,8 @@ OriginalParameterSizeWidthHeight=元のパラメータのサイズ(幅、高さ)
 ;Original parameter size (width, height):
 OtherFiles=その他のファイル
 ;Other files
+OuterRadius=外側の半径:
+;Outer radius:
 OutputFile=出力ファイル:
 ;Output file:
 OutputFolder=出力フォルダ:
@@ -2837,6 +2853,8 @@ PausingOnNextFrame=次のフレームで一時停止します...
 ;Pausing on next frame...
 PercentOfLocalDE=局所DEに対する割合 (%) です。
 ;Percent of local DE
+Phase=位相:
+;Phase:
 Picture=画像
 ;picture
 PictureJPEG=画像 (JPEG)
@@ -3123,6 +3141,8 @@ RendersTheMiddleOfThePicture=画像の中央をメインパスだけで 3 つの
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=ここから繰り返す
 ;Repeat from here
+RepeatThePictureInItself=画像を画像の中に繰り返す (ドロステ効果)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=全キーフレームのプレビュー画像を再レンダリング
 ;Rerender all keyframe preview images
 Reset=リセット
@@ -3717,6 +3737,8 @@ TheCameraFliesOnIntoThe=カメラはフラクタルの奥へ飛び続け、ズ�
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=カメラがフラクタルを離れました
 ;the camera left the fractal
+TheCentreAsAPartOf=画像の幅と高さに対する割合で表した中心。0.5 が中央
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=アニメーション全フレームでの選んだ値: キーフレームの四角を上下にドラッグするか、クリックして値を入力します
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=色を 16 進数の RGB で #RRGGBB の形式で指定します (# は省略可、#RGB も使えます)
@@ -3817,14 +3839,22 @@ TheNewestJobSoFarRendered=現時点で最新のジョブ: レンダリング済�
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=パラメータが未完了の計算と一致しなくなりました。「3D計算」を押して計算してください。
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=0 から 1: 隣り合う複製が混ざり合う一段の割合。0 では境目がくっきり残ります
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=DE 組み合わせの{}部で dIFS 数式 ({}) とほかの数式 ({}) が混ざっています。各部は 1 種類しか計算できません。dIFS 数式を一方の部に、ほかの数式をもう一方の部に入れてください (第 2 部の開始位置は数式ウィンドウの「DEcombinate」タブで設定します)。
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=画像が計算内容と一致しません。もう一度計算してください。
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=エッシャーの「版画画廊」のように、画像をその内側に繰り返します。画像全体への最後の処理で、パラメータと共に保存されます
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=他のすべてのパスの後に行う画像の仕上げ: 露出、明るい光の周りのグロー、フィルミックトーンマッピング、カラーグレーディング、周辺減光、色収差
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=平面の色 (クリックで変更)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=プレビューは計算した画像を縮小したものです。「今すぐ描画」で効果を元の大きさで描きます。効果はパラメータと共に保存され、アニメーションのフレームにも使われます。
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=画像の短い辺に対する割合で表した半径。二つの半径の間の環が残される部分
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=球折りの内側の球の半径。その内側は膨らまされます。0.5 が古典的な値で、0 で無効になります
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=回転は中心点 (X 中心、Y 中心、Z 中心) の周りで行われます
@@ -3837,6 +3867,8 @@ TheSelectionMustBeBiggerThan=選択範囲は幅と高さが 2 ピクセルより
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=選択範囲は幅と高さが 2 ピクセルより大きくなければなりません
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=設定を初期値に戻します
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=スウォームの共有フォルダ
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=任意のべき乗値を使えるサインバルブ。整数べき乗より計算が遅くなります。\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3899,6 +3931,8 @@ ThreadsForJobs0AllCores=ジョブ用スレッド数(0 = 全コア):
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=しきい値を0まで:
 ;Threshold to 0:
+TickRepeatThePictureIn=「画像を画像の中に繰り返す」にチェックを入れると、計算した画像に効果が表示されます。
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..次の更新まで
 ;..til next update
 TileCountHorizontal=タイル数、横:
@@ -3989,10 +4023,14 @@ TurnOnOffTheJuliaMode=Juliaモードをオン/オフします。
 ;Turn on/off the julia mode
 Turned=回転:
 ;Turned:
+TurnsOfTheSpiralPerStep=縮小一段あたりの螺旋の回転数。0 は同心円の複製、1 はエッシャーの螺旋、2 はより急な螺旋、負の値は逆向き
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=ターンテーブル
 ;Turntable
 TweakOfParametersBy={} のパラメータをアレンジ
 ;Tweak of parameters by {}
+TwistTurns=ねじれ (回転数):
+;Twist (turns):
 Type=型:
 ;Type:
 Type2=種類
@@ -4287,6 +4325,8 @@ Zoom=ズーム:
 ;Zoom:
 Zoom2=ズーム
 ;Zoom
+ZoomsThroughOneShrinkStep=縮小一段分ズームします。1 は 0 と同じ見え方。0 から 1 へアニメーションすると無限ズームに
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Z位置
 ;Zpos
 Zrot=Z回転

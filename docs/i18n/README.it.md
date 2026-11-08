@@ -866,6 +866,37 @@ permettono di verificare ulteriormente da solo:
   suo.
 
   </details>
+* **L'effetto Droste**: l'immagine ripetuta dentro se stessa, come nella *Galleria di stampe* di Escher, con la spirale di Escher o come copie concentriche, e uno zoom senza fine quando la fase è animata.
+
+  <a href="../img/droste.jpg"><img src="../img/droste.jpg" width="760" alt="L'esempio Dodeca Torus mix come calcolato, e con l'effetto Droste: il frattale si avvolge a spirale dentro se stesso verso il centro"></a>
+
+  <details><summary>Per saperne di più</summary>
+
+  Finestra Post processing, sezione *Finishing*, pulsante *Effetto Droste...*:
+  la finestra mostra l'immagine calcolata in formato ridotto con l'effetto,
+  dal vivo. Spunta *Ripetere l'immagine dentro se stessa*, fai clic o
+  trascina sull'anteprima per fissare il centro, gira la rotella del mouse
+  sopra di essa per il raggio esterno (con Maiusc quello interno), poi
+  *Dipingi ora* la dipinge a grandezza piena. L'anello tra i due raggi è
+  l'unica parte dell'immagine che resta: si ripete verso il centro e verso
+  l'esterno, sempre più piccolo e sempre più grande. Una *torsione* di 1
+  unisce le copie lungo la spirale di Escher, 0 dà copie concentriche; la
+  *dissolvenza* fonde le copie vicine dove il bordo interno dell'anello
+  incontra quello esterno; la *fase* avanza di un passo, e l'immagine alla
+  fase 1 è quella della fase 0, così un'animazione della fase da 0 a 1 è uno
+  zoom senza fine e senza giunture fatto di una sola immagine calcolata.
+  Riesce meglio con un oggetto al centro dell'immagine o una vista dentro un
+  foro; un orizzonte che attraversa l'anello mostra i bordi delle copie.
+  Chiavi di scena `droste = centro x, centro y, raggio interno, raggio
+  esterno` (frazioni della dimensione dell'immagine, o `off`),
+  `droste_twist`, `droste_phase`, `droste_blend`; sono salvate con i
+  parametri e interpolate tra i fotogrammi chiave. L'effetto ha bisogno
+  dell'immagine intera, quindi le tessere di un Big Render e le viste del
+  Bulb Tracer non lo ricevono; un panorama a 360 gradi non ne ha. La
+  matematica è di Bart de Smit e Hendrik Lenstra (2003), i controlli del
+  filtro seguono Josh Sommers e Tom Beddard.
+
+  </details>
 * **Un rilievo fine sulla superficie**: ruvido, pietra (creste e crepe) o
   grana, più fine del dettaglio del calcolo, con una variazione di colore.
 

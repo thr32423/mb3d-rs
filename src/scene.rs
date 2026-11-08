@@ -437,6 +437,8 @@ pub struct Scene {
     /// the finishing of the picture: exposure, glow, tone mapping, colour
     /// grading, vignette, colour fringes (not in MB3D)
     pub finish: Option<crate::finish::Finish>,
+    /// the Droste effect: the picture repeated in itself (not in MB3D)
+    pub droste: Option<crate::droste::Droste>,
     /// a fine relief and colour variation on the surface (not in MB3D)
     pub detail: Option<crate::detail::Detail>,
     /// experimental speed-ups that change the picture a little (not in
@@ -632,6 +634,7 @@ impl Default for Scene {
             ground: None,
             clouds: None,
             finish: None,
+            droste: None,
             detail: None,
             experimental: Default::default(),
             post_steps: None,
@@ -694,6 +697,13 @@ impl Scene {
             f.chromatic = 0.0;
         }
         Some(f)
+    }
+
+    /// The Droste effect as the camera takes it: none on a 360 degree
+    /// panorama (its picture is a map of the sphere, without a middle to
+    /// spiral into).
+    pub fn droste_for_camera(&self) -> Option<crate::droste::Droste> {
+        self.droste.filter(|_| self.optic != CameraOptic::Panorama)
     }
 
     /// The eye's shift from the middle to the right in steps (0 without
@@ -1122,6 +1132,9 @@ impl Scene {
         }
         if let Some(f) = self.finish.filter(|f| !f.is_neutral()) {
             t.push_str(&f.to_text());
+        }
+        if let Some(d) = &self.droste {
+            t.push_str(&d.to_text());
         }
         if let Some(d) = &self.detail {
             t.push_str(&d.to_text());
@@ -1672,6 +1685,25 @@ impl Scene {
                             _ => f.chromatic = (num()? as f32).clamp(0.0, 1.0),
                         }
                     }
+                    "droste" if matches!(val.trim().to_ascii_lowercase().as_str(), "off" | "none" | "no") => s.droste = None,
+                    "droste" => {
+                        let p = vec_n(4).map_err(|_| err(format!("bad droste '{val}' (centre x, centre y, inner radius, outer radius: 0.5, 0.5, 0.12, 0.45, or off)")))?;
+                        let d = s.droste.get_or_insert_with(Default::default);
+                        d.center = [p[0] as f32, p[1] as f32];
+                        d.inner = p[2] as f32;
+                        d.outer = p[3] as f32;
+                        *d = d.clamped();
+                    }
+                    "droste_twist" | "droste_phase" | "droste_blend" => {
+                        let v = num()? as f32;
+                        let d = s.droste.get_or_insert_with(Default::default);
+                        match key.as_str() {
+                            "droste_twist" => d.twist = v,
+                            "droste_phase" => d.phase = v,
+                            _ => d.blend = v,
+                        }
+                        *d = d.clamped();
+                    }
                     "cloud_offset" => {
                         let p = vec_n(3)?;
                         s.clouds.get_or_insert_with(Default::default).offset = [p[0], p[1], p[2]];
@@ -1984,6 +2016,24 @@ mod tests {
         assert_eq!(s.finish.unwrap().vignette, 0.5);
         s.optic = CameraOptic::Fisheye;
         assert_eq!(s.finish_for_camera().unwrap().vignette, 0.5);
+    }
+
+    /// The Droste effect's keys read back as written, `off` removes it,
+    /// and a panorama has none.
+    #[test]
+    fn droste_keys_round_trip() {
+        let mut s = Scene::parse("droste = 0.4, 0.6, 0.1, 0.5\ndroste_twist = 2\ndroste_phase = 0.25\ndroste_blend = 0.2\n").unwrap();
+        let d = s.droste.unwrap();
+        assert_eq!((d.center, d.inner, d.outer, d.twist, d.phase, d.blend), ([0.4, 0.6], 0.1, 0.5, 2.0, 0.25, 0.2));
+        let again = Scene::parse(&d.to_text()).unwrap();
+        assert_eq!(again.droste, Some(d));
+        assert!(s.extra_text().contains("droste = 0.4, 0.6, 0.1, 0.5"));
+        assert!(s.droste_for_camera().is_some());
+        s.optic = CameraOptic::Panorama;
+        assert!(s.droste_for_camera().is_none());
+        let off = Scene::parse("droste_twist = 1\ndroste = off\n").unwrap();
+        assert!(off.droste.is_none());
+        assert!(Scene::parse("droste = 1, 2\n").is_err());
     }
 
     #[test]

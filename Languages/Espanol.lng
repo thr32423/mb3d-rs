@@ -562,6 +562,10 @@ CautionTheProcessingsBelowMustBe=Atención:  los procesos de abajo deben calcula
 ;Caution:  The processings below must be calculated\nfrom top to bottom and light changes will reset\nthese calculations!
 CeilSmallestIntegerXXMaxInt={ Ceil: menor entero >= X, |X| < MaxInt }
 ;{ Ceil: Smallest integer >= X, |X| < MaxInt }
+CentreX=Centro x:
+;Centre x:
+CentreY=Centro y:
+;Centre y:
 Change=Cambiar
 ;Change
 ChangeParams=Cambiar parám.
@@ -632,6 +636,8 @@ ClickOnTheButtonAndAfterwards3=Haga clic en el botón y después en el objeto de
 ;Click on the button and afterwards on the object in the image to get\nthe non shifted object distance.\nThe object part would appear in the real distance of the screen.
 ClickOnTheObjectInThe=Haga clic en el objeto de la imagen que quiera centrar.\nLa dirección de la cámara no cambia; use las opciones\nde rotación para girar alrededor del punto medio.
 ;Click on the object in the image to be centered.\nThe camera direction will not be changed, use the rotation\noptions to rotate around the midpoint.
+ClickOrDragOnThePreview=Haga clic o arrastre en la vista previa para fijar el centro; la rueda del ratón sobre ella cambia el radio exterior, con Mayús el interior.\n\nEl anillo entre los dos radios se repite hacia el centro y hacia fuera, cada vez más pequeño y cada vez más grande. Un giro de 1 une las copias a lo largo de la espiral de Escher, 0 da copias concéntricas. La fase avanza un paso: una animación de 0 a 1 es un zoom sin fin.
+;Click or drag on the preview to set the centre; the mouse wheel over it changes the outer radius, with Shift the inner one.\n\nThe ring between the two radii is repeated towards the centre and outwards, ever smaller and ever larger. A twist of 1 joins the copies along Escher's spiral, 0 gives concentric copies. The phase zooms through one step: an animation from 0 to 1 is an endless zoom.
 ClickThenClickAnyPixelIn=Pulse aquí y luego cualquier píxel de las ventanas del programa (la imagen, un mapa, una paleta, otra ventana) para tomar su color. Esc lo detiene.
 ;Click, then click any pixel in the program's windows (the picture, a map, a palette, another window) to take its color. Esc stops.
 ClickToChangeBetweenDynfogOn=Clic para alternar entre Dynfog en its y Color en its
@@ -854,6 +860,8 @@ Credit=Crédito:
 ;Credit:
 CrossEyedPreview=Vista previa ojos cruzados
 ;Cross-eyed preview
+Crossfade=Fundido:
+;Crossfade:
 Ctrl1ToCtrl7In=Ctrl+1 a Ctrl+7 en el orden de la lista, Ctrl+W para cerrar
 ;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
 Curves=Curvas
@@ -1124,6 +1132,10 @@ DownscaleSpecular=Reducir especular
 ;Downscale specular
 DropTheLoosePiecesSmallerThan=Descartar las piezas sueltas menores que esta parte de los triángulos de la pieza mayor (porcentaje); 0 conserva todas
 ;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+DrosteEffect=Efecto Droste
+;Droste effect
+DrosteEffect2=Efecto Droste...
+;Droste effect...
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Ni idea, no hacer nada
@@ -1804,6 +1816,8 @@ Infos=Info
 ;Infos
 IniDirs=Carpetas
 ;Ini Dirs
+InnerRadius=Radio interior:
+;Inner radius:
 Input=Entrada
 ;Input
 InputTheHeightDivisor=Introduzca el divisor de altura:
@@ -2740,6 +2754,8 @@ OriginalParameterSizeWidthHeight=Tamaño original de los parámetros (ancho, alt
 ;Original parameter size (width, height):
 OtherFiles=Otros archivos
 ;Other files
+OuterRadius=Radio exterior:
+;Outer radius:
 OutputFile=Archivo de salida:
 ;Output file:
 OutputFolder=Carpeta de salida:
@@ -2836,6 +2852,8 @@ PausingOnNextFrame=Pausando en el siguiente fotograma...
 ;Pausing on next frame...
 PercentOfLocalDE=Porcentaje del DE local
 ;Percent of local DE
+Phase=Fase:
+;Phase:
 Picture=imagen
 ;picture
 PictureJPEG=Imagen (JPEG)
@@ -3122,6 +3140,8 @@ RendersTheMiddleOfThePicture=Renderiza el centro de la imagen solo con la pasada
 ;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Repetir desde aquí
 ;Repeat from here
+RepeatThePictureInItself=Repetir la imagen dentro de sí misma (efecto Droste)
+;Repeat the picture in itself (the Droste effect)
 RerenderAllKeyframePreviewImages=Volver a renderizar todas las vistas previas de fotogramas clave
 ;Rerender all keyframe preview images
 Reset=restab.
@@ -3716,6 +3736,8 @@ TheCameraFliesOnIntoThe=La cámara sigue volando hacia el interior del fractal, 
 ;The camera flies on into the fractal, the zoom following the distance to it, and steers through its gaps; a keyframe every half second (Catmull-Rom). It ends early at a dead end, at the limit of double precision or when it leaves the fractal
 TheCameraLeftTheFractal=la cámara salió del fractal
 ;the camera left the fractal
+TheCentreAsAPartOf=El centro como fracción del ancho y del alto de la imagen; 0,5 es el medio
+;The centre as a part of the picture's width and height; 0.5 is the middle
 TheChosenValueOverAllFrames=El valor elegido en todos los fotogramas de la animación: arrastre el cuadrado de un fotograma clave hacia arriba o abajo, o haga clic y escriba su valor
 ;The chosen value over all frames of the animation: drag a keyframe's square up or down, or click it and type its value
 TheColourAsHexadecimalRGBAs=El color en RGB hexadecimal, como #RRGGBB (el # es opcional; #RGB también vale)
@@ -3816,14 +3838,22 @@ TheNewestJobSoFarRendered=La tarea más reciente hasta ahora: partes renderizada
 ;The newest job so far: rendered parts, parts under way (with their progress), missing parts
 TheParametersDoNotMatchThe=Los parámetros ya no coinciden con el cálculo sin terminar: pulse "Calcular 3D" para calcularlos.
 ;The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
+ThePartOfAStepOverWhich=De 0 a 1: la parte de un paso en la que las copias vecinas se funden; 0 deja bordes duros
+;0 to 1: the part of a step over which neighbouring copies crossfade; 0 leaves hard edges
 ThePartOfTheDECombination=La {} parte de la combinación de DE mezcla fórmulas dIFS ({}) con otras ({}). Cada parte calcula un solo tipo: ponga las fórmulas dIFS en una parte y las demás en la otra (la pestaña "DEcombinar" de la ventana de fórmulas fija dónde empieza la segunda parte).
 ;The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
 ThePictureDoesNotMatchIts=La imagen no coincide con su cálculo: calcúlela de nuevo.
 ;The picture does not match its calculation: calculate it again.
+ThePictureRepeatedInItself=La imagen repetida dentro de sí misma, como en la Galería de grabados de Escher: un último paso sobre toda la imagen, guardado con los parámetros
+;The picture repeated in itself, as in Escher's Print Gallery: a last pass over the whole picture, saved with the parameters
 ThePictureSFinishingAfterAll=El acabado de la imagen tras todas las demás pasadas: exposición, resplandor alrededor de la luz intensa, mapeo tonal fílmico, corrección de color, una viñeta y franjas de color
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=El color del plano (clic para cambiarlo)
 ;The plane's colour (click to change)
+ThePreviewIsTheCalculatedPicture=La vista previa es la imagen calculada a tamaño reducido. Pintar ahora pinta el efecto a tamaño completo; se guarda con los parámetros y se usa en los fotogramas de animación.
+;The preview is the calculated picture at a reduced size. Paint now paints the effect at full size; it is saved with the parameters and used for animation frames.
+TheRadiiAsPartsOfThe=Los radios como fracciones del lado más corto de la imagen: el anillo entre ellos es la parte de la imagen que se conserva
+;The radii as parts of the picture's shorter side: the ring between them is the part of the picture kept
 TheRadiusOfTheSphericalFold=el radio de la esfera interior del pliegue esférico; lo que queda dentro se infla; 0,5 es el valor clásico, 0 lo apaga
 ;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=La rotación se hace alrededor del punto medio (Xmid, Ymid, Zmid)
@@ -3836,6 +3866,8 @@ TheSelectionMustBeBiggerThan=La selección debe medir más de 2 píxeles de anch
 ;The selection must be bigger than 2 pixels in width and height.
 TheSelectionMustBeBiggerThanLower=la selección debe medir más de 2 píxeles de ancho y de alto
 ;the selection must be bigger than 2 pixels in width and height
+TheSettingsBackToTheirStart=Los ajustes vuelven a sus valores iniciales
+;The settings back to their starting values
 TheSharedFolderOfTheSwarm=La carpeta compartida del enjambre
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=El bulbo seno donde se pueden usar valores de potencia arbitrarios; el cálculo es más lento que con potencias enteras.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
@@ -3898,6 +3930,8 @@ ThreadsForJobs0AllCores=Hilos para tareas (0 = todos los núcleos):
 ;Threads for jobs (0 = all cores):
 ThresholdTo0=Umbral a 0:
 ;Threshold to 0:
+TickRepeatThePictureIn=Marque «Repetir la imagen dentro de sí misma» para ver el efecto sobre la imagen calculada.
+;Tick "Repeat the picture in itself" to see the effect on the calculated picture.
 TilNextUpdate=..hasta la próxima actualización
 ;..til next update
 TileCountHorizontal=Nº de teselas,  horizontal:
@@ -3988,10 +4022,14 @@ TurnOnOffTheJuliaMode=Activar/desactivar el modo julia
 ;Turn on/off the julia mode
 Turned=Girada:
 ;Turned:
+TurnsOfTheSpiralPerStep=Vueltas de la espiral por paso de reducción: 0 copias concéntricas, 1 la espiral de Escher, 2 una más cerrada, negativo en sentido contrario
+;Turns of the spiral per shrink step: 0 concentric copies, 1 Escher's spiral, 2 a steeper one, negative the other way round
 Turntable=Plato giratorio
 ;Turntable
 TweakOfParametersBy=Retoque de parámetros de {}
 ;Tweak of parameters by {}
+TwistTurns=Giro (vueltas):
+;Twist (turns):
 Type=Tipo:
 ;Type:
 Type2=Tipo
@@ -4286,6 +4324,8 @@ Zoom=Zoom:
 ;Zoom:
 Zoom2=Zoom
 ;Zoom
+ZoomsThroughOneShrinkStep=Avanza un paso de reducción: 1 se ve como 0. Anímelo de 0 a 1 para un zoom sin fin
+;Zooms through one shrink step: 1 looks as 0. Animate it from 0 to 1 for an endless zoom
 Zpos=Zpos
 ;Zpos
 Zrot=Zrot

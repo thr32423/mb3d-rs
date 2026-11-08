@@ -1,7 +1,7 @@
 //! Text rendering: the VCL fonts mapped to embedded TrueType faces
 //! (Liberation Sans / Mono, metric compatible with Arial / Courier New; on
 //! Windows Tahoma is used when installed, as MB3D's styles do).  Scripts
-//! whose letters join and move (Devanagari, Arabic) are shaped with
+//! whose letters join and move (Devanagari, Tamil, Arabic) are shaped with
 //! rustybuzz in the language's font; all else is drawn a character at a
 //! time. A line with right-to-left letters (Arabic, Urdu, Hebrew) is put in
 //! display order by the Unicode bidirectional algorithm (unicode-bidi).
@@ -235,9 +235,9 @@ fn glyph_of(face: Face, px: f32, key: GlyphKey) -> std::rc::Rc<Glyph> {
 }
 
 /// Characters of the scripts that need shaping: Devanagari (with its
-/// extensions and the Vedic marks), and the joiners between them.
+/// extensions and the Vedic marks), Tamil, and the joiners between them.
 fn needs_shaping(c: char) -> bool {
-    matches!(c as u32, 0x0900..=0x097F | 0xA8E0..=0xA8FF | 0x1CD0..=0x1CFF | 0x200C | 0x200D)
+    matches!(c as u32, 0x0900..=0x097F | 0x0B80..=0x0BFF | 0xA8E0..=0xA8FF | 0x1CD0..=0x1CFF | 0x200C | 0x200D)
 }
 
 /// Letters of the Arabic script (Arabic, Urdu, Persian ...), shaped right

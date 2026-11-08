@@ -26,6 +26,7 @@ DEVA = opt("--src-deva", "/usr/share/fonts/noto/NotoSansDevanagari-Regular.ttf")
 # (the UI cut: line heights that fit the windows; Urdu in it too, Nastaliq
 # would be too tall for them)
 ARAB = opt("--src-arab", "/usr/share/fonts/noto/NotoSansArabicUI-Regular.ttf")
+TAML = opt("--src-taml", "/usr/share/fonts/noto/NotoSansTamilUI-Regular.ttf")
 
 # language file, face in the CJK collection (or "deva", "arab": the
 # shaped scripts' fonts), new family name
@@ -37,8 +38,9 @@ TARGETS = [
     ("Hindi", "deva", None),
     ("Arabic", "arab", None),
     ("Urdu", "arab", None),
+    ("Tamil", "taml", None),
 ]
-SHAPED = {"deva": DEVA, "arab": ARAB}
+SHAPED = {"deva": DEVA, "arab": ARAB, "taml": TAML}
 
 
 def chars_of_language(name):

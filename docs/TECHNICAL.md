@@ -1764,10 +1764,10 @@ has not translated yet, `sync` puts the files in order (labels by ID, the
 notes, the untranslated labels listed at the end of each file as notes);
 the tests check that every reference of the forms and the code has an
 English text and every language's labels and control texts exist.
-The fonts of Japanese, Korean, Chinese and Hindi (`Languages/*.ttf`, named
+The fonts of Japanese, Korean, Chinese, Hindi, Tamil, Arabic and Urdu (`Languages/*.ttf`, named
 by `font =`) are subsets of the Noto fonts with the characters their
 language file uses (one glyph per character, no layout tables, for CJK;
-Devanagari keeps its shaping rules): `python3 tools/font_subsets.py` (needs
+Devanagari, Tamil and Arabic keep their shaping rules): `python3 tools/font_subsets.py` (needs
 fontTools) adds what a file gained and never drops a character.
 
 **Translations of the README and the wiki.** One per language of the

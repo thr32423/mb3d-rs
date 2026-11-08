@@ -193,11 +193,13 @@ you check further on your own:
   The language badge at the right end of the main window's title bar
   shows the interface language (`EN`); a click opens the language window.
   A language is a text file in the `Languages` folder next to the program.
-  Shipped: English, Deutsch, Français, Italiano, Nederlands, Polski,
-  Kaszëbsczi, हिन्दी, 日本語, 한국어, 简体中文 and 繁體中文 (each with its flag; the
-  East Asian ones bring a subset of Noto Sans CJK for their characters,
-  Hindi brings Noto Sans Devanagari, whose joined letters and vowel signs
-  are set with the rustybuzz text shaper).
+  Shipped: English, Deutsch, Español, Français, Bahasa Indonesia, Italiano,
+  Nederlands, Polski, Português, Kaszëbsczi, العربية, اردو, हिन्दी, தமிழ், 日本語,
+  한국어, 简体中文 and 繁體中文 (each with its flag; the East Asian ones bring a
+  subset of Noto Sans CJK for their characters, Hindi brings Noto Sans
+  Devanagari and Tamil Noto Sans Tamil, whose joined letters and vowel
+  signs are set with the rustybuzz text shaper; Arabic and Urdu are written
+  right to left in Noto Sans Arabic).
   The translations were machine made and checked for structure, not by
   native speakers: corrections are welcome, each is one line of the file. To translate: type the name of your language and
   press *Create language file*; the program writes `Languages/<name>.lng`
@@ -1580,9 +1582,10 @@ Mandelbulb3D, which this program is a port of, was made by these people:
   [TGlad/FragmentariumExamples](https://github.com/TGlad/FragmentariumExamples);
   this program's version is written in Rust and WGSL from that
   algorithm, with a colour per dome added.
-* **The fonts of the languages** are Noto Sans CJK (subsets) and Noto
-  Sans Devanagari by the Noto Project Authors (SIL Open Font License,
-  `Languages/OFL-*.txt`); Devanagari is shaped with
+* **The fonts of the languages** are Noto Sans CJK (subsets), Noto Sans
+  Devanagari, Noto Sans Tamil and Noto Sans Arabic by the Noto Project
+  Authors (SIL Open Font License, `Languages/OFL-*.txt`); Devanagari, Tamil
+  and Arabic are shaped with
   [rustybuzz](https://github.com/harfbuzz/rustybuzz) (MIT), the Rust port
   of HarfBuzz.
 * **The icon** is Mandelbulb3D's own icon (`m3d128.ico` from

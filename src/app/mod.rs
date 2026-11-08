@@ -38,6 +38,7 @@ pub mod tools_forms;
 pub mod unfinished_form;
 pub mod history_form;
 pub mod log_form;
+pub mod share_form;
 pub mod util;
 pub mod voxel_form;
 
@@ -49,7 +50,7 @@ use std::path::PathBuf;
 pub const FORMS: &[&str] = &[
     "Mand", "FormulaGUI", "LightAdjust", "PostProcessForm", "Navigator", "Animation", "AniPreviewWindow", "AniProcess",
     "BatchForm", "BRInfoWindow", "ColorOptionForm", "ColorPick", "FormulaParser", "IniDirsForm", "MapSequencesGUI",
-    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
+    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "Share", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
     "VoxelExport", "ZBuf16BitGenUI", "Curves", "BulbTracer2UI", "HeightMapGenUI", "JITFormulaEditGUI", "MeshPreviewUI", "LanguageGUI", "HotkeysGUI",
 ];
 
@@ -79,6 +80,7 @@ pub struct Mb3d {
     pub history: history_form::State,
     pub curves: curves_form::State,
     pub logview: log_form::State,
+    pub share: share_form::State,
     pub voxel: voxel_form::State,
     pub btracer: bulbtracer_form::State,
     pub splat: splat_form::State,
@@ -237,6 +239,7 @@ impl App for Mb3d {
             "UnfinishedFrm" => unfinished_form::event(self, ui, e),
             "HistoryFrm" => history_form::event(self, ui, e),
             "LogFrm" => log_form::event(self, ui, e),
+            "ShareFrm" => share_form::event(self, ui, e),
             "AiConnectFrm" => ai_form::event(self, ui, e),
             "ExperimentalFrm" => experimental_form::event(self, ui, e),
             "AnimTemplatesFrm" => anim_templates_form::event(self, ui, e),
@@ -339,6 +342,7 @@ impl Mb3d {
             "swarm" => swarm_form::dialog(self, ui, what, r),
             "unfinished" => unfinished_form::dialog(self, ui, what, r),
             "history" => history_form::dialog(self, ui, what, r),
+            "share" => share_form::dialog(self, ui, what, r),
             _ => {}
         }
     }
@@ -425,6 +429,7 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         history: Default::default(),
         curves: Default::default(),
         logview: Default::default(),
+        share: Default::default(),
         voxel: voxel_form::State::default(),
         btracer: bulbtracer_form::State::default(),
         splat: splat_form::State::default(),

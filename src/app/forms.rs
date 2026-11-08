@@ -35,6 +35,7 @@ pub const ALL: &[(&str, &str)] = &[
     ("Unfinished", include_str!("forms/Unfinished.dfm")),
     ("History", include_str!("forms/History.dfm")),
     ("Log", include_str!("forms/Log.dfm")),
+    ("Share", include_str!("forms/Share.dfm")),
     ("AiConnect", include_str!("forms/AiConnect.dfm")),
     ("Experimental", include_str!("forms/Experimental.dfm")),
     ("AnimTemplates", include_str!("forms/AnimTemplates.dfm")),

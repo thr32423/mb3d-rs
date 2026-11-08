@@ -344,6 +344,7 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
     app.message(ui, "");
     set_language_badge(ui);
     ui.fm(F).history_hint = tr("@MB:HistoryThePicturesCalculatedTheFiles");
+    ui.fm(F).share_hint = tr("@MB:ShareThePictureItsParametersAs");
     ui.fm(F).log_hint = tr("@MB:LogEverythingTheProgramDidIts");
     // a session before this one that never ended (see log.rs)
     if let Some(u) = crate::log::take_unclean() {
@@ -2685,6 +2686,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "LanguageBadgeClick" => ui.show("LanguageFrm"),
         "HistoryIconClick" => super::history_form::open(app, ui),
         "LogIconClick" => super::log_form::open(app, ui),
+        "ShareIconClick" => super::share_form::open(app, ui),
         "AiBtnClick" => super::ai_form::open(app, ui),
         "ExpBtnClick" => super::experimental_form::open(app, ui),
         "SwarmBtnClick" => ui.show("SwarmFrm"),
@@ -3315,6 +3317,11 @@ fn save_pic_dialog(app: &mut Mb3d, ui: &mut Ui, what: &str) {
 }
 
 /// The image as saved: reduced by the viewing scale (MB3D saves Image1).
+/// The shown picture as it is saved (reduced by the viewing scale).
+pub fn shown_picture(app: &Mb3d) -> Option<(Vec<u8>, usize, usize)> {
+    saved_image(app)
+}
+
 fn saved_image(app: &Mb3d) -> Option<(Vec<u8>, usize, usize)> {
     let (rgb, w, h) = app.main.rgb.clone()?;
     let s = app.main.image_scale.max(1) as usize;

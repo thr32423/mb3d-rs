@@ -132,6 +132,8 @@ pub const NC_LANG: i32 = 3;
 pub const NC_HISTORY: i32 = 4;
 /// `Form::nc_hot` while the mouse is on the title bar's log icon.
 pub const NC_LOG: i32 = 5;
+/// `nc_hot` of the share icon
+pub const NC_SHARE: i32 = 6;
 
 pub struct Form {
     pub name: String,
@@ -195,6 +197,11 @@ pub struct Form {
     /// `LogIconClick` event
     pub log_hint: String,
     pub log_rect: std::cell::Cell<super::canvas::Rect>,
+    /// the share icon (three joined dots) left of the log icon: its hint
+    /// (empty: no icon) and where it was painted; a click posts the form a
+    /// `ShareIconClick` event
+    pub share_hint: String,
+    pub share_rect: std::cell::Cell<super::canvas::Rect>,
     /// the language badge at the right end of the title bar (left of the
     /// window buttons, the version left of it): the language's
     /// code (`EN`; empty: none), its hint and where it was painted; a
@@ -302,6 +309,8 @@ impl Form {
             history_rect: Default::default(),
             log_hint: String::new(),
             log_rect: Default::default(),
+            share_hint: String::new(),
+            share_rect: Default::default(),
             caption_lang: String::new(),
             lang_hint: String::new(),
             lang_rect: Default::default(),

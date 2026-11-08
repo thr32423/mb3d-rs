@@ -316,6 +316,16 @@ impl Form {
                     right = r.x - 10;
                 }
             }
+            // the share icon left of it
+            self.share_rect.set(Rect::default());
+            if !self.share_hint.is_empty() {
+                let r = Rect::new(right - 16, b + (ch - 16) / 2, 16, 16);
+                if r.x > tx + 60 {
+                    draw_share_icon(cv, r, th.caption_text(active), self.nc_hot == NC_SHARE);
+                    self.share_rect.set(r);
+                    right = r.x - 10;
+                }
+            }
             let old = cv.clip_to(Rect::new(tx, b, right - tx - 4, ch));
             cv.text(tx, b + (ch - lh) / 2, self.caption(), &tf, th.caption_text(active));
             let bx = tx + cv.text_width(&tf, self.caption()) + 10;
@@ -1182,11 +1192,12 @@ impl Form {
 
     fn paint_hint(&self, cv: &mut Canvas, th: &Theme, text: &str, x: i32, y: i32) {
         let font = Font::default();
-        let lines = cv.layout_lines(text, &font, 400, true);
+        let (cw, ch) = self.client_size();
+        // (in a window narrower than a hint, it wraps at the window's width)
+        let lines = cv.layout_lines(text, &font, 400.min((cw - 10).max(120)), true);
         let lh = line_height(&font);
         let w = lines.iter().map(|l| cv.text_width(&font, l)).max().unwrap_or(0) + 8;
         let h = lh * lines.len() as i32 + 4;
-        let (cw, ch) = self.client_size();
         let x = x.min(cw - w - 1).max(0);
         let y = if y + h > ch { (y - h - 24).max(0) } else { y };
         let r = Rect::new(x, y, w, h);
@@ -1357,7 +1368,7 @@ fn muted_flag(b: &super::bitmap::Bitmap, bg: u32) -> super::bitmap::Bitmap {
 /// text colour; a lighter box behind it while the mouse is on it.
 fn draw_log_icon(cv: &mut Canvas, r: Rect, col: u32, hot: bool) {
     if hot {
-        cv.round_rect(r.inset(-3), 3.0, (col & 0xFF_FFFF) | 0x3000_0000, (col & 0xFF_FFFF) | 0x3000_0000, None);
+        cv.round_fill_alpha(r.inset(-3), 3.0, (col & 0xFF_FFFF) | 0x3000_0000);
     }
     let c = col | 0xFF00_0000;
     let (x0, y0, x1, y1) = (r.x as f32 + 3.0, r.y as f32 + 1.5, r.x as f32 + 13.0, r.y as f32 + 14.5);
@@ -1374,9 +1385,31 @@ fn draw_log_icon(cv: &mut Canvas, r: Rect, col: u32, hot: bool) {
     }
 }
 
+/// The title bar's share icon: three dots joined by two lines (the usual
+/// share sign), in the title's text colour; a lighter box behind it while
+/// the mouse is on it.
+fn draw_share_icon(cv: &mut Canvas, r: Rect, col: u32, hot: bool) {
+    if hot {
+        cv.round_fill_alpha(r.inset(-3), 3.0, (col & 0xFF_FFFF) | 0x3000_0000);
+    }
+    let c = col | 0xFF00_0000;
+    let (x0, y0) = (r.x as f32, r.y as f32);
+    let (a, b, d) = ((x0 + 4.0, y0 + 8.5), (x0 + 12.0, y0 + 3.5), (x0 + 12.0, y0 + 13.5));
+    cv.line_aa(a.0, a.1, b.0, b.1, 1.3, c);
+    cv.line_aa(a.0, a.1, d.0, d.1, 1.3, c);
+    for (px, py) in [a, b, d] {
+        let n = 10;
+        let pts: Vec<(f32, f32)> = (0..n).map(|k| {
+            let t = k as f32 / n as f32 * std::f32::consts::TAU;
+            (px + 2.4 * t.cos(), py + 2.4 * t.sin())
+        }).collect();
+        cv.polygon(&pts, c);
+    }
+}
+
 fn draw_history_icon(cv: &mut Canvas, r: Rect, col: u32, hot: bool) {
     if hot {
-        cv.round_rect(r.inset(-3), 3.0, (col & 0xFF_FFFF) | 0x3000_0000, (col & 0xFF_FFFF) | 0x3000_0000, None);
+        cv.round_fill_alpha(r.inset(-3), 3.0, (col & 0xFF_FFFF) | 0x3000_0000);
     }
     let c = col | 0xFF00_0000;
     let (cx, cy, rad) = (r.x as f32 + 8.0, r.y as f32 + 8.5, 6.0);

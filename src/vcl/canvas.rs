@@ -397,6 +397,25 @@ impl<'a> Canvas<'a> {
         }
     }
 
+    /// A rounded rectangle filled with `c`, keeping its alpha (`round_rect`
+    /// paints its colours opaque): the light box behind a title bar icon
+    /// under the mouse.
+    pub fn round_fill_alpha(&mut self, r: Rect, radius: f32, c: u32) {
+        if r.is_empty() {
+            return;
+        }
+        let (x0, y0, x1, y1) = (self.dx(r.x), self.dy(r.y), self.dx(r.right()), self.dy(r.bottom()));
+        let rad = (radius * self.scale).max(0.0);
+        for y in y0..y1 {
+            for x in x0..x1 {
+                let cov = Self::rr_cov(x as f32 + 0.5, y as f32 + 0.5, x0 as f32, y0 as f32, x1 as f32, y1 as f32, rad);
+                if cov > 0.0 {
+                    self.put_dev(x, y, c, (cov.min(1.0) * 255.0) as u32);
+                }
+            }
+        }
+    }
+
     /// Filled ellipse (anti-aliased) with an optional border.
     pub fn ellipse(&mut self, r: Rect, fill: Option<u32>, border: Option<u32>) {
         let (x0, y0, x1, y1) = (self.dx(r.x) as f32, self.dy(r.y) as f32, self.dx(r.right()) as f32, self.dy(r.bottom()) as f32);

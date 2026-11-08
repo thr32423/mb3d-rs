@@ -62,6 +62,8 @@ AOCalcTime=AO calc time:
 ;Mand3DForm.Label47.Caption
 ASineIntegerPowerBulbWith=A sine integer power bulb with foldings before, like in the amazing box.
 ;the program
+ASphericalPanoramaGetsTheEXIF=A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
+;not used
 AStoppedOrInterruptedRenderKeeps=A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
 ;UnfinishedFrm.Label1.Caption
 ATransparentBackgroundNeedsPNGFrames=A transparent background needs PNG frames: choose PNG as the output format.
@@ -266,6 +268,8 @@ Around=Around:
 ;AnimTemplatesFrm.PivotLabel.Caption
 AroundTheMiddleAnObject=Around the middle (an object)
 ;SplatFrm.AroundCmb.Items
+Artist=Artist:
+;not used
 AsFullBackgroundSphere=As full background sphere:
 ;LightAdjustForm.CheckBox12.Caption
 Aspect=Aspect:
@@ -398,6 +402,8 @@ BulbTracer2SettingsBtrace2=BulbTracer2 settings (*.btrace2)
 ;the program
 By=By
 ;SwarmFrm.Caption
+By2={} by {}
+;not used
 ByOfDone={} ({}, by {}): {} of {} {} done
 ;the program
 CPU=CPU
@@ -416,6 +422,8 @@ Calculate3DAndTheBatchWindow=Calculate 3D and the Batch window with the swarm, i
 ;SwarmFrm.Label11.Caption
 CalculateAFast8x8BlockyImage=Calculate a fast 8x8 blocky image without proper lighting
 ;Mand3DForm.Button11.Hint
+CalculateAPictureFirstOrUntick=Calculate a picture first, or untick the picture.
+;not used
 CalculateASAutomatically=Calculate A.S. automatically
 ;PostProForm.CheckBox11.Caption
 CalculateColors=Calculate Colors
@@ -732,6 +740,8 @@ CopyParamsToClipboard=Copy Params to Clipboard
 ;MutaGenFrm.ToClipboardItm.Caption
 CopyTheCommandToPasteIt=Copy the command, to paste it into a terminal
 ;AiConnectFrm.Button2.Hint
+CopyThePostText=Copy the post text
+;not used
 CopyTheSelectedLineOrAll=Copy the selected line, or all the lines shown when none is selected
 ;LogFrm.Button1.Hint
 CopyTheValues=Copy the values
@@ -790,6 +800,8 @@ CreateLanguageFile=Create language file
 ;LanguageFrm.CreateBtn.Caption
 CreateMeshes=Create Meshes
 ;Mand3DForm.MeshExportBtn.Hint
+Credit=Credit:
+;not used
 CrossEyedPreview=Cross-eyed preview
 ;Mand3DForm.StereoCrossCheck.Caption
 Ctrl1ToCtrl7In=Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
@@ -1186,6 +1198,10 @@ FNr=F.nr:
 ;FNavigator.Label45.Caption
 FOVy=FOVy:
 ;Mand3DForm.Label21.Caption, FNavigator.Label8.Caption; the program
+FacebookSize2048Px360Photos=Facebook size (2048 px, 360 photos 6000 px)
+;not used
+FacebookTurnsParametersPastedIntoA=Facebook turns parameters pasted into a post into links, and groups ask for them as a text file: post this file with the picture or put it into the group's files.
+;not used
 FailedToImportFractalParametersAll=Failed to import fractal parameters. All other settings where imported?
 ;the program
 FarDepthFog=Far depth fog
@@ -1276,6 +1292,8 @@ FogOffset=Fog offset
 ;LightAdjustForm.Label1.Caption
 Folder=Folder
 ;HistoryFrm.Caption; the program
+Folder2=Folder:
+;not used
 FolderOfTheLanguageFiles=Folder of the language files:
 ;LanguageFrm.Label3.Caption
 FollowTheNewest=Follow the newest
@@ -1310,6 +1328,8 @@ FormulaValues=Formula values:
 ;FNavigator.Button3.Caption
 Formulas=Formulas
 ;FormulaGUIForm.Caption, Mand3DForm.Button10.Caption, MutaGenFrm.Label4.Caption
+Formulas2=Formulas: {}
+;not used
 FormulasColon=Formulas:
 ;HotkeysFrm.Label4.Caption
 Forward=Forward
@@ -1344,6 +1364,8 @@ FromTheCameraAllAroundA=From the camera, all around (a scene seen from inside)
 ;SplatFrm.AroundCmb.Items
 FullM3IImageFiles=Full M3I image files:
 ;IniDirForm.Button3.Caption
+FullSize=Full size
+;not used
 FunctionArcCosConstXDoubleDouble=function ArcCos(const X : Double) : Double;
 ;JITFormulaEditorForm.SupportedFunctionsEdit.Lines
 FunctionArcCoshConstXDoubleDouble=function ArcCosh(const X: Double): Double;
@@ -2052,6 +2074,8 @@ MMBWheelZoom=MMB/Wheel: zoom
 ;HeightMapGenFrm.Label2.Caption, MeshPreviewFrm.Label16.Caption
 MRelObj=M.rel.obj.
 ;LightAdjustForm.CheckBox14.Caption
+MadeWithMb3dRsMandelbulb3DFor=Made with mb3d-rs {} (Mandelbulb3D for Windows, Linux and macOS)
+;not used
 MainCalcTime=Main calc time:
 ;Mand3DForm.Label51.Caption
 MainParas=main paras
@@ -2068,6 +2092,8 @@ MakeSureThatNoLightWill=Make sure that no light will be subtracted in non-blend 
 ;LightAdjustForm.CheckBox23.Hint
 MakeSureThatTheCalcAutomatic=Make sure that the 'Calc... automatic.' options for the hard\nand ambient shadows are set, if you wish to consider them.
 ;PostProForm.Button15.Hint
+MakeTheFiles=Make the files
+;not used
 MakeTheLightOfThatPicture=Make the light of that picture warmer and render it again.
 ;the program
 MakeTheTopBottomGradientOf=Make the top-bottom gradient of the ambient and background colors\nrelative to the objects coordinate system.\nUse it in animations to fix the lights to the scenery.
@@ -2290,6 +2316,8 @@ N360Orbit=360° orbit
 ;AnimTemplatesFrm.TemplateCmb.Items
 N360Panorama=360 Panorama
 ;Mand3DForm.RadioGroup2.Items
+N360PhotosTheCameraTagFacebook=360 photos: the camera tag Facebook looks for
+;not used
 N360VR=360° VR
 ;AnimationForm.Vr360Check.Caption
 N3DAnalyticFormula=3D analytic formula
@@ -2560,6 +2588,8 @@ OpenTextParameters=Open text parameters
 ;FTextBox.Caption
 OpenTheAnimationMaker=Open the animation maker
 ;Mand3DForm.SpeedButton12.Hint
+OpenTheFolder=Open the folder
+;not used
 OpenTheFolderOfTheFile=Open the folder of the file
 ;HistoryFrm.Button2.Hint
 OpenTheFolderOfTheLog=Open the folder of the log files (one a day, kept 30 days)
@@ -2660,6 +2690,10 @@ Parameters=Parameters
 ;HistoryFrm.ComboBox1.Items
 ParametersAndLights=Parameters and lights
 ;the program
+ParametersAsATextFileTxt=Parameters as a text file (.txt)
+;not used
+ParametersAttached=Parameters: {} (attached)
+;not used
 ParametersCopiedToTheClipboard=Parameters copied to the clipboard.
 ;the program
 ParametersLoadedPressCalculate3DTo=Parameters loaded, press "Calculate 3D" to render.
@@ -2686,6 +2720,8 @@ PercentOfLocalDE=Percent of local DE
 ;FNavigator.Edit1.Hint
 Picture=picture
 ;the program
+PictureJPEG=Picture (JPEG)
+;not used
 Pictures=pictures
 ;the program
 PicturesAndFilesTheAssistantMakes=Pictures and files the assistant makes go into {}; nothing is deleted. Pictures larger than 4K are made only after you agreed, and a calculation stops after 10 minutes. Everything it does is in the log.
@@ -2730,6 +2766,8 @@ PostProcessingColon=Post processing:
 ;HotkeysFrm.Label6.Caption
 PostProcessingLower=post processing
 ;the program
+PostText=Post text:
+;not used
 Postprocess=Postprocess
 ;Mand3DForm.Button15.Caption
 PowerRaiseBaseToAnyPower={ Power: Raise base to any power.
@@ -3232,12 +3270,18 @@ ShadersCompiling=shaders compiling
 ;the program
 ShadowsAndAO=shadows and AO
 ;the program
+Share=Share
+;not used
 ShareRenderingBetweenYourComputersThrough=Share rendering between your computers through a shared folder
 ;Mand3DForm.SwarmBtn.Hint
+ShareThePictureItsParametersAs=Share: the picture, its parameters as a text file and the text of a post, ready for a group
+;not used
 ShareThisComputerRenderTheJobs=Share this computer: render the jobs of the folder, and give mine to the swarm
 ;SwarmFrm.CheckBox1.Caption
 SharedFolder=Shared folder:
 ;SwarmFrm.Label1.Caption
+SharedInThePostTextIs=Saved in the folder "{}"; the post text is on the clipboard.
+;not used
 SharingButNoOtherComputerIs=Sharing, but no other computer is in the swarm yet: renders run on this computer alone
 ;the program
 SharingStopped=sharing stopped: {}
@@ -3305,7 +3349,7 @@ Sliding=Sliding
 SlidingWalkingStep=Sliding+Walking step:
 ;FNavigator.Label7.Caption
 Slot=slot {}
-;not used
+;the program
 SlotsTo=slots {} to {}
 ;the program
 SmoothDEcomb=Smooth DEcomb:
@@ -3712,6 +3756,8 @@ Tiling=Tiling:
 ;TilingForm.Label3.Caption
 TimeNeeded=Time needed:
 ;AnimationForm.Label12.Caption
+Title=Title:
+;not used
 ToCalculateABetterHardShadow=To calculate a better hard shadow, only if 1 HS selected!
 ;PostProForm.CheckBox29.Hint
 ToClipboard=To Clipboard
@@ -3766,6 +3812,8 @@ Turned=Turned:
 ;FormulaGUIForm.Part2TurnLbl.Caption
 Turntable=Turntable
 ;AnimationForm.OrbitBtn.Caption
+TweakOfParametersBy=Tweak of parameters by {}
+;not used
 Type=Type:
 ;ParamValueEditFrm.Label1.Caption
 Type2=Type
@@ -3938,6 +3986,8 @@ White=white
 ;AniPreviewForm.CheckBox2.Caption
 WhiteOutside=White outside
 ;FVoxelExport.CheckBox1.Caption
+WhoseParametersYouStartedFromGroups=Whose parameters you started from: groups ask to credit the artist (for example: Tweak of "Pipe Organ" by Marije)
+;not used
 WhyTheCalculationCannotStart=Why the calculation cannot start
 ;the program
 Width=Width:

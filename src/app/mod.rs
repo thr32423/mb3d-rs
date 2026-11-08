@@ -13,6 +13,7 @@ pub mod curves_form;
 pub mod engine;
 pub mod experimental_form;
 pub mod event_log;
+pub mod explain;
 pub mod eta;
 mod eta_model;
 pub mod file_preview;

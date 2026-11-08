@@ -247,8 +247,19 @@ impl Ui {
         self.message_box_at(tag, caption, text, buttons);
     }
 
+    /// [`Ui::message_box`] with the buttons' own captions (modal result,
+    /// caption); the first is the default button.
+    pub fn message_box_with(&mut self, tag: &str, caption: &str, text: &str, buttons: &[(i32, String)]) {
+        self.message_box_captions(tag, caption, text, buttons);
+    }
+
     /// [`Ui::message_box`], giving the message's form.
     fn message_box_at(&mut self, tag: &str, caption: &str, text: &str, buttons: &[i32]) -> usize {
+        let b: Vec<(i32, String)> = buttons.iter().map(|&mr| (mr, mr_caption(mr))).collect();
+        self.message_box_captions(tag, caption, text, &b)
+    }
+
+    fn message_box_captions(&mut self, tag: &str, caption: &str, text: &str, buttons: &[(i32, String)]) -> usize {
         let font = Font::default();
         let measure = |s: &str| super::font::text_width(font.face(), font.em(), s).ceil() as i32;
         let lines: Vec<&str> = text.lines().collect();
@@ -256,7 +267,7 @@ impl Ui {
         let lh = line_height(&font);
         // wrapped line count estimate
         let n: i32 = lines.iter().map(|l| (measure(l) / 560 + 1).max(1)).sum::<i32>().max(1);
-        let bw = 75;
+        let bw = buttons.iter().map(|(_, c)| measure(c) + 24).max().unwrap_or(0).max(75);
         let btn_total = buttons.len() as i32 * (bw + 8) - 8;
         let w = (tw + 48).max(btn_total + 32).max(220);
         let h = n * lh + 24 + 25 + 22;
@@ -268,10 +279,11 @@ impl Ui {
             esc(text)
         ));
         let mut x = (w - btn_total) / 2;
-        for (k, &mr) in buttons.iter().enumerate() {
+        for (k, (mr, cap)) in buttons.iter().enumerate() {
+            let mr = *mr;
             let default = k == 0;
             let cancel = mr == MR_CANCEL || mr == MR_NO || buttons.len() == 1;
-            d.push_str(&button(&format!("Btn{k}"), &mr_caption(mr), x, h - 25 - 12, bw, mr, default, cancel));
+            d.push_str(&button(&format!("Btn{k}"), cap, x, h - 25 - 12, bw, mr, default, cancel));
             x += bw + 8;
         }
         d.push_str("end\n");

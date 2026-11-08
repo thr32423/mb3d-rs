@@ -194,6 +194,8 @@ Amount=Amount:
 ;PostProForm.Label12.Caption
 AnAIAssistantOnThisComputer=An AI assistant on this computer can use Mandelbulb 3D: ask it in plain words, or by voice, to describe, change and render your pictures, to make variations or to render what you worked on last. Mandelbulb 3D stays offline: the assistant's app starts it on this computer.
 ;AiConnectFrm.Label1.Caption
+AnInterpolationHybridTheInterpolateTab=An interpolation hybrid (the "Interpolate" tab of the Formula window) blends two fractal formulas step by step; dIFS formulas cannot be blended. Use "Alternate" or "DEcombinate" for them.
+;the program
 AnUnfinishedCalculationOfThisPicture=An unfinished calculation of this picture was kept ({}).\n\nContinue it?  "No" calculates it again from the start.
 ;the program
 AnUnfinishedMonteCarloRenderOf=An unfinished Monte Carlo render of these parameters was kept ({}).\n\nContinue it?  "No" renders it again from the start.
@@ -663,9 +665,9 @@ ColorStart=Color start
 Coloring=Coloring
 ;Mand3DForm.TabSheet3.Caption
 ColorsFromFile=Colors from file...
-;not used
+;ColorForm.ColorsFileBtn.Caption; the program
 ColorsTakenFrom=Colors taken from {}
-;not used
+;the program
 Colour0Grey1AsIt=Colour: 0 grey, 1 as it is, 2 twice as colourful
 ;PostProForm.FinSatEdit.Hint
 ColourFringes=Colour fringes
@@ -1236,6 +1238,8 @@ FinishedTracingObject=Finished tracing object.
 ;the program
 Finishing=Finishing
 ;PostProForm.FinishBtn.Caption; the program
+First=first
+;the program
 First4RaysNoisy=first 4 rays (noisy)
 ;the program
 FirstCalculationOfThisFormulaCombination=First calculation of this formula combination: the graphics card's shaders are being compiled (10-30 s, only once - the driver keeps them). The CPU calculates meanwhile, the card joins when they are ready.
@@ -1298,6 +1302,8 @@ FormulaName=Formula name:
 ;JITFormulaEditorForm.Label1.Caption
 FormulaNotFound=Formula '{}' not found.
 ;the program
+FormulaNotInstalled=Formula not installed
+;the program
 FormulaNrWhereThe2ndPart=Formula nr where the 2nd part of the hybrid starts
 ;FormulaGUIForm.UpDown1.Hint
 FormulaValues=Formula values:
@@ -1333,7 +1339,7 @@ Fresnel=Fresnel:
 Fresnel0To1MoreReflection=Fresnel (0 to 1): more reflection where the surface turns away from the view, as with glass, water and lacquer (shows best with the reflections)
 ;PostProForm.FresnelEdit.Hint
 FromClipboard=From Clipboard
-;Mand3DForm.SpeedButton8.Caption
+;ColorForm.ColorsClipBtn.Caption, Mand3DForm.SpeedButton8.Caption; the program
 FromTheCameraAllAroundA=From the camera, all around (a scene seen from inside)
 ;SplatFrm.AroundCmb.Items
 FullM3IImageFiles=Full M3I image files:
@@ -1536,6 +1542,8 @@ HeightMapGeneratorPreview=HeightMap Generator Preview
 ;the program
 HelpfulIfYouWantToRedo=Helpful if you want to redo an unwanted drawing for example.
 ;PostProForm.CheckBox30.Hint
+HereTheDIFSFormulasAndThe=Here the dIFS formulas and the others take turns in the slots: move the dIFS formulas after the others first (a right click on a formula tab of the Formula window shifts and copies formulas), then use "DEcombinate".
+;the program
 Hex=Hex:
 ;the program
 HiQual=HiQual
@@ -1730,6 +1738,8 @@ InsideColor=Inside color
 ;ColorForm.Label4.Caption
 InsideRender=Inside render
 ;FormulaGUIForm.ComboBox1.Items
+InstalledFormulasWithASimilarName=Installed formulas with a similar name: {}
+;the program
 Int=Int.:
 ;LightAdjustForm.Label33.Caption
 Int64=Int64
@@ -2400,6 +2410,8 @@ NoiseFilterStrength=Noise filter: strength {}
 ;the program
 None=none
 ;the program
+NoneOfTheFormulaSlotsHolds=None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
+;the program
 Normal=Normal
 ;Mand3DForm.ComboBox2.Items
 NormalStatusForThisFormula=Normal status for this formula
@@ -2647,7 +2659,7 @@ Parameter=Parameter
 Parameters=Parameters
 ;HistoryFrm.ComboBox1.Items
 ParametersAndLights=Parameters and lights
-;not used
+;the program
 ParametersCopiedToTheClipboard=Parameters copied to the clipboard.
 ;the program
 ParametersLoadedPressCalculate3DTo=Parameters loaded, press "Calculate 3D" to render.
@@ -3061,7 +3073,7 @@ SaveAsImageAtTheLocation=Save as image at the location you specify
 SaveBtrace2=Save btrace2...
 ;BulbTracer2Frm.SaveBTracer2FileBtn.Caption
 SaveColors=Save colors...
-;not used
+;ColorForm.ColorsSaveBtn.Caption; the program
 SaveCompleteM3I=Save complete M3I
 ;Mand3DForm.Button8.Hint
 SaveExit=Save + exit
@@ -3119,7 +3131,7 @@ SavedOpenEXRFloatingPointColoursAnd=Saved {} (OpenEXR, floating point colours an
 SavedTransparentBackground=Saved {} (transparent background)
 ;the program
 SavesTheLightingWithTheseColors=Saves the lighting with these colors as a light file (.m3l, also for MB3D); "Colors from file" takes the colors back from it.
-;not used
+;ColorForm.ColorsSaveBtn.Hint
 Saving=Saving:
 ;TilingForm.Label5.Caption; the program
 SavingSucceeded=Saving succeeded
@@ -3156,6 +3168,8 @@ SecantSearchForTheSurface=Secant search for the surface
 ;ExperimentalFrm.SecantBox.Caption
 SecantSearchmode=Secant searchmode:
 ;MCForm.CheckBox6.Caption
+Second=second
+;the program
 SecondFocusPointIfDifferentFrom=Second focus point, if different from the first one\nyou get a focus line instead of a focus point.\n(physically not very realistic, but good to have)\s
 ;PostProForm.Edit10.Hint
 SeeAlsoTheMapColoringOptions=See also the map coloring options in the main windows 'Coloring' tab.
@@ -3198,6 +3212,8 @@ SessionsAndCrashes=Sessions and crashes
 ;LogFrm.ComboBox3.Items
 Set=Set
 ;CurvesFrm.SetBtn.Caption
+SetItUpNowTheFormulas=Set it up now? The formulas stay in their slots: the first part takes {}, the second part {}, joined with min (both objects).
+;the program
 SetLightfuncToCosine=Set lightfunc to cosine
 ;PostProForm.CheckBox10.Caption
 SetTheMapsOrientationRelativeTo=Set the maps orientation relative to the object.\nUse it in animations to fix the lights to the scenery.
@@ -3206,6 +3222,8 @@ SetTheVisualThemeOfThe=Set the visual theme of the application
 ;Mand3DForm.VisualThemesBtn.Hint
 SetTo0=set to 0
 ;LightAdjustForm.FogResetButton.Caption
+SetUpDECombination=Set up DE combination
+;the program
 SetsAutomaticallyTheCorrespondendingLightFunctio=Sets automatically the correspondending light function to cosine,\nwhen the shadow is calculated.\nThe cosine and the quadratic cosine function works well with the shadow.
 ;PostProForm.CheckBox10.Hint
 SettingTheVisualTheme=Setting the Visual Theme
@@ -3286,6 +3304,10 @@ Sliding=Sliding
 ;FNavigator.Label1.Caption
 SlidingWalkingStep=Sliding+Walking step:
 ;FNavigator.Label7.Caption
+Slot=slot {}
+;not used
+SlotsTo=slots {} to {}
+;the program
 SmoothDEcomb=Smooth DEcomb:
 ;FNavigator.Label53.Caption
 SmoothImageOnLoad=Smooth image on load
@@ -3453,9 +3475,9 @@ SwitchBackToTheDefaultTheme=Switch back to the default theme
 TakeTheEntryOutOfThe=Take the entry out of the history (a calculated picture's parameters and thumbnail are deleted; other files stay where they are)
 ;HistoryFrm.Button3.Hint
 TakesOnlyTheColorsFromThe=Takes only the colors from the parameters on the clipboard (copied from a post, for example).
-;not used
+;ColorForm.ColorsClipBtn.Hint
 TakesOnlyTheColorsTheSurface=Takes only the colors (the surface palette, its transparency and the inside colors) from a parameter file (.m3p, .m3i, text) or a light file (.m3l): the lights, the fractal and the view stay as they are.
-;not used
+;ColorForm.ColorsFileBtn.Hint
 TargetMapSlot=Target Map Slot
 ;MapSequencesFrm.Label3.Caption
 TargetMapSlotUseThisNumber=Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
@@ -3503,6 +3525,8 @@ TheColourAsHexadecimalRGBAs=The color as hexadecimal RGB, as #RRGGBB (the # is o
 TheColourOfDeepWaterThe=The colour of deep water: the water's own light, and the colour what lies under it turns to with depth (click to change)
 ;Mand3DForm.GroundWaterColBtn.Hint
 TheCommandLineProgramMb3dWas=The command line program mb3d was not found next to this program: install the program again.
+;the program
+TheDIFSFormulasHereOnlyTransform=The dIFS formulas here ({}) only transform space: they move, turn, fold or repeat it. A dIFS chain also needs a dIFS shape formula after them that draws something, such as boxIFS, cylinderIFS or HeightMapIFS.
 ;the program
 TheDefaultNumberingIncludes2Numbers=The default numbering includes 2 numbers, seperated in X and Y.\nIf you choose this option, the numbering is only one number,\nincreasing in each column and follows on the next row.
 ;TilingForm.CheckBox7.Hint
@@ -3580,6 +3604,8 @@ TheNewestJobSoFarRendered=The newest job so far: rendered parts, parts under way
 ;SwarmFrm.Image1.Hint
 TheParametersDoNotMatchThe=The parameters do not match the unfinished calculation any more: press "Calculate 3D" to calculate them.
 ;the program
+ThePartOfTheDECombination=The {} part of the DE combination mixes dIFS formulas ({}) with others ({}). Each part calculates one kind only: put the dIFS formulas in one part and the others in the other part (the "DEcombinate" tab of the Formula window sets where the second part starts).
+;the program
 ThePictureDoesNotMatchIts=The picture does not match its calculation: calculate it again.
 ;the program
 ThePictureSFinishingAfterAll=The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
@@ -3624,6 +3650,8 @@ Themes=Themes
 ;Mand3DForm.VisualThemesBtn.Caption
 ThereIsAFileAlready=There is a file {} already.
 ;the program
+TheseParametersUseTheFormulaWhich=These parameters use the formula "{}", which is not installed here.\n\nFormulas are files ending in .m3f. Get {}.m3f (it is often shared together with the parameters, in a group's files or in a formula pack) and put it into one of the formula folders:\n{}\n\nThen open or paste the parameters again.
+;the program
 ThingsToAskTheAssistant=Things to ask the assistant
 ;AiConnectFrm.Label4.Caption
 ThisComputer=This computer:
@@ -3639,6 +3667,8 @@ ThisRenderIsRunningRightNow=This render is running right now.
 ThisRenderKeepsNoImage=This render keeps no image.
 ;the program
 ThisRenderKeptNoParameters=This render kept no parameters.
+;the program
+ThisSceneMixesTwoKindsOf=This scene mixes two kinds of formulas in one formula chain:\n- dIFS formulas ({}) build a shape straight from distances,\n- the others ({}) are fractals iterated step by step (escape time).\nOne chain cannot calculate both kinds at once.\n\nTo show both, join them with a DE combination: the first part calculates one kind, the second part the other, and the two objects are joined (min: both objects, max: only where they overlap, smooth: with a soft seam). It is the "DEcombinate" tab at the top of the Formula window.
 ;the program
 ThisSessionLive=This session (live)
 ;LogFrm.ComboBox2.Items; the program
@@ -3908,6 +3938,8 @@ White=white
 ;AniPreviewForm.CheckBox2.Caption
 WhiteOutside=White outside
 ;FVoxelExport.CheckBox1.Caption
+WhyTheCalculationCannotStart=Why the calculation cannot start
+;the program
 Width=Width:
 ;AnimationForm.Label17.Caption, Mand3DForm.Label11.Caption
 Windows=Windows

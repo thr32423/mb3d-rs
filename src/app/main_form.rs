@@ -8,7 +8,7 @@ use super::{Mb3d, MAIN};
 use crate::math::{build_rot_matrix, mat_mul, matrix_to_angles, normalise_matrix_to, rotate_vector_reverse};
 use crate::scene::{CameraOptic, Scene};
 use crate::vcl::bitmap::Bitmap;
-use crate::vcl::form::{MouseButton, MR_CANCEL, MR_NO, MR_YES, SS_LEFT};
+use crate::vcl::form::{MouseButton, MR_CANCEL, MR_NO, MR_OK, MR_YES, SS_LEFT};
 use crate::vcl::{DialogResult, Ev, Event, Ui};
 use std::path::PathBuf;
 use std::time::Instant;
@@ -37,6 +37,9 @@ pub const ACC_PRESETS: [Preset; 4] = [
 const PRESET_FILES: [&str; 4] = ["preset_preview.txt", "preset_video.txt", "preset_mid.txt", "preset_high.txt"];
 
 pub struct State {
+    /// the fix offered with an explained calculation error (the question
+    /// is open)
+    pub explain_fix: Option<super::explain::Fix>,
     pub image_scale: i32,
     pub presets: [Preset; 4],
     pub slice_calc: u8,
@@ -215,6 +218,7 @@ pub struct State {
 impl Default for State {
     fn default() -> Self {
         State {
+            explain_fix: None,
             image_scale: 1,
             presets: ACC_PRESETS,
             slice_calc: 2,
@@ -2079,6 +2083,10 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             } else if !err.is_empty() {
                 crate::log::error("calc", &err);
                 app.message(ui, &err);
+                // the errors beginners meet, in words (and the fix offered)
+                if let Some(ex) = super::explain::calc_error(&app.scene, &err) {
+                    show_explained(app, ui, ex);
+                }
             } else if app.main.calc3d {
                 let secs = app.main.calc_start.elapsed().as_secs_f64();
                 // the last stage's time, and the later stages that did not
@@ -2745,6 +2753,14 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                 }
                 Err(e) if e.starts_with(crate::m3p::TEXT_DAMAGED) => {
                     app.message(ui, &tr("@MB:TheTextParametersOnTheClipboard"));
+                }
+                // parameters fine, a formula of them not installed (it said
+                // "no text parameters found" before)
+                Err(e) if super::explain::missing_formula_name(&e).is_some() => {
+                    app.message(ui, &e);
+                    if let Some(ex) = super::explain::missing_formula(&e) {
+                        show_explained(app, ui, ex);
+                    }
                 }
                 Err(_) => {
                     if ui.has_form("FTextBox") {
@@ -3636,12 +3652,40 @@ pub fn open_file(app: &mut Mb3d, ui: &mut Ui, p: &std::path::Path) {
             }
             show_image(app, ui);
         }
-        Err(e) => app.message(ui, &e),
+        Err(e) => {
+            app.message(ui, &e);
+            // a formula that is not installed: what to do, in words
+            if let Some(ex) = super::explain::missing_formula(&e) {
+                show_explained(app, ui, ex);
+            }
+        }
     }
+}
+
+/// An error explained in words ([`super::explain`]): a message box, with
+/// the button of its fix when the program can apply one.
+pub fn show_explained(app: &mut Mb3d, ui: &mut Ui, ex: super::explain::Explained) {
+    app.main.explain_fix = ex.fix;
+    let buttons = match ex.fix {
+        Some(super::explain::Fix::DeComb { .. }) => vec![(MR_YES, tr("@MB:SetUpDECombination")), (MR_CANCEL, tr("@MB:Cancel"))],
+        None => vec![(MR_OK, tr("@MB:OK"))],
+    };
+    ui.message_box_with("main:explained", &ex.caption, &ex.text, &buttons);
 }
 
 pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
     match (what, r) {
+        ("explained", DialogResult::Button(b)) => {
+            let fix = app.main.explain_fix.take();
+            if let (true, Some(fix)) = (*b == MR_YES, fix) {
+                // the fix into the scene and the windows, then calculate again
+                app.make_scene(ui);
+                super::explain::apply_fix(&mut app.scene, fix);
+                app.scene_to_forms(ui);
+                button2_click(app, ui);
+            }
+            return;
+        }
         ("memory", DialogResult::Button(b)) => {
             if !std::mem::take(&mut app.main.memory_ask) {
                 return;

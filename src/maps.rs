@@ -241,6 +241,17 @@ impl LightMap {
         self.data[y * (self.width + 1) + x]
     }
 
+    /// One pixel as it is, no interpolation (a background picture of the
+    /// render's own size, shown 1:1); `sqr` as in [`Self::pixel_t`].
+    pub fn pixel_at(&self, x: usize, y: usize, sqr: bool) -> [f32; 3] {
+        let p = self.at(x.min(self.width.saturating_sub(1)), y.min(self.height.saturating_sub(1)));
+        if sqr && !self.linear {
+            p.map(|v| v * v * (1.0 / 255.0))
+        } else {
+            p
+        }
+    }
+
     /// 4x4 bicubic spline with the given column / row indices; `sqr`
     /// interpolates the squared colours (`ColToSVecSqr`).
     fn spline_t(&self, cols: [usize; 4], rows: [usize; 4], xv: [f32; 4], yv: [f32; 4], sqr: bool) -> [f32; 3] {

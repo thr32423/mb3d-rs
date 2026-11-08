@@ -74,6 +74,8 @@ AMultiplierThatDefinesTheMiximal=Un moltiplicatore che definisce la lunghezza ma
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=Tempo calcolo AO:
 ;AO calc time:
+APlanarOpticWithAField=Un'ottica planare con 1 grado di campo visivo: quasi ortografica, senza prospettiva nella mappa di altezza. Poi ricalcola.
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
 ARotationAppliedEachIterationIn=una rotazione applicata a ogni iterazione, in gradi
 ;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=Un bulb seno a potenza intera con piegature preliminari, come nell'Amazing Box.
@@ -208,6 +210,8 @@ AmbientLower=ambientale
 ;ambient
 AmbientOcclusion=occlusione ambientale
 ;ambient occlusion
+AmbientOcclusion16Bit=Occlusione ambientale (16 bit)
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=Profondità raggi ambientali:
 ;Ambient rays depth:
 AmbientShadow=Ombra ambientale
@@ -282,6 +286,8 @@ Aperture=Apertura:
 ;Aperture:
 Appearance=Aspetto
 ;Appearance
+ApplyTheRecommendedSetting=Applica l'impostazione consigliata
+;Apply the recommended setting
 ApplyToImage=Applica all'immagine
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=Applica i valori modificati, perché i campi sono solo di output
@@ -372,6 +378,10 @@ BatchProcessing=Elaborazione batch
 ;Batch processing
 BatchProcessingPictureOf=Elaborazione batch: immagine {} di {}
 ;Batch processing: picture {} of {}
+Benchmark=Test di prestazioni...
+;Benchmark...
+Benchmark2=Test di prestazioni
+;Benchmark
 Between=tra:
 ;between:
 Big=grandi
@@ -450,6 +460,8 @@ Calculate3DAndTheBatchWindow=Calcola 3D e la finestra Batch con lo sciame, in
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Calcola rapidamente un'immagine a blocchi 8x8 senza illuminazione corretta
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=Calcola prima un'immagine.
+;Calculate a picture first.
 CalculateAPictureFirstOrUntick=Calcola prima un'immagine, oppure togli la spunta all'immagine.
 ;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=Calcola O.A. automaticamente
@@ -522,6 +534,8 @@ Camera=Camera
 ;Camera
 CameraColon=Fotocamera:
 ;Camera:
+CameraForTextures=Camera per texture
+;Camera for textures
 CameraLense=Obiettivo camera:
 ;Camera lense:
 Cancel=Annulla
@@ -776,6 +790,8 @@ CopyTheName=Copia il nome
 ;Copy the name
 CopyThePostText=Copia il testo
 ;Copy the post text
+CopyTheResult=Copia il risultato
+;Copy the result
 CopyTheSelectedLineOrAll=Copia la riga selezionata, o tutte le righe mostrate se nessuna è selezionata
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Copia i valori
@@ -888,6 +904,8 @@ DEOcclusionAtHalfResolution=Occlusione DE a metà risoluzione
 ;DE occlusion at half resolution
 DEStop=DE stop:
 ;DE stop:
+DEStopOfThePostPasses=DE stop dei passaggi successivi:
+;DE stop of the post passes:
 DEcombinate=DEcombinate
 ;DEcombinate
 DEstop=DEstop:
@@ -1104,6 +1122,8 @@ DownscaleDiffuseKeepReflections=Riduci il diffuso, mantieni i riflessi
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=Riduci lo speculare
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=Scarta i pezzi staccati più piccoli di questa quota dei triangoli del pezzo maggiore (percento); 0 li tiene tutti
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Non so, non fare nulla
@@ -1124,6 +1144,8 @@ DynamicFogOrVolumetricLightParams=Parametri della nebbia dinamica o della luce v
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=Nebbia dinamica:\nPiù basso è il numero, più lontano dall'oggetto compare la nebbia.\nCon dIFS la nebbia circonda la parte dell'oggetto calcolata a questa iterazione.\nZero per disattivare questa funzione e calcolare la nebbia dinamica sul numero di passi dei raggi, come di consueto.\nSuggerimento: attivare l'opzione 'First step random' per evitare gradini.\nLuce volumetrica:\nScegliere il numero della luce da cui calcolare la diffusione della luce.
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=Ogni mappa è un PNG a sé accanto alle altre: <nome>_color, _height, _normal, _ao. L'altezza è la profondità della superficie, le normali seguono la convenzione OpenGL, l'occlusione è l'ombra ambientale dell'immagine.
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=Colore bordi
 ;Edges color
 Edit=Modif.
@@ -1606,6 +1628,8 @@ HardShadowsLower=ombre nette
 ;hard shadows
 Height=Altezza:
 ;Height:
+Height16BitNearestPointWhite=Altezza (16 bit, il punto più vicino bianco)
+;Height (16 bit, nearest point white)
 HeightMapGenerator=Generatore di HeightMap
 ;HeightMap Generator
 HeightMapGeneratorPreview=Anteprima generatore HeightMap
@@ -1854,6 +1878,8 @@ IsNotAValidFloatingPoint='{}' non è un valore in virgola mobile valido
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' non è un valore intero valido
 ;'{}' is not a valid integer value
+Islands=Isole %
+;Islands %
 Iteration=Iterazione
 ;Iteration
 IterationCount=numero di iterazioni
@@ -1902,6 +1928,8 @@ JuliaOn=Julia on
 ;Julia On
 JuliaValuesXYZ=Valori Julia (x,y,z):
 ;Julia values (x,y,z):
+Keep=Mantieni %
+;Keep %
 KeepAspect=mantieni proporz.
 ;keep aspect
 KeepLights=Mantieni luci
@@ -2180,6 +2208,8 @@ MapSequences=Sequenze mappe
 ;Map Sequences
 MapType=Tipo di mappa:
 ;Map Type:
+MapsOfTheCalculatedPicture=Mappe dell'immagine calcolata:
+;Maps of the calculated picture:
 Material=Materiale
 ;Material
 Max=Max
@@ -2504,6 +2534,8 @@ Noise=-rumore
 ;-noise
 NoiseAI=-rumore IA
 ;-noise AI
+NoiseDoctor=Dottore del rumore
+;Noise doctor
 NoiseFilter=\sFiltro rumore
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=Filtro antirumore sull'immagine mostrata (riduzione del rumore DCT come "Denoise DCT" di GIMP),\ncon intensità stimata dai raggi. Il rendering stesso non viene modificato;\nil prossimo aggiornamento lo mostra di nuovo senza filtro.
@@ -2516,6 +2548,8 @@ NoneOfTheFormulaSlotsHolds=Nessuno slot delle formule contiene una formula che c
 ;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normale
 ;Normal
+NormalMap=Mappa delle normali
+;Normal map
 NormalStatusForThisFormula=Stato normale per questa formula
 ;Normal status for this formula
 NormalsOnDE=Normali su DE:
@@ -2726,6 +2760,8 @@ OverwriteExistingImages=Sovrascrivi immagini esistenti
 ;Overwrite existing images
 OverwriteExistingM3IFiles=Sovrascrivi file M3I esistenti
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=Impostazioni di passo proprie per i passaggi dopo quello principale (ombre, occlusione, luce volumetrica, riflessi)
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16 bit (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2954,6 +2990,8 @@ Range=Intervallo
 ;Range
 RawValuesMappedValuesClampedValues=Valori grezzi:\n  {}..\n  {}\nValori mappati:\n  {}..\n  {}\nValori limitati:\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=Passo del raggio dei passaggi successivi:
+;Ray step of the post passes:
 Rays=Raggi:
 ;Rays:
 RaystepDivisor=Divisore del passo dei raggi:
@@ -2986,6 +3024,8 @@ RectLower=rett.
 ;rect.
 Rectilinear=Rettilineo
 ;Rectilinear
+ReduceTheMeshToThisShare=Riduci la mesh a questa quota dei suoi vertici (percento, raggruppamento di vertici); 100 la lascia come tracciata
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Riduce gli artefatti a blocchi, non più così importante grazie all'interpolazione spline.
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=Riduce il moltiplicatore del passo dei raggi per evitare l'overstepping.\nRende il rendering più lento.
@@ -3072,6 +3112,10 @@ RenderingNow=rendering in corso
 ;rendering now
 RenderingSliceOf=Rendering sezione: {} di {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=Renderizza la scena di test fissa (Integer Power, 640 x 512, 120 iterazioni, passaggio principale) sul processore e sulla scheda grafica, così i risultati di computer diversi si confrontano. Pubblica il testo così com'è.
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=Renderizza il centro dell'immagine con il solo passaggio principale sotto tre impostazioni di passo e conta macchie e buchi di ciascuna. L'impostazione consigliata può essere applicata alla scena.
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Ripeti da qui
 ;Repeat from here
 RerenderAllKeyframePreviewImages=Rirenderizza tutte le anteprime dei keyframe
@@ -3154,6 +3198,14 @@ Rows=Righe
 ;Rows
 RowsOfTiles=Righe di riquadri
 ;Rows of tiles
+RunTheBenchmark=Avvia il test
+;Run the benchmark
+RunTheNoiseDoctor=Avvia il dottore del rumore
+;Run the noise doctor
+Running0=In corso: {0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=Il dottore del rumore è al lavoro ...
+;Running the noise doctor ...
 SLeft=mancano {} s
 ;{} s left
 SSAO15=SSAO15
@@ -3512,6 +3564,10 @@ StepRelax=Passo allungato:
 ;Step relax:
 StepcountForBinarySearch=Numero di passi per \nla ricerca binaria:
 ;Stepcount for \nbinary search:
+StepsAndNoise=Passi e rumore
+;Steps and noise
+StepsAndNoise2=Passi e rumore...
+;Steps and noise...
 StepwidthLimiter=Limitatore ampiezza passo:
 ;Stepwidth limiter:
 Stereo=Stereo
@@ -3616,6 +3672,10 @@ TargetMapSlotUseThisNumber=Slot mappa di destinazione. Usare questo numero come 
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=Modello:
 ;Template:
+TextureExport=Esporta texture...
+;Texture export...
+TextureExport2=Esporta texture
+;Texture export
 TheAmazingBoxAkaMandboxFormula=La formula 'Amazing Box' alias Mandbox, inventata da TGlad su fractalforums.com.\n\nLa formula per un'iterazione si presenta così:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=La somma dei colori diffuso e speculare aggiunti è maggiore di 1,\nridurli per una colorazione più realistica?
@@ -3734,6 +3794,8 @@ TheLastSessionDidNotEnd=L'ultima sessione non è terminata correttamente (si è 
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=L'editor principale sta ancora renderizzando. Fermarlo prima o attendere che abbia finito.
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=Il passaggio principale può avanzare con un passo molto fine mentre ombre, occlusione e riflessi ne mantengono uno normale: il passo fine costa tempo solo dove si vede. Salvato con i parametri.
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=La vista della finestra principale
 ;The main window's view
 TheMapOptionsCalculatesXY=Le opzioni mappa calcolano le coordinate x,y dal vettore\nspecifico per le mappe sferiche; questo cambia anche la prima scelta colore\nche di solito si basa sulle iterazioni lisce.\nDevi ricalcolare l'immagine per vedere il risultato delle\nmodifiche a queste opzioni.
@@ -3850,6 +3912,8 @@ TileXYLower=riquadro X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=Riquadro X={} Y={} salvato.
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=Ripetibile: specchiata al doppio della dimensione, senza giunture su ogni bordo
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=riquadri
 ;tiles
 Tiles2=Riquadri
@@ -4124,10 +4188,14 @@ Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=Scrivi le mappe
+;Write the maps
 WritesTheEnglishTextsAsA=Scrive i testi inglesi come nuovo file di lingua con questo nome; tradurli con un editor di testo, poi premere Ricarica
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=Scrive l'immagine com'è ora (le righe non finite come sfondo) come file .m3i
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=Scritto: {0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=Scritto: {}\nTradurre i testi a destra di "=" con un editor di testo, poi premere Ricarica.
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=Angolo X:

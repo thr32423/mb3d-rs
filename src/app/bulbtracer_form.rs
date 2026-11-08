@@ -223,6 +223,9 @@ fn header_from_ui(app: &mut Mb3d, ui: &Ui) {
         [fv(ui, "TraceZMinEdit"), fv(ui, "TraceZMaxEdit")],
     ];
     h.mp.close = ui.checked(F, "CloseMeshCheckbox");
+    h.mp.islands = fv(ui, "IslandsEdit").clamp(0.0, 100.0);
+    let keep = fv(ui, "KeepEdit");
+    h.mp.decimate = if keep <= 0.0 { 100.0 } else { keep.clamp(0.1, 100.0) };
     h.output = ui.text(F, "FilenameREd");
 }
 
@@ -263,6 +266,8 @@ fn ui_from_header(app: &mut Mb3d, ui: &mut Ui) {
     ui.set_checked(F, "OpenGLPreviewCheckbox", false);
     ui.set_text(F, "FilenameREd", &h.output);
     ui.set_checked(F, "CloseMeshCheckbox", m.close);
+    ui.set_text(F, "IslandsEdit", &fts(m.islands));
+    ui.set_text(F, "KeepEdit", &fts(if m.decimate <= 0.0 { 100.0 } else { m.decimate }));
     app.btracer.user_change = b;
 }
 

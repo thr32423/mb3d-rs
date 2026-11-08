@@ -838,6 +838,33 @@ object Mand3DForm: TMand3DForm
           TabOrder = 5
           OnChangingEx = SpinEdit2ChangingEx
         end
+        object StepsBtn: TButton
+          Left = 8
+          Top = 204
+          Width = 130
+          Height = 22
+          Caption = '@MB:StepsAndNoise2'
+          TabOrder = 20
+          OnClick = StepsBtnClick
+        end
+        object BenchBtn: TButton
+          Left = 8
+          Top = 230
+          Width = 130
+          Height = 22
+          Caption = '@MB:Benchmark'
+          TabOrder = 21
+          OnClick = BenchBtnClick
+        end
+        object TexBtn: TButton
+          Left = 8
+          Top = 256
+          Width = 130
+          Height = 22
+          Caption = '@MB:TextureExport'
+          TabOrder = 22
+          OnClick = TexBtnClick
+        end
         object ExpBtn: TButton
           Left = 8
           Top = 92

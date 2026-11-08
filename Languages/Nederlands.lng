@@ -74,6 +74,8 @@ AMultiplierThatDefinesTheMiximal=Een vermenigvuldiger die de maximale lengte van
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO-rekentijd:
 ;AO calc time:
+APlanarOpticWithAField=Een planaire optiek met 1 graad beeldhoek: bijna orthografisch, geen perspectief in de hoogtekaart. Daarna opnieuw berekenen.
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
 ARotationAppliedEachIterationIn=een draaiing bij elke iteratie, in graden
 ;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=Een sinusbulb met gehele macht en voorafgaande vouwingen, zoals in de Amazing Box.
@@ -208,6 +210,8 @@ AmbientLower=ambient
 ;ambient
 AmbientOcclusion=ambient occlusion
 ;ambient occlusion
+AmbientOcclusion16Bit=Omgevingsocclusie (16 bit)
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=Diepte omgevingsstralen:
 ;Ambient rays depth:
 AmbientShadow=Ambient-schaduw
@@ -282,6 +286,8 @@ Aperture=Diafragma:
 ;Aperture:
 Appearance=Uiterlijk
 ;Appearance
+ApplyTheRecommendedSetting=Aanbevolen instelling toepassen
+;Apply the recommended setting
 ApplyToImage=Toepassen op afbeelding
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=Pas uw gewijzigde waarden toe, want de velden zijn alleen uitvoer
@@ -372,6 +378,10 @@ BatchProcessing=Batchverwerking
 ;Batch processing
 BatchProcessingPictureOf=Batchverwerking: afbeelding {} van {}
 ;Batch processing: picture {} of {}
+Benchmark=Benchmark...
+;Benchmark...
+Benchmark2=Benchmark
+;Benchmark
 Between=tussen:
 ;between:
 Big=groot
@@ -450,6 +460,8 @@ Calculate3DAndTheBatchWindow=3D berekenen en het batchvenster met de zwerm, in
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Berekent snel een blokkerige 8x8-afbeelding zonder echte belichting
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=Bereken eerst een beeld.
+;Calculate a picture first.
 CalculateAPictureFirstOrUntick=Bereken eerst een afbeelding, of vink de afbeelding uit.
 ;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=A.S. automatisch berekenen
@@ -522,6 +534,8 @@ Camera=Camera
 ;Camera
 CameraColon=Camera:
 ;Camera:
+CameraForTextures=Camera voor texturen
+;Camera for textures
 CameraLense=Cameralens:
 ;Camera lense:
 Cancel=Annuleren
@@ -776,6 +790,8 @@ CopyTheName=Naam kopiëren
 ;Copy the name
 CopyThePostText=Posttekst kopiëren
 ;Copy the post text
+CopyTheResult=Resultaat kopiëren
+;Copy the result
 CopyTheSelectedLineOrAll=De geselecteerde regel kopiëren, of alle getoonde regels als er geen is geselecteerd
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Waarden kopiëren
@@ -888,6 +904,8 @@ DEOcclusionAtHalfResolution=DE-occlusion op halve resolutie
 ;DE occlusion at half resolution
 DEStop=DE stop:
 ;DE stop:
+DEStopOfThePostPasses=DE-stop van de nadoorgangen:
+;DE stop of the post passes:
 DEcombinate=DEcombinate
 ;DEcombinate
 DEstop=DEstop:
@@ -1104,6 +1122,8 @@ DownscaleDiffuseKeepReflections=Diffuus verkleinen, reflecties behouden
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=Speculair verkleinen
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=Losse stukken weglaten die kleiner zijn dan dit aandeel van de driehoeken van het grootste stuk (procent); 0 houdt alles
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Weet niet, niets doen
@@ -1124,6 +1144,8 @@ DynamicFogOrVolumetricLightParams=Parameters voor dynamische mist of volumetrisc
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=Dynamische mist:\nHoe lager het getal, hoe verder van het object de mist verschijnt.\nBij dIFS ligt de mist rond het objectdeel dat bij deze iteratie wordt berekend.\nNul schakelt deze functie uit en baseert de dynamische mist zoals gewoonlijk op het aantal straalstappen.\nTip: Schakel de optie 'First step random' in om trapjes te voorkomen.\nVolumetrisch licht:\nKies het nummer van het licht waarvoor de lichtverstrooiing wordt berekend.
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=Elke kaart is een eigen PNG naast de andere: <naam>_color, _height, _normal, _ao. De hoogte is de diepte van het oppervlak, de normalen volgen de OpenGL-conventie, de occlusie is de omgevingsschaduw van het beeld.
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=Randkleur
 ;Edges color
 Edit=Bewerk
@@ -1606,6 +1628,8 @@ HardShadowsLower=harde schaduwen
 ;hard shadows
 Height=Hoogte:
 ;Height:
+Height16BitNearestPointWhite=Hoogte (16 bit, dichtstbijzijnde punt wit)
+;Height (16 bit, nearest point white)
 HeightMapGenerator=HeightMap-generator
 ;HeightMap Generator
 HeightMapGeneratorPreview=Voorbeeld hoogtemapgenerator
@@ -1854,6 +1878,8 @@ IsNotAValidFloatingPoint='{}' is geen geldige drijvendekommawaarde
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' is geen geldig geheel getal
 ;'{}' is not a valid integer value
+Islands=Eilanden %
+;Islands %
 Iteration=Iteratie
 ;Iteration
 IterationCount=aantal iteraties
@@ -1902,6 +1928,8 @@ JuliaOn=Julia aan
 ;Julia On
 JuliaValuesXYZ=Julia-waarden (x,y,z):
 ;Julia values (x,y,z):
+Keep=Houden %
+;Keep %
 KeepAspect=verhouding behouden
 ;keep aspect
 KeepLights=Lichten behouden
@@ -2180,6 +2208,8 @@ MapSequences=Map-reeksen
 ;Map Sequences
 MapType=Kaarttype:
 ;Map Type:
+MapsOfTheCalculatedPicture=Kaarten van het berekende beeld:
+;Maps of the calculated picture:
 Material=Materiaal
 ;Material
 Max=Max
@@ -2504,6 +2534,8 @@ Noise=-ruis
 ;-noise
 NoiseAI=-ruis AI
 ;-noise AI
+NoiseDoctor=Ruisdokter
+;Noise doctor
 NoiseFilter=\sRuisfilter
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=Ruisfilter op de getoonde afbeelding (DCT-ontruising zoals GIMP's "Denoise DCT"),\nmet een sterkte die uit de stralen wordt geschat. De rendering zelf verandert niet;\nde volgende update toont haar weer ongefilterd.
@@ -2516,6 +2548,8 @@ NoneOfTheFormulaSlotsHolds=Geen van de formuleslots bevat een formule die een fr
 ;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normaal
 ;Normal
+NormalMap=Normaalkaart
+;Normal map
 NormalStatusForThisFormula=Normale status voor deze formule
 ;Normal status for this formula
 NormalsOnDE=Normalen op DE:
@@ -2726,6 +2760,8 @@ OverwriteExistingImages=Bestaande afbeeldingen overschrijven
 ;Overwrite existing images
 OverwriteExistingM3IFiles=Bestaande M3I-bestanden overschrijven
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=Eigen stapinstellingen voor de doorgangen na de hoofddoorgang (schaduwen, occlusie, volumetrisch licht, spiegelingen)
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16-bits (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2954,6 +2990,8 @@ Range=Bereik
 ;Range
 RawValuesMappedValuesClampedValues=Ruwe waarden:\n  {}..\n  {}\nOmgezette waarden:\n  {}..\n  {}\nBegrensde waarden:\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=Straalstap van de nadoorgangen:
+;Ray step of the post passes:
 Rays=Stralen:
 ;Rays:
 RaystepDivisor=Raystap-deler:
@@ -2986,6 +3024,8 @@ RectLower=recht.
 ;rect.
 Rectilinear=Rectilineair
 ;Rectilinear
+ReduceTheMeshToThisShare=De mesh terugbrengen tot dit aandeel van zijn hoekpunten (procent, vertexclustering); 100 laat hem zoals berekend
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Vermindert blokkerige artefacten; minder belangrijk geworden dankzij spline-interpolatie.
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=Verlaagt de raystap-vermenigvuldiger om overstepping te voorkomen.\nMaakt het renderen langzamer.
@@ -3072,6 +3112,10 @@ RenderingNow=wordt nu gerenderd
 ;rendering now
 RenderingSliceOf=Plak renderen: {} van {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=Rendert de vaste benchmarkscène (Integer Power, 640 x 512, 120 iteraties, hoofddoorgang) op de processor en de grafische kaart, zodat resultaten van verschillende computers vergelijkbaar zijn. Plaats de tekst zoals hij is.
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=Rendert het midden van het beeld met alleen de hoofddoorgang onder drie stapinstellingen en telt in elke de spikkels en gaten. De aanbevolen instelling kan op de scène worden toegepast.
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Herhalen vanaf hier
 ;Repeat from here
 RerenderAllKeyframePreviewImages=Alle keyframe-voorbeelden opnieuw renderen
@@ -3154,6 +3198,14 @@ Rows=Rijen
 ;Rows
 RowsOfTiles=Rijen tegels
 ;Rows of tiles
+RunTheBenchmark=Benchmark starten
+;Run the benchmark
+RunTheNoiseDoctor=Ruisdokter starten
+;Run the noise doctor
+Running0=Bezig: {0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=De ruisdokter werkt ...
+;Running the noise doctor ...
 SLeft=nog {} s
 ;{} s left
 SSAO15=SSAO15
@@ -3512,6 +3564,10 @@ StepRelax=Stapverlenging:
 ;Step relax:
 StepcountForBinarySearch=Aantal stappen voor \nbinair zoeken:
 ;Stepcount for \nbinary search:
+StepsAndNoise=Stappen en ruis
+;Steps and noise
+StepsAndNoise2=Stappen en ruis...
+;Steps and noise...
 StepwidthLimiter=Stapbreedtebegrenzer:
 ;Stepwidth limiter:
 Stereo=Stereo
@@ -3616,6 +3672,10 @@ TargetMapSlotUseThisNumber=Doel-mapslot. Gebruik dit nummer als map in uw fracta
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=Sjabloon:
 ;Template:
+TextureExport=Textuurexport...
+;Texture export...
+TextureExport2=Textuurexport
+;Texture export
 TheAmazingBoxAkaMandboxFormula=De formule 'Amazing Box', ook wel Mandbox, bedacht door TGlad op fractalforums.com.\n\nDe formule voor één iteratie ziet er zo uit:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=De som van de diffuse en speculaire kleuren is groter dan 1,\nzal ik ze verkleinen voor een realistischere kleuring?
@@ -3734,6 +3794,8 @@ TheLastSessionDidNotEnd=De vorige sessie is niet goed afgesloten (ze liep vast, 
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=De hoofdeditor is nog aan het renderen. Stop die eerst of wacht tot hij klaar is.
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=De hoofddoorgang kan met een zeer fijne straalstap marcheren terwijl schaduwen, occlusie en spiegelingen een normale houden: de fijne stap kost dan alleen tijd waar hij te zien is. Bewaard met de parameters.
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=De weergave van het hoofdvenster
 ;The main window's view
 TheMapOptionsCalculatesXY=De map-opties berekenen x,y-coördinaten uit de betreffende\nvector voor sferische maps; dit verandert ook de eerste kleurkeuze,\ndie normaal op gladde iteraties is gebaseerd.\nU moet de afbeelding opnieuw berekenen om het resultaat van\ndeze wijzigingen te zien.
@@ -3850,6 +3912,8 @@ TileXYLower=tegel X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=Tegel X={} Y={} opgeslagen.
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=Tegelbaar: gespiegeld tot dubbele grootte, naadloos aan elke rand
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=tegels
 ;tiles
 Tiles2=Tegels
@@ -4124,10 +4188,14 @@ Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=Kaarten schrijven
+;Write the maps
 WritesTheEnglishTextsAsA=Schrijft de Engelse teksten als een nieuw taalbestand met deze naam; vertaal ze met een teksteditor en druk daarna op Opnieuw laden
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=Schrijft de afbeelding zoals ze nu is (de nog niet gedane rijen als achtergrond) als .m3i-bestand
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=Geschreven: {0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=Geschreven: {}\nVertaal de teksten rechts van de "=" met een teksteditor en druk daarna op Opnieuw laden.
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=X-hoek:

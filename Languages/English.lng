@@ -74,6 +74,8 @@ AMultiplierThatDefinesTheMiximal=A multiplier that defines the miximal length of
 ;PostProForm.Edit5.Hint
 AOCalcTime=AO calc time:
 ;Mand3DForm.Label47.Caption
+APlanarOpticWithAField=A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
+;TextureFrm.CameraBtn.Hint; the program
 ARotationAppliedEachIterationIn=a rotation applied each iteration, in degrees
 ;the program
 ASineIntegerPowerBulbWith=A sine integer power bulb with foldings before, like in the amazing box.
@@ -208,6 +210,8 @@ AmbientLower=ambient
 ;the program
 AmbientOcclusion=ambient occlusion
 ;the program
+AmbientOcclusion16Bit=Ambient occlusion (16 bit)
+;TextureFrm.AoCheck.Caption
 AmbientRaysDepth=Ambient rays depth:
 ;MCForm.Label9.Caption
 AmbientShadow=Ambient shadow
@@ -282,6 +286,8 @@ Aperture=Aperture:
 ;PostProForm.Label5.Caption
 Appearance=Appearance
 ;MeshPreviewFrm.GroupBox1.Caption
+ApplyTheRecommendedSetting=Apply the recommended setting
+;StepsFrm.ApplyBtn.Caption
 ApplyToImage=Apply to image
 ;Mand3DForm.Button7.Caption
 ApplyYourChangedValuesBecauseEdits=Apply your changed values, because edits are only output
@@ -372,6 +378,10 @@ BatchProcessing=Batch processing
 ;BatchForm1.Caption; the program
 BatchProcessingPictureOf=Batch processing: picture {} of {}
 ;the program
+Benchmark=Benchmark...
+;Mand3DForm.BenchBtn.Caption
+Benchmark2=Benchmark
+;BenchFrm.Caption
 Between=between:
 ;AnimationForm.Label21.Caption
 Big=big
@@ -450,6 +460,8 @@ Calculate3DAndTheBatchWindow=Calculate 3D and the Batch window with the swarm, i
 ;SwarmFrm.Label11.Caption
 CalculateAFast8x8BlockyImage=Calculate a fast 8x8 blocky image without proper lighting
 ;Mand3DForm.Button11.Hint
+CalculateAPictureFirst=Calculate a picture first.
+;the program
 CalculateAPictureFirstOrUntick=Calculate a picture first, or untick the picture.
 ;the program
 CalculateASAutomatically=Calculate A.S. automatically
@@ -522,6 +534,8 @@ Camera=Camera
 ;Mand3DForm.TabSheet1.Caption
 CameraColon=Camera:
 ;FNavigator.RadioGroup2.Caption
+CameraForTextures=Camera for textures
+;TextureFrm.CameraBtn.Caption
 CameraLense=Camera lense:
 ;Mand3DForm.RadioGroup2.Caption
 Cancel=Cancel
@@ -657,7 +671,7 @@ ClickToTypeTheZoomIt=Click to type the zoom (it stays: fixed zoom).
 ClippingR=ClippingR:
 ;PostProForm.Label2.Caption
 Close=Close
-;AiConnectFrm.Button3.Caption, AnimTemplatesFrm.CloseBtn.Caption, BulbTracer2Frm.CloseButton.Caption and 9 more
+;AiConnectFrm.Button3.Caption, AnimTemplatesFrm.CloseBtn.Caption, BenchFrm.CloseBtn.Caption and 12 more
 CloseMesh=Close Mesh
 ;BulbTracer2Frm.CloseMeshCheckbox.Caption
 CloseTheCurrentWindow=Close the current window:
@@ -687,7 +701,7 @@ ColCycling=Col cycling
 ColVarOnZ=Col. var. on Z
 ;LightAdjustForm.Label12.Caption
 Color=Color
-;the program
+;TextureFrm.ColorCheck.Caption; the program
 ColorAdjustment=Color adjustment
 ;ColorForm.Caption
 ColorEnd=Color end
@@ -776,6 +790,8 @@ CopyTheName=Copy the name
 ;FormulaBookFrm.CopyBtn.Caption
 CopyThePostText=Copy the post text
 ;ShareFrm.CopyBtn.Caption
+CopyTheResult=Copy the result
+;BenchFrm.CopyBtn.Caption
 CopyTheSelectedLineOrAll=Copy the selected line, or all the lines shown when none is selected
 ;LogFrm.Button1.Hint
 CopyTheValues=Copy the values
@@ -888,6 +904,8 @@ DEOcclusionAtHalfResolution=DE occlusion at half resolution
 ;ExperimentalFrm.HalfBox.Caption
 DEStop=DE stop:
 ;AniProcessForm.Label18.Caption, BulbTracer2Frm.Label12.Caption, Mand3DForm.Label18.Caption
+DEStopOfThePostPasses=DE stop of the post passes:
+;StepsFrm.DeLabel.Caption
 DEcombinate=DEcombinate
 ;FormulaGUIForm.TabControl2.Tabs
 DEstop=DEstop:
@@ -1104,6 +1122,8 @@ DownscaleDiffuseKeepReflections=Downscale diffuse, keep reflections
 ;FColorOptions.Button1.Caption
 DownscaleSpecular=Downscale specular
 ;FColorOptions.Button3.Caption
+DropTheLoosePiecesSmallerThan=Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
+;BulbTracer2Frm.IslandsLbl.Hint, BulbTracer2Frm.IslandsEdit.Hint
 Ds=Ds:
 ;FormulaGUIForm.Label18.Caption; the program
 DunnoDoNothing=Dunno, do nothing
@@ -1124,6 +1144,8 @@ DynamicFogOrVolumetricLightParams=Dynamic fog or volumetric light params. See 'C
 ;LightAdjustForm.Label44.Caption
 DynamicFogTheLowerTheNumber=Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
 ;the program
+EachMapIsAPNGOf=Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
+;TextureFrm.NoteLabel.Caption
 EdgesColor=Edges color
 ;MeshPreviewFrm.Label1.Caption
 Edit=Edit
@@ -1335,7 +1357,7 @@ FogOffset=Fog offset
 Folder=Folder
 ;HistoryFrm.Caption; the program
 Folder2=Folder:
-;ShareFrm.Label5.Caption; the program
+;ShareFrm.Label5.Caption, TextureFrm.FolderLabel.Caption; the program
 FolderOfTheLanguageFiles=Folder of the language files:
 ;LanguageFrm.Label3.Caption
 FollowTheNewest=Follow the newest
@@ -1606,6 +1628,8 @@ HardShadowsLower=hard shadows
 ;the program
 Height=Height:
 ;AnimationForm.Label18.Caption, Mand3DForm.Label25.Caption
+Height16BitNearestPointWhite=Height (16 bit, nearest point white)
+;TextureFrm.HeightCheck.Caption
 HeightMapGenerator=HeightMap Generator
 ;HeightMapGenFrm.Caption
 HeightMapGeneratorPreview=HeightMap Generator Preview
@@ -1854,6 +1878,8 @@ IsNotAValidFloatingPoint='{}' is not a valid floating point value
 ;the program
 IsNotAValidIntegerValue='{}' is not a valid integer value
 ;the program
+Islands=Islands %
+;BulbTracer2Frm.IslandsLbl.Caption
 Iteration=Iteration
 ;FormulaEditor.StaticText14.Caption
 IterationCount=Iteration Count
@@ -1902,6 +1928,8 @@ JuliaOn=Julia On
 ;the program
 JuliaValuesXYZ=Julia values (x,y,z):
 ;FNavigator.Button2.Caption
+Keep=Keep %
+;BulbTracer2Frm.KeepLbl.Caption
 KeepAspect=keep aspect
 ;Mand3DForm.CheckBox10.Caption
 KeepLights=Keep lights
@@ -2180,6 +2208,8 @@ MapSequences=Map Sequences
 ;Mand3DForm.MapSequencesBtn.Caption
 MapType=Map Type:
 ;HeightMapGenFrm.Label19.Caption
+MapsOfTheCalculatedPicture=Maps of the calculated picture:
+;TextureFrm.MapsLabel.Caption
 Material=Material
 ;MeshPreviewFrm.MaterialSheet.Caption, PostProForm.MaterialBtn.Caption; the program
 Max=Max
@@ -2409,7 +2439,7 @@ N4dRotationXwYwZw=4d rotation (xw,yw,zw):\s
 N8BitPNG=8 Bit PNG
 ;the program
 Name=Name:
-;ParamValueEditFrm.Label2.Caption
+;ParamValueEditFrm.Label2.Caption, TextureFrm.NameLabel.Caption
 Name2=Name
 ;HistoryFrm.Caption, UnfinishedFrm.ListView1.Caption; the program
 NamedParams=Named Params:
@@ -2504,6 +2534,8 @@ Noise=-noise
 ;MCForm.Button6.Caption
 NoiseAI=-noise AI
 ;MCForm.Button10.Caption
+NoiseDoctor=Noise doctor
+;StepsFrm.DoctorLabel.Caption; the program
 NoiseFilter=\sNoise Filter
 ;PostProForm.NoiseFilterBtn.Caption
 NoiseFilterOnTheShownPicture=Noise filter on the shown picture (DCT denoising as GIMP's "Denoise DCT"),\nits strength estimated from the rays. The rendering itself is not changed;\nthe next update shows it unfiltered again.
@@ -2516,6 +2548,8 @@ NoneOfTheFormulaSlotsHolds=None of the formula slots holds a formula that makes 
 ;the program
 Normal=Normal
 ;Mand3DForm.ComboBox2.Items
+NormalMap=Normal map
+;TextureFrm.NormalCheck.Caption
 NormalStatusForThisFormula=Normal status for this formula
 ;FormulaGUIForm.Ratethisformulaasnormal1.Caption
 NormalsOnDE=Normals on DE:
@@ -2665,7 +2699,7 @@ OpenTheAnimationMaker=Open the animation maker
 OpenTheExample=Open the example
 ;FormulaBookFrm.OpenBtn.Caption
 OpenTheFolder=Open the folder
-;ShareFrm.OpenBtn.Caption
+;ShareFrm.OpenBtn.Caption, TextureFrm.OpenBtn.Caption
 OpenTheFolderOfTheFile=Open the folder of the file
 ;HistoryFrm.Button2.Hint
 OpenTheFolderOfTheLog=Open the folder of the log files (one a day, kept 30 days)
@@ -2726,6 +2760,8 @@ OverwriteExistingImages=Overwrite existing images
 ;AnimationForm.CheckBox6.Caption
 OverwriteExistingM3IFiles=Overwrite existing M3I files
 ;BatchForm1.CheckBox1.Caption
+OwnStepSettingsForThePasses=Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
+;StepsFrm.PostCheck.Caption
 PGM16BitPgm=PGM 16 bit (*.pgm)
 ;the program
 PNG=PNG
@@ -2954,6 +2990,8 @@ Range=Range
 ;MapSequencesFrm.Label2.Caption
 RawValuesMappedValuesClampedValues=Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
 ;the program
+RayStepOfThePostPasses=Ray step of the post passes:
+;StepsFrm.RayLabel.Caption
 Rays=Rays:
 ;PostProForm.Label16.Caption
 RaystepDivisor=Raystep divisor:
@@ -2986,6 +3024,8 @@ RectLower=rect.
 ;FNavigator.RadioGroup2.Items
 Rectilinear=Rectilinear
 ;Mand3DForm.RadioGroup2.Items
+ReduceTheMeshToThisShare=Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
+;BulbTracer2Frm.KeepLbl.Hint, BulbTracer2Frm.KeepEdit.Hint
 ReducesBlockyArtifactsNoMoreThat=Reduces blocky artifacts, no more that important due to spline interpolation.
 ;LightAdjustForm.CheckBox13.Hint
 ReducesTheRaystepMultiplierToAvoid=Reduces the raystep multiplier to avoid overstepping.\nMakes the rendering slower.
@@ -3072,6 +3112,10 @@ RenderingNow=rendering now
 ;the program
 RenderingSliceOf=Rendering slice: {} of {}
 ;the program
+RendersTheFixedBenchmarkSceneInteger=Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+;BenchFrm.NoteLabel.Caption
+RendersTheMiddleOfThePicture=Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
+;StepsFrm.DoctorNote.Caption
 RepeatFromHere=Repeat from here
 ;FormulaGUIForm.CheckBox1.Caption
 RerenderAllKeyframePreviewImages=Rerender all keyframe preview images
@@ -3154,6 +3198,14 @@ Rows=Rows
 ;HistoryFrm.ComboBox2.Items
 RowsOfTiles=Rows of tiles
 ;SwarmFrm.Edit6.Hint
+RunTheBenchmark=Run the benchmark
+;BenchFrm.RunBtn.Caption
+RunTheNoiseDoctor=Run the noise doctor
+;StepsFrm.RunBtn.Caption
+Running0=Running: {0} ...
+;the program
+RunningTheNoiseDoctor=Running the noise doctor ...
+;the program
 SLeft={} s left
 ;the program
 SSAO15=SSAO15
@@ -3512,6 +3564,10 @@ StepRelax=Step relax:
 ;ExperimentalFrm.RelaxLabel.Caption
 StepcountForBinarySearch=Stepcount for \nbinary search:
 ;AniProcessForm.Label13.Caption, Mand3DForm.Label13.Caption
+StepsAndNoise=Steps and noise
+;StepsFrm.Caption
+StepsAndNoise2=Steps and noise...
+;Mand3DForm.StepsBtn.Caption
 StepwidthLimiter=Stepwidth limiter:
 ;AniProcessForm.Label2.Caption, Mand3DForm.Label26.Caption
 Stereo=Stereo
@@ -3616,6 +3672,10 @@ TargetMapSlotUseThisNumber=Target Map Slot. Use this number as map in your fract
 ;MapSequencesFrm.DestChannelEdit.Hint
 Template=Template:
 ;AnimTemplatesFrm.TemplateLabel.Caption
+TextureExport=Texture export...
+;Mand3DForm.TexBtn.Caption
+TextureExport2=Texture export
+;TextureFrm.Caption
 TheAmazingBoxAkaMandboxFormula=The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;the program
 TheAmountOfAddedDiffuseAnd=The amount of added diffuse and specular colors are bigger 1,\nshould i downscale them for a more realistic coloring?
@@ -3734,6 +3794,8 @@ TheLastSessionDidNotEnd=The last session did not end properly (it froze, was kil
 ;the program
 TheMainEditorIsStillRendering=The main editor is still rendering. Please stop it first or wait until it is done.
 ;the program
+TheMainPassCanMarchWith=The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
+;StepsFrm.PostNote.Caption
 TheMainWindowSView=The main window's view
 ;AnimTemplatesFrm.StartCmb.Items
 TheMapOptionsCalculatesXY=The map options calculates x,y coordinates from the specific\nvector for spherical maps, this changes also the first color choice\nthat is usually based on smooth iterations.\nYou have to recalculate the image to see the result of this\noptions changes.
@@ -3850,6 +3912,8 @@ TileXYLower=tile X={} Y={}
 ;the program
 TileXYSaved=Tile X={} Y={} saved.
 ;the program
+TileableMirroredToTwiceTheSize=Tileable: mirrored to twice the size, seamless at every edge
+;TextureFrm.TileCheck.Caption
 Tiles=tiles
 ;SwarmFrm.Label10.Caption; the program
 Tiles2=Tiles
@@ -4124,10 +4188,14 @@ Wrap1=wrap1
 ;LightAdjustForm.RadioGroup1.Items
 Wrap2=wrap2
 ;LightAdjustForm.RadioGroup1.Items
+WriteTheMaps=Write the maps
+;TextureFrm.WriteBtn.Caption
 WritesTheEnglishTextsAsA=Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 ;LanguageFrm.CreateBtn.Hint
 WritesThePictureAsItIs=Writes the picture as it is now (the rows not done as background) as a .m3i file
 ;UnfinishedFrm.Button5.Hint
+Written0=Written: {0}
+;the program
 WrittenTranslateTheTextsRightOf=Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 ;the program
 XAngle=X angle:

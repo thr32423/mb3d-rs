@@ -22,6 +22,7 @@ USAGE:
     mb3d swarm worker DIR | list DIR                               share rendering through a shared folder
     mb3d resume [--clear [KEY]] [--m3i KEY FILE]                   unfinished renders kept for continuing
     mb3d vr360 FILE.mp4|FILE.jpg [-o OUT] [--stereo mono|tb|lr]    mark a 360 video or photo for VR players
+    mb3d benchmark [--cpu]                                         the fixed benchmark scene, a result to post
     (mb3d animate --help, mb3d batch --help, ...)
 
 SCENE_FILE is an INI-style scene description (.m3s; --save-scene writes one), a
@@ -206,6 +207,26 @@ OPTIONS:
         --stereo <S>      mono (default), tb or lr (videos)
 ";
 
+/// `mb3d benchmark`: the fixed scene on the processor and the card, the
+/// result as text.
+fn bench_cmd(argv: &[String]) -> Result<(), String> {
+    let mut card = true;
+    for a in argv {
+        match a.as_str() {
+            "-h" | "--help" => {
+                println!("mb3d benchmark [--cpu]\n\nRenders the benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass)\non the processor and, unless --cpu is given, on the graphics card, and prints the\ntimes with the processor's and the card's names, as a result to post.");
+                return Ok(());
+            }
+            "--cpu" => card = false,
+            o => return Err(usage_err(&format!("unknown option {o}"))),
+        }
+    }
+    args_read();
+    let r = mb3d::bench::run(card, &|s| mb3d::elog!("  {s} ..."), &|| false)?;
+    println!("{}", r.text());
+    Ok(())
+}
+
 fn vr360_cmd(argv: &[String]) -> Result<(), String> {
     let (mut file, mut out, mut st) = (None::<String>, None::<String>, mb3d::vr::Stereo::Mono);
     let mut args = argv.iter();
@@ -297,6 +318,7 @@ fn run() -> Result<(), String> {
         Some("resume") => return resume_cmd(&all[1..]),
         Some("mcp") => return mcp_cmd(&all[1..]),
         Some("vr360") | Some("vr") => return vr360_cmd(&all[1..]),
+        Some("benchmark") | Some("bench") => return bench_cmd(&all[1..]),
         _ => {}
     }
     let mut args = std::env::args().skip(1);
@@ -2148,6 +2170,10 @@ OPTIONS:
         --rotate <X,Y,Z>     Turn the cube (degrees)
         --bounds <X0,X1,Y0,Y1,Z0,Z1>  Only this part of the cube (0..100 each)
         --close              Close the mesh at the bounds (for 3D printing)
+        --islands <PCT>      Drop the loose pieces smaller than PCT percent of the
+                             largest piece's triangles (the flying parts)
+        --decimate <PCT>     Reduce the mesh to PCT percent of its vertices
+                             (vertex clustering)
         --colors             Vertex colours from the palette
         --smooth <N>         Taubin smoothing passes afterwards
     -s, --set <KEY=VALUE>    Change a scene key (may be repeated)
@@ -2195,6 +2221,8 @@ fn mesh_cmd(argv: &[String]) -> Result<(), String> {
             "--close" => mp.close = true,
             "--colors" | "--colours" => mp.colors = true,
             "--smooth" => mp.smooth = num(val()?, "--smooth")?.clamp(0.0, 1000.0) as u32,
+            "--islands" => mp.islands = num(val()?, "--islands")?.clamp(0.0, 100.0),
+            "--decimate" => mp.decimate = num(val()?, "--decimate")?.clamp(0.1, 100.0),
             "-s" | "--set" => overrides.push(val()?),
             "-t" | "--threads" => threads = val()?.parse().map_err(|_| "bad --threads value".to_string())?,
             "-q" | "--quiet" => quiet = true,

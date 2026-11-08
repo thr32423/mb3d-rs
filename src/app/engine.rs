@@ -1075,10 +1075,18 @@ fn recalc(e: &Inner, sc: &Scene, rect: [i32; 4], div: f64, nearer: bool, opts: (
             raw[y * w + x] = *n;
         }
     }
-    let q = rect_params(&p, r);
+    // (the passes after the main one with their own step settings, when
+    // the scene has them)
+    let post_target = target.post_scene();
+    let target_p = match &post_target {
+        Some(s) => CalcParams::new(s)?,
+        None => p.clone(),
+    };
+    let target = post_target.as_ref().unwrap_or(&target);
+    let q = rect_params(&target_p, r);
     if hs && target.shadows.is_some() {
         stage("hard shadows");
-        crate::render::hard_shadows_reporting(&target, &q, &mut part, threads, &progress, cancel);
+        crate::render::hard_shadows_reporting(target, &q, &mut part, threads, &progress, cancel);
     }
     if let (true, false, Some(d), Some(_)) = (deao, keep_as, &target.deao, &target.ao) {
         stage("ambient");
@@ -1100,7 +1108,7 @@ fn recalc(e: &Inner, sc: &Scene, rect: [i32; 4], div: f64, nearer: bool, opts: (
     e.publish(rgb, w, h, "", None);
     // (post_sig stays the old one: outside the selection the processing is
     // the old image's)
-    *e.base.lock().unwrap() = Some(Arc::new(Base { scene: target, params: p, raw: Arc::new(raw), post: Arc::new(post), post_sig: b.post_sig.clone(), w, h }));
+    *e.base.lock().unwrap() = Some(Arc::new(Base { scene: target.clone(), params: p, raw: Arc::new(raw), post: Arc::new(post), post_sig: b.post_sig.clone(), w, h }));
     Ok(())
 }
 

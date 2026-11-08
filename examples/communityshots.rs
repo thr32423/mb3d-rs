@@ -1,7 +1,7 @@
 //! The screenshots of docs/COMMUNITY_WISHES.md, without windows:
 //! `communityshots OUTDIR STEP ...`, the steps in this order for the
 //! documentation: calc main share eyedropper colordlg colorform2 maps difs
-//! missing pano import book.  The files the steps make go to a temporary folder.
+//! missing pano import book steps bench texture mesh.  The files the steps make go to a temporary folder.
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -277,6 +277,87 @@ fn main() {
                 settle(&mut ui, &mut app);
                 eprintln!("book shows: {} / {}", ui.caption("FormulaBookFrm", "NameLabel"), ui.caption("FormulaBookFrm", "CountLabel"));
                 ui.save_form_png("FormulaBookFrm", &out.join("book_difs.png"), 1.0).unwrap();
+            }
+            // the Steps and noise window: the post steps on, the doctor run
+            "steps" => {
+                ui.show("StepsFrm");
+                app.process(&mut ui);
+                ui.set_checked("StepsFrm", "PostCheck", true);
+                ui.post("StepsFrm", "PostCheck", "PostCheckClick", mb3d::vcl::Ev::Click);
+                app.process(&mut ui);
+                ui.set_text("StepsFrm", "RayEdit", "0.5");
+                ui.post("StepsFrm", "RayEdit", "PostEditChange", mb3d::vcl::Ev::Change);
+                app.process(&mut ui);
+                ui.click("StepsFrm", "RunBtn");
+                app.process(&mut ui);
+                for _ in 0..600 {
+                    std::thread::sleep(std::time::Duration::from_millis(100));
+                    mb3d::vcl::App::idle(&mut app, &mut ui);
+                    app.process(&mut ui);
+                    if !ui.text("StepsFrm", "ResultMemo").contains("...") {
+                        break;
+                    }
+                }
+                eprintln!("doctor:\n{}", ui.text("StepsFrm", "ResultMemo"));
+                ui.save_form_png("StepsFrm", &out.join("steps_window.png"), 1.0).unwrap();
+                ui.click("StepsFrm", "CloseBtn");
+                app.process(&mut ui);
+                ui.show("Mand3DForm");
+                ui.set_active_page("Mand3DForm", "PageControl1", "TabSheet4");
+                app.process(&mut ui);
+                ui.save_form_png("Mand3DForm", &out.join("internal_tab.png"), 1.0).unwrap();
+            }
+            // the Benchmark window after a run
+            "bench" => {
+                ui.show("BenchFrm");
+                app.process(&mut ui);
+                ui.click("BenchFrm", "RunBtn");
+                app.process(&mut ui);
+                for _ in 0..1800 {
+                    std::thread::sleep(std::time::Duration::from_millis(100));
+                    mb3d::vcl::App::idle(&mut app, &mut ui);
+                    app.process(&mut ui);
+                    if !ui.text("BenchFrm", "ResultMemo").is_empty() {
+                        break;
+                    }
+                }
+                eprintln!("benchmark:\n{}", ui.text("BenchFrm", "ResultMemo"));
+                ui.save_form_png("BenchFrm", &out.join("benchmark_window.png"), 1.0).unwrap();
+                ui.click("BenchFrm", "CloseBtn");
+                app.process(&mut ui);
+            }
+            // the Texture export window: the maps of the calculated picture
+            "texture" => {
+                ui.show("TextureFrm");
+                app.process(&mut ui);
+                let dir = tmp.join("textures");
+                ui.set_text("TextureFrm", "FolderEdit", &dir.display().to_string());
+                ui.set_text("TextureFrm", "NameEdit", "bulb");
+                ui.set_checked("TextureFrm", "TileCheck", true);
+                ui.click("TextureFrm", "WriteBtn");
+                app.process(&mut ui);
+                eprintln!("texture: {}", ui.caption("TextureFrm", "StatusLabel"));
+                ui.save_form_png("TextureFrm", &out.join("texture_window.png"), 1.0).unwrap();
+                for e in std::fs::read_dir(&dir).unwrap().flatten() {
+                    let p = e.path();
+                    eprintln!("texture file: {} ({} bytes)", p.display(), e.metadata().unwrap().len());
+                    let _ = std::fs::copy(&p, out.join(format!("texture_{}", p.file_name().unwrap().to_string_lossy())));
+                }
+                ui.click("TextureFrm", "CloseBtn");
+                app.process(&mut ui);
+            }
+            // the Bulb Tracer's new fields
+            "mesh" => {
+                ui.show("BulbTracer2Frm");
+                app.process(&mut ui);
+                let f = ui.fm("BulbTracer2Frm");
+                let id = f.id("IslandsEdit").unwrap();
+                let (hx, hy) = (f.ctl[id].left, f.ctl[id].top);
+                f.hint = Some((f.ctl[id].hint.clone(), hx - 360, hy + 30));
+                ui.save_form_png("BulbTracer2Frm", &out.join("mesh_fields.png"), 1.0).unwrap();
+                ui.fm("BulbTracer2Frm").hint = None;
+                ui.click("BulbTracer2Frm", "CloseButton");
+                app.process(&mut ui);
             }
             o => eprintln!("unknown step {o}"),
         }

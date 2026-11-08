@@ -40,6 +40,9 @@ pub mod history_form;
 pub mod log_form;
 pub mod share_form;
 pub mod formula_book_form;
+pub mod steps_form;
+pub mod bench_form;
+pub mod texture_form;
 pub mod util;
 pub mod voxel_form;
 
@@ -51,7 +54,7 @@ use std::path::PathBuf;
 pub const FORMS: &[&str] = &[
     "Mand", "FormulaGUI", "LightAdjust", "PostProcessForm", "Navigator", "Animation", "AniPreviewWindow", "AniProcess",
     "BatchForm", "BRInfoWindow", "ColorOptionForm", "ColorPick", "FormulaParser", "IniDirsForm", "MapSequencesGUI",
-    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "Share", "FormulaBook", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
+    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "Share", "FormulaBook", "Steps", "Benchmark", "TextureExport", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
     "VoxelExport", "ZBuf16BitGenUI", "Curves", "BulbTracer2UI", "HeightMapGenUI", "JITFormulaEditGUI", "MeshPreviewUI", "LanguageGUI", "HotkeysGUI",
 ];
 
@@ -83,6 +86,9 @@ pub struct Mb3d {
     pub logview: log_form::State,
     pub share: share_form::State,
     pub book: formula_book_form::State,
+    pub steps: steps_form::State,
+    pub bench: bench_form::State,
+    pub texture: texture_form::State,
     pub voxel: voxel_form::State,
     pub btracer: bulbtracer_form::State,
     pub splat: splat_form::State,
@@ -247,6 +253,9 @@ impl App for Mb3d {
             "LogFrm" => log_form::event(self, ui, e),
             "ShareFrm" => share_form::event(self, ui, e),
             "FormulaBookFrm" => formula_book_form::event(self, ui, e),
+            "StepsFrm" => steps_form::event(self, ui, e),
+            "BenchFrm" => bench_form::event(self, ui, e),
+            "TextureFrm" => texture_form::event(self, ui, e),
             "AiConnectFrm" => ai_form::event(self, ui, e),
             "ExperimentalFrm" => experimental_form::event(self, ui, e),
             "AnimTemplatesFrm" => anim_templates_form::event(self, ui, e),
@@ -304,6 +313,8 @@ impl App for Mb3d {
         mutagen_form::idle(self, ui);
         meshview::idle(self, ui);
         file_preview::idle(self, ui);
+        steps_form::idle(self, ui);
+        bench_form::idle(self, ui);
         history_form::idle(self, ui);
         log_form::idle(self, ui);
     }
@@ -350,6 +361,7 @@ impl Mb3d {
             "unfinished" => unfinished_form::dialog(self, ui, what, r),
             "history" => history_form::dialog(self, ui, what, r),
             "share" => share_form::dialog(self, ui, what, r),
+            "texture" => texture_form::dialog(self, ui, what, r),
             _ => {}
         }
     }
@@ -438,6 +450,9 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         logview: Default::default(),
         share: Default::default(),
         book: Default::default(),
+        steps: Default::default(),
+        bench: Default::default(),
+        texture: Default::default(),
         voxel: voxel_form::State::default(),
         btracer: bulbtracer_form::State::default(),
         splat: splat_form::State::default(),

@@ -2084,6 +2084,15 @@ pub fn post_process_reporting(
     let mut times = card_post_times(sc, p);
     // the water where a ray from the eye meets it (water_layer)
     let new_water = crate::water_layer::apply(p, gbuf, threads);
+    // the passes after the main one may march with their own step
+    // settings (Scene::post_steps): the shadows, the occlusion and the
+    // volumetric light below take `pq`
+    let post_sc = sc.post_scene();
+    let post_p = match &post_sc {
+        Some(s) => Some(CalcParams::new(s)?),
+        None => None,
+    };
+    let (sc, p) = (post_sc.as_ref().unwrap_or(sc), post_p.as_ref().unwrap_or(p));
     if sc.normals_on_zbuf {
         crate::reflect::normals_on_zbuf(sc, p, gbuf);
     }
@@ -2617,7 +2626,15 @@ fn paint_core<S: crate::lighting::Sample>(
     if sc.mc.reflections && p.slice_2d == 0 {
         stage("reflections");
         let t = Instant::now();
-        crate::reflect::reflections(sc, p, gbuf, &mut rgb, &cam, &lv, threads, progress, cancel);
+        // (the reflections march with the post step settings when the
+        // scene has them)
+        match sc.post_scene() {
+            Some(ps) => match CalcParams::new(&ps) {
+                Ok(pp) => crate::reflect::reflections(&ps, &pp, gbuf, &mut rgb, &cam, &lv, threads, progress, cancel),
+                Err(_) => crate::reflect::reflections(sc, p, gbuf, &mut rgb, &cam, &lv, threads, progress, cancel),
+            },
+            None => crate::reflect::reflections(sc, p, gbuf, &mut rgb, &cam, &lv, threads, progress, cancel),
+        }
         refl_s = Some(t.elapsed().as_secs_f64());
     }
     if let Some(c) = sc.clouds.as_ref().filter(|_| p.slice_2d == 0 && !cancel()) {

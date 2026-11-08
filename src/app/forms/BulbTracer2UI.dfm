@@ -393,10 +393,52 @@ object BulbTracer2Frm: TBulbTracer2Frm
         TabOrder = 13
         OnClick = SelectOutputFilenameBtnClick
       end
+      object IslandsLbl: TLabel
+        Left = 386
+        Top = 113
+        Width = 50
+        Height = 13
+        Hint = '@MB:DropTheLoosePiecesSmallerThan'
+        Caption = '@MB:Islands'
+        ParentShowHint = False
+        ShowHint = True
+      end
+      object IslandsEdit: TEdit
+        Left = 440
+        Top = 109
+        Width = 38
+        Height = 21
+        Hint = '@MB:DropTheLoosePiecesSmallerThan'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 30
+        Text = '0'
+      end
+      object KeepLbl: TLabel
+        Left = 484
+        Top = 113
+        Width = 40
+        Height = 13
+        Hint = '@MB:ReduceTheMeshToThisShare'
+        Caption = '@MB:Keep'
+        ParentShowHint = False
+        ShowHint = True
+      end
+      object KeepEdit: TEdit
+        Left = 526
+        Top = 109
+        Width = 38
+        Height = 21
+        Hint = '@MB:ReduceTheMeshToThisShare'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 31
+        Text = '100'
+      end
       object FilenameREd: TEdit
         Left = 97
         Top = 109
-        Width = 503
+        Width = 283
         Height = 21
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText

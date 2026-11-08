@@ -41,6 +41,13 @@ pub struct MeshParams {
     pub close: bool,
     /// Taubin smoothing passes afterwards (not used by MB3D's export)
     pub smooth: u32,
+    /// drop the pieces (connected parts) smaller than this share of the
+    /// largest piece's triangles, in percent; 0 keeps every piece (not
+    /// in MB3D: the flying parts the users remove in MeshLab)
+    pub islands: f64,
+    /// reduce the mesh to this share of its vertices, in percent, by
+    /// vertex clustering; 100 (or 0) keeps it as traced (not in MB3D)
+    pub decimate: f64,
 }
 
 impl Default for MeshParams {
@@ -55,6 +62,8 @@ impl Default for MeshParams {
             bounds: [[0.0, GRID]; 3],
             close: false,
             smooth: 0,
+            islands: 0.0,
+            decimate: 100.0,
         }
     }
 }
@@ -381,6 +390,12 @@ pub fn trace_with(
     let mut mesh = fb.mesh;
     if mp.smooth > 0 {
         mesh.taubin(0.5, -0.53, mp.smooth);
+    }
+    if mp.islands > 0.0 {
+        mesh.remove_islands(mp.islands / 100.0);
+    }
+    if mp.decimate > 0.0 && mp.decimate < 100.0 {
+        mesh.decimate(mp.decimate / 100.0);
     }
     mesh.center(1.0);
     Ok(mesh)
@@ -729,6 +744,170 @@ impl Mesh {
 
     /// Edges: (total, used by one face, used by more than two faces).  A
     /// closed surface has only edges shared by two faces.
+    /// The connected pieces of the mesh (vertices joined by faces): the
+    /// piece index of every vertex and the triangle count of each piece.
+    pub fn pieces(&self) -> (Vec<usize>, Vec<usize>) {
+        let n = self.vertices.len();
+        let mut parent: Vec<usize> = (0..n).collect();
+        fn find(parent: &mut [usize], mut i: usize) -> usize {
+            while parent[i] != i {
+                parent[i] = parent[parent[i]];
+                i = parent[i];
+            }
+            i
+        }
+        for f in &self.faces {
+            let a = find(&mut parent, f[0] as usize);
+            for &v in &f[1..] {
+                let b = find(&mut parent, v as usize);
+                if a != b {
+                    parent[b] = a;
+                }
+            }
+        }
+        let mut index = vec![usize::MAX; n];
+        let mut counts: Vec<usize> = Vec::new();
+        let mut of = vec![0usize; n];
+        for i in 0..n {
+            let r = find(&mut parent, i);
+            if index[r] == usize::MAX {
+                index[r] = counts.len();
+                counts.push(0);
+            }
+            of[i] = index[r];
+        }
+        for f in &self.faces {
+            counts[of[f[0] as usize]] += 1;
+        }
+        (of, counts)
+    }
+
+    /// Drops the pieces with fewer triangles than `min_share` of the
+    /// largest piece (the flying parts of a mesh export, which the users
+    /// remove by hand in MeshLab); returns how many pieces went.
+    pub fn remove_islands(&mut self, min_share: f64) -> usize {
+        let (of, counts) = self.pieces();
+        let Some(&largest) = counts.iter().max() else { return 0 };
+        let min = (largest as f64 * min_share.clamp(0.0, 1.0)).ceil() as usize;
+        let keep: Vec<bool> = counts.iter().map(|&c| c >= min).collect();
+        let removed = keep.iter().filter(|k| !**k).count();
+        if removed == 0 {
+            return 0;
+        }
+        self.faces.retain(|f| keep[of[f[0] as usize]]);
+        self.drop_unused_vertices();
+        removed
+    }
+
+    /// Reduces the mesh to about `share` of its vertices by vertex
+    /// clustering: the vertices in each cell of a grid become one (their
+    /// mean, the colours too), and the faces that collapse go.
+    pub fn decimate(&mut self, share: f64) {
+        let share = share.clamp(0.001, 1.0);
+        if share >= 1.0 || self.vertices.len() < 8 {
+            return;
+        }
+        let (mut lo, mut hi) = ([f32::MAX; 3], [f32::MIN; 3]);
+        for v in &self.vertices {
+            for k in 0..3 {
+                lo[k] = lo[k].min(v[k]);
+                hi[k] = hi[k].max(v[k]);
+            }
+        }
+        let ext: Vec<f32> = (0..3).map(|k| (hi[k] - lo[k]).max(1e-9)).collect();
+        // the grid: the wanted vertex count over the mesh's volume; the
+        // surface fills only a share of the cells, so the cell size is
+        // corrected a few times until the count comes out close
+        let want = (self.vertices.len() as f64 * share).max(8.0);
+        let vol = ext.iter().fold(1.0f64, |a, &e| a * e as f64);
+        let mut cell = (vol / want).cbrt() as f32;
+        let mut keys: Vec<u64> = Vec::new();
+        for _ in 0..12 {
+            keys = self
+                .vertices
+                .iter()
+                .map(|v| {
+                    let c = |k: usize| (((v[k] - lo[k]) / cell) as u64).min(0x1F_FFFF);
+                    c(0) | c(1) << 21 | c(2) << 42
+                })
+                .collect();
+            let mut distinct = keys.clone();
+            distinct.sort_unstable();
+            distinct.dedup();
+            let got = distinct.len() as f64;
+            if (got - want).abs() <= want * 0.1 {
+                break;
+            }
+            cell *= (got / want).cbrt().clamp(0.5, 2.0) as f32;
+        }
+        let mut map: std::collections::HashMap<u64, u32> = std::collections::HashMap::new();
+        let mut new_v: Vec<[f32; 3]> = Vec::new();
+        let mut new_c: Vec<[f32; 4]> = Vec::new();
+        let mut cnt: Vec<u32> = Vec::new();
+        let mut remap = vec![0u32; self.vertices.len()];
+        for (i, k) in keys.iter().enumerate() {
+            let j = *map.entry(*k).or_insert_with(|| {
+                new_v.push([0.0; 3]);
+                new_c.push([0.0; 4]);
+                cnt.push(0);
+                (new_v.len() - 1) as u32
+            }) as usize;
+            for c in 0..3 {
+                new_v[j][c] += self.vertices[i][c];
+            }
+            if let Some(cols) = &self.colors {
+                for c in 0..4 {
+                    new_c[j][c] += cols[i][c];
+                }
+            }
+            cnt[j] += 1;
+            remap[i] = j as u32;
+        }
+        for (j, n) in cnt.iter().enumerate() {
+            let inv = 1.0 / *n as f32;
+            new_v[j] = new_v[j].map(|v| v * inv);
+            new_c[j] = new_c[j].map(|v| v * inv);
+        }
+        self.faces = self
+            .faces
+            .iter()
+            .map(|f| [remap[f[0] as usize], remap[f[1] as usize], remap[f[2] as usize]])
+            .filter(|f| f[0] != f[1] && f[1] != f[2] && f[0] != f[2])
+            .collect();
+        self.vertices = new_v;
+        if self.colors.is_some() {
+            self.colors = Some(new_c);
+        }
+        self.drop_unused_vertices();
+    }
+
+    /// Removes the vertices no face uses.
+    fn drop_unused_vertices(&mut self) {
+        let mut used = vec![false; self.vertices.len()];
+        for f in &self.faces {
+            for &v in f {
+                used[v as usize] = true;
+            }
+        }
+        let mut remap = vec![u32::MAX; self.vertices.len()];
+        let mut n = 0u32;
+        for (i, u) in used.iter().enumerate() {
+            if *u {
+                remap[i] = n;
+                n += 1;
+            }
+        }
+        self.vertices = self.vertices.iter().zip(&used).filter(|(_, u)| **u).map(|(v, _)| *v).collect();
+        if let Some(c) = &self.colors {
+            self.colors = Some(c.iter().zip(&used).filter(|(_, u)| **u).map(|(v, _)| *v).collect());
+        }
+        for f in &mut self.faces {
+            for v in f.iter_mut() {
+                *v = remap[*v as usize];
+            }
+        }
+    }
+
     pub fn edge_stats(&self) -> (usize, usize, usize) {
         let mut edges: HashMap<(u32, u32), u32> = HashMap::new();
         for f in &self.faces {
@@ -745,6 +924,63 @@ impl Mesh {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Two triangles sharing an edge, far from a lone small triangle.
+    fn two_pieces() -> Mesh {
+        Mesh {
+            vertices: vec![[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0], [5.0, 5.0, 5.0], [5.1, 5.0, 5.0], [5.0, 5.1, 5.0]],
+            faces: vec![[0, 1, 2], [1, 3, 2], [4, 5, 6]],
+            colors: Some(vec![[1.0, 0.0, 0.0, 1.0]; 7]),
+        }
+    }
+
+    #[test]
+    fn islands_are_found_and_removed() {
+        let mut m = two_pieces();
+        let (of, counts) = m.pieces();
+        assert_eq!(counts.len(), 2);
+        assert_eq!(counts.iter().sum::<usize>(), 3);
+        assert_eq!(of[0], of[3]);
+        assert_ne!(of[0], of[4]);
+        assert_eq!(m.remove_islands(0.6), 1);
+        assert_eq!(m.faces.len(), 2);
+        assert_eq!(m.vertices.len(), 4);
+        assert_eq!(m.colors.as_ref().unwrap().len(), 4);
+        assert!(m.faces.iter().all(|f| f.iter().all(|&v| (v as usize) < 4)));
+        // nothing below the share: nothing removed
+        assert_eq!(two_pieces().remove_islands(0.1), 0);
+    }
+
+    #[test]
+    fn decimation_reduces_the_vertices() {
+        // a grid of 20 x 20 points as a mesh of 2 triangles per cell
+        let n = 20usize;
+        let mut vertices = Vec::new();
+        for y in 0..n {
+            for x in 0..n {
+                vertices.push([x as f32, y as f32, ((x * y) % 3) as f32 * 0.1]);
+            }
+        }
+        let mut faces = Vec::new();
+        for y in 0..n - 1 {
+            for x in 0..n - 1 {
+                let i = (y * n + x) as u32;
+                faces.push([i, i + 1, i + n as u32]);
+                faces.push([i + 1, i + n as u32 + 1, i + n as u32]);
+            }
+        }
+        let mut m = Mesh { vertices, faces, colors: None };
+        let before = m.vertices.len();
+        m.decimate(0.25);
+        let after = m.vertices.len();
+        assert!(after < before / 2 && after > before / 16, "{before} -> {after}");
+        assert!(!m.faces.is_empty());
+        assert!(m.faces.iter().all(|f| f[0] != f[1] && f[1] != f[2] && f[0] != f[2] && f.iter().all(|&v| (v as usize) < after)));
+        // 100 % keeps the mesh
+        let mut same = two_pieces();
+        same.decimate(1.0);
+        assert_eq!(same.vertices.len(), 7);
+    }
 
     #[test]
     fn tables_are_consistent() {

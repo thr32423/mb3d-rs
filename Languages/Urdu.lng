@@ -75,6 +75,8 @@ AMultiplierThatDefinesTheMiximal=ایک ضرب کار جو سخت سائے کے 
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO حساب کا وقت:
 ;AO calc time:
+APlanarOpticWithAField=1 درجہ زاویۂ نظر والی مسطح بصریات: تقریباً عمودی، اونچائی نقشے میں کوئی تناظر نہیں۔ بعد میں دوبارہ حساب کریں۔
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
 ARotationAppliedEachIterationIn=ہر تکرار میں لگائی گئی گردش، ڈگریوں میں
 ;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=پہلے فولڈنگ کے ساتھ سائن انٹیجر پاور بلب، جیسا امیزنگ باکس میں ہے۔
@@ -209,6 +211,8 @@ AmbientLower=ایمبیئنٹ
 ;ambient
 AmbientOcclusion=ایمبیئنٹ آکلوژن
 ;ambient occlusion
+AmbientOcclusion16Bit=ماحولی رکاوٹ (16 بٹ)
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=ایمبیئنٹ شعاعوں کی گہرائی:
 ;Ambient rays depth:
 AmbientShadow=ایمبیئنٹ سایہ
@@ -283,6 +287,8 @@ Aperture=اپرچر:
 ;Aperture:
 Appearance=ظاہری شکل
 ;Appearance
+ApplyTheRecommendedSetting=تجویز کردہ ترتیب لاگو کریں
+;Apply the recommended setting
 ApplyToImage=تصویر پر لاگو کریں
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=اپنی بدلی ہوئی قدریں لاگو کریں، کیونکہ خانے صرف آؤٹ پٹ ہیں
@@ -373,6 +379,10 @@ BatchProcessing=بیچ پروسیسنگ
 ;Batch processing
 BatchProcessingPictureOf=بیچ پروسیسنگ: تصویر {} از {}
 ;Batch processing: picture {} of {}
+Benchmark=بینچ مارک...
+;Benchmark...
+Benchmark2=بینچ مارک
+;Benchmark
 Between=درمیان:
 ;between:
 Big=بڑا
@@ -451,6 +461,8 @@ Calculate3DAndTheBatchWindow=3D حساب اور بیچ ونڈو سوارم کے 
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=درست روشنی کے بغیر ایک تیز 8x8 بلاک دار تصویر کا حساب کریں
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=پہلے ایک تصویر کا حساب کریں۔
+;Calculate a picture first.
 CalculateAPictureFirstOrUntick=پہلے تصویر کا حساب کریں، یا تصویر کا نشان ہٹا دیں۔
 ;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=A.S. خودکار حساب کریں
@@ -523,6 +535,8 @@ Camera=کیمرا
 ;Camera
 CameraColon=کیمرا:
 ;Camera:
+CameraForTextures=ٹیکسچر کے لیے کیمرہ
+;Camera for textures
 CameraLense=کیمرا لینز:
 ;Camera lense:
 Cancel=منسوخ
@@ -777,6 +791,8 @@ CopyTheName=نام کاپی کریں
 ;Copy the name
 CopyThePostText=پوسٹ کا متن کاپی کریں
 ;Copy the post text
+CopyTheResult=نتیجہ کاپی کریں
+;Copy the result
 CopyTheSelectedLineOrAll=منتخب سطر کاپی کریں، یا کچھ منتخب نہ ہو تو دکھائی گئی تمام سطریں
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=قدریں کاپی کریں
@@ -889,6 +905,8 @@ DEOcclusionAtHalfResolution=آدھی ریزولوشن پر DE آکلوژن
 ;DE occlusion at half resolution
 DEStop=DE stop:
 ;DE stop:
+DEStopOfThePostPasses=بعد کے پاسوں کا DE سٹاپ:
+;DE stop of the post passes:
 DEcombinate=DE امتزاج
 ;DEcombinate
 DEstop=DEstop:
@@ -1105,6 +1123,8 @@ DownscaleDiffuseKeepReflections=ڈفیوز چھوٹا کریں، عکس رکھی
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=اسپیکولر چھوٹا کریں
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=سب سے بڑے ٹکڑے کی مثلثوں کے اس حصے (فیصد) سے چھوٹے ڈھیلے ٹکڑے ہٹائیں؛ 0 سب رکھتا ہے
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=پتا نہیں، کچھ نہ کریں
@@ -1125,6 +1145,8 @@ DynamicFogOrVolumetricLightParams=متحرک دھند یا حجمی روشنی �
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=متحرک دھند:\nعدد جتنا کم ہو، دھند شے سے اتنی ہی دور نظر آتی ہے۔\ndIFS کے ساتھ، دھند شے کے اس حصے کے گرد ہوتی ہے جس کا حساب اس تکرار پر ہوا۔\nیہ خصوصیت بند کرنے اور متحرک دھند معمول کے مطابق شعاع قدموں کی تعداد پر کرنے کے لیے صفر۔\nاشارہ: قدموں کے نشان سے بچنے کے لیے 'پہلا قدم بے ترتیب' منتخب کریں۔\nحجمی روشنی:\nوہ روشنی نمبر منتخب کریں جس سے روشنی کے بکھراؤ کا حساب ہو گا۔
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=ہر نقشہ دوسروں کے ساتھ اپنا PNG ہے: <نام>_color، _height، _normal، _ao۔ اونچائی سطح کی گہرائی ہے، نارمل OpenGL روایت میں ہیں، رکاوٹ تصویر کا ماحولی سایہ ہے۔
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=کناروں کا رنگ
 ;Edges color
 Edit=ترمیم
@@ -1607,6 +1629,8 @@ HardShadowsLower=سخت سائے
 ;hard shadows
 Height=اونچائی:
 ;Height:
+Height16BitNearestPointWhite=اونچائی (16 بٹ، قریب ترین نقطہ سفید)
+;Height (16 bit, nearest point white)
 HeightMapGenerator=HeightMap جنریٹر
 ;HeightMap Generator
 HeightMapGeneratorPreview=HeightMap جنریٹر پیش منظر
@@ -1855,6 +1879,8 @@ IsNotAValidFloatingPoint='{}' درست اعشاری قدر نہیں ہے
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' درست عدد صحیح قدر نہیں ہے
 ;'{}' is not a valid integer value
+Islands=جزیرے %
+;Islands %
 Iteration=تکرار
 ;Iteration
 IterationCount=تکرار کی تعداد
@@ -1903,6 +1929,8 @@ JuliaOn=جولیا چالو
 ;Julia On
 JuliaValuesXYZ=جولیا قدریں (x,y,z):
 ;Julia values (x,y,z):
+Keep=رکھیں %
+;Keep %
 KeepAspect=تناسب برقرار
 ;keep aspect
 KeepLights=روشنیاں برقرار
@@ -2181,6 +2209,8 @@ MapSequences=نقشہ سلسلے
 ;Map Sequences
 MapType=نقشے کی قسم:
 ;Map Type:
+MapsOfTheCalculatedPicture=حساب شدہ تصویر کے نقشے:
+;Maps of the calculated picture:
 Material=مادہ
 ;Material
 Max=Max
@@ -2505,6 +2535,8 @@ Noise=-شور
 ;-noise
 NoiseAI=-شور AI
 ;-noise AI
+NoiseDoctor=شور ڈاکٹر
+;Noise doctor
 NoiseFilter=\sشور فلٹر
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=دکھائی گئی تصویر پر شور فلٹر (DCT ڈی نوائزنگ، GIMP کے "Denoise DCT" کی طرح)،\nاس کی شدت شعاعوں سے اندازہ کی جاتی ہے۔ رینڈرنگ خود نہیں بدلتی؛\nاگلی اپ ڈیٹ اسے دوبارہ بغیر فلٹر کے دکھاتی ہے۔
@@ -2517,6 +2549,8 @@ NoneOfTheFormulaSlotsHolds=کسی بھی فارمولا سلاٹ میں فریک
 ;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=عام
 ;Normal
+NormalMap=نارمل نقشہ
+;Normal map
 NormalStatusForThisFormula=اس فارمولے کی عام حیثیت
 ;Normal status for this formula
 NormalsOnDE=DE پر نارملز:
@@ -2727,6 +2761,8 @@ OverwriteExistingImages=موجودہ تصاویر پر لکھیں
 ;Overwrite existing images
 OverwriteExistingM3IFiles=موجودہ M3I فائلوں پر لکھیں
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=مرکزی پاس کے بعد کے پاسوں (سائے، رکاوٹ، حجمی روشنی، عکس) کے لیے اپنی قدم ترتیبات
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16 bit (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2955,6 +2991,8 @@ Range=حد
 ;Range
 RawValuesMappedValuesClampedValues=خام قدریں:\n  {}..\n  {}\nنقشہ شدہ قدریں:\n  {}..\n  {}\nمحدود قدریں:\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=بعد کے پاسوں کا شعاعی قدم:
+;Ray step of the post passes:
 Rays=شعاعیں:
 ;Rays:
 RaystepDivisor=شعاع قدم مقسوم علیہ:
@@ -2987,6 +3025,8 @@ RectLower=مستطیل
 ;rect.
 Rectilinear=سیدھی لکیری
 ;Rectilinear
+ReduceTheMeshToThisShare=میش کو اس کے راسوں کے اس حصے (فیصد، راس گروہ بندی) تک کم کریں؛ 100 اسے حساب جیسا رکھتا ہے
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=بلاک دار نقائص کم کرتا ہے، spline انٹرپولیشن کی وجہ سے اب اتنا اہم نہیں۔
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=حد سے آگے بڑھنے سے بچنے کے لیے شعاع قدم ضرب کار کم کرتا ہے۔\nرینڈرنگ سست ہو جاتی ہے۔
@@ -3073,6 +3113,10 @@ RenderingNow=ابھی رینڈر ہو رہا ہے
 ;rendering now
 RenderingSliceOf=ٹکڑا رینڈر ہو رہا ہے: {} از {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=مقررہ بینچ مارک منظر (Integer Power، 640 x 512، 120 تکرار، مرکزی پاس) کو پروسیسر اور گرافکس کارڈ پر رینڈر کرتا ہے تاکہ مختلف کمپیوٹروں کے نتائج کا موازنہ ہو سکے۔ متن جوں کا توں پوسٹ کریں۔
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=تصویر کے درمیان کو صرف مرکزی پاس سے تین قدم ترتیبات پر رینڈر کرتا ہے اور ہر ایک میں دھبے اور سوراخ گنتا ہے۔ تجویز کردہ ترتیب منظر پر لاگو کی جا سکتی ہے۔
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=یہاں سے دہرائیں
 ;Repeat from here
 RerenderAllKeyframePreviewImages=تمام کی فریم پیش منظر تصاویر دوبارہ رینڈر کریں
@@ -3155,6 +3199,14 @@ Rows=قطاریں
 ;Rows
 RowsOfTiles=ٹائلز کی قطاریں
 ;Rows of tiles
+RunTheBenchmark=بینچ مارک چلائیں
+;Run the benchmark
+RunTheNoiseDoctor=شور ڈاکٹر چلائیں
+;Run the noise doctor
+Running0=جاری: {0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=شور ڈاکٹر چل رہا ہے ...
+;Running the noise doctor ...
 SLeft={} s باقی
 ;{} s left
 SSAO15=SSAO15
@@ -3513,6 +3565,10 @@ StepRelax=قدم نرمی:
 ;Step relax:
 StepcountForBinarySearch=بائنری سرچ کے لیے \nقدموں کی تعداد:
 ;Stepcount for \nbinary search:
+StepsAndNoise=قدم اور شور
+;Steps and noise
+StepsAndNoise2=قدم اور شور...
+;Steps and noise...
 StepwidthLimiter=قدم چوڑائی حد:
 ;Stepwidth limiter:
 Stereo=اسٹیریو
@@ -3617,6 +3673,10 @@ TargetMapSlotUseThisNumber=ہدف نقشہ خانہ۔ متحرک نقشے کے �
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=سانچہ:
 ;Template:
+TextureExport=ٹیکسچر برآمد...
+;Texture export...
+TextureExport2=ٹیکسچر برآمد
+;Texture export
 TheAmazingBoxAkaMandboxFormula='Amazing Box' فارمولا، جسے Mandbox فارمولا بھی کہتے ہیں، fractalforums.com پر TGlad نے ایجاد کیا۔\n\nایک تکرار کا فارمولا کچھ اس طرح ہے:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=شامل کیے گئے ڈفیوز اور اسپیکولر رنگوں کی مقدار 1 سے زیادہ ہے،\nکیا زیادہ حقیقی رنگ کاری کے لیے انہیں کم کر دوں؟
@@ -3735,6 +3795,8 @@ TheLastSessionDidNotEnd=پچھلا سیشن درست طریقے سے ختم نہ
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=مرکزی ایڈیٹر ابھی رینڈر کر رہا ہے۔ براہ کرم پہلے اسے روکیں یا مکمل ہونے تک انتظار کریں۔
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=مرکزی پاس بہت باریک شعاعی قدم سے چل سکتا ہے جبکہ سائے، رکاوٹ اور عکس عام قدم رکھتے ہیں: باریک قدم تب صرف وہیں وقت لیتا ہے جہاں دکھائی دے۔ پیرامیٹرز کے ساتھ محفوظ ہوتا ہے۔
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=مرکزی ونڈو کا منظر
 ;The main window's view
 TheMapOptionsCalculatesXY=نقشہ اختیارات کروی نقشوں کے لیے مخصوص ویکٹر سے x,y کوآرڈینیٹس\nحساب کرتے ہیں، اس سے پہلا رنگ انتخاب بھی بدلتا ہے\nجو عموماً ہموار تکرار پر مبنی ہوتا ہے۔\nان اختیارات کی تبدیلی کا نتیجہ دیکھنے کے لیے تصویر کا\nدوبارہ حساب کرنا ہو گا۔
@@ -3851,6 +3913,8 @@ TileXYLower=ٹائل X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=ٹائل X={} Y={} محفوظ ہوئی۔
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=ٹائل کے قابل: دگنے سائز تک عکس، ہر کنارے پر بے جوڑ
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=ٹائلز
 ;tiles
 Tiles2=ٹائلز
@@ -4125,10 +4189,14 @@ Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=نقشے لکھیں
+;Write the maps
 WritesTheEnglishTextsAsA=انگریزی متن اس نام کی نئی زبان فائل کے طور پر لکھتا ہے؛ انہیں ٹیکسٹ ایڈیٹر سے ترجمہ کریں، پھر "دوبارہ لوڈ" دبائیں
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=تصویر کو جیسی ابھی ہے (نامکمل قطاریں پس منظر کے طور پر) .m3i فائل کے طور پر لکھتا ہے
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=لکھا گیا: {0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=لکھا گیا: {}\n"=" کے دائیں متن کو ٹیکسٹ ایڈیٹر سے ترجمہ کریں، پھر "دوبارہ لوڈ" دبائیں۔
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=X زاویہ:

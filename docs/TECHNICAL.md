@@ -11,6 +11,7 @@ The technical side of [mb3d-rs](../README.md): how the graphics card is used, wh
 - [Scene files (.m3s)](#scene-files-m3s)
 - [Mandelbulber settings files (.fract)](#mandelbulber-settings-files-fract)
 - [The Formula book](#the-formula-book)
+- [Post pass steps, noise doctor, textures, mesh cleaning, benchmark](#post-pass-steps-noise-doctor-textures-mesh-cleaning-benchmark)
 - [Ambient occlusion and shadows](#ambient-occlusion-and-shadows)
 - [Lights, volumetric light, cutting planes, depth of field](#lights-volumetric-light-cutting-planes-depth-of-field)
 - [Reflections and transparency, normals on the z-buffer](#reflections-and-transparency-normals-on-the-z-buffer)
@@ -822,6 +823,52 @@ uses gets `Scene::preset` written to `cache/formula-book/<name>.txt`, which
 the same queue calculates (the queue reads every kind of parameters through
 `animfile::load_scene` since). The texts are labels (`Languages/*.lng`), so
 the book is in all languages.
+
+## Post pass steps, noise doctor, textures, mesh cleaning, benchmark
+
+Five more of the group's wishes (docs/COMMUNITY_WISHES.md 8-12), none in MB3D:
+
+* `Scene::post_steps` (`PostSteps { raystep, de_stop }`, text keys
+  `post_raystep`, `post_de_stop`, in the mb3d-rs block of `.m3p` files):
+  `Scene::post_scene()` is the scene with those values in place of the main
+  pass's. `render::post_process_reporting` builds its `CalcParams` from it
+  for the hard shadows, the DE occlusion and the volumetric light, the
+  paint stage for the reflections, and the window's selection passes
+  (`engine.rs`) the same; the card's post passes keep the main parameters.
+  tests/post_steps.rs checks the round trip and that the surface of a
+  render with coarser post steps is the main pass's.
+* `noise.rs`: `specks()` counts a pixel whose luma is more than 48 of 255
+  from the median of its eight neighbours, and a pixel alone of its kind
+  (background among surface or the reverse); `diagnose()` renders the
+  middle crop (`crop()`, up to 256 x 192) with the main pass alone
+  (`calculate_raw_cancellable` + `paint`) under `settings()`: as set, half
+  the ray step, a quarter of the limiter (or a quarter of the step);
+  `best()` prefers fewer specks, then speed, with a tie band of 0.06 per
+  thousand pixels. The window is `app/steps_form.rs` (`StepsFrm`), the run
+  in a thread polled by a timer.
+* The direct background picture of the render's size: `Plv.exact_bg` and
+  `LightMap::pixel_at` in place of the spline at the half-pixel offset
+  (`lighting.rs`, `maps.rs`).
+* `texture.rs`: `height_map` (16 bit from `zpos`, nearest white),
+  `normal_map` (the G-buffer normals, y and z flipped to the OpenGL
+  convention), `ao_map` (16 bit from `amb_shadow`), `mirror` for tileable
+  sets, `camera_preset` (planar, 1 degree), `write` for the PNG files;
+  the window `app/texture_form.rs` takes the picture from the engine's
+  `Base.post` and `Output.rgb`.
+* `mesh.rs`: `Mesh::pieces` (union-find over the faces), `remove_islands`
+  (pieces below a share of the largest piece's triangles),
+  `decimate` (vertex clustering on a grid whose cell is corrected until the
+  cell count is within 10 % of the wanted vertex count),
+  `drop_unused_vertices`; `MeshParams.islands` / `.decimate` in percent,
+  applied in `trace_with` after the smoothing, the Bulb Tracer's
+  `IslandsEdit` / `KeepEdit` and `mb3d mesh --islands --decimate`.
+  tools/blender_import_mb3d.py imports the result into Blender with a
+  vertex colour material.
+* `bench.rs`: `scene()` (Integer Power 640 x 512, 120 iterations, main
+  pass), `run()` on the processor with the card off, then the card twice
+  (the first run compiles), `BenchResult::text()`; `cpu_name()` from
+  /proc/cpuinfo, sysctl or PROCESSOR_IDENTIFIER. `mb3d benchmark [--cpu]`
+  and the window `app/bench_form.rs`.
 
 ## Ambient occlusion and shadows
 

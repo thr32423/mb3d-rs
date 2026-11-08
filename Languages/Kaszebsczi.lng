@@ -74,6 +74,8 @@ AMultiplierThatDefinesTheMiximal=Mnożnik, chtëren òkresliwô maksymalną dłu
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=Czas rechòwaniô AO:
 ;AO calc time:
+APlanarOpticWithAField=Planarnô òptika z pòlã widzeniô 1 stãpnia: wnet òrtograficznô, bez perspektiwë w mapie wësokòscë. Pòtemù wërechùj znowa.
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
 ARotationAppliedEachIterationIn=òbrót brëkòwóny w kòżdi iteracji, w stãpniach
 ;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=Sinusowi bulb z całkòwitą pòtãdżą ë ze wczasnyma skłôdanyma, jak w Amazing Box.
@@ -208,6 +210,8 @@ AmbientLower=òkòlé
 ;ambient
 AmbientOcclusion=ambient occlusion
 ;ambient occlusion
+AmbientOcclusion16Bit=Òkluzjô òkòlégò (16 bitów)
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=Głãbiô parmieni òtoczeniô:
 ;Ambient rays depth:
 AmbientShadow=Òkòlny céń
@@ -282,6 +286,8 @@ Aperture=Apertura:
 ;Aperture:
 Appearance=Wëzdrzatk
 ;Appearance
+ApplyTheRecommendedSetting=Ùżij zalécóny nastôw
+;Apply the recommended setting
 ApplyToImage=Zastosuj do òbrôzka
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=Zastosuj zmienioné wôrtnotë, bò pòla są blós wińdzenim
@@ -372,6 +378,10 @@ BatchProcessing=Serijné przerôbianié
 ;Batch processing
 BatchProcessingPictureOf=Serijné przerôbianié: òbrôzk {} z {}
 ;Batch processing: picture {} of {}
+Benchmark=Test wëdajnoscë...
+;Benchmark...
+Benchmark2=Test wëdajnoscë
+;Benchmark
 Between=midzë:
 ;between:
 Big=wiôldżé
@@ -450,6 +460,8 @@ Calculate3DAndTheBatchWindow=Rechùj 3D ë òkno rzeszowégò renderowaniô z ro
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Rechùje chùtczi klockòwi òbrôzk 8x8 bez pòrządnégò òswieceniô
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=Nôprzód wërechùj òbrôz.
+;Calculate a picture first.
 CalculateAPictureFirstOrUntick=Nôprzód wërechùj òbrôzk abò òdznaczë òbrôzk.
 ;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=Rechùj A.S. aùtomatno
@@ -522,6 +534,8 @@ Camera=Kamera
 ;Camera
 CameraColon=Kamera:
 ;Camera:
+CameraForTextures=Kamera do teksturów
+;Camera for textures
 CameraLense=Òbiektiw kamerë:
 ;Camera lense:
 Cancel=Òprzestóń
@@ -776,6 +790,8 @@ CopyTheName=Kòpiuj miono
 ;Copy the name
 CopyThePostText=Kòpérëj tekst wpisu
 ;Copy the post text
+CopyTheResult=Kòpiuj wińdżi
+;Copy the result
 CopyTheSelectedLineOrAll=Kòpérëj zaznaczoną régã abò wszëtczé pòkazóné régi, czej niżódnô nie je zaznaczonô
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Kòpérëj wôrtnotë
@@ -888,6 +904,8 @@ DEOcclusionAtHalfResolution=DE occlusion przë pòłowie rozdzélnoscë
 ;DE occlusion at half resolution
 DEStop=DE stop:
 ;DE stop:
+DEStopOfThePostPasses=DE stop dodôwnëch przebiegów:
+;DE stop of the post passes:
 DEcombinate=DEcombinate
 ;DEcombinate
 DEstop=DEstop:
@@ -1104,6 +1122,8 @@ DownscaleDiffuseKeepReflections=Zmniészë rozproszoné, òstawi òdbicô
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=Zmniészë òdbłësk
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=Òdrzucë lózné sztëczczi mniészé jak ten dzél trójkątów nôwikszégò sztëczka (procent); 0 zachòwiwô wszëtczé
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Nie wiém, nick nie rób
@@ -1124,6 +1144,8 @@ DynamicFogOrVolumetricLightParams=Parametrë dinamiczny mgłë abò wòlumetricz
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=Dinamicznô dôka:\nCzim niższô lëczba, tim dali òd òbiektu pòkazywô sã dôka.\nPrzë dIFS dôka je wkół dzéla òbiektu rechòwónégò w ti iteracji.\nZero wëłącziwô tã fùnkcjã i dinamicznô dôka dzejô jak zwëczajno na lëczbie krokòw parmienia.\nRada: Zaznaczë òpcjã 'First step random', bë zabezpiec przed stãpniama.\nWòlumetriczny wid:\nWëbierzë nr widu, dlô jaczégò bãdze rechòwóné rozpraszanié widu.
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=Kòżdô mapa to apartny PNG kòl jinëch: <miono>_color, _height, _normal, _ao. Wësokòsc to głãbia wiérzchù, normalné są w kònwencji OpenGL, òkluzjô to céń òkòlégò òbrazu.
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=Farwa kańtów
 ;Edges color
 Edit=Edytuj
@@ -1606,6 +1628,8 @@ HardShadowsLower=cwiardé cénie
 ;hard shadows
 Height=Wiżô:
 ;Height:
+Height16BitNearestPointWhite=Wësokòsc (16 bitów, nôblëższi pùnkt biôłi)
+;Height (16 bit, nearest point white)
 HeightMapGenerator=Generator map wësokòscë
 ;HeightMap Generator
 HeightMapGeneratorPreview=Pòdzérk generatora mapë wësokòscë
@@ -1854,6 +1878,8 @@ IsNotAValidFloatingPoint='{}' nie je bezzmiłkòwą wôrtnotą zmiennoprzecynkò
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' nie je bezzmiłkòwą wôrtnotą całkòwitą
 ;'{}' is not a valid integer value
+Islands=Òstrowë %
+;Islands %
 Iteration=Iteracjô
 ;Iteration
 IterationCount=lëczbã iteracjów
@@ -1902,6 +1928,8 @@ JuliaOn=Julia wł.
 ;Julia On
 JuliaValuesXYZ=Wôrtnotë Julia (x,y,z):
 ;Julia values (x,y,z):
+Keep=Zachòwôj %
+;Keep %
 KeepAspect=trzëmôj propòrcje
 ;keep aspect
 KeepLights=Zachòwôj widë
@@ -2180,6 +2208,8 @@ MapSequences=Sekwencje mapów
 ;Map Sequences
 MapType=Ôrt mapë:
 ;Map Type:
+MapsOfTheCalculatedPicture=Mapë wërechòwónégò òbrazu:
+;Maps of the calculated picture:
 Material=Materiał
 ;Material
 Max=Max
@@ -2504,6 +2534,8 @@ Noise=-szëm
 ;-noise
 NoiseAI=-szëm AI
 ;-noise AI
+NoiseDoctor=Doktór szumù
+;Noise doctor
 NoiseFilter=\sFilter szëmù
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=Filter szëmù na pòkazywónym òbrôzkù (òdszëmianié DCT jak "Denoise DCT" w GIMP-ie),\njegò mòc je òszacowónô z parmieni. Samò renderowanié sã nie zmieniwô;\npòsobné òdswiéżenié pòkazywô je znowa bez filtra.
@@ -2516,6 +2548,8 @@ NoneOfTheFormulaSlotsHolds=Żóden slot fòrmùłë nie mô fòrmùłë, jakô r
 ;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normalny
 ;Normal
+NormalMap=Mapa normalnëch
+;Normal map
 NormalStatusForThisFormula=Normalny sztatus ti fòrmùłë
 ;Normal status for this formula
 NormalsOnDE=Nòrmale na DE:
@@ -2726,6 +2760,8 @@ OverwriteExistingImages=Nadpiszë jistniejącé òbrôzczi
 ;Overwrite existing images
 OverwriteExistingM3IFiles=Nadpiszë jistniejącé lopczi M3I
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=Swòje nastôwë krokù dlô przebiegów pò przédnym (ceniô, òkluzjô, wòluméjtriczné widno, òdbicô)
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16 bit (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2954,6 +2990,8 @@ Range=Zasyg
 ;Range
 RawValuesMappedValuesClampedValues=Surowé wôrtnotë:\n  {}..\n  {}\nPrzeniosłé wôrtnotë:\n  {}..\n  {}\nÒbgrańczoné wôrtnotë:\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=Krok parmienia dodôwnëch przebiegów:
+;Ray step of the post passes:
 Rays=Parmienie:
 ;Rays:
 RaystepDivisor=Dzelnik krokù parmienia:
@@ -2986,6 +3024,8 @@ RectLower=rekt.
 ;rect.
 Rectilinear=Prostolinijny
 ;Rectilinear
+ReduceTheMeshToThisShare=Zmniészë sécã do tegò dzélu ji wiérzchòłków (procent, grëpòwanié wiérzchòłków); 100 òstôwiô jã jak wërechòwóną
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Zmniésziwô klockòwaté artefaktë, przez interpòlacjã spline ju nie tak wôżné.
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=Zmniészô mnożnik krokù parmienia, żebë ùniknąc przekroczeniô.\nRenderowanié je wòlniészé.
@@ -3072,6 +3112,10 @@ RenderingNow=terô renderowanié
 ;rendering now
 RenderingSliceOf=Renderowanié skrôwka: {} z {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=Renderëje stałą testową scenã (Integer Power, 640 x 512, 120 iteracjów, przédny przebiég) na procesorze i graficzny karce, żebë wińdżi z różnëch kòmpùtrów szło pòrównac. Òpùblikùj tekst bez zmianów.
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=Renderëje strzódk òbrazu samim przédnym przebiegã przë trzech nastôwach krokù i rechùje w kòżdim plamczi i dzurë. Zalécóny nastôw mòże bëc ùżëti do scenë.
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Pòwtórz òd tuwò
 ;Repeat from here
 RerenderAllKeyframePreviewImages=Renderuj znowa wszëtczé pòdzérczi kluczowëch klatków
@@ -3154,6 +3198,14 @@ Rows=Rédżi
 ;Rows
 RowsOfTiles=Rédżi kachlów
 ;Rows of tiles
+RunTheBenchmark=Zrëszë test
+;Run the benchmark
+RunTheNoiseDoctor=Zrëszë doktora szumù
+;Run the noise doctor
+Running0=Dzeje sã: {0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=Doktór szumù robi ...
+;Running the noise doctor ...
 SLeft=òstało {} s
 ;{} s left
 SSAO15=SSAO15
@@ -3512,6 +3564,10 @@ StepRelax=Wëdłużenié krokù:
 ;Step relax:
 StepcountForBinarySearch=Lëczba kroków dlô \nbinarnégò szukaniô:
 ;Stepcount for \nbinary search:
+StepsAndNoise=Kroczi i szum
+;Steps and noise
+StepsAndNoise2=Kroczi i szum...
+;Steps and noise...
 StepwidthLimiter=Ògrańczenié szérzë krokù:
 ;Stepwidth limiter:
 Stereo=Stereo
@@ -3616,6 +3672,10 @@ TargetMapSlotUseThisNumber=Docelowi slot mapë. Ùżij ti lëczbë jakno mapë w
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=Szablon:
 ;Template:
+TextureExport=Ekspòrt teksturów...
+;Texture export...
+TextureExport2=Ekspòrt teksturów
+;Texture export
 TheAmazingBoxAkaMandboxFormula=Fòrmùła 'Amazing Box', téż zwónô Mandbox, wëmëslonô przez TGlada na fractalforums.com.\n\nFòrmùła jednégò iteracëji wëzdrzy tak:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=Wielosc dodónëch rozproszonëch ë spekùlarnëch farwów je wikszô jak 1,\nczë je zmniészëc dlô realisticzniészégò farwieniô?
@@ -3734,6 +3794,8 @@ TheLastSessionDidNotEnd=Òstatnô sesjô nie skùńczëła sã pòprawno (zamarz
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=Przédny editor wcyg renderëje. Nôprzód gò zatrzëmôj abò żdżë, jaż skùńczi.
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=Przédny przebiég mòże jic baro drobnym krokã parmienia, a ceniô, òkluzjô i òdbicô trzimają zwëczajny: drobny krok kòsztëje tej czas blós tam, gdze gò widzec. Zapisywóné z parametrama.
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=Wëzdrzatk przédnégò òkna
 ;The main window's view
 TheMapOptionsCalculatesXY=Òpcje mapë rechùją kòòrdinatë x,y z òsoblëwégò\nwektora dlô sfericznëch mapów, to zmieniwô téż pierszi wëbiér farwë,\njaczi zwëczajno òpiérô sã na głôdczich iteracjach.\nŻebë widzec wënik zmianów tëch òpcjów,\nnót je òbrôzk wërechòwac znowa.
@@ -3850,6 +3912,8 @@ TileXYLower=kachel X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=Kachel X={} Y={} zapisóny.
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=Kaflowô: òdbitô do dwa razë wikszégò rozmiaru, bez szwów na kòżdi kance
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=kachlach
 ;tiles
 Tiles2=Kachle
@@ -4124,10 +4188,14 @@ Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=Zapiszë mapë
+;Write the maps
 WritesTheEnglishTextsAsA=Zapisywô anielsczé tekstë jakno nowi lopk jãzëka ò tim mionie; przełożë je edytorã tekstu, a tej wcësni Wczëtôj znowa
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=Zapisywô òbrôzk taczi, jaczi je terô (nieskùńczoné rédżi jakno tło), jakno lopk .m3i
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=Zapisóné: {0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=Zapisóné: {}\nPrzełożë tekstë z prawa òd "=" edytorã tekstu, a tej wcësni Wczëtôj znowa.
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=Nórt X:

@@ -75,6 +75,8 @@ AMultiplierThatDefinesTheMiximal=定義硬陰影計算最大長度的乘數，\n
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO 計算時間：
 ;AO calc time:
+APlanarOpticWithAField=視場 1 度的平面光學：近乎正交，高度圖中沒有透視。之後請重新計算。
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
 ARotationAppliedEachIterationIn=每次迭代施加的旋轉，單位為度
 ;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=帶有前置摺疊的正弦整數冪球莖，與神奇盒子中的相同。
@@ -209,6 +211,8 @@ AmbientLower=環境
 ;ambient
 AmbientOcclusion=環境光遮蔽
 ;ambient occlusion
+AmbientOcclusion16Bit=環境光遮蔽（16 位元）
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=環境光線深度：
 ;Ambient rays depth:
 AmbientShadow=環境陰影
@@ -283,6 +287,8 @@ Aperture=光圈：
 ;Aperture:
 Appearance=外觀
 ;Appearance
+ApplyTheRecommendedSetting=套用推薦設定
+;Apply the recommended setting
 ApplyToImage=套用到影像
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=請套用您更改的值，因為編輯框僅供輸出
@@ -373,6 +379,10 @@ BatchProcessing=批次處理
 ;Batch processing
 BatchProcessingPictureOf=批次處理：第 {} 張圖片，共 {} 張
 ;Batch processing: picture {} of {}
+Benchmark=基準測試...
+;Benchmark...
+Benchmark2=基準測試
+;Benchmark
 Between=介於：
 ;between:
 Big=大
@@ -451,6 +461,8 @@ Calculate3DAndTheBatchWindow=計算 3D 與批次視窗交由 swarm 處理，分�
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=快速計算 8x8 方塊狀影像，不含正確光照
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=請先計算一幅畫面。
+;Calculate a picture first.
 CalculateAPictureFirstOrUntick=請先計算一張圖片，或取消勾選該圖片。
 ;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=自動計算環境陰影
@@ -523,6 +535,8 @@ Camera=相機
 ;Camera
 CameraColon=相機：
 ;Camera:
+CameraForTextures=紋理用相機
+;Camera for textures
 CameraLense=相機鏡頭：
 ;Camera lense:
 Cancel=取消
@@ -777,6 +791,8 @@ CopyTheName=複製名稱
 ;Copy the name
 CopyThePostText=複製貼文文字
 ;Copy the post text
+CopyTheResult=複製結果
+;Copy the result
 CopyTheSelectedLineOrAll=複製選取的那一行；未選取時複製所有顯示的行
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=複製數值
@@ -889,6 +905,8 @@ DEOcclusionAtHalfResolution=半解析度 DE 遮蔽
 ;DE occlusion at half resolution
 DEStop=DE stop：
 ;DE stop:
+DEStopOfThePostPasses=後續通道的 DE 停止值：
+;DE stop of the post passes:
 DEcombinate=DEcombinate
 ;DEcombinate
 DEstop=DEstop：
@@ -1105,6 +1123,8 @@ DownscaleDiffuseKeepReflections=縮小漫射，保留反射
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=縮小鏡面反射
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=丟棄三角形數少於最大部分此比例（百分比）的零散部分；0 保留全部
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds：
 ;Ds:
 DunnoDoNothing=不知道，什麼都不做
@@ -1125,6 +1145,8 @@ DynamicFogOrVolumetricLightParams=動態霧或體積光參數。選項請見「�
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=動態霧：\n數值越低，霧出現的位置離物件越遠。\n使用 dIFS 時，霧圍繞在此迭代所計算的物件部分周圍。\n設為零可停用此功能，並照常依光線步數計算動態霧。\n提示：勾選「First step random」選項可避免階梯狀條紋。\n體積光：\n選擇要計算光散射的光源編號。
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=每張貼圖都是並排的獨立 PNG：<名稱>_color、_height、_normal、_ao。高度是表面的深度，法線採用 OpenGL 慣例，遮蔽是畫面的環境陰影。
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=邊線顏色
 ;Edges color
 Edit=編輯
@@ -1607,6 +1629,8 @@ HardShadowsLower=硬陰影
 ;hard shadows
 Height=高度：
 ;Height:
+Height16BitNearestPointWhite=高度（16 位元，最近點為白）
+;Height (16 bit, nearest point white)
 HeightMapGenerator=高度圖產生器
 ;HeightMap Generator
 HeightMapGeneratorPreview=高度圖產生器預覽
@@ -1855,6 +1879,8 @@ IsNotAValidFloatingPoint=「{}」不是有效的浮點數值
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue=「{}」不是有效的整數值
 ;'{}' is not a valid integer value
+Islands=孤島 %
+;Islands %
 Iteration=迭代
 ;Iteration
 IterationCount=迭代次數
@@ -1903,6 +1929,8 @@ JuliaOn=Julia 開
 ;Julia On
 JuliaValuesXYZ=Julia 值 (x,y,z)：
 ;Julia values (x,y,z):
+Keep=保留 %
+;Keep %
 KeepAspect=保持長寬比
 ;keep aspect
 KeepLights=保留燈光
@@ -2181,6 +2209,8 @@ MapSequences=貼圖序列
 ;Map Sequences
 MapType=貼圖類型：
 ;Map Type:
+MapsOfTheCalculatedPicture=已計算畫面的貼圖：
+;Maps of the calculated picture:
 Material=材質
 ;Material
 Max=Max
@@ -2505,6 +2535,8 @@ Noise=-雜訊
 ;-noise
 NoiseAI=-雜訊AI
 ;-noise AI
+NoiseDoctor=雜訊醫生
+;Noise doctor
 NoiseFilter=\s雜訊濾波
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=對顯示的圖片套用雜訊濾鏡（DCT 去雜訊，如同 GIMP 的「Denoise DCT」），\n強度依光線數估計。渲染本身不會改變；\n下次更新時會再次顯示未濾波的影像。
@@ -2517,6 +2549,8 @@ NoneOfTheFormulaSlotsHolds=沒有任何公式插槽含有能產生碎形的公�
 ;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=一般
 ;Normal
+NormalMap=法線貼圖
+;Normal map
 NormalStatusForThisFormula=將此公式設為一般狀態
 ;Normal status for this formula
 NormalsOnDE=以 DE 計算法向量：
@@ -2727,6 +2761,8 @@ OverwriteExistingImages=覆寫既有影像
 ;Overwrite existing images
 OverwriteExistingM3IFiles=覆寫既有的 M3I 檔案
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=主通道之後的通道（陰影、遮蔽、體積光、反射）使用自己的步長設定
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16 位元 (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2955,6 +2991,8 @@ Range=範圍
 ;Range
 RawValuesMappedValuesClampedValues=原始值：\n  {}..\n  {}\n對應值：\n  {}..\n  {}\n限制值：\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=後續通道的光線步長：
+;Ray step of the post passes:
 Rays=光線數：
 ;Rays:
 RaystepDivisor=光線步長除數：
@@ -2987,6 +3025,8 @@ RectLower=直線
 ;rect.
 Rectilinear=直線投影
 ;Rectilinear
+ReduceTheMeshToThisShare=把網格減到其頂點的此比例（百分比，頂點叢集）；100 保持計算原樣
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=減少方塊狀瑕疵，由於已有樣條插值，現在已不那麼重要。
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=降低光線步長乘數以避免過步。\n會使算圖變慢。
@@ -3073,6 +3113,10 @@ RenderingNow=正在渲染
 ;rendering now
 RenderingSliceOf=正在渲染切片：{} / {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=在處理器和顯示卡上渲染固定的基準場景（Integer Power，640 x 512，120 次迭代，主通道），使不同電腦的結果可以比較。請原樣發布文字。
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=僅用主通道在三種步長設定下渲染畫面中央，並統計各自的斑點和孔洞。推薦的設定可以套用到場景。
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=從此處重複
 ;Repeat from here
 RerenderAllKeyframePreviewImages=重新算出所有關鍵影格預覽圖
@@ -3155,6 +3199,14 @@ Rows=列
 ;Rows
 RowsOfTiles=圖塊的列數
 ;Rows of tiles
+RunTheBenchmark=執行基準測試
+;Run the benchmark
+RunTheNoiseDoctor=執行雜訊醫生
+;Run the noise doctor
+Running0=執行中：{0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=雜訊醫生執行中 ...
+;Running the noise doctor ...
 SLeft=剩 {} 秒
 ;{} s left
 SSAO15=SSAO15
@@ -3513,6 +3565,10 @@ StepRelax=步長放寬：
 ;Step relax:
 StepcountForBinarySearch=二分搜尋\n步數：
 ;Stepcount for \nbinary search:
+StepsAndNoise=步長與雜訊
+;Steps and noise
+StepsAndNoise2=步長與雜訊...
+;Steps and noise...
 StepwidthLimiter=步寬限制器：
 ;Stepwidth limiter:
 Stereo=立體
@@ -3617,6 +3673,10 @@ TargetMapSlotUseThisNumber=目標貼圖插槽。在碎形中以此編號作為�
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=範本：
 ;Template:
+TextureExport=紋理匯出...
+;Texture export...
+TextureExport2=紋理匯出
+;Texture export
 TheAmazingBoxAkaMandboxFormula='Amazing Box'，又稱 Mandbox 公式，由 TGlad 在 fractalforums.com 發明。\n\n一次迭代的公式如下：\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=漫射與高光顏色相加的總量大於 1，\n要將其縮小以獲得更真實的著色嗎？
@@ -3735,6 +3795,8 @@ TheLastSessionDidNotEnd=上一個工作階段未正常結束（凍結、被終�
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=主編輯器仍在渲染。請先停止，或等待完成。
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=主通道可以用極細的光線步長行進，而陰影、遮蔽和反射保持正常步長：細步長只在看得見的地方花費時間。隨參數儲存。
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=主視窗的視角
 ;The main window's view
 TheMapOptionsCalculatesXY=貼圖選項會從特定向量計算球面貼圖的 x,y 座標，\n這也會改變通常以平滑迭代為基礎的\n第一色彩選擇。\n您必須重新計算影像才能看到\n這些選項更改的結果。
@@ -3851,6 +3913,8 @@ TileXYLower=圖塊 X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=圖塊 X={} Y={} 已儲存。
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=可平鋪：鏡像到兩倍大小，每條邊都無縫
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=個圖塊
 ;tiles
 Tiles2=圖塊
@@ -4125,10 +4189,14 @@ Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=寫出貼圖
+;Write the maps
 WritesTheEnglishTextsAsA=以此名稱將英文文字寫成新的語言檔案；請用文字編輯器翻譯，然後按「重新載入」
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=將圖片依目前狀態寫入 .m3i 檔案（尚未完成的列以背景填入）
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=已寫出：{0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=已寫入：{}\n請用文字編輯器翻譯「=」右側的文字，然後按「重新載入」。
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=X 角度：

@@ -74,6 +74,8 @@ AMultiplierThatDefinesTheMiximal=Pengali yang menentukan panjang maksimal perhit
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=Waktu hitung AO:
 ;AO calc time:
+APlanarOpticWithAField=Optik planar dengan sudut pandang 1 derajat: hampir ortografis, tanpa perspektif di peta tinggi. Hitung lagi sesudahnya.
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
 ARotationAppliedEachIterationIn=rotasi yang diterapkan tiap iterasi, dalam derajat
 ;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=Bulb sinus pangkat bilangan bulat dengan pelipatan sebelumnya, seperti pada amazing box.
@@ -208,6 +210,8 @@ AmbientLower=ambien
 ;ambient
 AmbientOcclusion=ambient occlusion
 ;ambient occlusion
+AmbientOcclusion16Bit=Oklusi ambien (16 bit)
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=Kedalaman sinar ambien:
 ;Ambient rays depth:
 AmbientShadow=Bayangan ambien
@@ -282,6 +286,8 @@ Aperture=Apertur:
 ;Aperture:
 Appearance=Tampilan
 ;Appearance
+ApplyTheRecommendedSetting=Terapkan pengaturan yang disarankan
+;Apply the recommended setting
 ApplyToImage=Terapkan ke gambar
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=Terapkan nilai yang Anda ubah, karena kolom edit hanya keluaran
@@ -372,6 +378,10 @@ BatchProcessing=Pemrosesan batch
 ;Batch processing
 BatchProcessingPictureOf=Pemrosesan batch: gambar {} dari {}
 ;Batch processing: picture {} of {}
+Benchmark=Uji kinerja...
+;Benchmark...
+Benchmark2=Uji kinerja
+;Benchmark
 Between=antara:
 ;between:
 Big=besar
@@ -450,6 +460,8 @@ Calculate3DAndTheBatchWindow=Hitung 3D dan jendela Batch dengan swarm, di
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=Hitung gambar kotak-kotak 8x8 yang cepat tanpa pencahayaan yang tepat
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=Hitung gambar dulu.
+;Calculate a picture first.
 CalculateAPictureFirstOrUntick=Hitung gambar dulu, atau hapus centang gambar.
 ;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=Hitung A.S. otomatis
@@ -522,6 +534,8 @@ Camera=Kamera
 ;Camera
 CameraColon=Kamera:
 ;Camera:
+CameraForTextures=Kamera untuk tekstur
+;Camera for textures
 CameraLense=Lensa kamera:
 ;Camera lense:
 Cancel=Batal
@@ -776,6 +790,8 @@ CopyTheName=Salin nama
 ;Copy the name
 CopyThePostText=Salin teks postingan
 ;Copy the post text
+CopyTheResult=Salin hasil
+;Copy the result
 CopyTheSelectedLineOrAll=Salin baris yang dipilih, atau semua baris yang ditampilkan jika tidak ada yang dipilih
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=Salin nilai
@@ -888,6 +904,8 @@ DEOcclusionAtHalfResolution=Oklusi DE pada setengah resolusi
 ;DE occlusion at half resolution
 DEStop=DE stop:
 ;DE stop:
+DEStopOfThePostPasses=DE stop tahap lanjutan:
+;DE stop of the post passes:
 DEcombinate=DEcombinate
 ;DEcombinate
 DEstop=DEstop:
@@ -1104,6 +1122,8 @@ DownscaleDiffuseKeepReflections=Perkecil difus, pertahankan refleksi
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=Perkecil spekular
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=Buang potongan lepas yang lebih kecil dari bagian segitiga potongan terbesar ini (persen); 0 menyimpan semua
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=Entahlah, jangan lakukan apa-apa
@@ -1124,6 +1144,8 @@ DynamicFogOrVolumetricLightParams=Param kabut dinamis atau cahaya volumetrik. Li
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=Kabut dinamis:\nSemakin kecil angkanya, semakin jauh dari objek kabut muncul.\nDengan dIFS, kabut berada di sekitar bagian objek yang dihitung pada iterasi ini.\nNol untuk menonaktifkan fitur ini dan membuat kabut dinamis dari jumlah langkah sinar seperti biasa.\nTips: Centang opsi 'Langkah pertama acak' untuk mencegah tangga.\nCahaya volumetrik:\nPilih nomor cahaya yang hamburan cahayanya akan dihitung.
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=Setiap peta adalah PNG tersendiri di samping yang lain: <nama>_color, _height, _normal, _ao. Tinggi adalah kedalaman permukaan, normal mengikuti konvensi OpenGL, oklusi adalah bayangan ambien gambar.
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=Warna tepi
 ;Edges color
 Edit=Edit
@@ -1606,6 +1628,8 @@ HardShadowsLower=bayangan keras
 ;hard shadows
 Height=Tinggi:
 ;Height:
+Height16BitNearestPointWhite=Tinggi (16 bit, titik terdekat putih)
+;Height (16 bit, nearest point white)
 HeightMapGenerator=Generator HeightMap
 ;HeightMap Generator
 HeightMapGeneratorPreview=Pratinjau Generator HeightMap
@@ -1854,6 +1878,8 @@ IsNotAValidFloatingPoint='{}' bukan nilai floating point yang valid
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' bukan nilai integer yang valid
 ;'{}' is not a valid integer value
+Islands=Pulau %
+;Islands %
 Iteration=Iterasi
 ;Iteration
 IterationCount=Jumlah Iterasi
@@ -1902,6 +1928,8 @@ JuliaOn=Julia Aktif
 ;Julia On
 JuliaValuesXYZ=Nilai Julia (x,y,z):
 ;Julia values (x,y,z):
+Keep=Simpan %
+;Keep %
 KeepAspect=jaga aspek
 ;keep aspect
 KeepLights=Pertahankan cahaya
@@ -2180,6 +2208,8 @@ MapSequences=Urutan Peta
 ;Map Sequences
 MapType=Jenis Peta:
 ;Map Type:
+MapsOfTheCalculatedPicture=Peta dari gambar yang dihitung:
+;Maps of the calculated picture:
 Material=Material
 ;Material
 Max=Max
@@ -2504,6 +2534,8 @@ Noise=-derau
 ;-noise
 NoiseAI=-derau AI
 ;-noise AI
+NoiseDoctor=Dokter derau
+;Noise doctor
 NoiseFilter=\sFilter Derau
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=Filter derau pada gambar yang ditampilkan (denoising DCT seperti "Denoise DCT" GIMP),\nkekuatannya diperkirakan dari sinar. Render itu sendiri tidak diubah;\npembaruan berikutnya menampilkannya lagi tanpa filter.
@@ -2516,6 +2548,8 @@ NoneOfTheFormulaSlotsHolds=Tidak ada slot formula yang berisi formula pembentuk 
 ;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=Normal
 ;Normal
+NormalMap=Peta normal
+;Normal map
 NormalStatusForThisFormula=Status normal untuk formula ini
 ;Normal status for this formula
 NormalsOnDE=Normal pada DE:
@@ -2726,6 +2760,8 @@ OverwriteExistingImages=Timpa gambar yang ada
 ;Overwrite existing images
 OverwriteExistingM3IFiles=Timpa file M3I yang ada
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=Pengaturan langkah sendiri untuk tahap setelah tahap utama (bayangan, oklusi, cahaya volumetrik, pantulan)
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16 bit (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2954,6 +2990,8 @@ Range=Rentang
 ;Range
 RawValuesMappedValuesClampedValues=Nilai Mentah:\n  {}..\n  {}\nNilai Terpetakan:\n  {}..\n  {}\nNilai Terbatas:\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=Langkah sinar tahap lanjutan:
+;Ray step of the post passes:
 Rays=Sinar:
 ;Rays:
 RaystepDivisor=Pembagi langkah sinar:
@@ -2986,6 +3024,8 @@ RectLower=persegi
 ;rect.
 Rectilinear=Rectilinear
 ;Rectilinear
+ReduceTheMeshToThisShare=Kurangi mesh ke bagian simpulnya ini (persen, pengelompokan simpul); 100 membiarkannya seperti dihitung
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Mengurangi artefak kotak-kotak, tidak terlalu penting lagi karena interpolasi spline.
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=Menurunkan pengali langkah sinar untuk menghindari overstepping.\nMembuat render lebih lambat.
@@ -3072,6 +3112,10 @@ RenderingNow=sedang dirender
 ;rendering now
 RenderingSliceOf=Merender irisan: {} dari {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=Merender adegan uji tetap (Integer Power, 640 x 512, 120 iterasi, tahap utama) di prosesor dan kartu grafis, agar hasil dari komputer berbeda bisa dibandingkan. Unggah teksnya apa adanya.
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=Merender bagian tengah gambar dengan tahap utama saja pada tiga pengaturan langkah dan menghitung bintik dan lubang di masing-masing. Pengaturan yang disarankan bisa diterapkan ke adegan.
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=Ulangi dari sini
 ;Repeat from here
 RerenderAllKeyframePreviewImages=Render ulang semua gambar pratinjau keyframe
@@ -3154,6 +3198,14 @@ Rows=Baris
 ;Rows
 RowsOfTiles=Baris tile
 ;Rows of tiles
+RunTheBenchmark=Jalankan uji
+;Run the benchmark
+RunTheNoiseDoctor=Jalankan dokter derau
+;Run the noise doctor
+Running0=Berjalan: {0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=Dokter derau sedang bekerja ...
+;Running the noise doctor ...
 SLeft={} d lagi
 ;{} s left
 SSAO15=SSAO15
@@ -3512,6 +3564,10 @@ StepRelax=Relaksasi langkah:
 ;Step relax:
 StepcountForBinarySearch=Jumlah langkah \npencarian biner:
 ;Stepcount for \nbinary search:
+StepsAndNoise=Langkah dan derau
+;Steps and noise
+StepsAndNoise2=Langkah dan derau...
+;Steps and noise...
 StepwidthLimiter=Pembatas lebar langkah:
 ;Stepwidth limiter:
 Stereo=Stereo
@@ -3616,6 +3672,10 @@ TargetMapSlotUseThisNumber=Slot Peta Tujuan. Gunakan nomor ini sebagai peta di f
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=Templat:
 ;Template:
+TextureExport=Ekspor tekstur...
+;Texture export...
+TextureExport2=Ekspor tekstur
+;Texture export
 TheAmazingBoxAkaMandboxFormula=Formula 'Amazing Box' alias Mandbox, ditemukan oleh TGlad di fractalforums.com.\n\nFormula untuk satu iterasi terlihat seperti ini:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=Jumlah warna difus dan spekular yang dijumlahkan lebih dari 1,\nperlukah saya mengecilkannya agar pewarnaan lebih realistis?
@@ -3734,6 +3794,8 @@ TheLastSessionDidNotEnd=Sesi terakhir tidak berakhir dengan benar (macet, dimati
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=Editor utama masih merender. Hentikan dulu atau tunggu hingga selesai.
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=Tahap utama bisa melangkah sangat halus sementara bayangan, oklusi dan pantulan memakai langkah biasa: langkah halus hanya memakan waktu di tempat yang terlihat. Disimpan bersama parameter.
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=Tampilan jendela utama
 ;The main window's view
 TheMapOptionsCalculatesXY=Opsi peta menghitung koordinat x,y dari vektor\ntertentu untuk peta sferis, ini juga mengubah pilihan warna pertama\nyang biasanya berdasarkan iterasi halus.\nAnda harus menghitung ulang gambar untuk melihat hasil perubahan\nopsi ini.
@@ -3850,6 +3912,8 @@ TileXYLower=tile X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=Tile X={} Y={} disimpan.
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=Bisa diubin: dicerminkan ke dua kali ukuran, mulus di setiap tepi
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=tile
 ;tiles
 Tiles2=Tile
@@ -4124,10 +4188,14 @@ Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=Tulis peta
+;Write the maps
 WritesTheEnglishTextsAsA=Menulis teks bahasa Inggris sebagai file bahasa baru dengan nama ini; terjemahkan dengan editor teks, lalu tekan Muat ulang
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=Menulis gambar seperti saat ini (baris yang belum selesai sebagai latar) sebagai file .m3i
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=Ditulis: {0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=Ditulis: {}\nTerjemahkan teks di kanan "=" dengan editor teks, lalu tekan Muat ulang.
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=Sudut X:

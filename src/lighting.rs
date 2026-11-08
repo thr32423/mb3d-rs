@@ -1730,6 +1730,9 @@ impl LightVals {
             x_pos,
             y_pos,
             dep_c: lerp(self.depth_col2, self.depth_col, ys),
+            px: x,
+            py: y,
+            exact_bg: self.bg_direct && self.bg.as_ref().is_some_and(|b| b.map.width as i32 == cam.width && b.map.height as i32 == cam.height),
         }
     }
 
@@ -1937,7 +1940,9 @@ impl LightVals {
         } else {
             out = match &self.bg {
                 Some(bg) => {
-                    let px = if self.bg_direct {
+                    let px = if self.bg_direct && plv.exact_bg {
+                        bg.map.pixel_at(plv.px.max(0) as usize, plv.py.max(0) as usize, sqr)
+                    } else if self.bg_direct {
                         bg.map.pixel_t(plv.x_pos, plv.y_pos, 0, sqr)
                     } else {
                         bg.map.sphere_pixel_t(abs_view, Some(&bg.rot), sqr)
@@ -2086,6 +2091,13 @@ pub(crate) struct Plv {
     pub(crate) x_pos: f32,
     pub(crate) y_pos: f32,
     pub(crate) dep_c: SVec,
+    /// the pixel, for a background picture shown 1:1
+    pub(crate) px: i32,
+    pub(crate) py: i32,
+    /// the direct background picture has the render's size: its pixels
+    /// are taken as they are, not interpolated (MB3D blurs them, which
+    /// the users work around by sharpening the picture beforehand)
+    pub(crate) exact_bg: bool,
 }
 
 /// Options of [`LightVals::shade`] for the reflection pass.

@@ -75,6 +75,8 @@ AMultiplierThatDefinesTheMiximal=एक गुणक जो कठोर छा�
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO गणना समय:
 ;AO calc time:
+APlanarOpticWithAField=1 डिग्री दृश्य क्षेत्र वाली समतल प्रकाशिकी: लगभग लंबकोणीय, ऊँचाई मैप में कोई परिप्रेक्ष्य नहीं। बाद में फिर से गणना करें।
+;A planar optic with a field of view of 1 degree: nearly orthographic, no perspective in the height map. Calculate again afterwards.
 ARotationAppliedEachIterationIn=हर पुनरावृत्ति में लगाया गया घुमाव, अंशों में
 ;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=पहले फ़ोल्डिंग वाला साइन पूर्णांक घात बल्ब, जैसा अमेज़िंग बॉक्स में होता है।
@@ -209,6 +211,8 @@ AmbientLower=परिवेश
 ;ambient
 AmbientOcclusion=एम्बिएंट ऑक्लूज़न
 ;ambient occlusion
+AmbientOcclusion16Bit=परिवेशी अवरोधन (16 बिट)
+;Ambient occlusion (16 bit)
 AmbientRaysDepth=परिवेश किरण गहराई:
 ;Ambient rays depth:
 AmbientShadow=परिवेश छाया
@@ -283,6 +287,8 @@ Aperture=एपर्चर:
 ;Aperture:
 Appearance=रूप
 ;Appearance
+ApplyTheRecommendedSetting=अनुशंसित सेटिंग लागू करें
+;Apply the recommended setting
 ApplyToImage=छवि पर लागू करें
 ;Apply to image
 ApplyYourChangedValuesBecauseEdits=बदले गए मान लागू करें, क्योंकि संपादन केवल आउटपुट हैं
@@ -373,6 +379,10 @@ BatchProcessing=बैच प्रोसेसिंग
 ;Batch processing
 BatchProcessingPictureOf=बैच प्रोसेसिंग: चित्र {} / {}
 ;Batch processing: picture {} of {}
+Benchmark=बेंचमार्क...
+;Benchmark...
+Benchmark2=बेंचमार्क
+;Benchmark
 Between=बीच में:
 ;between:
 Big=बड़ा
@@ -451,6 +461,8 @@ Calculate3DAndTheBatchWindow=3D गणना और बैच विंडो �
 ;Calculate 3D and the Batch window with the swarm, in
 CalculateAFast8x8BlockyImage=सही प्रकाश व्यवस्था के बिना एक तेज़ 8x8 ब्लॉकी छवि की गणना करें
 ;Calculate a fast 8x8 blocky image without proper lighting
+CalculateAPictureFirst=पहले एक चित्र की गणना करें।
+;Calculate a picture first.
 CalculateAPictureFirstOrUntick=पहले चित्र की गणना करें, या चित्र का निशान हटाएँ।
 ;Calculate a picture first, or untick the picture.
 CalculateASAutomatically=प.छा. की स्वतः गणना करें
@@ -523,6 +535,8 @@ Camera=कैमरा
 ;Camera
 CameraColon=कैमरा:
 ;Camera:
+CameraForTextures=टेक्सचर के लिए कैमरा
+;Camera for textures
 CameraLense=कैमरा लेंस:
 ;Camera lense:
 Cancel=रद्द करें
@@ -777,6 +791,8 @@ CopyTheName=नाम कॉपी करें
 ;Copy the name
 CopyThePostText=पोस्ट टेक्स्ट कॉपी करें
 ;Copy the post text
+CopyTheResult=परिणाम कॉपी करें
+;Copy the result
 CopyTheSelectedLineOrAll=चुनी गई पंक्ति कॉपी करें, या कोई न चुनी हो तो दिखाई गई सभी पंक्तियाँ
 ;Copy the selected line, or all the lines shown when none is selected
 CopyTheValues=मान कॉपी करें
@@ -889,6 +905,8 @@ DEOcclusionAtHalfResolution=आधे रिज़ॉल्यूशन पर D
 ;DE occlusion at half resolution
 DEStop=DE stop:
 ;DE stop:
+DEStopOfThePostPasses=बाद के पासों का DE स्टॉप:
+;DE stop of the post passes:
 DEcombinate=DE संयोजन
 ;DEcombinate
 DEstop=DEstop:
@@ -1105,6 +1123,8 @@ DownscaleDiffuseKeepReflections=डिफ़्यूज़ घटाएँ, प
 ;Downscale diffuse, keep reflections
 DownscaleSpecular=स्पेक्युलर घटाएँ
 ;Downscale specular
+DropTheLoosePiecesSmallerThan=सबसे बड़े टुकड़े के त्रिभुजों के इस हिस्से (प्रतिशत) से छोटे ढीले टुकड़े हटाएँ; 0 सब रखता है
+;Drop the loose pieces smaller than this share of the largest piece's triangles (percent); 0 keeps every piece
 Ds=Ds:
 ;Ds:
 DunnoDoNothing=पता नहीं, कुछ न करें
@@ -1125,6 +1145,8 @@ DynamicFogOrVolumetricLightParams=डायनामिक कोहरा य�
 ;Dynamic fog or volumetric light params. See 'Coloring' tab for options!
 DynamicFogTheLowerTheNumber=डायनामिक कोहरा:\nसंख्या जितनी कम, कोहरा वस्तु से उतनी दूर दिखता है।\ndIFS के साथ, कोहरा इस पुनरावृत्ति पर गणना किए गए वस्तु भाग के चारों ओर होता है।\nयह सुविधा बंद करने और डायनामिक कोहरा हमेशा की तरह रे-स्टेप गिनती पर करने के लिए शून्य।\nसंकेत: स्टेप से बचने के लिए 'First step random' विकल्प चुनें।\nवॉल्यूमेट्रिक प्रकाश:\nवह प्रकाश संख्या चुनें जिससे प्रकाश प्रकीर्णन की गणना होगी।
 ;Dynamic fog:\nThe lower the number the farer away from the object the fog shows up.\nWith dIFS, the fog is around the object part calculated at this iteration.\nZero to disable this feature and do the dynamic fog on raystep count as usual.\nHint: Check the 'First step random' option to prevent steps.\nVolumetric light:\nChoose the light nr from which lightscattering will be calculated.
+EachMapIsAPNGOf=हर मैप दूसरों के बगल में अपना PNG है: <नाम>_color, _height, _normal, _ao। ऊँचाई सतह की गहराई है, नॉर्मल OpenGL परिपाटी में हैं, अवरोधन चित्र की परिवेशी छाया है।
+;Each map is a PNG of its own next to the others: <name>_color, _height, _normal, _ao. The height is the depth of the surface, the normals are in the OpenGL convention, the occlusion is the ambient shadow of the picture.
 EdgesColor=किनारों का रंग
 ;Edges color
 Edit=संपादित
@@ -1607,6 +1629,8 @@ HardShadowsLower=कठोर छायाएँ
 ;hard shadows
 Height=ऊँचाई:
 ;Height:
+Height16BitNearestPointWhite=ऊँचाई (16 बिट, निकटतम बिंदु सफ़ेद)
+;Height (16 bit, nearest point white)
 HeightMapGenerator=हाइटमैप जनरेटर
 ;HeightMap Generator
 HeightMapGeneratorPreview=HeightMap जनरेटर पूर्वावलोकन
@@ -1855,6 +1879,8 @@ IsNotAValidFloatingPoint='{}' मान्य दशमलव मान नह�
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' मान्य पूर्णांक मान नहीं है
 ;'{}' is not a valid integer value
+Islands=द्वीप %
+;Islands %
 Iteration=पुनरावृत्ति
 ;Iteration
 IterationCount=पुनरावृत्ति संख्या
@@ -1903,6 +1929,8 @@ JuliaOn=Julia चालू
 ;Julia On
 JuliaValuesXYZ=Julia मान (x,y,z):
 ;Julia values (x,y,z):
+Keep=रखें %
+;Keep %
 KeepAspect=अनुपात रखें
 ;keep aspect
 KeepLights=प्रकाश रखें
@@ -2181,6 +2209,8 @@ MapSequences=मैप अनुक्रम
 ;Map Sequences
 MapType=मैप प्रकार:
 ;Map Type:
+MapsOfTheCalculatedPicture=गणना किए चित्र के मैप:
+;Maps of the calculated picture:
 Material=सामग्री
 ;Material
 Max=Max
@@ -2505,6 +2535,8 @@ Noise=-शोर
 ;-noise
 NoiseAI=-शोर AI
 ;-noise AI
+NoiseDoctor=शोर डॉक्टर
+;Noise doctor
 NoiseFilter=\sशोर फ़िल्टर
 ;\sNoise Filter
 NoiseFilterOnTheShownPicture=दिखाए गए चित्र पर शोर फ़िल्टर (GIMP के "Denoise DCT" जैसा DCT शोर निवारण),\nइसकी तीव्रता किरणों से अनुमानित होती है। रेंडरिंग स्वयं नहीं बदलती;\nअगला अपडेट इसे फिर से बिना फ़िल्टर के दिखाता है।
@@ -2517,6 +2549,8 @@ NoneOfTheFormulaSlotsHolds=किसी भी फ़ॉर्मूला स�
 ;None of the formula slots holds a formula that makes a fractal: each one is empty, has 0 iterations, or holds a formula that only changes space ({}).\n\nPut a fractal formula, such as Integer Power or Amazing Box, into a slot and give it at least 1 iteration.
 Normal=सामान्य
 ;Normal
+NormalMap=नॉर्मल मैप
+;Normal map
 NormalStatusForThisFormula=इस फ़ॉर्मूले की सामान्य स्थिति
 ;Normal status for this formula
 NormalsOnDE=DE पर नॉर्मल:
@@ -2727,6 +2761,8 @@ OverwriteExistingImages=मौजूदा छवियाँ ओवरराइ
 ;Overwrite existing images
 OverwriteExistingM3IFiles=मौजूदा M3I फ़ाइलें ओवरराइट करें
 ;Overwrite existing M3I files
+OwnStepSettingsForThePasses=मुख्य पास के बाद के पासों (छाया, अवरोधन, आयतनी प्रकाश, परावर्तन) के लिए अपनी कदम सेटिंग
+;Own step settings for the passes after the main one (shadows, occlusion, volumetric light, reflections)
 PGM16BitPgm=PGM 16 bit (*.pgm)
 ;PGM 16 bit (*.pgm)
 PNG=PNG
@@ -2955,6 +2991,8 @@ Range=सीमा
 ;Range
 RawValuesMappedValuesClampedValues=कच्चे मान:\n  {}..\n  {}\nमैप किए गए मान:\n  {}..\n  {}\nसीमित मान:\n  {}..\n  {}\n
 ;Raw Values:\n  {}..\n  {}\nMapped Values:\n  {}..\n  {}\nClamped Values:\n  {}..\n  {}\n
+RayStepOfThePostPasses=बाद के पासों का किरण कदम:
+;Ray step of the post passes:
 Rays=किरणें:
 ;Rays:
 RaystepDivisor=रे-स्टेप भाजक:
@@ -2987,6 +3025,8 @@ RectLower=रेक्ट.
 ;rect.
 Rectilinear=रेक्टिलिनियर
 ;Rectilinear
+ReduceTheMeshToThisShare=मेश को उसके शीर्षों के इस हिस्से (प्रतिशत, शीर्ष समूहन) तक घटाएँ; 100 उसे गणना जैसा रखता है
+;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=ब्लॉक जैसी विकृतियाँ कम करता है, स्प्लाइन इंटरपोलेशन के कारण अब उतना महत्वपूर्ण नहीं।
 ;Reduces blocky artifacts, no more that important due to spline interpolation.
 ReducesTheRaystepMultiplierToAvoid=ओवरस्टेपिंग से बचने के लिए रे-स्टेप गुणक घटाता है।\nइससे रेंडरिंग धीमी हो जाती है।
@@ -3073,6 +3113,10 @@ RenderingNow=अभी रेंडर हो रहा है
 ;rendering now
 RenderingSliceOf=स्लाइस रेंडर हो रही है: {} / {}
 ;Rendering slice: {} of {}
+RendersTheFixedBenchmarkSceneInteger=निश्चित बेंचमार्क दृश्य (Integer Power, 640 x 512, 120 पुनरावृत्ति, मुख्य पास) को प्रोसेसर और ग्राफ़िक्स कार्ड पर रेंडर करता है, ताकि अलग कंप्यूटरों के परिणाम तुलनीय हों। पाठ को जैसा है वैसा पोस्ट करें।
+;Renders the fixed benchmark scene (Integer Power, 640 x 512, 120 iterations, the main pass) on the processor and on the graphics card, so results from different computers compare. Post the text as it is.
+RendersTheMiddleOfThePicture=चित्र के बीच को केवल मुख्य पास से तीन कदम सेटिंग पर रेंडर करता है और हर एक में धब्बे और छेद गिनता है। अनुशंसित सेटिंग दृश्य पर लागू की जा सकती है।
+;Renders the middle of the picture with the main pass alone under three step settings and counts the specks and holes in each. The recommended setting can be applied to the scene.
 RepeatFromHere=यहाँ से दोहराएँ
 ;Repeat from here
 RerenderAllKeyframePreviewImages=सभी कीफ़्रेम पूर्वावलोकन फिर से रेंडर करें
@@ -3155,6 +3199,14 @@ Rows=पंक्तियाँ
 ;Rows
 RowsOfTiles=टाइल की पंक्तियाँ
 ;Rows of tiles
+RunTheBenchmark=बेंचमार्क चलाएँ
+;Run the benchmark
+RunTheNoiseDoctor=शोर डॉक्टर चलाएँ
+;Run the noise doctor
+Running0=चल रहा है: {0} ...
+;Running: {0} ...
+RunningTheNoiseDoctor=शोर डॉक्टर चल रहा है ...
+;Running the noise doctor ...
 SLeft={} से. शेष
 ;{} s left
 SSAO15=SSAO15
@@ -3513,6 +3565,10 @@ StepRelax=स्टेप ढील:
 ;Step relax:
 StepcountForBinarySearch=बाइनरी खोज के \nचरणों की संख्या:
 ;Stepcount for \nbinary search:
+StepsAndNoise=कदम और शोर
+;Steps and noise
+StepsAndNoise2=कदम और शोर...
+;Steps and noise...
 StepwidthLimiter=चरण-चौड़ाई सीमक:
 ;Stepwidth limiter:
 Stereo=स्टीरियो
@@ -3617,6 +3673,10 @@ TargetMapSlotUseThisNumber=लक्ष्य मैप स्लॉट। ए�
 ;Target Map Slot. Use this number as map in your fractal, e. g. as heightmap, in order to have an animated map
 Template=टेम्पलेट:
 ;Template:
+TextureExport=टेक्सचर निर्यात...
+;Texture export...
+TextureExport2=टेक्सचर निर्यात
+;Texture export
 TheAmazingBoxAkaMandboxFormula='Amazing Box' उर्फ़ Mandbox फ़ॉर्मूला, जिसका आविष्कार fractalforums.com पर TGlad ने किया।\n\nएक पुनरावृत्ति का फ़ॉर्मूला इस प्रकार दिखता है:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 ;The 'Amazing Box' aka Mandbox formula, invented by TGlad at fractalforums.com.\n\nThe formula for one iteration looks like this:\n\nx = abs(x+Fold) - abs(x-Fold) - x\ny = abs(y+Fold) - abs(y-Fold) - y\nz = abs(z+Fold) - abs(z-Fold) - z\nrr = x*x + y*y + z*z\nif rr < sqr(Min_R) then m = Scale/sqr(Min_R) else\nif rr < 1 then m = Scale/rr else m = Scale\nx = x * m + Cx\ny = y * m + Cy\nz = z * m + Cz
 TheAmountOfAddedDiffuseAnd=जोड़े गए डिफ़्यूज़ और स्पेक्युलर रंगों का योग 1 से अधिक है,\nक्या अधिक यथार्थवादी रंगों के लिए उन्हें कम कर दूँ?
@@ -3735,6 +3795,8 @@ TheLastSessionDidNotEnd=पिछला सत्र ठीक से समा�
 ;The last session did not end properly (it froze, was killed or crashed): {}. What it did last is in the log (the Log window, the icon in the title bar).
 TheMainEditorIsStillRendering=मुख्य संपादक अभी भी रेंडर कर रहा है। कृपया पहले उसे रोकें या उसके पूरा होने तक प्रतीक्षा करें।
 ;The main editor is still rendering. Please stop it first or wait until it is done.
+TheMainPassCanMarchWith=मुख्य पास बहुत महीन किरण कदम से चल सकता है जबकि छाया, अवरोधन और परावर्तन सामान्य कदम रखते हैं: महीन कदम तब केवल वहीं समय लेता है जहाँ दिखता है। पैरामीटर के साथ सहेजा जाता है।
+;The main pass can march with a very fine ray step while the shadows, the occlusion and the reflections keep a normal one: the fine step then costs time only where it shows. Kept with the parameters.
 TheMainWindowSView=मुख्य विंडो का दृश्य
 ;The main window's view
 TheMapOptionsCalculatesXY=मैप विकल्प गोलाकार मैप के लिए विशिष्ट वेक्टर से x,y निर्देशांक\nगणना करते हैं, इससे पहला रंग चयन भी बदलता है\nजो सामान्यतः स्मूद पुनरावृत्तियों पर आधारित होता है।\nइन विकल्पों के बदलाव का परिणाम देखने के लिए\nछवि की फिर से गणना करनी होगी।
@@ -3851,6 +3913,8 @@ TileXYLower=टाइल X={} Y={}
 ;tile X={} Y={}
 TileXYSaved=टाइल X={} Y={} सहेजी गई।
 ;Tile X={} Y={} saved.
+TileableMirroredToTwiceTheSize=टाइल योग्य: दोगुने आकार में प्रतिबिंबित, हर किनारे पर निर्बाध
+;Tileable: mirrored to twice the size, seamless at every edge
 Tiles=टाइल में
 ;tiles
 Tiles2=टाइलें
@@ -4125,10 +4189,14 @@ Wrap1=wrap1
 ;wrap1
 Wrap2=wrap2
 ;wrap2
+WriteTheMaps=मैप लिखें
+;Write the maps
 WritesTheEnglishTextsAsA=अंग्रेज़ी टेक्स्ट को इस नाम की नई भाषा फ़ाइल के रूप में लिखता है; उन्हें टेक्स्ट एडिटर में अनुवाद करें, फिर "फिर से लोड करें" दबाएँ
 ;Writes the English texts as a new language file of this name; translate them with a text editor, then press Reload
 WritesThePictureAsItIs=चित्र को जैसा वह अभी है (अधूरी पंक्तियाँ पृष्ठभूमि के रूप में) .m3i फ़ाइल के रूप में लिखता है
 ;Writes the picture as it is now (the rows not done as background) as a .m3i file
+Written0=लिखा गया: {0}
+;Written: {0}
 WrittenTranslateTheTextsRightOf=लिखा गया: {}\n"=" के दाईं ओर के पाठों का किसी टेक्स्ट एडिटर में अनुवाद करें, फिर Reload दबाएँ।
 ;Written: {}\nTranslate the texts right of the "=" with a text editor, then press Reload.
 XAngle=X कोण:

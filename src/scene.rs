@@ -442,6 +442,11 @@ pub struct Scene {
     /// experimental speed-ups that change the picture a little (not in
     /// MB3D), see `crate::experimental`
     pub experimental: crate::experimental::Experimental,
+    /// the step settings of the passes after the main one (shadows,
+    /// occlusion, volumetric light, reflections), when they differ from
+    /// the main pass's (not in MB3D): the group's trick of a very fine
+    /// ray step for the main pass alone, the other passes at normal cost
+    pub post_steps: Option<PostSteps>,
     /// The surface material (not in MB3D): None = MB3D's
     pub material: Option<Material>,
     /// The place of the DE combination's second part (not in MB3D)
@@ -629,6 +634,7 @@ impl Default for Scene {
             finish: None,
             detail: None,
             experimental: Default::default(),
+            post_steps: None,
             material: None,
             part2_place: None,
             deao: None,
@@ -1121,6 +1127,9 @@ impl Scene {
             t.push_str(&d.to_text());
         }
         t.push_str(&self.experimental.to_text());
+        if let Some(ps) = &self.post_steps {
+            let _ = writeln!(t, "post_raystep = {}\npost_de_stop = {}", ps.raystep, ps.de_stop);
+        }
         if let Some(g) = &self.ground {
             let c = g.color;
             let _ = writeln!(t, "ground = {}, {}", ["x", "y", "z"][g.axis as usize % 3], g.pos);
@@ -1622,6 +1631,14 @@ impl Scene {
                     "free_steps" => s.experimental.free_steps = boolean()?,
                     "occlusion_half" => s.experimental.ao_half = boolean()?,
                     "cone_march" => s.experimental.cone = boolean()?,
+                    "post_raystep" => {
+                        let d = PostSteps::of(&s);
+                        s.post_steps.get_or_insert(d).raystep = num()?.clamp(0.0001, 100.0);
+                    }
+                    "post_de_stop" => {
+                        let d = PostSteps::of(&s);
+                        s.post_steps.get_or_insert(d).de_stop = num()?.clamp(0.001, 1000.0);
+                    }
                     "detail_color" => s.detail.get_or_insert_with(Default::default).color = (num()? as f32).clamp(0.0, 1.0),
                     "finish" if matches!(val.trim().to_ascii_lowercase().as_str(), "off" | "none" | "no") => s.finish = None,
                     "finish_exposure" | "finish_tonemap" | "glow" | "finish_contrast" | "finish_saturation" | "finish_warmth" | "vignette" | "chromatic" => {
@@ -2054,6 +2071,39 @@ pub struct DeCombParams {
 impl DeCombParams {
     pub fn new(iterations: i32) -> Self {
         DeCombParams { kind: 1, end1: 0, start2: 1, end2: 5, repeat2: 1, iterations2: iterations, smooth: 0.5, mix_pow: 2.0, mix_color: 0 }
+    }
+}
+
+/// The step settings of the passes after the main one (see
+/// `Scene::post_steps`): MB3D's "Raystep multiplier" and "DEstop" for the
+/// shadows, the occlusion, the volumetric light and the reflections.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PostSteps {
+    pub raystep: f64,
+    pub de_stop: f64,
+}
+
+impl PostSteps {
+    /// The main pass's values, as a start.
+    pub fn of(sc: &Scene) -> PostSteps {
+        PostSteps { raystep: sc.z_step_div, de_stop: sc.de_stop }
+    }
+}
+
+impl Scene {
+    /// The scene as the passes after the main one see it: with the post
+    /// step settings in place of the main pass's; None when they are the
+    /// same.
+    pub fn post_scene(&self) -> Option<Scene> {
+        let ps = self.post_steps?;
+        if ps.raystep == self.z_step_div && ps.de_stop == self.de_stop {
+            return None;
+        }
+        let mut s = self.clone();
+        s.z_step_div = ps.raystep;
+        s.de_stop = ps.de_stop;
+        s.post_steps = None;
+        Some(s)
     }
 }
 

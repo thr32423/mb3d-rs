@@ -1,6 +1,6 @@
-# Seven wishes of the Mandelbulb Maniacs group
+# Twelve wishes of the Mandelbulb Maniacs group
 
-The Facebook group *Mandelbulb Maniacs* (about 20 000 members) has used MB3D since 2013. Its posts were read for what people ask for, what trips them up and what they do by hand. These seven changes answer the most common wishes:
+The Facebook group *Mandelbulb Maniacs* (about 20 000 members) has used MB3D since 2013. Its posts were read for what people ask for, what trips them up and what they do by hand. These twelve changes answer the most common wishes:
 
 1. [360 photos that Facebook recognises](#1-360-photos-that-facebook-recognises)
 2. [Maps of any name](#2-maps-of-any-name)
@@ -9,6 +9,11 @@ The Facebook group *Mandelbulb Maniacs* (about 20 000 members) has used MB3D sin
 5. [The Share window](#5-the-share-window)
 6. [Mandelbulber settings files open](#6-mandelbulber-settings-files-open)
 7. [The Formula book](#7-the-formula-book)
+8. [Step settings for the post passes, and the noise doctor](#8-step-settings-for-the-post-passes-and-the-noise-doctor)
+9. [Background pictures 1:1](#9-background-pictures-11)
+10. [Texture export](#10-texture-export)
+11. [Mesh export without flying parts, smaller](#11-mesh-export-without-flying-parts-smaller)
+12. [The benchmark](#12-the-benchmark)
 
 The pictures on this page come from the program itself (`cargo run --example communityshots`).
 
@@ -224,6 +229,61 @@ The left side lists every formula the Formulas window lists (the built-in ones a
 <a href="img/community/book_difs.png"><img src="img/community/book_difs.png" width="900" alt="The book showing the dIFS shapes"></a>
 
 The texts are labels, so the book comes in all 17 languages. What the book says comes from what the program has (the DE option, the formula file, the value names, the example files): it is not a hand-written encyclopedia, and a formula whose values have unusual names shows them with their defaults alone. The logic is in `src/formula_book.rs` (tested), the window in `src/app/formula_book_form.rs`.
+
+## 8. Step settings for the post passes, and the noise doctor
+
+**What the group asks.** Two things about noise. The trick of the experienced: render the main pass with a tiny ray step (0.01), then put the step back to normal before the shadows, the occlusion, the reflections and the depth of field, so the expensive setting is paid only where it shows. And the folk wisdom about black specks ("the step width limiter should be 1, not 0.1", "a higher ray step sometimes gives less noise on dIFS") that contradicts itself from post to post.
+
+**What the program does.** The Internal tab has a new button, *Steps and noise...*:
+
+<a href="img/community/internal_tab.png"><img src="img/community/internal_tab.png" width="320" alt="The Internal tab with the three new buttons"></a>
+
+<a href="img/community/steps_window.png"><img src="img/community/steps_window.png" width="520" alt="The Steps and noise window after a doctor's run"></a>
+
+* **Own step settings for the post passes.** With the check box on, the shadows, the DE ambient occlusion, the volumetric light and the reflections march with the ray step and DE stop given here, while the main pass keeps the main window's. The settings are kept with the parameters (`post_raystep`, `post_de_stop` in the mb3d-rs block; MB3D ignores them). The card's own shadow and occlusion passes keep the main pass's settings.
+* **The noise doctor** renders the middle of the picture (up to 256 x 192 pixels) with the main pass alone under three settings: as set, half the ray step, and a quarter of the step limiter (or a quarter of the ray step when the limiter is tight already). It counts the specks (a pixel far brighter or darker than its neighbours) and the holes (a background pixel among surface pixels, or the reverse) in each and reports them per thousand pixels with the time each took. *Apply the recommended setting* puts the winner into the scene: the fewest specks, among equals the fastest, and never a change for a twentieth of a speck.
+
+## 9. Background pictures 1:1
+
+**What the group asks.** A background picture of the render's own size came out blurred, so people sharpened it beforehand.
+
+**What the program does.** When the background picture is shown directly (not as a sphere map) and has exactly the picture's size, every pixel of it is taken as it is. MB3D sampled it half a pixel off through its spline, which blurred it; a background of another size is still interpolated as before. True supersampling is in the command line (`--aa 2`) and in the Big renders window (the downscale factor); the main window's picture is still calculated at its set size.
+
+## 10. Texture export
+
+**What the group asks.** Textures from fractals: a field of view of 1, depth fog only, lights off, the picture inverted and fed to Substance Designer for a PBR set.
+
+**What the program does.** *Texture export...* on the Internal tab writes the maps of the calculated picture as PNG files side by side:
+
+<a href="img/community/texture_window.png"><img src="img/community/texture_window.png" width="520" alt="The Texture export window after writing a set"></a>
+
+* **Colour** as rendered; **height** (16 bit, the depth of the surface, the nearest point white, the background black); **normal map** (the surface normals in the OpenGL convention, red right, green up, blue towards the viewer); **ambient occlusion** (16 bit, the picture's ambient shadow, open surface white).
+* **Tileable** mirrors the set to twice the size, which joins seamlessly at every edge.
+* **Camera for textures** sets the group's recipe: a planar optic with a field of view of one degree, nearly orthographic, so the height map has no perspective. Calculate again afterwards, then write.
+
+<a href="img/community/texture_bulb_height.png"><img src="img/community/texture_bulb_height.png" width="200" alt="Height map"></a> <a href="img/community/texture_bulb_normal.png"><img src="img/community/texture_bulb_normal.png" width="200" alt="Normal map"></a> <a href="img/community/texture_bulb_ao.png"><img src="img/community/texture_bulb_ao.png" width="200" alt="Ambient occlusion map"></a>
+
+Roughness and metallic maps are material values, not something a render can measure; a material editor derives them from the height and occlusion maps.
+
+## 11. Mesh export without flying parts, smaller
+
+**What the group asks.** The mesh workflow was voxels to Fiji to a 1.2 GB OBJ to MeshLab to remove the flying parts and decimate, and a plugin for Blender.
+
+**What the program does.** The Bulb Tracer window's *Mesh properties* have two new fields, and `mb3d mesh` the options `--islands` and `--decimate`:
+
+<a href="img/community/mesh_fields.png"><img src="img/community/mesh_fields.png" width="640" alt="The Bulb Tracer window with the Islands and Keep fields"></a>
+
+* **Islands %** drops the loose pieces (connected parts of the mesh) whose triangle count is below this share of the largest piece's; 0 keeps every piece. The pieces are found by joining the vertices along the faces.
+* **Keep %** reduces the mesh to this share of its vertices by vertex clustering: the vertices in each cell of a grid become their mean (the colours too), faces that collapse go, and the cell size is adjusted until the count comes out close. 100 keeps the mesh as traced.
+* **tools/blender_import_mb3d.py** imports the .ply or .obj into Blender (3.0 or newer), recalculates the normals, shades smooth, and gives the mesh a material whose base colour is the vertex colour attribute, so a coloured export renders coloured at once. A splat .ply comes in as points. Run it from the Scripting workspace or with `blender --python tools/blender_import_mb3d.py -- file.ply`.
+
+## 12. The benchmark
+
+**What the group asks.** "Render this at 640 x 512 and post your Main Calc Time and your rig", and numbers that never compare because everyone's parameters and version differ.
+
+**What the program does.** *Benchmark...* on the Internal tab (and `mb3d benchmark` on the command line) renders one fixed scene, the Integer Power preset at 640 x 512 with 60 iterations and the main pass alone, first on the processor, then on the graphics card (its first run compiles the shaders and does not count), and writes the result as text to copy and post: the program's version, the times, the processor's name and thread count, the card's name, the system.
+
+<a href="img/community/benchmark_window.png"><img src="img/community/benchmark_window.png" width="520" alt="The Benchmark window with a result"></a>
 
 ## Two small fixes found on the way
 

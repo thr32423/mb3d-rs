@@ -997,10 +997,10 @@ fn save_picture(app: &mut Mb3d, ui: &mut Ui, path: &Path, jpeg_q: u8) {
     let rgb = shown_rgb(ui, img, p);
     let (w, h) = (img.width, img.height);
     let ext = path.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).unwrap_or_default();
+    // (a spherical panorama: the tags of a 360 photo)
     let data = match ext.as_str() {
-        "jpg" | "jpeg" => crate::jpeg::encode(w, h, &rgb, jpeg_q),
         "bmp" => crate::frames::encode_bmp(w, h, &rgb),
-        _ => crate::png::encode_rgb(w, h, &rgb),
+        _ => crate::vr::encode_picture_for(p, path, w, h, &rgb, jpeg_q),
     };
     if let Err(e) = std::fs::write(path, data) {
         return ui.show_message(&format!("{}: {e}", path.display()));

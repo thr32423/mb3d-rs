@@ -258,6 +258,20 @@ pub fn with_text(mut png: Vec<u8>, key: &str, text: &str) -> Vec<u8> {
     png
 }
 
+/// `png` (from the encoders here) with a chunk of `kind` and `data` right
+/// after its IHDR chunk, before the image data (where `eXIf` belongs).
+pub fn with_chunk_before_idat(png: Vec<u8>, kind: &[u8; 4], data: &[u8]) -> Vec<u8> {
+    // signature (8) + IHDR (4 + 4 + 13 + 4)
+    let at = 8 + 25;
+    if png.len() < at || &png[12..16] != b"IHDR" {
+        return png;
+    }
+    let mut out = png[..at].to_vec();
+    chunk(&mut out, &crc32_table(), kind, data);
+    out.extend_from_slice(&png[at..]);
+    out
+}
+
 /// PNG file contents of an 8 bit RGBA image (straight alpha).
 pub fn encode_rgba(width: usize, height: usize, rgba: &[u8]) -> Vec<u8> {
     encode(width, height, rgba, 6, 8, 4)

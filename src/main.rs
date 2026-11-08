@@ -110,6 +110,9 @@ fn main() -> ExitCode {
     // or an animation running unwatched), without a session lock
     mb3d::log::init("cli", false);
     mb3d::log::session_start("mb3d");
+    if std::env::var("MB3D_360_CAMERA_TAG").is_ok_and(|v| v.trim() == "0") {
+        mb3d::vr::set_camera_tag(false);
+    }
     let r = run();
     // a shader still compiling in the background is finished and cached
     // before the program ends, however long it takes (see
@@ -170,14 +173,11 @@ fn write_out(path: &str, data: &[u8]) -> Result<(), String> {
     r.map_err(|e| output_err(path, e))
 }
 
-/// Writes an 8 bit RGB picture as PNG (to the standard output for "-").
-fn write_png(path: &str, w: usize, h: usize, rgb: &[u8]) -> Result<(), String> {
-    let l = path.to_ascii_lowercase();
-    if l.ends_with(".jpg") || l.ends_with(".jpeg") {
-        // (a 360 photo: mb3d vr360 adds the Photo Sphere XMP)
-        return write_out(path, &mb3d::jpeg::encode(w, h, rgb, 95));
-    }
-    write_out(path, &mb3d::png::encode_rgb(w, h, rgb))
+/// Writes an 8 bit RGB picture of `sc` as PNG, or JPEG for a .jpg / .jpeg
+/// name (to the standard output for "-"); a 360 panorama gets the tags of
+/// 360 photos ([`mb3d::vr::encode_picture_for`]).
+fn write_png(path: &str, sc: &mb3d::Scene, w: usize, h: usize, rgb: &[u8]) -> Result<(), String> {
+    write_out(path, &mb3d::vr::encode_picture_for(sc, std::path::Path::new(path), w, h, rgb, 95))
 }
 
 const VR360_USAGE: &str = "\
@@ -191,7 +191,10 @@ equirectangular video (YouTube, Meta Quest, VLC show it as a sphere): mono, or
 stereo with the eyes top-bottom (tb, the left eye on top: mb3d animate --vr
 with --stereo pair) or side by side (lr). A JPEG of a 360 panorama (2:1) gets
 the Photo Sphere XMP (Facebook, Google Photos and photo viewers show it as a
-360 photo; stereo 360 photos are not a thing they take).
+360 photo; stereo 360 photos are not a thing they take) and the EXIF camera of a
+360 camera (Make RICOH, Model RICOH THETA S), the tag Facebook's upload goes
+by. Rendered 360 panoramas (optic=2, 2:1) get both tags in JPEG and PNG files;
+MB3D_360_CAMERA_TAG=0 leaves the camera tag out.
 
 The file is changed in place unless -o names another. The name tag that
 players without metadata go by (_360, _360_TB) is up to you.
@@ -560,7 +563,7 @@ fn run() -> Result<(), String> {
         let (w, h) = (eyes[0].1, eyes[0].2);
         let (rgb, ow, oh) = mb3d::render::compose_stereo(&eyes[0].0, &eyes[1].0, w, h, layout);
         let rgb = denoised(rgb, ow, oh, denoise);
-        write_png(&output, ow, oh, &rgb)?;
+        write_png(&output, &scene, ow, oh, &rgb)?;
     } else if let Some(tl) = scene.tiling {
         if let Some(dir) = &swarm {
             // the picture in tiles with the swarm, put together here
@@ -601,7 +604,7 @@ fn run() -> Result<(), String> {
             } else {
                 let (rgb, w, h) = if aa > 1 { mb3d::render::downsample(&rgb, fw, fh, aa) } else { (rgb, fw, fh) };
                 let rgb = denoised(rgb, w, h, denoise);
-                write_png(&output, w, h, &rgb)?;
+                write_png(&output, &fs, w, h, &rgb)?;
             }
             if let Some(d) = depth {
                 write_depth(&d, &full, fw, fh, aa)?;
@@ -672,7 +675,7 @@ fn run() -> Result<(), String> {
                 (res.rgb, res.width, res.height)
             };
             let rgb = denoised(rgb, ow, oh, denoise);
-            write_png(&output, ow, oh, &rgb)?;
+            write_png(&output, &scene, ow, oh, &rgb)?;
         }
         if let (Some(d), Some(g)) = (depth, &res.gbuffer) {
             write_depth(&d, g, res.width, res.height, down)?;
@@ -791,7 +794,7 @@ fn render_single(
             (res.rgb.clone(), res.width, res.height)
         };
         let rgb = denoised(rgb, ow, oh, denoise);
-        write_png(&output, ow, oh, &rgb)?;
+        write_png(output, scene, ow, oh, &rgb)?;
     }
     if let Some(d) = depth {
         write_depth(&d, &res.gbuffer, res.width, res.height, aa)?;
@@ -2649,7 +2652,7 @@ fn mc_cmd(argv: &[String]) -> Result<(), String> {
             rgb = mb3d::denoise::dct_denoise(&rgb, img.width, img.height, sigma, n);
         }
         mb3d::finish::apply_rgb8(&mut rgb, img.width, img.height, scene.finish_for_camera().as_ref());
-        write_png(&out, img.width, img.height, &rgb)
+        write_png(&out, &scene, img.width, img.height, &rgb)
     };
     if let Some(dir) = &swarm {
         if is_m3c {

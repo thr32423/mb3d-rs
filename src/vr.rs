@@ -5,7 +5,12 @@
 //! picture (2:1). Viewers only show it as a sphere when they are told so:
 //!
 //! * Photos: the Photo Sphere XMP of a JPEG (`GPano`, Google's tags that
-//!   Facebook, Google Photos and most 360 viewers read): [`jpeg_with_pano`].
+//!   Facebook, Google Photos and most 360 viewers read): [`jpeg_with_pano`],
+//!   and with [`camera_tag`] on, the EXIF camera of a 360 camera (Make
+//!   `RICOH`, Model `RICOH THETA S`), the tag Facebook's own upload goes by
+//!   when it ignores the XMP (the trick of the Mandelbulb Maniacs group,
+//!   who set it by hand in the file's properties). A PNG gets both as an
+//!   `eXIf` and an XMP `iTXt` chunk: [`png_with_pano`].
 //! * Videos: the Spherical Video V2 boxes of an MP4 (`st3d` for the stereo
 //!   layout, `sv3d` with an equirectangular `proj`; YouTube, Meta Quest's
 //!   players, VLC): [`inject_spherical_mp4`]. Players that ignore them (and
@@ -79,10 +84,69 @@ GPano:PoseHeadingDegrees=\"0\" GPano:InitialViewHeadingDegrees=\"0\"/>\
     )
 }
 
+/// Whether 360 pictures also get the EXIF camera of a 360 camera
+/// ([`pano_exif`]); on unless the user switched it off (the Share window,
+/// `Pano360CameraTag` in the ini file).
+static CAMERA_TAG: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
+/// Switches the 360 camera tag of [`pano_exif`] on or off.
+pub fn set_camera_tag(on: bool) {
+    CAMERA_TAG.store(on, std::sync::atomic::Ordering::Relaxed);
+}
+
+/// Is the 360 camera tag on?
+pub fn camera_tag() -> bool {
+    CAMERA_TAG.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+/// The camera Facebook takes for a 360 camera (Make, Model).
+pub const PANO_CAMERA: (&str, &str) = ("RICOH", "RICOH THETA S");
+
+/// The EXIF block (a little-endian TIFF structure, without the `Exif\0\0`
+/// of a JPEG) of a 360 picture: IFD0 with Make and Model of
+/// [`PANO_CAMERA`] and Software (this program and its version).
+pub fn pano_exif() -> Vec<u8> {
+    let software = format!("mb3d-rs {}", env!("CARGO_PKG_VERSION"));
+    // (tag, ASCII value with its terminating zero), sorted by tag
+    let fields: [(u16, String); 3] = [(0x010F, PANO_CAMERA.0.to_string()), (0x0110, PANO_CAMERA.1.to_string()), (0x0131, software)];
+    let n = fields.len();
+    let ifd = 8;
+    let mut data_at = ifd + 2 + n * 12 + 4;
+    let mut t: Vec<u8> = vec![b'I', b'I', 42, 0];
+    t.extend_from_slice(&(ifd as u32).to_le_bytes());
+    t.extend_from_slice(&(n as u16).to_le_bytes());
+    let mut values: Vec<u8> = Vec::new();
+    for (tag, v) in &fields {
+        let mut bytes = v.as_bytes().to_vec();
+        bytes.push(0);
+        t.extend_from_slice(&tag.to_le_bytes());
+        t.extend_from_slice(&2u16.to_le_bytes()); // ASCII
+        t.extend_from_slice(&(bytes.len() as u32).to_le_bytes());
+        if bytes.len() <= 4 {
+            let mut inline = bytes.clone();
+            inline.resize(4, 0);
+            t.extend_from_slice(&inline);
+        } else {
+            t.extend_from_slice(&(data_at as u32).to_le_bytes());
+            data_at += bytes.len() + bytes.len() % 2;
+            values.extend_from_slice(&bytes);
+            if bytes.len() % 2 == 1 {
+                values.push(0);
+            }
+        }
+    }
+    t.extend_from_slice(&0u32.to_le_bytes()); // no next IFD
+    t.extend_from_slice(&values);
+    t
+}
+
 /// A JPEG file with the Photo Sphere XMP of a `w` × `h` picture in an APP1
-/// segment after the JFIF one (an XMP segment there already is replaced).
+/// segment after the JFIF one (an XMP segment there already is replaced),
+/// and with [`camera_tag`] on the EXIF segment of [`pano_exif`] before it
+/// (an EXIF segment there already is replaced as well).
 pub fn jpeg_with_pano(jpeg: &[u8], w: usize, h: usize) -> Result<Vec<u8>, String> {
     const NS: &[u8] = b"http://ns.adobe.com/xap/1.0/\0";
+    const EXIF: &[u8] = b"Exif\0\0";
     if !jpeg.starts_with(&[0xFF, 0xD8]) {
         return Err("not a JPEG file".into());
     }
@@ -98,7 +162,8 @@ pub fn jpeg_with_pano(jpeg: &[u8], w: usize, h: usize) -> Result<Vec<u8>, String
         let len = u16::from_be_bytes([jpeg[pos + 2], jpeg[pos + 3]]) as usize;
         let seg = jpeg.get(pos..pos + 2 + len).ok_or("a JPEG segment is cut off")?;
         let xmp = m == 0xE1 && seg.get(4..4 + NS.len()) == Some(NS);
-        if !xmp {
+        let exif = m == 0xE1 && seg.get(4..4 + EXIF.len()) == Some(EXIF);
+        if !xmp && !exif {
             head.extend_from_slice(seg);
         }
         if m == 0xE0 && insert_at.is_none() {
@@ -111,7 +176,15 @@ pub fn jpeg_with_pano(jpeg: &[u8], w: usize, h: usize) -> Result<Vec<u8>, String
     if len > 0xFFFF {
         return Err("XMP too long".into());
     }
-    let mut seg = vec![0xFF, 0xE1];
+    let mut seg = Vec::new();
+    if camera_tag() {
+        let e = pano_exif();
+        seg.extend_from_slice(&[0xFF, 0xE1]);
+        seg.extend_from_slice(&((2 + EXIF.len() + e.len()) as u16).to_be_bytes());
+        seg.extend_from_slice(EXIF);
+        seg.extend_from_slice(&e);
+    }
+    seg.extend_from_slice(&[0xFF, 0xE1]);
     seg.extend_from_slice(&(len as u16).to_be_bytes());
     seg.extend_from_slice(NS);
     seg.extend_from_slice(packet.as_bytes());
@@ -133,6 +206,43 @@ pub fn encode_jpeg_for(sc: &crate::scene::Scene, w: usize, h: usize, rgb: &[u8],
         jpeg_with_pano(&j, w, h).unwrap_or(j)
     } else {
         j
+    }
+}
+
+/// A PNG file (from [`crate::png`]'s encoders) with the 360 tags of a
+/// `w` × `h` picture: the Photo Sphere XMP as an `iTXt` chunk
+/// (`XML:com.adobe.xmp`), and with [`camera_tag`] on the EXIF block of
+/// [`pano_exif`] as an `eXIf` chunk, both before the image data.
+pub fn png_with_pano(png: Vec<u8>, w: usize, h: usize) -> Vec<u8> {
+    let mut xmp = b"XML:com.adobe.xmp\0\0\0\0\0".to_vec();
+    xmp.extend_from_slice(pano_xmp(w, h).as_bytes());
+    let mut png = crate::png::with_chunk_before_idat(png, b"iTXt", &xmp);
+    if camera_tag() {
+        png = crate::png::with_chunk_before_idat(png, b"eXIf", &pano_exif());
+    }
+    png
+}
+
+/// Encodes a picture as PNG, with the 360 tags when it is a 360 one of
+/// `sc` ([`is_pano`]).
+pub fn encode_png_for(sc: &crate::scene::Scene, w: usize, h: usize, rgb: &[u8]) -> Vec<u8> {
+    let p = crate::png::encode_rgb(w, h, rgb);
+    if is_pano(sc, w, h) {
+        png_with_pano(p, w, h)
+    } else {
+        p
+    }
+}
+
+/// A PNG or JPEG file (by the extension of `path`; anything but `.jpg` and
+/// `.jpeg` is a PNG) of a picture of `sc`, with the 360 tags when it is a
+/// 360 one.
+pub fn encode_picture_for(sc: &crate::scene::Scene, path: &Path, w: usize, h: usize, rgb: &[u8], quality: u8) -> Vec<u8> {
+    let ext = path.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).unwrap_or_default();
+    if ext == "jpg" || ext == "jpeg" {
+        encode_jpeg_for(sc, w, h, rgb, quality)
+    } else {
+        encode_png_for(sc, w, h, rgb)
     }
 }
 
@@ -504,6 +614,66 @@ mod tests {
         assert_eq!(q.len(), p.len());
         // after the JFIF segment
         assert_eq!(&p[2..4], &[0xFF, 0xE0]);
+    }
+
+    #[test]
+    fn a_360_jpeg_gets_the_camera_of_a_360_camera() {
+        let rgb = vec![90u8; 64 * 32 * 3];
+        let j = crate::jpeg::encode(64, 32, &rgb, 90);
+        let p = jpeg_with_pano(&j, 64, 32).unwrap();
+        // the EXIF segment right after the JFIF one, the XMP after it
+        let at = |b: &[u8], i: usize| (b[i], b[i + 1], u16::from_be_bytes([b[i + 2], b[i + 3]]) as usize);
+        let (_, m0, l0) = at(&p, 2);
+        assert_eq!(m0, 0xE0);
+        let (_, m1, l1) = at(&p, 4 + l0);
+        assert_eq!(m1, 0xE1);
+        assert_eq!(&p[8 + l0..14 + l0], b"Exif\0\0");
+        let (_, m2, _) = at(&p, 6 + l0 + l1);
+        assert_eq!(m2, 0xE1);
+        assert_eq!(&p[10 + l0 + l1..10 + l0 + l1 + 28], b"http://ns.adobe.com/xap/1.0/");
+        // done again: one of each
+        let q = jpeg_with_pano(&p, 64, 32).unwrap();
+        assert_eq!(q.len(), p.len());
+        assert_eq!(q.windows(6).filter(|w| *w == b"Exif\0\0").count(), 1);
+        let im = crate::image::decode(&q).unwrap();
+        assert_eq!((im.width, im.height), (64, 32));
+    }
+
+    #[test]
+    fn the_exif_block_reads_as_tiff() {
+        let t = pano_exif();
+        assert_eq!(&t[..4], b"II*\0");
+        let u16at = |i: usize| u16::from_le_bytes([t[i], t[i + 1]]);
+        let u32at = |i: usize| u32::from_le_bytes(t[i..i + 4].try_into().unwrap());
+        let ifd = u32at(4) as usize;
+        let n = u16at(ifd) as usize;
+        assert_eq!(n, 3);
+        let mut tags = Vec::new();
+        for k in 0..n {
+            let e = ifd + 2 + k * 12;
+            let (tag, ty, count, off) = (u16at(e), u16at(e + 2), u32at(e + 4) as usize, u32at(e + 8) as usize);
+            assert_eq!(ty, 2);
+            let v = &t[off..off + count];
+            assert_eq!(v[count - 1], 0);
+            tags.push((tag, String::from_utf8(v[..count - 1].to_vec()).unwrap()));
+        }
+        assert_eq!(tags[0], (0x010F, "RICOH".to_string()));
+        assert_eq!(tags[1], (0x0110, "RICOH THETA S".to_string()));
+        assert!(tags[2].1.starts_with("mb3d-rs "));
+        // tags in ascending order, no next IFD
+        assert!(tags.windows(2).all(|w| w[0].0 < w[1].0));
+        assert_eq!(u32at(ifd + 2 + n * 12), 0);
+    }
+
+    #[test]
+    fn a_360_png_gets_xmp_and_exif_before_the_image_data() {
+        let p = png_with_pano(crate::png::encode_rgb(8, 4, &[7u8; 8 * 4 * 3]), 8, 4);
+        let find = |k: &[u8]| p.windows(4).position(|w| w == k).unwrap();
+        let (itxt, exif, idat) = (find(b"iTXt"), find(b"eXIf"), find(b"IDAT"));
+        assert!(itxt < idat && exif < idat);
+        assert!(String::from_utf8_lossy(&p).contains("GPano:ProjectionType=\"equirectangular\""));
+        let im = crate::image::decode(&p).unwrap();
+        assert_eq!((im.width, im.height), (8, 4));
     }
 
     #[test]

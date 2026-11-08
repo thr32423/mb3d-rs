@@ -3386,10 +3386,12 @@ fn save_image(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
         }
         "bmp" => Box::new(move || Ok(crate::frames::encode_bmp(w, h, &rgb))),
         _ => {
-            // "png par": the text parameters as the PNG comment (SavePNG)
+            // "png par": the text parameters as the PNG comment (SavePNG);
+            // a spherical panorama: the tags of a 360 photo
             let text = png_comment(app, ui);
+            let sc = app.eng.base().map(|b| b.scene.clone()).unwrap_or_else(|| app.scene.clone());
             Box::new(move || {
-                let mut data = crate::png::encode_rgb(w, h, &rgb);
+                let mut data = crate::vr::encode_png_for(&sc, w, h, &rgb);
                 if let Some(t) = text {
                     data = crate::png::with_text(data, "Comment", &t);
                 }
@@ -3429,6 +3431,9 @@ fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
         let rgb = crate::render::paint16(&b.scene, &b.params, &b.post);
         let (rgb, w, h) = if s > 1 { crate::render::downsample(&rgb, b.w, b.h, s) } else { (rgb, b.w, b.h) };
         let mut data = crate::png::encode_rgb16(w, h, &rgb);
+        if crate::vr::is_pano(&b.scene, w, h) {
+            data = crate::vr::png_with_pano(data, w, h);
+        }
         if let Some(t) = text {
             data = crate::png::with_text(data, "Comment", &t);
         }

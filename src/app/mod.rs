@@ -370,6 +370,8 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
     // MB3D's folders: formulas and maps of the ini (next to the program)
     crate::formulas::add_formula_dir(ini.dir(ini::DIR_FORMULAS));
     crate::maps::add_map_dir(ini.dir(ini::DIR_MAPS));
+    // 360 pictures with the camera of a 360 camera (Facebook), unless off
+    crate::vr::set_camera_tag(ini.get_extra("Pano360CameraTag") != Some("0"));
     // the themes of the `Themes` folder next to the program
     crate::vcl::theme::check()?;
     let style = Style::from_name(ini.get("VisualTheme")).unwrap_or_default();

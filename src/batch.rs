@@ -232,7 +232,16 @@ pub fn render_item(
             let p = output.with_file_name(format!("{stem}_depth.png"));
             std::fs::write(&p, crate::png::encode_gray16(img.width, img.height, z)).map_err(|e| format!("{}: {e}", p.display()))?;
         }
-        c.finish(&crate::frames::encode(opts.format, &img)?)?;
+        let mut data = crate::frames::encode(opts.format, &img)?;
+        // a spherical panorama: the tags of a 360 photo
+        if crate::vr::is_pano(&s, img.width, img.height) {
+            data = match opts.format {
+                crate::anim::OutputFormat::Jpg => crate::vr::jpeg_with_pano(&data, img.width, img.height).unwrap_or(data),
+                crate::anim::OutputFormat::Png if img.rgba.is_none() => crate::vr::png_with_pano(data, img.width, img.height),
+                _ => data,
+            };
+        }
+        c.finish(&data)?;
         if let Some(ck) = ck {
             ck.finish();
         }

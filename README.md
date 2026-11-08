@@ -7,7 +7,7 @@
 <!-- languages:end -->
 
 <!-- latest:start -->
-**Latest release: [v0.3.3](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.3)** (7 Nov 2026, 16:03 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
+**Latest release: [v0.3.4](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.4)** (8 Nov 2026, 06:22 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
 <!-- latest:end -->
 
 mb3d-rs is [Mandelbulb3D](https://github.com/thargor6/mb3d) (MB3D), the
@@ -1454,6 +1454,20 @@ Each commit links to its full description and code on GitHub; the downloads
 of a release are on its page. Times are in UTC.
 
 <!-- updates:start -->
+### [v0.3.4](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.4) · 8 Nov 2026, 06:22 UTC
+
+| Commit | What it does |
+|---|---|
+| [`d5eff1b`](https://github.com/thr32423/mb3d-rs/commit/d5eff1b7382aac5b2e2398e07e29072aa806b67c) | Version number and release notes of this release |
+| [`568f351`](https://github.com/thr32423/mb3d-rs/commit/568f351a5ed474d40f6d3e24907db8320800455a) | The background picture's load options of the Lighting window work as in MB3D: "Smooth image on load" (TBoptions bit 19), "Scale rows to geographic projection" (AdditionalOptions bit 7) and "Fit left+right borders" (AdditionalOptions bit 4) were read by neither the file reader nor the window, so a scene saved with them rendered with the raw picture. maps::background applies SmoothLightMap (a 5 point filter down the columns and along the rows with wrap-around, 8 bit pictures only) and FitLMborder (the 6 outer columns of each side blended into the other) ported step for step from maps/Maps.pas, including the values the last row and column see; the bits are kept in .m3p/.m3i and as background_smooth, background_geographic, background_fit_borders in the text parameters; the three check boxes of the Lighting window are wired. Of the 80 example files only "material colors" (geographic + fit borders) changes; the other three with a background picture are byte-identical. Found through Mandelbulb3D-SE (Rodrigo-Spacecraft), whose copy of the engine reads the bits; the filters here follow MB3D's Pascal, not its approximation. Tests: the filters on synthetic pictures, the bits and keys round trip; TECHNICAL.md |
+| [`33b631f`](https://github.com/thr32423/mb3d-rs/commit/33b631f4acfa6daa8543acddbc39fe55532d031d) | TECHNICAL.md: the reflection rounds' first-round share and one-round rule, the command line's unlimited wait for a shader compile |
+| [`f42eba6`](https://github.com/thr32423/mb3d-rs/commit/f42eba6a7a3ed3352bfe35a7ead135eaed169a99) | The first reflection round keeps half the rays for the CPU threads only when the round is a few slot-fulls of the card (under four times its 32768 slots): at half size and above the rounds share well by themselves and the fixed share cost ImpossibleWorld dIFS 7 %; MB3D_REFLECT_CPU_FINISH_ONE sets the one-round rule's share. Reflection stage against v0.3.3, best of two: a quarter size 20 to 38 % faster on four scenes, half and three-quarter sizes the same within 1 % |
+| [`1381625`](https://github.com/thr32423/mb3d-rs/commit/1381625f642c873634a229f4cea7686719da9629) | Reflections shared with the card: one round with the CPU threads at three times the card's rate sends the remaining rounds to the CPU (before, both kinds of round had to show the CPU's part at 60 %). Reflection stage at a quarter size against v0.3.3, best of three: ImpossibleWorld dIFS 23.1 s to 17.5 s, Hal-Tenny 1.78 to 1.33, ApolloBalloons 2.61 to 2.07, Melting spot bloxx 1.05 to 0.66, Rama 0.53 to 0.40, Sabine62 0.82 to 0.60, Fishbowl 0.17 to 0.14, Torii temple and cutted sphere the same |
+| [`1e5e263`](https://github.com/thr32423/mb3d-rs/commit/1e5e2637cc5faeb37dd4f5ba745eda481353a922) | Reflections shared with the card: the first round, before any rate is measured, keeps half the rays for the CPU threads (the card claimed up to two thirds and the threads waited on it when it was the slower side; MB3D_REFLECT_CPU_PRIOR sets the share). Reflection stage at a quarter size, best of three: Hal-Tenny 2.16 s to 1.30 s, Melting spot bloxx 1.06 to 0.71, ApolloBalloons 2.61 to 2.15, ImpossibleWorld dIFS 23.2 to 21.7, cutted sphere 0.29 to 0.28 |
+| [`de33b3e`](https://github.com/thr32423/mb3d-rs/commit/de33b3eef468fa883a8da35e68cf1a191c0e7c4d) | The command line waits for a background shader compile as long as it takes before ending (MB3D_COMPILE_WAIT_SECS limits it), saying so every 30 s: the limit of 120 s cut off the scenes whose compile takes about that long (Abominog-Ua: 115-135 s a pipeline on an RTX 2060), so every run of them compiled again and the driver's cache never got them; now the second run has them in 0.1 s |
+| [`38db5f3`](https://github.com/thr32423/mb3d-rs/commit/38db5f33f46a3b356b704390762b32d767ea9799) | Test: a render stopped in the march or in a post pass and continued from its checkpoint equals the uninterrupted render byte for byte, also with another thread count |
+| [`4c037d1`](https://github.com/thr32423/mb3d-rs/commit/4c037d1dc2c3b102e214150c3634280e9c26e4c5) | README: Updates for v0.3.3 |
+
 ### [v0.3.3](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.3) · 7 Nov 2026, 16:03 UTC
 
 | Commit | What it does |
@@ -1475,21 +1489,7 @@ of a release are on its page. Times are in UTC.
 | [`ac45e1f`](https://github.com/thr32423/mb3d-rs/commit/ac45e1f8abeaa8e972d67f7459ec98332e71e4cc) | The scan guard no longer trips the scan itself: tests/scanner_words.rs quoted the scanner's word with its bracket in its comments, and scanrepo.dev rated 6edc999 dangerous, 70 of 100, for that file alone; the test now spells the word in two halves, never writes it with a bracket, and checks itself too. The README's update list words 31ab9bb's line without it |
 | [`6edc999`](https://github.com/thr32423/mb3d-rs/commit/6edc99999c8bf59c4b49fa1c11585ab3d2a542d1) | README: Updates for v0.3.1 |
 
-### [v0.3.1](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.1) · 5 Nov 2026, 14:41 UTC
-
-| Commit | What it does |
-|---|---|
-| [`4e6b0a1`](https://github.com/thr32423/mb3d-rs/commit/4e6b0a1b34a22a2e24572a6e2b55a3103db8e98b) | Version number and release notes of this release |
-| [`31ab9bb`](https://github.com/thr32423/mb3d-rs/commit/31ab9bb590ed0565c3a8f583e558ce3bb0ecead9) | The malware scan rates the repository safe again: two math helpers of the formula compiler renamed (scanrepo.dev took their name for running code given as text and rated 0.2.100 dangerous, 70 of 100); tests/scanner_words.rs keeps such names out |
-| [`e3e7329`](https://github.com/thr32423/mb3d-rs/commit/e3e7329a76dd256923522e2e1ea512e341a11a29) | Animation templates in the README and its 16 translations: pictures of an orbit and a fly-through, the exact orbit, Start from, the fly-through's Stop, links to the videos attached to the v0.2.100 release; Rathinagiri S (SRathinaGiri) credited for the templates, 360 photos and 360 VR videos (#30) in every language and in the contributors' list; the four new labels in all 17 languages |
-| [`c2576e6`](https://github.com/thr32423/mb3d-rs/commit/c2576e69908aa6d4afcbdfd40cae8c398c4a5b3a) | Animation templates: an orbit from the last keyframe gives that keyframe the orbit's first one (the same camera and picture, the middle on the pivot the orbit's keyframes share): its first part interpolated two middles and left the circle |
-| [`b2e5cab`](https://github.com/thr32423/mb3d-rs/commit/b2e5cab64ff1ea11089d1db1e6c3784c1f046af3) | Animation templates after PR #30 (SRathinaGiri): an exact orbit, the pivot found from far away, the fly-through on a thread |
-| [`db62c70`](https://github.com/thr32423/mb3d-rs/commit/db62c70abea3d792448336810bbc5eef666430b7) | README: Updates for v0.2.100 |
-| [`06c37c0`](https://github.com/thr32423/mb3d-rs/commit/06c37c0c23b7fa3653422c143adcc73f056916f8) | Animation templates and 360 output: the 35 labels in all 17 languages, the CJK font subsets, the README and its 16 translations, TECHNICAL.md |
-| [`ad677c9`](https://github.com/thr32423/mb3d-rs/commit/ad677c96780ed3f723288f9697d693341b5bb58b) | 360 videos: Spherical Video V1 metadata as well as V2 |
-| [`0f15c52`](https://github.com/thr32423/mb3d-rs/commit/0f15c52339e20c0c945bbe39164ebc16a2fc874d) | Animation templates (360 degree orbit around any axis, fly-through), 360 degree photos, 360 degree VR animations mono and stereo |
-
-All 114 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
+All 115 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
 <!-- updates:end -->
 
 ## For developers

@@ -171,8 +171,18 @@ fn make(app: &mut Mb3d, ui: &mut Ui) {
         Ok(w) => {
             crate::vcl::clipboard::set(&post);
             let name = w.folder.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
-            ui.set_caption(F, "StatusLabel", &trf("@MB:SharedInThePostTextIs", &[&name]));
-            app.message(ui, &trf("@MB:SharedInThePostTextIs", &[&w.folder.display()]));
+            let mut status = trf("@MB:SharedInThePostTextIs", &[&name]);
+            if let Some((_, pw, ph)) = image.as_ref() {
+                // whether the picture got the 360 tags, and why not
+                status.push('\n');
+                status.push_str(&if crate::vr::is_pano(&sc, *pw, *ph) {
+                    tr("@MB:N360PhotoTaggedForFacebookRICOH")
+                } else {
+                    trf("@MB:No360TagsTheCalculatedPicture", &[&pw.to_string(), &ph.to_string()])
+                });
+            }
+            ui.set_caption(F, "StatusLabel", &status);
+            app.message(ui, &status.replace('\n', " "));
             app.share.made = Some(w.folder);
             ui.set_enabled(F, "OpenBtn", true);
         }

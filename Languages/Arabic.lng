@@ -2409,6 +2409,8 @@ N360Orbit=مدار 360°
 ;360° orbit
 N360Panorama=بانوراما 360
 ;360 Panorama
+N360PhotoTaggedForFacebookRICOH=صورة 360: موسومة لفيسبوك (كاميرا RICOH THETA، وXMP لـ Photo Sphere)
+;360 photo: tagged for Facebook (RICOH THETA camera, Photo Sphere XMP)
 N360PhotosTheCameraTagFacebook=صور 360: وسم الكاميرا الذي يبحث عنه Facebook
 ;360 photos: the camera tag Facebook looks for
 N360VR=واقع افتراضي 360°
@@ -2489,6 +2491,8 @@ No=لا
 ;no
 No2=لا
 ;No
+No360TagsTheCalculatedPicture=لا وسوم 360: الصورة المحسوبة ليست بانوراما كروية عرضها ضعف ارتفاعها ({0} × {1}). اضبط البصريات والحجم ثم أعد الحساب.
+;No 360 tags: the calculated picture is not a spherical panorama twice as wide as high ({0} x {1}). Set the optic, the size and calculate again.
 NoDescriptionFromTheAuthor=لا وصف من المؤلف.
 ;No description from the author.
 NoDoFOnTiles=لا DoF على البلاطات.

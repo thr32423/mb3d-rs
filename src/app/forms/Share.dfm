@@ -195,10 +195,11 @@ object ShareFrm: TShareFrm
   end
   object StatusLabel: TLabel
     Left = 8
-    Top = 390
+    Top = 382
     Width = 524
-    Height = 13
+    Height = 30
     AutoSize = False
+    WordWrap = True
     Caption = ''
   end
 end

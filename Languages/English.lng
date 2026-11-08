@@ -2408,6 +2408,8 @@ N360Orbit=360° orbit
 ;AnimTemplatesFrm.TemplateCmb.Items
 N360Panorama=360 Panorama
 ;Mand3DForm.RadioGroup2.Items
+N360PhotoTaggedForFacebookRICOH=360 photo: tagged for Facebook (RICOH THETA camera, Photo Sphere XMP)
+;the program
 N360PhotosTheCameraTagFacebook=360 photos: the camera tag Facebook looks for
 ;ShareFrm.CamCheck.Caption
 N360VR=360° VR
@@ -2487,6 +2489,8 @@ NewZoom=New zoom:
 No=no
 ;PostProForm.RadioGroup5.Items
 No2=No
+;the program
+No360TagsTheCalculatedPicture=No 360 tags: the calculated picture is not a spherical panorama twice as wide as high ({0} x {1}). Set the optic, the size and calculate again.
 ;the program
 NoDescriptionFromTheAuthor=No description from the author.
 ;the program

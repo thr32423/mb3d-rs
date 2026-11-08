@@ -163,6 +163,13 @@ fn show_selected(app: &mut Mb3d, ui: &mut Ui) {
     }
 }
 
+/// The example clicked in the list: its picture.
+fn show_example(app: &mut Mb3d, ui: &mut Ui) {
+    if let Some(p) = chosen_example(app, ui) {
+        super::file_preview::request(app, ui, p, F, "Image1", "PicLabel");
+    }
+}
+
 /// The caption under the picture, in the book's words rather than the
 /// preview queue's (called from the idle work when a preview arrived).
 pub fn picture_caption(app: &Mb3d, ui: &mut Ui) {
@@ -171,7 +178,8 @@ pub fn picture_caption(app: &Mb3d, ui: &mut Ui) {
     }
     let Some(t) = selected(app, ui) else { return };
     let ex = examples_of(app, t);
-    let text = match ex.first() {
+    let i = ui.item_index(F, "ExampleList").max(0) as usize;
+    let text = match ex.get(i).or(ex.first()) {
         Some(p) => trf("@MB:Example0", &[&formula_book::file_title(p)]),
         None => tr("@MB:TheFormulaAloneAtItsDefault"),
     };
@@ -202,6 +210,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "FilterChange" => fill_list(app, ui),
         "NameListClick" => show_selected(app, ui),
         "NameListDblClick" => use_formula(app, ui),
+        "ExampleListClick" => show_example(app, ui),
         "UseBtnClick" => use_formula(app, ui),
         "OpenBtnClick" | "ExampleListDblClick" => {
             if let Some(p) = chosen_example(app, ui) {

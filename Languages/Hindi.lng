@@ -2409,6 +2409,8 @@ N360Orbit=360° परिक्रमा
 ;360° orbit
 N360Panorama=360 पैनोरमा
 ;360 Panorama
+N360PhotoTaggedForFacebookRICOH=360 फ़ोटो: Facebook के लिए टैग किया गया (RICOH THETA कैमरा, Photo Sphere XMP)
+;360 photo: tagged for Facebook (RICOH THETA camera, Photo Sphere XMP)
 N360PhotosTheCameraTagFacebook=360 फ़ोटो: वह कैमरा टैग जिसे Facebook खोजता है
 ;360 photos: the camera tag Facebook looks for
 N360VR=360° वीआर
@@ -2489,6 +2491,8 @@ No=नहीं
 ;no
 No2=नहीं
 ;No
+No360TagsTheCalculatedPicture=360 टैग नहीं: गणना किया चित्र चौड़ाई में ऊँचाई से दोगुना गोलीय पैनोरमा नहीं है ({0} x {1})। प्रकाशिकी और आकार सेट करके फिर से गणना करें।
+;No 360 tags: the calculated picture is not a spherical panorama twice as wide as high ({0} x {1}). Set the optic, the size and calculate again.
 NoDescriptionFromTheAuthor=लेखक का कोई विवरण नहीं।
 ;No description from the author.
 NoDoFOnTiles=टाइलों पर DoF नहीं।

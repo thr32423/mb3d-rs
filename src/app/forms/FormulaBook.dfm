@@ -109,6 +109,7 @@ object FormulaBookFrm: TFormulaBookFrm
     Height = 216
     ItemHeight = 13
     TabOrder = 3
+    OnClick = ExampleListClick
     OnDblClick = ExampleListDblClick
   end
   object PageMemo: TMemo

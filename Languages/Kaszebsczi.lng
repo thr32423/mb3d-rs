@@ -2408,6 +2408,8 @@ N360Orbit=Òrbita 360°
 ;360° orbit
 N360Panorama=Panorama 360
 ;360 Panorama
+N360PhotoTaggedForFacebookRICOH=Òdjimk 360: òznaczony dlô Facebooka (kamera RICOH THETA, XMP Photo Sphere)
+;360 photo: tagged for Facebook (RICOH THETA camera, Photo Sphere XMP)
 N360PhotosTheCameraTagFacebook=Òdjimczi 360: znak kamerë, chtërnégò szukô Facebook
 ;360 photos: the camera tag Facebook looks for
 N360VR=VR 360°
@@ -2488,6 +2490,8 @@ No=nié
 ;no
 No2=Nié
 ;No
+No360TagsTheCalculatedPicture=Felëją znaczniczi 360: wërechòwóny òbrôz nie je sfericzną panoramą dwa razë szerszą jak wëższą ({0} x {1}). Nastôwi òptikã i rozmiar i wërechùj znowa.
+;No 360 tags: the calculated picture is not a spherical panorama twice as wide as high ({0} x {1}). Set the optic, the size and calculate again.
 NoDescriptionFromTheAuthor=Felëje òpisënk òd ùsôdzcë.
 ;No description from the author.
 NoDoFOnTiles=Bez DoF na kachlach.

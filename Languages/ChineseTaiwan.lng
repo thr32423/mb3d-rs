@@ -2409,6 +2409,8 @@ N360Orbit=360° 環繞
 ;360° orbit
 N360Panorama=360 全景
 ;360 Panorama
+N360PhotoTaggedForFacebookRICOH=360 照片：已為 Facebook 加標籤（RICOH THETA 相機、Photo Sphere XMP）
+;360 photo: tagged for Facebook (RICOH THETA camera, Photo Sphere XMP)
 N360PhotosTheCameraTagFacebook=360 相片：Facebook 會辨識的相機標籤
 ;360 photos: the camera tag Facebook looks for
 N360VR=360° VR
@@ -2489,6 +2491,8 @@ No=否
 ;no
 No2=否
 ;No
+No360TagsTheCalculatedPicture=無 360 標籤：計算的畫面不是寬為高兩倍的球面全景（{0} x {1}）。請設定光學和尺寸後重新計算。
+;No 360 tags: the calculated picture is not a spherical panorama twice as wide as high ({0} x {1}). Set the optic, the size and calculate again.
 NoDescriptionFromTheAuthor=作者沒有留下說明。
 ;No description from the author.
 NoDoFOnTiles=圖塊不支援景深。

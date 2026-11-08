@@ -62,7 +62,8 @@ pub fn vr_name(stem: &str, st: Stereo) -> String {
 
 /// Is a picture of `w` × `h` of this scene an equirectangular 360 one?
 pub fn is_pano(sc: &crate::scene::Scene, w: usize, h: usize) -> bool {
-    sc.optic == crate::scene::CameraOptic::Panorama && w == 2 * h
+    // (a shrunk picture may be a pixel off 2:1)
+    sc.optic == crate::scene::CameraOptic::Panorama && w.abs_diff(2 * h) <= 2
 }
 
 // ---------------------------------------------------------------------------

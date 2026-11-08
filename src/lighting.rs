@@ -268,6 +268,15 @@ pub struct Lighting {
     /// A small blurred copy of the background picture is the ambient light
     /// (`AdditionalOptions` bit 5)
     pub bg_ambient: bool,
+    /// The background picture is smoothed when it is loaded (`TBoptions`
+    /// bit 19, "Smooth image on load"; 8 bit pictures only, as MB3D)
+    pub bg_smooth: bool,
+    /// Its rows are scaled to a geographic projection when it is loaded
+    /// (`AdditionalOptions` bit 7, "Scale rows to geographic projection")
+    pub bg_geographic: bool,
+    /// Its left and right borders are blended into each other when it is
+    /// loaded (`AdditionalOptions` bit 4, "Fit left+right borders")
+    pub bg_fit_borders: bool,
 }
 
 /// `LFunction` of the start preset's main light (spec ^64, diffuse func 3)
@@ -375,6 +384,9 @@ impl Default for Lighting {
             diff_map_scale: 30,
             yc_comb: false,
             bg_ambient: false,
+            bg_smooth: false,
+            bg_geographic: false,
+            bg_fit_borders: false,
         }
     }
 }
@@ -1177,7 +1189,7 @@ impl LightVals {
             bg: if l.bg_image.is_empty() {
                 None
             } else {
-                crate::maps::by_name(&l.bg_image).map(|map| PaintMap {
+                crate::maps::background(&l.bg_image, l.bg_smooth, l.bg_geographic, l.bg_fit_borders).map(|map| PaintMap {
                     map,
                     rot: pic_rot_matrix(l.bg_rot),
                     intensity: 1.04f32.powi(l.bg_brightness as i32 - 40),
@@ -1217,7 +1229,7 @@ impl LightVals {
             yc_comb: l.yc_comb,
             diff_map,
             bg_small: if l.bg_ambient && !l.bg_image.is_empty() {
-                crate::maps::by_name(&l.bg_image).map(|map| PaintMap {
+                crate::maps::background(&l.bg_image, l.bg_smooth, l.bg_geographic, l.bg_fit_borders).map(|map| PaintMap {
                     map: std::sync::Arc::new(map.small_copy()),
                     rot: pic_rot_matrix(l.bg_rot),
                     intensity: 1.04f32.powi(l.bg_brightness as i32 - 40),

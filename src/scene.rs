@@ -1025,6 +1025,9 @@ impl Scene {
             let _ = writeln!(t, "background_rotation = {}, {}, {}", l.bg_rot[0], l.bg_rot[1], l.bg_rot[2]);
             let _ = writeln!(t, "background_direct = {}\nbackground_brightness = {}", l.bg_direct, l.bg_brightness);
             let _ = writeln!(t, "background_add_light = {}", l.bg_add_light);
+            if l.bg_smooth || l.bg_geographic || l.bg_fit_borders {
+                let _ = writeln!(t, "background_smooth = {}\nbackground_geographic = {}\nbackground_fit_borders = {}", l.bg_smooth, l.bg_geographic, l.bg_fit_borders);
+            }
         }
         for f in &self.formulas {
             let _ = writeln!(t, "\n[formula]\nname = {}\niterations = {}", f.formula.name(), f.iterations);
@@ -1336,6 +1339,9 @@ impl Scene {
                     "background_direct" => s.lighting.bg_direct = boolean()?,
                     "background_brightness" => s.lighting.bg_brightness = int()?.clamp(0, 255) as u8,
                     "background_add_light" => s.lighting.bg_add_light = boolean()?,
+                    "background_smooth" => s.lighting.bg_smooth = boolean()?,
+                    "background_geographic" => s.lighting.bg_geographic = boolean()?,
+                    "background_fit_borders" => s.lighting.bg_fit_borders = boolean()?,
                     "iterations" | "max_iterations" => s.iterations = int()?.max(1),
                     "min_iterations" => s.min_iterations = int()?.max(0),
                     // MB3D's "color on it" field: -1 = off, 0 = the start vector

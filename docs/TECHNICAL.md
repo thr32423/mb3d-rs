@@ -889,6 +889,7 @@ specular colours of the palette say how much light a surface reflects.
 | `inside` | `outside`, `inside`, `both` | inside rendering, in-and-outside |
 | `background_image` | file name | background picture (sphere or `background_direct = true` image coordinates); a Radiance `.hdr` keeps its light above white and lights Monte Carlo renders, its sun as a light with soft shadows |
 | `background_rotation`, `background_brightness`, `background_add_light`, `background_ambient` | | picture rotation (bytes, 128 = half turn), brightness 1.04^(v-40), add instead of fog, small blurred copy as ambient light |
+| `background_smooth`, `background_geographic`, `background_fit_borders` | true/false | the picture's load options of MB3D's Lighting window (`SmoothLightMap`, `FitLMborder` in maps/Maps.pas): smoothed with a 5 point filter (8 bit pictures), the rows scaled to a geographic projection, the left and right borders blended into each other over 6 pixels |
 | `map`, `map_rotation` (in `[light]`) | map number, 3 bytes | light map: an image lighting from all directions |
 | `diffuse_map` | map number | diffuse colour map |
 | `diffuse_map_mode` | `iterations_otrap`, `normals`, `wrap_sine`, `wrap` | how the map is placed |

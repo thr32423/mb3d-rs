@@ -23,6 +23,9 @@ pub struct LightMap {
     /// linear values (HDR pictures): not squared for the lighting's
     /// square root mode
     pub linear: bool,
+    /// a 16 bit picture (MB3D's `iMapType` 1): [`Self::background_copy`]
+    /// does not smooth it, as MB3D does not
+    deep: bool,
 }
 
 /// The sun of an HDR picture ([`LightMap::split_sun`]).
@@ -40,15 +43,15 @@ pub struct Sun {
 impl LightMap {
     pub fn from_image(img: &crate::image::Image) -> LightMap {
         let div = if img.deep { 1.0 / 256.0 } else { 1.0 };
-        Self::from_pixels(img.width, img.height, false, |x, y| img.pixel(x, y).map(|v| v as f32 * div))
+        Self::from_pixels(img.width, img.height, false, img.deep, |x, y| img.pixel(x, y).map(|v| v as f32 * div))
     }
 
     /// A Radiance HDR picture: white (1) as 255, the brighter parts above.
     pub fn from_hdr(img: &crate::image::HdrImage) -> LightMap {
-        Self::from_pixels(img.width, img.height, true, |x, y| img.data[y * img.width + x].map(|v| v * 255.0))
+        Self::from_pixels(img.width, img.height, true, true, |x, y| img.data[y * img.width + x].map(|v| v * 255.0))
     }
 
-    fn from_pixels(w: usize, h: usize, linear: bool, px: impl Fn(usize, usize) -> [f32; 3]) -> LightMap {
+    fn from_pixels(w: usize, h: usize, linear: bool, deep: bool, px: impl Fn(usize, usize) -> [f32; 3]) -> LightMap {
         let mut data = Vec::with_capacity((w + 1) * (h + 1));
         for y in 0..=h {
             for x in 0..=w {
@@ -65,7 +68,7 @@ impl LightMap {
             }
         }
         let n = (w * h).max(1) as f64;
-        LightMap { width: w, height: h, data, avg: avg.map(|v| (v / n) as f32), linear }
+        LightMap { width: w, height: h, data, avg: avg.map(|v| (v / n) as f32), linear, deep }
     }
 
     /// The sun of an HDR picture: the pixels around its brightest one
@@ -144,7 +147,7 @@ impl LightMap {
             power: power.map(|v| v as f32),
             radius: (area / std::f64::consts::PI).sqrt() as f32,
         };
-        Some((LightMap { width: w, height: h, data, avg: self.avg, linear: true }, sun))
+        Some((LightMap { width: w, height: h, data, avg: self.avg, linear: true, deep: self.deep }, sun))
     }
 
     /// `MakeSmallLMimage`: a 16 x 8 box-filtered copy, smoothed
@@ -224,7 +227,7 @@ impl LightMap {
             }
             data[y * (W + 1) + W] = data[y * (W + 1)];
         }
-        LightMap { width: W, height: H, data, avg: self.avg, linear: self.linear }
+        LightMap { width: W, height: H, data, avg: self.avg, linear: self.linear, deep: self.deep }
     }
 
     /// The pixels (0..255) in rows of `width + 1` (the first column
@@ -710,5 +713,231 @@ mod tests {
         let q = m.spline_px(7.9, 5.5);
         assert!((q[1] - 50.0 / 255.0).abs() < 1e-4);
         assert!((m.avg[0] - 100.0).abs() < 1e-3);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// the background picture's load options (MB3D's Lighting window)
+
+impl LightMap {
+    /// The picture as MB3D loads a background picture with the Lighting
+    /// window's options (`LoadLightMap` in maps/Maps.pas: `SmoothLightMap`
+    /// then `FitLMborder`): `smooth` runs a 5 point filter (-0.05, 0.25,
+    /// 0.6, 0.25, -0.05) down every column and then along every row, with
+    /// wrap-around (8 bit pictures only, as MB3D); `geographic` scales
+    /// every row towards its middle by the cosine of its latitude with a
+    /// cubic interpolation, so a flat picture becomes a geographic
+    /// projection; `fit_borders` blends the 6 left and the 6 right columns
+    /// into each other so the seam of the sphere does not show.  The
+    /// pointer walks of the Pascal are kept step for step, including the
+    /// values its last row and column see (the row 0 already smoothed, the
+    /// repeated row not smoothed along x), so the pictures match MB3D's.
+    pub fn background_copy(&self, smooth: bool, geographic: bool, fit_borders: bool) -> LightMap {
+        let (w, h, st) = (self.width, self.height, self.width + 1);
+        let mut d = self.data.clone();
+        // the values of a channel as MB3D holds them: bytes, or words of a
+        // 16 bit picture (kept here as 1/256), rounded after every step
+        // (ClipR, ClipRw, SVecToColNoScale, SVecToWordCol); an HDR picture
+        // (not in MB3D) keeps its floating point light
+        let (up, max) = if self.deep { (256.0f32, 65535.0f32) } else { (1.0, 255.0) };
+        let quant = |v: f32| if self.linear { v.max(0.0) } else { (v * up).clamp(0.0, max).round_ties_even() / up };
+        if smooth && !self.deep && w >= 3 && h >= 3 {
+            // ipolC
+            let ipol = |a: [f32; 3], b: [f32; 3], c: [f32; 3], d: [f32; 3], e: [f32; 3]| -> [f32; 3] {
+                let mut r = [0f32; 3];
+                for k in 0..3 {
+                    r[k] = quant((a[k] + e[k]) * -0.05 + (b[k] + d[k]) * 0.25 + c[k] * 0.6);
+                }
+                r
+            };
+            // down the columns: the taps two rows back wrap to the bottom;
+            // the last row's tap ahead is row 0 after its smoothing, and the
+            // repeated row (h) becomes row 0
+            for x in 0..w {
+                let at = |y: usize| y * st + x;
+                let (mut c1, mut c2, mut c3) = (d[at(h - 2)], d[at(h - 1)], d[at(0)]);
+                let (mut p3, mut p4, mut p5) = (0usize, 1usize, 2usize);
+                for y in 1..=h {
+                    d[at(p3)] = ipol(c1, c2, c3, d[at(p4)], d[at(p5)]);
+                    c1 = c2;
+                    c2 = c3;
+                    c3 = d[at(p4)];
+                    p3 = p4;
+                    p4 = p5;
+                    p5 = if y == h - 1 { 0 } else { p5 + 1 };
+                }
+                d[at(p3)] = d[at(0)];
+            }
+            // along the rows (not the repeated row), the same way
+            for y in 0..h {
+                let at = |x: usize| y * st + x;
+                let (mut c1, mut c2, mut c3) = (d[at(w - 2)], d[at(w - 1)], d[at(0)]);
+                let (mut p3, mut p4, mut p5) = (0usize, 1usize, 2usize);
+                for x in 1..=w {
+                    d[at(p3)] = ipol(c1, c2, c3, d[at(p4)], d[at(p5)]);
+                    c1 = c2;
+                    c2 = c3;
+                    c3 = d[at(p4)];
+                    p3 = p4;
+                    p4 = p5;
+                    p5 = if x == w - 1 { 0 } else { p5 + 1 };
+                }
+                d[at(p3)] = d[at(0)];
+            }
+        }
+        if geographic && w >= 3 && h >= 1 {
+            // ipolF: a cubic through the 4 pixels from `i`, weights / 6
+            let ipol = |p: &[[f32; 3]], f: f32| -> [f32; 3] {
+                let (ff, fff) = (f * f, f * f * f);
+                let w1 = 3.0 * ff - 2.0 * f - fff;
+                let w2 = 3.0 * (fff - 2.0 * ff - f + 2.0);
+                let w3 = 3.0 * (ff + 2.0 * f - fff);
+                let w4 = fff - f;
+                let mut r = [0f32; 3];
+                for k in 0..3 {
+                    r[k] = quant((p[0][k] * w1 + p[1][k] * w2 + p[2][k] * w3 + p[3][k] * w4) * (1.0 / 6.0));
+                }
+                r
+            };
+            let sp = (w as f32 - 1.0) * 0.5;
+            let sw = w as f32 - 1.99;
+            // the row and its repeated pixel, and pixel 1 once more behind
+            // them (the cubic reads up to 3 pixels past its start)
+            let mut ba = vec![[0f32; 3]; w + 2];
+            for y in 0..h {
+                let lat = 2.0 * (y as f64 + 0.5) / h as f64 - 1.0;
+                let s = lat.clamp(-1.0, 1.0).asin().cos() as f32;
+                ba[..=w].copy_from_slice(&d[y * st..y * st + w + 1]);
+                ba[w + 1] = ba[1];
+                let mut first = [0f32; 3];
+                for x in 0..w {
+                    let s2 = ((x as f32 - sp) * s + sp).min(sw);
+                    let i = s2.trunc() as usize;
+                    let px = ipol(&ba[i..i + 4], s2.fract());
+                    d[y * st + x] = px;
+                    if x == 0 {
+                        first = px;
+                    }
+                }
+                d[y * st + w] = first;
+            }
+            for x in 0..=w {
+                d[h * st + x] = d[x];
+            }
+        }
+        if fit_borders && w >= 2 {
+            for x in 0..6.min(w / 2) {
+                let s2 = (0.5 - 0.5 * (std::f64::consts::PI * 0.5 * (x as f64 + 0.5) / 6.0).sin()) as f32;
+                let s1 = 1.0 - s2;
+                for y in 0..h {
+                    let (i, j) = (y * st + x, y * st + w - x - 1);
+                    let (a, b) = (d[i], d[j]);
+                    for k in 0..3 {
+                        d[i][k] = quant(a[k] * s1 + b[k] * s2);
+                        d[j][k] = quant(a[k] * s2 + b[k] * s1);
+                    }
+                }
+            }
+            for y in 0..h {
+                d[y * st + w] = d[y * st];
+            }
+        }
+        let mut avg = [0f64; 3];
+        for y in 0..h {
+            for x in 0..w {
+                for k in 0..3 {
+                    avg[k] += d[y * st + x][k] as f64;
+                }
+            }
+        }
+        let n = (w * h).max(1) as f64;
+        LightMap { width: w, height: h, data: d, avg: avg.map(|v| (v / n) as f32), linear: self.linear, deep: self.deep }
+    }
+}
+
+/// The background picture `name` ([`by_name`]) with the load options of
+/// the Lighting window applied ([`LightMap::background_copy`]), cached.
+pub fn background(name: &str, smooth: bool, geographic: bool, fit_borders: bool) -> Option<Arc<LightMap>> {
+    let raw = by_name(name)?;
+    if !(smooth || geographic || fit_borders) {
+        return Some(raw);
+    }
+    let key = format!("bg:{}{}{}:{}", smooth as u8, geographic as u8, fit_borders as u8, name.trim());
+    if let Some(m) = cache().lock().unwrap().get(&key) {
+        return m.clone();
+    }
+    let m = Arc::new(raw.background_copy(smooth, geographic, fit_borders));
+    cache().lock().unwrap().insert(key, Some(m.clone()));
+    Some(m)
+}
+
+#[cfg(test)]
+mod background_tests {
+    use super::*;
+
+    fn map(w: usize, h: usize, deep: bool, px: impl Fn(usize, usize) -> f32) -> LightMap {
+        LightMap::from_pixels(w, h, false, deep, |x, y| [px(x, y); 3])
+    }
+
+    #[test]
+    fn a_flat_picture_stays_flat_under_every_option() {
+        let m = map(9, 7, false, |_, _| 120.0);
+        let p = m.background_copy(true, true, true);
+        assert!(p.data.iter().all(|v| *v == [120.0; 3]));
+        assert_eq!(p.avg, [120.0; 3]);
+    }
+
+    /// The 5 point filter down and then along: a spike of 100 spreads to
+    /// 60 and 25 (the -5 clipped to 0) down its column, then along the rows.
+    #[test]
+    fn smooth_is_mb3d_s_five_point_filter_in_both_directions() {
+        let m = map(7, 7, false, |x, y| if (x, y) == (3, 2) { 100.0 } else { 0.0 });
+        let p = m.background_copy(true, false, false);
+        let v = |x: usize, y: usize| p.data[y * 8 + x][0];
+        assert_eq!((v(3, 2), v(2, 2), v(4, 2), v(1, 2), v(5, 2)), (36.0, 15.0, 15.0, 0.0, 0.0));
+        assert_eq!((v(3, 1), v(2, 1), v(3, 3), v(3, 0), v(3, 4)), (15.0, 6.0, 15.0, 0.0, 0.0));
+        // the repeated column and row
+        assert_eq!(v(7, 2), v(0, 2));
+        assert_eq!(v(3, 7), v(3, 0));
+        // a 16 bit picture is left alone, as MB3D leaves it
+        let m = map(7, 7, true, |x, y| if (x, y) == (3, 2) { 100.0 } else { 0.0 });
+        assert_eq!(m.background_copy(true, false, false).data, m.data);
+    }
+
+    /// The row through the middle (latitude 0) keeps its scale; MB3D's
+    /// cubic starts one pixel on, so the row moves by one pixel.  A row
+    /// at the pole is drawn into its middle.
+    #[test]
+    fn geographic_scales_the_rows_by_their_latitude() {
+        let m = map(12, 5, false, |x, _| x as f32 * 20.0);
+        let p = m.background_copy(false, true, false);
+        let v = |x: usize, y: usize| p.data[y * 13 + x][0];
+        for x in 0..10 {
+            assert_eq!(v(x, 2), (x as f32 + 1.0) * 20.0, "x {x}");
+        }
+        assert_eq!(v(12, 2), v(0, 2));
+        // the top row (latitude -0.8, cosine 0.6) is drawn towards its
+        // middle: a ramp stays a ramp (the cubic is exact on it), scaled
+        for x in 0..12 {
+            let s2 = (x as f32 - 5.5) * 0.6 + 5.5;
+            assert_eq!(v(x, 0), ((s2 + 1.0) * 20.0).round(), "x {x}");
+        }
+        // the repeated row is row 0
+        for x in 0..=12 {
+            assert_eq!(v(x, 5), v(x, 0));
+        }
+    }
+
+    #[test]
+    fn fit_borders_blends_six_columns_of_each_side_into_the_other() {
+        let m = map(20, 3, false, |x, _| if x < 10 { 0.0 } else { 200.0 });
+        let p = m.background_copy(false, false, true);
+        let v = |x: usize| p.data[20 + 1 + x][0];
+        for x in 0..6 {
+            let s2 = 0.5 - 0.5 * (std::f64::consts::PI * 0.5 * (x as f64 + 0.5) / 6.0).sin();
+            assert_eq!(v(x), (200.0 * s2).round() as f32, "left {x}");
+            assert_eq!(v(19 - x), (200.0 * (1.0 - s2)).round() as f32, "right {x}");
+        }
+        assert_eq!((v(6), v(13), v(20)), (0.0, 200.0, v(0)));
     }
 }

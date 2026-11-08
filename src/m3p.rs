@@ -1001,6 +1001,10 @@ fn parse_light(r: &Rd, w: &mut Vec<String>) -> Lighting {
     l.internal_gamma2 = add_opt & 1 != 0;
     l.yc_comb = add_opt & 4 != 0;
     l.bg_ambient = add_opt & 32 != 0;
+    // LoadBackgroundPicT (FileHandling.pas): the picture's load options
+    l.bg_smooth = tb_options & 0x80000 != 0;
+    l.bg_geographic = add_opt & 0x80 != 0;
+    l.bg_fit_borders = add_opt & 16 != 0;
     l.amb_rel_obj = tb_options & 0x2000_0000 != 0;
     l.dfog_options = r.u8(light(0) + 24) & 3;
     l.ex_mode = r.u8(light(2) + 24);
@@ -1296,7 +1300,7 @@ pub fn write(sc: &Scene) -> Vec<u8> {
     put(&mut d, b, &(l.var_col_z.round() as i16).to_le_bytes());
     d[b + 2] = l.roughness.round().clamp(0.0, 255.0) as u8;
     prgb(&mut d, b + 4, l.dyn_fog_col2);
-    d[b + 7] = (l.bg_add_light as u8) << 3 | l.internal_gamma2 as u8 | (l.yc_comb as u8) << 2 | (l.bg_ambient as u8) << 5;
+    d[b + 7] = (l.bg_add_light as u8) << 3 | l.internal_gamma2 as u8 | (l.yc_comb as u8) << 2 | (l.bg_ambient as u8) << 5 | (l.bg_fit_borders as u8) << 4 | (l.bg_geographic as u8) << 7;
     d[b + 3] = l.diff_map as u8;
     let tbv = [
         (l.fog_offset.round() as i32 & 0xFFFF) | ((l.fog_far_offset.round() as i32 & 0xFFFF) << 16),
@@ -1314,7 +1318,7 @@ pub fn write(sc: &Scene) -> Vec<u8> {
     }
     let mut tbo: u32 = (l.interior_start.round() as u32 & 0x7F) | (l.interior_end.round() as u32 & 0x7F) << 7 | 7 << 20;
     tbo |= (l.amb_rel_obj as u32) << 29;
-    tbo |= (l.color_cycling as u32) << 14 | (l.bg_direct as u32) << 15 | (l.color_on_otrap as u32) << 17 | (l.far_fog as u32) << 18;
+    tbo |= (l.color_cycling as u32) << 14 | (l.bg_direct as u32) << 15 | (l.color_on_otrap as u32) << 17 | (l.far_fog as u32) << 18 | (l.bg_smooth as u32) << 19;
     tbo |= (l.gamma.round() as u32 & 0x3F) << 23 | ((l.depth_func as u32) & 3) << 30;
     if let Some((a1, a2)) = l.fine_col_adj {
         tbo |= 0x10000;
@@ -1855,4 +1859,35 @@ pub fn write_m3i_image_to(path: &std::path::Path, sc: &Scene, gbuf: &[crate::gbu
 pub fn m3i_parts(sc: &Scene) -> (Vec<u8>, Vec<u8>) {
     let p = write(sc);
     (p[..HEADER_SIZE].to_vec(), p[HEADER_SIZE..].to_vec())
+}
+
+#[cfg(test)]
+mod background_option_tests {
+    use super::*;
+
+    /// The three load options of the background picture keep their bits
+    /// of MB3D's record (TBoptions bit 19, AdditionalOptions bits 7 and 4)
+    /// and their text keys.
+    #[test]
+    fn background_load_options_round_trip() {
+        for bits in 0..8u8 {
+            let mut sc = Scene::preset("Integer Power").unwrap();
+            sc.lighting.bg_image = "sky.png".into();
+            sc.lighting.bg_smooth = bits & 1 != 0;
+            sc.lighting.bg_geographic = bits & 2 != 0;
+            sc.lighting.bg_fit_borders = bits & 4 != 0;
+            let want = (sc.lighting.bg_smooth, sc.lighting.bg_geographic, sc.lighting.bg_fit_borders);
+            let raw = write(&sc);
+            let b = 432;
+            assert_eq!(raw[b + 44 + 2] & 8 != 0, want.0, "TBoptions bit 19");
+            assert_eq!(raw[b + 7] & 0x80 != 0, want.1, "AdditionalOptions bit 7");
+            assert_eq!(raw[b + 7] & 16 != 0, want.2, "AdditionalOptions bit 4");
+            let back = parse(&raw).unwrap().scene.lighting;
+            assert_eq!((back.bg_smooth, back.bg_geographic, back.bg_fit_borders), want);
+            let text = sc.to_text();
+            assert_eq!(text.contains("background_smooth = "), bits != 0);
+            let back = Scene::parse(&text).unwrap().lighting;
+            assert_eq!((back.bg_smooth, back.bg_geographic, back.bg_fit_borders), want);
+        }
+    }
 }

@@ -623,6 +623,9 @@ pub fn set_from_header(app: &mut Mb3d, ui: &mut Ui) {
     ui.set_item_index(F, "RadioGroup1", (l.diff_map_mode & 3) as i32);
     ui.set_checked(F, "CheckBox16", l.ex_mode & 1 != 0);
     ui.set_checked(F, "CheckBox17", l.bg_add_light);
+    ui.set_checked(F, "CheckBox13", l.bg_smooth);
+    ui.set_checked(F, "CheckBox5", l.bg_geographic);
+    ui.set_checked(F, "CheckBox20", l.bg_fit_borders);
     ui.set_checked(F, "CheckBox18", l.yc_comb);
     ui.set_checked(F, "CheckBox19", l.dfog_options & 1 != 0);
     ui.set_checked(F, "CheckBox23", l.dfog_options & 2 != 0);
@@ -684,6 +687,9 @@ pub fn put_light_in_header(app: &mut Mb3d, ui: &mut Ui) {
     }
     l.internal_gamma2 = ui.checked(F, "CheckBox10");
     l.bg_add_light = ui.checked(F, "CheckBox17");
+    l.bg_smooth = ui.checked(F, "CheckBox13");
+    l.bg_geographic = ui.checked(F, "CheckBox5");
+    l.bg_fit_borders = ui.checked(F, "CheckBox20");
     l.yc_comb = ui.checked(F, "CheckBox18");
     l.bg_ambient = ui.checked(F, "CheckBox21");
     l.diff_map_mode = ui.item_index(F, "RadioGroup1").clamp(0, 3) as u8;
@@ -1008,8 +1014,8 @@ fn map_preview(m: &crate::maps::LightMap, w: usize, h: usize) -> Bitmap {
 }
 
 fn set_bg_preview(app: &Mb3d, ui: &mut Ui) {
-    let name = &app.scene.lighting.bg_image;
-    let img = if name.is_empty() { None } else { crate::maps::by_name(name) };
+    let l = &app.scene.lighting;
+    let img = if l.bg_image.is_empty() { None } else { crate::maps::background(&l.bg_image, l.bg_smooth, l.bg_geographic, l.bg_fit_borders) };
     ui.set_visible(F, "Image5", img.is_some());
     let p = img.map(|m| map_preview(&m, ui.c(F, "Image5").width.max(8) as usize, ui.c(F, "Image5").height.max(8) as usize));
     ui.set_picture(F, "Image5", p);

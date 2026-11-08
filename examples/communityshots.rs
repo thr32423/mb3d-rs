@@ -1,7 +1,7 @@
 //! The screenshots of docs/COMMUNITY_WISHES.md, without windows:
 //! `communityshots OUTDIR STEP ...`, the steps in this order for the
 //! documentation: calc main share eyedropper colordlg colorform2 maps difs
-//! missing pano.  The files the steps make go to a temporary folder.
+//! missing pano import book.  The files the steps make go to a temporary folder.
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -223,6 +223,60 @@ fn main() {
                 ui.fm("Mand3DForm").nc_hot = mb3d::vcl::form::NC_HISTORY;
                 ui.save_form_png("Mand3DForm", &out.join("main_history_hot.png"), 1.0).unwrap();
                 ui.fm("Mand3DForm").nc_hot = -1;
+            }
+            // a Mandelbulber settings file opened: the notes, the picture
+            "import" => {
+                let f = std::path::PathBuf::from("tests/data/mandelbox.fract");
+                mb3d::app::main_form::open_file(&mut app, &mut ui, &f);
+                app.process(&mut ui);
+                eprintln!("messages:\n{}", ui.text("Mand3DForm", "Memo1"));
+                ui.click("Mand3DForm", "Button2");
+                app.process(&mut ui);
+                wait(&mut ui, &mut app);
+                ui.save_form_png("Mand3DForm", &out.join("import_main.png"), 1.0).unwrap();
+                ui.show("FormulaGUIForm");
+                app.process(&mut ui);
+                ui.save_form_png("FormulaGUIForm", &out.join("import_formulas.png"), 1.0).unwrap();
+            }
+            // the Formula book, from the Formulas window's button
+            "book" => {
+                mb3d::formulas::add_formula_dir(std::path::PathBuf::from("M3Formulas-community"));
+                ui.show("FormulaGUIForm");
+                app.process(&mut ui);
+                let f = ui.fm("FormulaGUIForm");
+                let id = f.id("SpeedButton12").unwrap();
+                let (hx, hy) = (f.ctl[id].left, f.ctl[id].top);
+                f.hint = Some((f.ctl[id].hint.clone(), hx - 120, hy + 48));
+                ui.save_form_png("FormulaGUIForm", &out.join("book_button.png"), 1.0).unwrap();
+                ui.fm("FormulaGUIForm").hint = None;
+                ui.click("FormulaGUIForm", "SpeedButton12");
+                app.process(&mut ui);
+                let settle = |ui: &mut mb3d::vcl::Ui, app: &mut mb3d::app::Mb3d| {
+                    for _ in 0..100 {
+                        std::thread::sleep(std::time::Duration::from_millis(100));
+                        mb3d::vcl::App::idle(app, ui);
+                        app.process(ui);
+                        if ui.c("FormulaBookFrm", "Image1").picture.is_some() {
+                            break;
+                        }
+                    }
+                };
+                settle(&mut ui, &mut app);
+                eprintln!("book shows: {} / {}", ui.caption("FormulaBookFrm", "NameLabel"), ui.caption("FormulaBookFrm", "CountLabel"));
+                ui.save_form_png("FormulaBookFrm", &out.join("book_window.png"), 1.0).unwrap();
+                ui.set_text("FormulaBookFrm", "SearchEdit", "surf");
+                ui.post("FormulaBookFrm", "SearchEdit", "FilterChange", mb3d::vcl::Ev::Change);
+                app.process(&mut ui);
+                settle(&mut ui, &mut app);
+                eprintln!("book shows: {} / {}", ui.caption("FormulaBookFrm", "NameLabel"), ui.caption("FormulaBookFrm", "CountLabel"));
+                ui.save_form_png("FormulaBookFrm", &out.join("book_search.png"), 1.0).unwrap();
+                ui.set_text("FormulaBookFrm", "SearchEdit", "");
+                ui.set_item_index("FormulaBookFrm", "CatCombo", 6);
+                ui.post("FormulaBookFrm", "CatCombo", "FilterChange", mb3d::vcl::Ev::Change);
+                app.process(&mut ui);
+                settle(&mut ui, &mut app);
+                eprintln!("book shows: {} / {}", ui.caption("FormulaBookFrm", "NameLabel"), ui.caption("FormulaBookFrm", "CountLabel"));
+                ui.save_form_png("FormulaBookFrm", &out.join("book_difs.png"), 1.0).unwrap();
             }
             o => eprintln!("unknown step {o}"),
         }

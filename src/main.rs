@@ -25,8 +25,10 @@ USAGE:
     (mb3d animate --help, mb3d batch --help, ...)
 
 SCENE_FILE is an INI-style scene description (.m3s; --save-scene writes one), a
-Mandelbulb3D parameter file (.m3p), image file (.m3i, parameters only) or a
-text file containing MB3D text parameters (Mandelbulb3Dv18{...}).
+Mandelbulb3D parameter file (.m3p), image file (.m3i, parameters only), a
+text file containing MB3D text parameters (Mandelbulb3Dv18{...}) or a
+Mandelbulber settings file (.fract: the camera and the formulas both
+programs share; what was not carried over is listed).
 Without a scene file the preset for --formula is rendered (run without any
 arguments, mb3d renders the \"Integer Power\" preset to mb3d.png).
 
@@ -396,8 +398,13 @@ fn run() -> Result<(), String> {
                 || std::fs::read(f).map(|d| String::from_utf8_lossy(&d).contains("Mandelbulb3Dv")).unwrap_or(false)
         })
         .unwrap_or(false);
-    if is_m3p && formula.is_some() {
-        return Err(usage_err("-f/--formula is for presets and scene files (not for MB3D parameters: use --set)"));
+    // a Mandelbulber settings file: what it shares with MB3D
+    let is_fract = scene_file
+        .as_deref()
+        .map(|f| mb3d::mandelbulber::is_fract(f, &std::fs::read_to_string(f).unwrap_or_default()))
+        .unwrap_or(false);
+    if (is_m3p || is_fract) && formula.is_some() {
+        return Err(usage_err("-f/--formula is for presets and scene files (not for MB3D or Mandelbulber parameters: use --set)"));
     }
     let raw_copy = is_m3p && overrides.is_empty() && scale.is_none();
     if raw_copy && (save_text.is_some() || save_m3p.is_some()) {
@@ -422,7 +429,22 @@ fn run() -> Result<(), String> {
             return Ok(());
         }
     }
-    let mut scene = if is_m3p {
+    let mut scene = if is_fract {
+        let path = scene_file.clone().unwrap();
+        let text = std::fs::read_to_string(&path).map_err(|e| input_err(format!("{path}: {e}")))?;
+        let im = mb3d::mandelbulber::import(&text).map_err(|e| input_err(format!("{path}: {e}")))?;
+        if !quiet {
+            mb3d::elog!("loaded {path} ({}x{})", im.scene.width, im.scene.height);
+            for n in &im.notes {
+                mb3d::elog!("  note: {n}");
+            }
+        }
+        let mut s = im.scene;
+        if let Some(f) = scale {
+            s.scale_image(f);
+        }
+        s.apply(&overrides.join("\n")).map_err(input_err)?
+    } else if is_m3p {
         let path = scene_file.clone().unwrap();
         let m = mb3d::m3p::load(std::path::Path::new(&path)).map_err(input_err)?;
         if !quiet {

@@ -74,6 +74,10 @@ pub fn scene_from_bytes(name: &str, data: Vec<u8>) -> Result<(Scene, Vec<String>
         Ok((m.scene, m.warnings))
     } else {
         let text = String::from_utf8(data).map_err(|_| format!("{name}: not a text scene file"))?;
+        if crate::mandelbulber::is_fract(name, &text) {
+            let im = crate::mandelbulber::import(&text).map_err(|e| format!("{name}: {e}"))?;
+            return Ok((im.scene, im.notes));
+        }
         Ok((Scene::parse(&text).map_err(|e| format!("{name}: {e}"))?, Vec::new()))
     }
 }

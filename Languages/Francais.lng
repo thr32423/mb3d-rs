@@ -30,6 +30,14 @@ code = FR
 [Labels]
 A360DegreeAnimationForVR=Une animation à 360 degrés pour casques de RV : chaque image un panorama sphérique, deux fois plus large que haute ; avec 'Rendre une animation stéréo', la vidéo a les yeux l'un au-dessus de l'autre, et la commande ffmpeg marque le MP4 pour les lecteurs de RV
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=Une formule 3D à temps d'échappement avec estimation numérique de distance : la forme fonctionne seule et se combine avec d'autres ; plus lente que la DE analytique.
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=Une formule 3D à temps d'échappement avec estimation analytique de distance : rapide et robuste ; une bonne première formule.
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=Une formule 4D : la quatrième coordonnée et la rotation 4D de la fenêtre Formules agissent ; DE numérique, donc lente.
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=Une formule 4D avec estimation analytique de distance : la rotation 4D agit, et le rendu est rapide.
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=Une formule de quaternion 4D, une itération:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=Une formule de bulbe suggérée par Aexion:\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\nAjout de deux options pour faire pivoter la constante par puissance selon la distance entre les vecteurs courants de Z et de C (Cond Phi=1),\net des options de Mode suivantes :\n(Bits de la valeur de Mode)\nBit1 : inverser les composantes atan de theta\nBit2 : inverser les composantes atan de phi\nBit3 : inverser theta et phi\nBit4 : inverser CyCz pour le calcul de l'angle\nBit5 : multiplier powerC par la distance entre les vecteurs Z et C
@@ -38,6 +46,12 @@ ACalculationIsRunningStopIt=Un calcul est en cours : arrêtez-le d'abord.
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=Un rayon grossier par bloc de 16, puis de 4 pixels avance avec l'étalement du bloc retranché de l'estimation de distance, et la marche de chaque pixel part de sa profondeur. Jusqu'à 60 % plus rapide dans l'espace ouvert ; des parties fines peuvent être perdues là où l'estimation est très fausse.
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=une constante ajoutée à chaque itération ; elle déplace la forme et brise sa symétrie
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=Une forme dIFS : un solide à estimation de distance (sphère, boîte, tube ...). À combiner seulement avec d'autres formules dIFS ; mélangée à des formules à temps d'échappement, elle donne l'erreur 'formula option is not valid'.
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=Une transformation dIFS : elle courbe, répète ou coupe les formes dIFS des emplacements suivants.
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=Méthode plus rapide que la recherche binaire, mais pouvant échouer si les DE sont mauvais
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=quelques secondes restantes
@@ -60,12 +74,20 @@ AMultiplierThatDefinesTheMiximal=Multiplicateur définissant la longueur maximal
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=Temps calcul AO:
 ;AO calc time:
+ARotationAppliedEachIterationIn=une rotation appliquée à chaque itération, en degrés
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=Un bulbe sinus à puissance entière avec des pliages préalables, comme dans l'Amazing Box.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=une inversion sphérique de l'espace ; son centre et son rayon décident quelle partie est retournée
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
 ASphericalPanoramaGetsTheEXIF=Un panorama sphérique reçoit l'appareil EXIF d'une caméra 360 (RICOH THETA S) en plus des balises Photo Sphere, pour que Facebook l'affiche comme photo 360. Pour chaque image 360 que le programme enregistre.
 ;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=Un rendu arrêté ou interrompu conserve ce qu'il a calculé ; Calculer 3D des mêmes paramètres le continue.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=Une transformation : elle ne change que le point et n'a pas de forme propre. À utiliser dans un emplacement avant ou entre des formules qui donnent une forme, jamais seule.
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=Une transformation seule ne montre rien : mettez une forme dans l'emplacement 1 et celle-ci dans le 2, ou l'inverse.
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=Un arrière-plan transparent nécessite des images PNG : choisissez PNG comme format de sortie.
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=Une vidéo nécessite des images : choisissez BMP, PNG ou JPG comme format de sortie.
@@ -88,6 +110,8 @@ AboutHMinLeft=environ {} h {} min restantes
 ;about {} h {} min left
 AboutMinLeft=environ {} min restantes
 ;about {} min left
+AboutThisFormula=À propos de cette formule...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=Quantité d'absorption absolue à l'intérieur du matériau (les forts zooms nécessitent de grandes valeurs). La couleur diffuse de l'objet s'applique aussi à l'intérieur.
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=Distance absolue des fonctions de combinaison lisse ;\nvous pouvez utiliser la notation scientifique comme 3e-5 pour les petites valeurs.\nEssayez 1/zoom pour approcher une valeur qui fonctionne.
@@ -156,6 +180,8 @@ AllFiles=Tous les fichiers
 ;All files
 AllFilesParen=Tous les fichiers (*.*)
 ;All files (*.*)
+AllFormulas=Toutes les formules
+;All formulas
 AllKinds=Tous les types
 ;All kinds
 AllRealworldUnitsInMeter=Toutes les unités réelles en mètres.
@@ -392,6 +418,8 @@ Browse=Parcourir...
 ;Browse...
 BuiltIn=intégré
 ;built in
+BuiltInFormula=Formule intégrée
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=compilé sans Intel Open Image Denoise
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -526,6 +554,8 @@ ChangeParams=Changer les paramètres
 ;Change Params
 ChangeTheJuliaValuesWithRadius=Modifier les valeurs Julia par rayon, longitude et latitude
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=ne change que la coloration, pas la forme
+;changes the colouring only, not the shape
 CheckColors=Vérifier couleurs
 ;Check colors
 CheckThisIfYouWantTo=Cochez pour créer une animation en boucle.\nL'interpolation se comporte comme si la première image-clé\nrevenait après la dernière, et inversement.
@@ -544,6 +574,8 @@ ChooseASharedFolderFirstOne=choisissez d'abord un dossier partagé (que chaque o
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=Choisir une option :
 ;Choose Option:
+ChoosesAVariantOfTheFormula=choisit une variante de la formule ; nombres entiers seulement
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=Choisir un thème :
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code (dans un terminal)
@@ -740,6 +772,8 @@ CopyParamsToClipboard=Copier les paramètres dans le presse-papiers
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=Copier la commande, pour la coller dans un terminal
 ;Copy the command, to paste it into a terminal
+CopyTheName=Copier le nom
+;Copy the name
 CopyThePostText=Copier le texte
 ;Copy the post text
 CopyTheSelectedLineOrAll=Copier la ligne sélectionnée, ou toutes les lignes affichées si aucune n'est sélectionnée
@@ -1156,6 +1190,12 @@ EveryNewPictureOfTheMain=Chaque nouvelle image de la fenêtre principale est fil
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=Tout
 ;Everything
+Example0=Exemple : {0}
+;Example: {0}
+ExampleFiles=Fichiers d'exemple
+;Example files
+ExampleFilesUsingIt0=Fichiers d'exemple qui l'utilisent : {0}
+;Example files using it: {0}
 ExchangeAdd=Échanger, ajouter
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=Échange cette formule avec la suivante
@@ -1246,6 +1286,8 @@ Fine=fin
 ;fine
 FineTuneThePositionsWithThe=affinez les positions avec les boutons fléchés
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=réglage fin de l'estimation de distance : augmentez-le si la surface montre des trous, baissez-le si elle paraît gonflée
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=Finaliser l'image
 ;Finish the picture
 FinishedRenderingSlices=Rendu des tranches terminé.
@@ -1308,10 +1350,14 @@ Formula1=Formule1 •
 ;Formula1 •
 Formula12=Formule1
 ;Formula1
+FormulaBook=Livre des formules
+;Formula book
 FormulaCombinationsInThisBatchThat=Combinaisons de formules de ce lot nouvelles pour la carte graphique (leurs shaders sont d'abord compilés, 10 à 30 s chacun ; le processeur calcule pendant ce temps, et une compilation attend tant que la mémoire manque) :
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=Éditeur de formules
 ;Formula editor
+FormulaFile0=Fichier de formule : {0}
+;Formula file: {0}
 FormulaLower=formule
 ;formula
 FormulaM3f=Formule (*.m3f)
@@ -1530,6 +1576,8 @@ GoToNext=Aller à la suivante
 ;Go to next
 GoneLastSeenSAgo=parti (vu il y a {} s)
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=Bonne première formule : peu de valeurs, rapide, et des fichiers d'exemple pour commencer.
+;Good first formula: few values, fast, and example files to start from.
 Grain=Grain
 ;Grain
 GraphicsCard=Carte graphique
@@ -1582,6 +1630,8 @@ High=haute
 ;high
 HighlightsMoveAsInThePictures=Les reflets se déplacent comme dans les images. Un splat prend environ 160 octets à 2, 68 sans.
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=Conseils :
+;Hints:
 History=Historique
 ;History
 HistoryThePicturesCalculatedTheFiles=Historique : les images calculées, les fichiers ouverts et enregistrés (cliquez pour parcourir)
@@ -1590,6 +1640,8 @@ HoldShiftKeyForFinerSteps=(Maintenez Maj pour des pas plus fins)
 ;(Hold Shift key for finer steps)
 Hotkeys=Raccourcis
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=combien de copies dans des copies la forme a ; chaque niveau coûte du temps
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=Combien de lumière l'eau laisse passer (0 à 1, 0 : opaque) : avec les reflets (Post-traitement) ou en Monte Carlo, la fractale se voit sous la surface, déviée par la réfraction et s'estompant avec la profondeur
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=Combien le plan réfléchit (0 à 1) : ses reflets brillants, et son miroir quand les reflets sont calculés (Post-traitement)
@@ -1602,6 +1654,8 @@ HowMurkyTheWaterIsHow=Trouble de l'eau : vitesse à laquelle la lumière s'y ét
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=Intensité du bruit à supprimer (1 à 30, comme le « Denoise DCT » de GIMP).\nPlus la valeur est élevée, plus le bruit est supprimé, ainsi que les détails fins.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=comment la valeur change avec le nombre d'itérations ; 0 la garde constante
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=L'épaisseur des nuages (1 : une couche pleine laisse passer environ 2 % de la lumière) et la part du ciel qu'ils couvrent (0 à 1)
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Le nom sous lequel cet ordinateur apparaît dans l'essaim
@@ -1882,6 +1936,8 @@ KeysThatBringAWindowTo=Touches qui mettent une fenêtre au premier plan depuis n
 ;Keys that bring a window to the front from any window
 Kind=Type
 ;Kind
+Kind0=Type : {0}
+;Kind: {0}
 LGamma05=Gamma L :  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=TRAITS DE LUMIÈRE
@@ -2104,6 +2160,10 @@ MakesReflectionsALittleDiffuseValue=Rend les réflexions légèrement diffuses, 
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=Création de la vidéo...
 ;Making the video...
+MandelbulberSettingsFract=Réglages Mandelbulber (*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=Beaucoup de valeurs : changez-en une à la fois et gardez ce qui vous plaît avec la fenêtre Historique.
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=Carte\nintrouvable
 ;Map not\nfound
 MapNumber=Numéro de carte
@@ -2284,6 +2344,8 @@ MutationType=Type de mutation
 ;Mutation type
 N0No255FullTransparency=0 : aucune, 255 : transparence totale
 ;0: no, 255: Full transparency
+N0Of1Formulas={0} formules sur {1}
+;{0} of {1} formulas
 N0To1DarkerCorners=0 à 1 : coins plus sombres
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 à 1 : franges rouges et bleues vers les coins, comme les montre un objectif
@@ -2322,14 +2384,22 @@ N360VR=RV 360°
 ;360° VR
 N3DAnalyticFormula=Formule 3D analytique
 ;3D analytic formula
+N3DEscapeTimeFormulas=Formules 3D à temps d'échappement
+;3D escape-time formulas
 N3DFormula=Formule 3D
 ;3D formula
+N3DFormulasWithAnalyticDEFast=Formules 3D à DE analytique (rapides)
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=Formule 4D analytique
 ;4D analytic formula
 N4DFormula=Formule 4D
 ;4D formula
+N4DFormulas=Formules 4D
+;4D formulas
+N4DFormulasWithAnalyticDE=Formules 4D à DE analytique
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=Rotation 4D de tout le bulbe:
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2388,8 +2458,12 @@ No=non
 ;no
 No2=Non
 ;No
+NoDescriptionFromTheAuthor=Pas de description de l'auteur.
+;No description from the author.
 NoDoFOnTiles=Pas de profondeur de champ sur les tuiles.
 ;No DoF on tiles.
+NoExampleFileUsesItTry=Aucun fichier d'exemple ne l'utilise ; essayez-la d'abord seule, puis dans l'emplacement 2 derrière une Amazing Box.
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=aucune face dans le fichier
 ;no faces in the file
 NoFileAdded=Aucun fichier ajouté
@@ -2588,6 +2662,8 @@ OpenTextParameters=Ouvrir des paramètres texte
 ;Open text parameters
 OpenTheAnimationMaker=Ouvre le créateur d'animations
 ;Open the animation maker
+OpenTheExample=Ouvrir l'exemple
+;Open the example
 OpenTheFolder=Ouvrir le dossier
 ;Open the folder
 OpenTheFolderOfTheFile=Ouvrir le dossier du fichier
@@ -2710,6 +2786,8 @@ Pass=passe {}
 ;pass {}
 Passes=Passes
 ;Passes
+PatienceA4DFormulaWithNumerical=Patience : une formule 4D à DE numérique se rend lentement ; commencez petit et augmentez le détail ensuite.
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=Mettre le rendu en pause
 ;Pause rendering
 PausedPressToContinue=En pause, cliquez pour continuer
@@ -2884,6 +2962,8 @@ RaystepMultiplier=Multiplicateur de pas:
 ;Raystep multiplier:
 RaystepSubDEstop=Pas moins DEstop:
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=Lecture des fichiers d'exemple ...
+;Reading the example files ...
 ReadingTheHistoryEntries=Lecture de l'historique... {} entrées
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=Relit les fichiers de langue, après que vous en avez modifié un
@@ -3062,6 +3142,8 @@ RoughImage=image grossière
 ;rough image
 Roughness=Rugosité
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=arrondit les arêtes ; de petites valeurs gardent la forme, de grandes la font fondre
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=Angle Rout de X, Y
 ;Rout angle of X, Y
 RoutAngleOfXZ=Angle Rout de X, Z
@@ -3188,6 +3270,8 @@ ScaleTheValuesByTheSelected=Met les valeurs à l'échelle selon le pourcentage s
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=Valeur d'échelle de la formule de départ, influe sur la précision de la DE
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=met à l'échelle une coordonnée à chaque itération ; -1 la reflète, 0 l'aplatit
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=Met à l'échelle la longueur maximale des rayons ambiants à calculer.\nUtilisez une valeur supérieure à 1 pour donner plus de profondeur aux ombres,\nles valeurs inférieures à 1 donnent des ombres plus locales.
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=Aperçu du balayage
@@ -3404,6 +3488,8 @@ StartBatchRendering=Démarrer le rendu par lot
 ;Start batch rendering
 StartFrom=Commencer à
 ;Start from
+StartFromAnExampleOpenOne=Partez d'un exemple : ouvrez-le et changez les valeurs petit à petit.
+;Start from an example: open one and change the values a little at a time.
 StartIndex=Index de début :
 ;Start index:
 StartRendering=Démarrer le rendu
@@ -3474,6 +3560,8 @@ StrengthOfDynamicFog=Intensité du brouillard dynamique.
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=Intensité, taille (unités de la fractale) et finesse (0.2 lisse à 0.8 granuleux) du relief
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=étire l'espace à chaque itération ; vers 2 ou 3 donne la forme classique, un signe moins la reflète, des valeurs entre 1 et 1,5 la font fondre
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=Étire les parties haute et basse ; peut être utile pour une image ordinaire en mode sphère complète.
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=Multiplicateur du nombre\nde sous-images :
@@ -3552,6 +3640,8 @@ TheBailoutValueForEscapetimeFormulas=La valeur de bailout pour les formules à t
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=Le rayon de flou sera limité à cette valeur.\nPeut accélérer le rendu quand le rayon devient très grand dans certaines parties de l'image.
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=la limite du pli en boîte : ce qui est au-delà est reflété en retour ; 1 est la boîte classique, plus petit plie davantage
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=Le calcul a échoué : {}
 ;The calculation failed: {}
 TheCalculationFailedLower=le calcul a échoué
@@ -3590,6 +3680,8 @@ TheEntriesUnderTheirDaysA=Les entrées sous leur jour ; les entrées et les imag
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=L'entrée n'a pas pu être retirée.
 ;The entry could not be removed.
+TheExponentOfTheBulb8=l'exposant du bulbe ; 8 donne le Mandelbulb classique, 2 est lisse, des valeurs plus hautes donnent plus de plis
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=Le fichier n'est plus là.
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=Le fichier <{}.m3f> existe déjà. Voulez-vous le remplacer ?
@@ -3600,10 +3692,18 @@ TheFirstFocusPointTheValue=Le (premier) point de netteté.\nLa valeur est relati
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=Le survol ne peut pas commencer ici : {}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=le décalage du pli sur un axe ; 1 est la forme pure, d'autres valeurs déplacent les copies
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=le dossier n'existe pas (ou n'est pas accessible)
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=La formule seule, avec ses valeurs par défaut
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=Le livre des formules : chaque formule en mots, avec une image, ses valeurs expliquées et des fichiers d'exemple
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=Le nom de la formule devrait commencer par « JIT » afin de distinguer ces formules des formules basées sur l'ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=la quatrième coordonnée : ceci la fait partir loin de 0 ; la rotation 4D la tourne
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=La fractale n'est dans aucune des vues.
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=La fractale de la fenêtre principale en splats gaussiens, pour la regarder de tous les côtés dans Blender (5.3 et ultérieur) et d'autres visionneuses de splats. Elle est calculée depuis plusieurs directions, et chaque pixel devient un splat de sa couleur.
@@ -3624,6 +3724,8 @@ TheImageSizeChangedCalculateThe=la taille de l'image a changé : recalculez l'im
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=Le mode its.trap dépend de l'option calculée dans l'onglet « Coloration ».
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=la constante de Julia de cette formule seule ; le mode Julia de la scène est dans la fenêtre Formules
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=La dernière image-clé
 ;The last keyframe
 TheLastSessionCrashed=La dernière session a planté : {}. Plus de détails dans la fenêtre Journal (l'icône dans la barre de titre).
@@ -3656,6 +3758,8 @@ ThePictureSFinishingAfterAll=La finition de l'image après toutes les autres pas
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=La couleur du plan (cliquer pour la changer)
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=le rayon de la sphère intérieure du pli sphérique ; ce qui est dedans est gonflé ; 0,5 est la valeur classique, 0 le désactive
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=La rotation s'effectue autour du point central (Xmid, Ymid, Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Les rotations sont effectuées à la suite, d'abord le plan XW, enfin le plan ZW.
@@ -3670,6 +3774,8 @@ TheSharedFolderOfTheSwarm=Le dossier partagé de l'essaim
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=Le bulbe sinus où des valeurs de puissance quelconques sont possibles ; le calcul est plus lent qu'avec des puissances entières.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=la taille de la forme de base, en unités de la scène
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=La taille des formes des nuages en unités de la fractale, et leur couleur (cliquer)
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=La taille des vignettes
@@ -3690,6 +3796,8 @@ TheViewIsFilledWithThe=la vue est remplie par la fractale
 ;the view is filled with the fractal
 TheViewShowsOnlySky=la vue ne montre que le ciel
 ;the view shows only sky
+TheWallThicknessOfAHollow=l'épaisseur de paroi d'une forme creuse
+;the wall thickness of a hollow shape
 Themes=Thèmes
 ;Themes
 ThereIsAFileAlready=Un fichier {} existe déjà.
@@ -3794,6 +3902,8 @@ TracingObject=Tracé de l'objet...
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=Suivre l'état du rendu dans le système de fichiers afin que plusieurs instances puissent rendre la même séquence de fichiers sans écraser le travail des autres nœuds
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=Transformations (seulement en combinaison)
+;Transformations (only in combination)
 Transparency=Transparence
 ;Transparency
 TransparencyIntensity=Intensité de la transparence
@@ -3864,6 +3974,8 @@ UseAmbientShadowsFromOriginalM3I=Utiliser les ombres ambiantes du fichier M3I d'
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=Orientation par défaut
 ;Use default orientation
+UseInTheFormulasWindow=Utiliser dans la fenêtre Formules
+;Use in the Formulas window
 UseItInAnimationsToFix=À utiliser dans les animations pour fixer les lumières au décor.
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=À n'utiliser qu'en second recours si les normales (la direction de la surface pour l'éclairage) semblent mauvaises.
@@ -3892,6 +4004,8 @@ Value=Valeur :
 ;Value:
 ValueNotGuilty=Valeur non valide
 ;Value not guilty
+Values=Valeurs :
+;Values:
 ValuesHaveAFractionFieldThat=// NaN ont un champ de fraction différent de 0.
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=DEstop selon le FOV:
@@ -3954,6 +4068,8 @@ WarningsAndErrors=Avertissements et erreurs
 ;Warnings and errors
 WasCopiedIntoTheMapsFolder={} a été copiée dans le dossier des cartes comme carte {} : {}
 ;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=Attention à la rotation 4D (fenêtre Formules) : elle change complètement la forme.
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=Eau :
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)

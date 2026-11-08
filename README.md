@@ -1033,7 +1033,7 @@ Step-by-step guides are in the [wiki](https://github.com/thr32423/mb3d-rs/wiki):
 * [Lighting workflow](https://github.com/thr32423/mb3d-rs/wiki/Lighting-workflow): render plainly, then try out lights, shadows and reflections
 * [Swarm setup](https://github.com/thr32423/mb3d-rs/wiki/Swarm-setup): rendering on several computers through a shared folder
 * [Troubleshooting and FAQ](https://github.com/thr32423/mb3d-rs/wiki/Troubleshooting-and-FAQ): when something does not work as expected
-* [Five wishes of the Mandelbulb Maniacs group](docs/COMMUNITY_WISHES.md): 360 photos Facebook recognises, maps of any name, the colour picker's hex field and eyedropper, errors in plain words, and the Share window
+* [Seven wishes of the Mandelbulb Maniacs group](docs/COMMUNITY_WISHES.md): 360 photos Facebook recognises, maps of any name, the colour picker's hex field and eyedropper, errors in plain words, the Share window, Mandelbulber settings files opening, and the Formula book
 
 Every release with its changes: [the whole list](docs/UPDATES.md).
 

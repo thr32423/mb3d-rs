@@ -31,6 +31,14 @@ font = ChineseSimplified.ttf
 [Labels]
 A360DegreeAnimationForVR=用于 VR 头显的 360 度动画：每一帧都是宽为高两倍的球面全景；配合“渲染立体动画”，视频中两只眼睛上下排列，ffmpeg 命令会将 MP4 标记给 VR 播放器
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=采用数值距离估计的 3D 逃逸时间公式：形状可以单独成立，也能与其他公式组合；比解析 DE 慢。
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=采用解析距离估计的 3D 逃逸时间公式：快而稳定；适合作为第一个公式。
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=4D 公式：第四坐标和公式窗口的 4D 旋转会起作用；数值 DE，所以较慢。
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=采用解析距离估计的 4D 公式：4D 旋转起作用，而且渲染很快。
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=四维四元数公式，一次迭代：\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=Aexion 建议的球茎（bulb）公式：\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\n新增两个选项，按 Z 与 C 当前向量之间的距离对常量做幂旋转 (Cond Phi=1)，\n以及以下模式选项：\n（模式值的各位）\nBit1：翻转 atan theta 分量\nBit2：翻转 atan phi 分量\nBit3：翻转 theta 和 phi\nBit4：计算角度时翻转 CyCz\nBit5：将 powerC 乘以向量 Z 与 C 的距离
@@ -39,6 +47,12 @@ ACalculationIsRunningStopIt=正在进行计算：请先停止它。
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=每 16 像素、再每 4 像素的块各发一条粗光线，按减去块的扩展量后的距离估计步进，每个像素的步进从它的深度开始。在开阔空间中最多快 60 %；在估计偏差大的地方可能丢失细薄的部分。
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=每次迭代加上的常数；它移动形状并打破对称
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=dIFS 形状：距离估计的实体（球、盒、管 ...）。只与其他 dIFS 公式组合；与逃逸时间公式混用会出现错误 'formula option is not valid'。
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=dIFS 变换：弯曲、重复或切割其后槽位中的 dIFS 形状。
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=比二分搜索更快的方法，但 DE 不佳时可能出错
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=剩余几秒
@@ -61,12 +75,20 @@ AMultiplierThatDefinesTheMiximal=一个乘数，相对于若干图像尺寸参�
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO 计算时间：
 ;AO calc time:
+ARotationAppliedEachIterationIn=每次迭代施加的旋转，单位为度
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=带有前置折叠的正弦整数幂球茎，与神奇盒子中的相同。
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=空间的球面反演；中心和半径决定哪一部分被翻转
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
 ASphericalPanoramaGetsTheEXIF=球面全景图除了 Photo Sphere 标签外，还会写入 360 相机（RICOH THETA S）的 EXIF 相机信息，这样 Facebook 会把它显示为 360 照片。程序保存的每张 360 图像都会这样处理。
 ;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=停止或中断的渲染会保留已计算的内容；用相同参数执行“计算 3D”即可继续。
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=变换：只改变点，本身没有形状。放在造型公式之前或之间的槽位中使用，不要单独使用。
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=变换单独不显示任何东西：把形状放在槽位 1，把它放在槽位 2，或者反过来。
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=透明背景需要 PNG 帧：请选择 PNG 作为输出格式。
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=视频需要图像：请选择 BMP、PNG 或 JPG 作为输出格式。
@@ -89,6 +111,8 @@ AboutHMinLeft=约剩余 {} 小时 {} 分钟
 ;about {} h {} min left
 AboutMinLeft=约剩余 {} 分钟
 ;about {} min left
+AboutThisFormula=关于此公式...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=材质内部的绝对吸收量（高倍缩放需要较大的值）。漫反射物体颜色同样用于内部。
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=平滑组合函数的绝对距离，\n小值可使用科学计数法，如 3e-5。\n可尝试 1/缩放 以接近可用值。
@@ -157,6 +181,8 @@ AllFiles=所有文件
 ;All files
 AllFilesParen=所有文件 (*.*)
 ;All files (*.*)
+AllFormulas=所有公式
+;All formulas
 AllKinds=所有类型
 ;All kinds
 AllRealworldUnitsInMeter=所有真实世界单位均为米。
@@ -393,6 +419,8 @@ Browse=浏览...
 ;Browse...
 BuiltIn=内置
 ;built in
+BuiltInFormula=内置公式
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=构建时未包含 Intel Open Image Denoise
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -527,6 +555,8 @@ ChangeParams=更改
 ;Change Params
 ChangeTheJuliaValuesWithRadius=用半径、经度和纬度改变 Julia 值
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=只改变着色，不改变形状
+;changes the colouring only, not the shape
 CheckColors=检查颜色
 ;Check colors
 CheckThisIfYouWantTo=若要制作循环动画请勾选此项。\n插值时视为最后一个关键帧之后\n再接第一个关键帧，反之亦然。
@@ -545,6 +575,8 @@ ChooseASharedFolderFirstOne=请先选择共享文件夹（集群中每台计算�
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=选择选项：
 ;Choose Option:
+ChoosesAVariantOfTheFormula=选择公式的变体；只能是整数
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=选择主题：
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code（在终端中）
@@ -741,6 +773,8 @@ CopyParamsToClipboard=复制参数到剪贴板
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=复制命令，以便粘贴到终端中
 ;Copy the command, to paste it into a terminal
+CopyTheName=复制名称
+;Copy the name
 CopyThePostText=复制帖子文本
 ;Copy the post text
 CopyTheSelectedLineOrAll=复制所选的行；未选择时复制显示的所有行
@@ -1157,6 +1191,12 @@ EveryNewPictureOfTheMain=主窗口的每幅新图像都会被过滤（保存的�
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=全部
 ;Everything
+Example0=示例：{0}
+;Example: {0}
+ExampleFiles=示例文件
+;Example files
+ExampleFilesUsingIt0=使用它的示例文件：{0}
+;Example files using it: {0}
 ExchangeAdd=交换、添加
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=将此公式与下一个交换
@@ -1247,6 +1287,8 @@ Fine=精细
 ;fine
 FineTuneThePositionsWithThe=用箭头按钮微调位置
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=距离估计的微调：表面出现孔洞时调高，看起来肿胀时调低
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=图片修饰
 ;Finish the picture
 FinishedRenderingSlices=切片渲染完成。
@@ -1309,10 +1351,14 @@ Formula1=公式1 •
 ;Formula1 •
 Formula12=公式1
 ;Formula1
+FormulaBook=公式手册
+;Formula book
 FormulaCombinationsInThisBatchThat=此批处理中对显卡而言新的公式组合（先编译其着色器，每个 10 到 30 秒；期间由 CPU 计算，内存不足时编译会等待）：
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=公式编辑器
 ;Formula editor
+FormulaFile0=公式文件：{0}
+;Formula file: {0}
 FormulaLower=公式
 ;formula
 FormulaM3f=公式 (*.m3f)
@@ -1531,6 +1577,8 @@ GoToNext=转到下一个
 ;Go to next
 GoneLastSeenSAgo=已离开（最后出现于 {} 秒前）
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=适合入门的公式：参数少、速度快，还有示例文件可作起点。
+;Good first formula: few values, fast, and example files to start from.
 Grain=颗粒
 ;Grain
 GraphicsCard=显卡
@@ -1583,6 +1631,8 @@ High=高
 ;high
 HighlightsMoveAsInThePictures=高光会像图片中一样移动。每个泼溅点在 2 时约占 160 字节，关闭时 68 字节。
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=提示：
+;Hints:
 History=历史记录
 ;History
 HistoryThePicturesCalculatedTheFiles=历史记录：已计算的图像、打开和保存的文件（点击浏览）
@@ -1591,6 +1641,8 @@ HoldShiftKeyForFinerSteps=（按住 Shift 键步进更细）
 ;(Hold Shift key for finer steps)
 Hotkeys=快捷键
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=形状中层层嵌套的副本有多少层；每层都要花时间
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=水透过多少光（0 到 1，0：不透明）：开启反射（后期处理）或在蒙特卡洛中，水面下的分形可见，被折射弯曲并随深度渐隐
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=平面的反射程度（0 到 1）：它的高光，以及计算反射时的镜面（后期处理）
@@ -1603,6 +1655,8 @@ HowMurkyTheWaterIsHow=水的浑浊程度：每个分形单位内光线减弱的�
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=要去除的噪点强度（1 到 30，同 GIMP 的“Denoise DCT”）。\n值越高去除的噪点越多，细节也损失越多。
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=该值随迭代次数如何变化；0 保持不变
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=云的浓度（1：整层约透过 2% 的光）以及覆盖天空的比例（0 到 1）
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=本机在集群中显示的名称
@@ -1883,6 +1937,8 @@ KeysThatBringAWindowTo=从任意窗口将某个窗口调到前面的按键
 ;Keys that bring a window to the front from any window
 Kind=类型
 ;Kind
+Kind0=类别：{0}
+;Kind: {0}
 LGamma05=L-Gamma：  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=光线笔触
@@ -2105,6 +2161,10 @@ MakesReflectionsALittleDiffuseValue=使反射略带漫射，取值范围 0 到 2
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=正在生成视频...
 ;Making the video...
+MandelbulberSettingsFract=Mandelbulber 设置 (*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=参数很多：一次只改一个，喜欢的结果用历史窗口保留。
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=未找到\n贴图
 ;Map not\nfound
 MapNumber=贴图编号
@@ -2285,6 +2345,8 @@ MutationType=变异类型
 ;Mutation type
 N0No255FullTransparency=0：不透明，255：完全透明
 ;0: no, 255: Full transparency
+N0Of1Formulas={1} 个公式中的 {0} 个
+;{0} of {1} formulas
 N0To1DarkerCorners=0 到 1：角落变暗
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 到 1：像镜头那样朝角落出现红蓝色边
@@ -2323,14 +2385,22 @@ N360VR=360° VR
 ;360° VR
 N3DAnalyticFormula=3D 解析公式
 ;3D analytic formula
+N3DEscapeTimeFormulas=3D 逃逸时间公式
+;3D escape-time formulas
 N3DFormula=3D 公式
 ;3D formula
+N3DFormulasWithAnalyticDEFast=带解析 DE 的 3D 公式（快）
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=4D 解析公式
 ;4D analytic formula
 N4DFormula=4D 公式
 ;4D formula
+N4DFormulas=4D 公式
+;4D formulas
+N4DFormulasWithAnalyticDE=带解析 DE 的 4D 公式
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=整个分形的 4D 旋转：
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2389,8 +2459,12 @@ No=无
 ;no
 No2=否
 ;No
+NoDescriptionFromTheAuthor=作者没有留下说明。
+;No description from the author.
 NoDoFOnTiles=图块不支持景深。
 ;No DoF on tiles.
+NoExampleFileUsesItTry=没有示例文件使用它；先单独试试，再放到 Amazing Box 后面的槽位 2 中。
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=文件中没有面
 ;no faces in the file
 NoFileAdded=未添加文件
@@ -2589,6 +2663,8 @@ OpenTextParameters=打开文本参数
 ;Open text parameters
 OpenTheAnimationMaker=打开动画制作器
 ;Open the animation maker
+OpenTheExample=打开示例
+;Open the example
 OpenTheFolder=打开文件夹
 ;Open the folder
 OpenTheFolderOfTheFile=打开文件所在的文件夹
@@ -2711,6 +2787,8 @@ Pass=第 {} 遍
 ;pass {}
 Passes=遍数
 ;Passes
+PatienceA4DFormulaWithNumerical=需要耐心：数值 DE 的 4D 公式渲染慢；先用小尺寸，之后再提高细节。
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=暂停渲染
 ;Pause rendering
 PausedPressToContinue=已暂停，按下以继续
@@ -2885,6 +2963,8 @@ RaystepMultiplier=光线步长乘数：
 ;Raystep multiplier:
 RaystepSubDEstop=光线步长减 DEstop：
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=正在读取示例文件 ...
+;Reading the example files ...
 ReadingTheHistoryEntries=正在读取历史记录…… {} 条记录
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=在您编辑了某个语言文件之后，重新读取语言文件
@@ -3063,6 +3143,8 @@ RoughImage=粗略图像
 ;rough image
 Roughness=粗糙度
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=使边缘圆润；小值保持形状，大值使其融化
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=X, Y 的 Rout 角
 ;Rout angle of X, Y
 RoutAngleOfXZ=X, Z 的 Rout 角
@@ -3189,6 +3271,8 @@ ScaleTheValuesByTheSelected=按所选百分比缩放数值。
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=起始公式的缩放值，影响 DE 精度
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=每次迭代缩放一个坐标；-1 镜像，0 压平
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=缩放要计算的环境光线的最大长度。\n大于 1 的值使阴影更有深度，\n小于 1 的值使阴影更局部化。
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=扫描预览
@@ -3405,6 +3489,8 @@ StartBatchRendering=开始批量渲染
 ;Start batch rendering
 StartFrom=起点
 ;Start from
+StartFromAnExampleOpenOne=从示例开始：打开一个，一点一点地改参数。
+;Start from an example: open one and change the values a little at a time.
 StartIndex=起始索引：
 ;Start index:
 StartRendering=开始渲染
@@ -3475,6 +3561,8 @@ StrengthOfDynamicFog=动态雾的强度。
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=起伏的强度、大小（分形单位）和精细度（0.2 平滑到 0.8 粗糙）
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=每次迭代拉伸空间；2 或 3 左右得到经典形状，负号使其镜像，1 到 1.5 之间会使其融化
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=拉伸上下部分，对在完整球面选项中使用普通图像可能有用。
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=子帧数\n乘数：
@@ -3553,6 +3641,8 @@ TheBailoutValueForEscapetimeFormulas=逃逸时间公式的逃逸值。\n如果�
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=模糊半径将被限制在此值以内。\n当某些图像区域的半径变得非常大时可加快渲染。
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=盒折叠的界限：超出的部分被折回；1 是经典的盒子，越小折得越多
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=计算失败：{}
 ;The calculation failed: {}
 TheCalculationFailedLower=计算失败
@@ -3591,6 +3681,8 @@ TheEntriesUnderTheirDaysA=记录按日期排列；打开某一天（点击它）
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=无法移除该记录。
 ;The entry could not be removed.
+TheExponentOfTheBulb8=球体的指数；8 得到经典的 Mandelbulb，2 很平滑，更高的值褶皱更多
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=该文件已不存在。
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=文件 <{}.m3f> 已存在。是否覆盖？
@@ -3601,10 +3693,18 @@ TheFirstFocusPointTheValue=（第一个）焦点。\n该值相对于观察者的
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=无法在此开始穿越飞行：{}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=折叠在某一轴上的偏移；1 是原始形状，其他值会移动各个副本
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=文件夹不存在（或无法访问）
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=仅此公式，取默认值
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=公式手册：用文字介绍每个公式，附图片、参数说明和示例文件
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=公式名称应以“JIT”开头，以便与基于 ASM 的公式区分
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=第四坐标：这让它从偏离 0 的位置开始；4D 旋转会转动它
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=分形不在任何一个视图中。
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=把主窗口的分形导出为高斯泼溅，以便在 Blender（5.3 及以上）和其他泼溅查看器中从各个方向观看。它从多个方向计算，每个像素都成为一个带有自身颜色的泼溅点。
@@ -3625,6 +3725,8 @@ TheImageSizeChangedCalculateThe=图像尺寸已更改：请重新计算图像
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap 模式取决于"着色"选项卡中计算时所用的选项。
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=仅此公式的 Julia 常数；场景的 Julia 模式在公式窗口中
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=最后一个关键帧
 ;The last keyframe
 TheLastSessionCrashed=上次会话崩溃了：{}。更多信息见“日志”窗口（标题栏中的图标）。
@@ -3657,6 +3759,8 @@ ThePictureSFinishingAfterAll=在所有其他处理之后对图片的修饰：曝
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=平面的颜色（点击更改）
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=球折叠内球的半径；内部会被放大；0.5 是经典值，0 则关闭
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=旋转围绕中点 (Xmid, Ymid, Zmid) 进行
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=旋转依次进行，先 XW 平面，最后 ZW 平面。
@@ -3671,6 +3775,8 @@ TheSharedFolderOfTheSwarm=集群的共享文件夹
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=可使用任意幂值的正弦球茎，计算比整数幂慢。\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=基本形状的大小，以场景单位计
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=云形状的大小（分形单位）及其颜色（点击）
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=图块的大小
@@ -3691,6 +3797,8 @@ TheViewIsFilledWithThe=画面已被分形填满
 ;the view is filled with the fractal
 TheViewShowsOnlySky=画面中只有天空
 ;the view shows only sky
+TheWallThicknessOfAHollow=空心形状的壁厚
+;the wall thickness of a hollow shape
 Themes=主题
 ;Themes
 ThereIsAFileAlready=文件 {} 已存在。
@@ -3795,6 +3903,8 @@ TracingObject=正在跟踪对象...
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=通过文件系统跟踪渲染状态，使多个实例可以渲染同一文件序列而不覆盖其他节点的工作
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=变换（仅用于组合）
+;Transformations (only in combination)
 Transparency=透明
 ;Transparency
 TransparencyIntensity=透明强度
@@ -3865,6 +3975,8 @@ UseAmbientShadowsFromOriginalM3I=使用原始 M3I 文件的环境阴影
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=使用默认方向
 ;Use default orientation
+UseInTheFormulasWindow=在公式窗口中使用
+;Use in the Formulas window
 UseItInAnimationsToFix=在动画中使用，可将光源固定到场景上。
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=仅在法线（用于光照的表面方向）看起来很糟糕时作为第二选择使用。
@@ -3893,6 +4005,8 @@ Value=值：
 ;Value:
 ValueNotGuilty=数值无效
 ;Value not guilty
+Values=参数：
+;Values:
 ValuesHaveAFractionFieldThat=// 值的小数部分字段不为 0。
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=DEstop 随 FOV 变化：
@@ -3955,6 +4069,8 @@ WarningsAndErrors=警告和错误
 ;Warnings and errors
 WasCopiedIntoTheMapsFolder={} 已作为贴图 {} 复制到贴图文件夹：{}
 ;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=留意 4D 旋转（公式窗口）：它会彻底改变形状。
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=水：
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)

@@ -278,7 +278,7 @@ object FormulaGUIForm: TFormulaGUIForm
       OnClick = SpeedButton11Click
     end
     object SpeedButton2: TSpeedButton
-      Left = 174
+      Left = 152
       Top = 51
       Width = 22
       Height = 20
@@ -300,6 +300,23 @@ object FormulaGUIForm: TFormulaGUIForm
       Top = 73
       Width = 290
       Height = 369
+    end
+    object SpeedButton12: TSpeedButton
+      Left = 176
+      Top = 51
+      Width = 22
+      Height = 20
+      Hint = '@MB:TheFormulaBookEveryFormulaIn'
+      Caption = '?'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = SpeedButton12Click
     end
     object SpeedButton4: TSpeedButton
       Left = 208
@@ -580,7 +597,7 @@ object FormulaGUIForm: TFormulaGUIForm
     object ComboEdit1: TEdit
       Left = 7
       Top = 51
-      Width = 164
+      Width = 142
       Height = 21
       Hint = '@MB:YouCanAlsoTypeInThe'
       Alignment = taCenter
@@ -1695,6 +1712,10 @@ object FormulaGUIForm: TFormulaGUIForm
       Tag = -2
       Caption = '@MB:HideThisFormula'
       OnClick = Hidethisformula1Click
+    end
+    object AboutThisFormula1: TMenuItem
+      Caption = '@MB:AboutThisFormula'
+      OnClick = AboutThisFormula1Click
     end
     object N1: TMenuItem
       Caption = '-'

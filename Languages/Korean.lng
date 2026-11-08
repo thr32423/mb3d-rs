@@ -31,6 +31,14 @@ font = Korean.ttf
 [Labels]
 A360DegreeAnimationForVR=VR 헤드셋용 360도 애니메이션: 모든 프레임이 가로가 세로의 두 배인 구형 파노라마입니다. '스테레오 애니메이션 렌더링'과 함께 쓰면 동영상에 두 눈이 위아래로 담기고, ffmpeg 명령이 MP4를 VR 플레이어용으로 표시합니다
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=수치적 거리 추정을 쓰는 3D 이스케이프 타임 수식: 형태가 단독으로 성립하고 다른 수식과 조합됩니다. 해석적 DE보다 느립니다.
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=해석적 거리 추정을 쓰는 3D 이스케이프 타임 수식: 빠르고 안정적입니다. 첫 수식으로 좋습니다.
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=4D 수식: 네 번째 좌표와 수식 창의 4D 회전이 적용됩니다. 수치적 DE라서 느립니다.
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=해석적 거리 추정을 쓰는 4D 수식: 4D 회전이 적용되고 렌더링이 빠릅니다.
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=4차원 쿼터니언 포뮬러, 1회 반복:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=Aexion이 제안한 벌브 포뮬러:\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\nZ와 C의 현재 벡터 사이의 거리에 따라 상수를 거듭제곱 회전시키는 옵션 두 가지 (Cond Phi=1)와\n다음 모드 옵션을 추가했습니다:\n(모드 값의 비트)\nBit1: atan theta 성분 뒤집기\nBit2: atan phi 성분 뒤집기\nBit3: theta와 phi 뒤집기\nBit4: 각도 계산에서 CyCz 뒤집기\nBit5: powerC에 벡터 Z와 C 사이의 거리를 곱하기
@@ -39,6 +47,12 @@ ACalculationIsRunningStopIt=계산이 실행 중입니다. 먼저 중지하십�
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=16픽셀, 그다음 4픽셀 블록마다 거친 광선 하나가 거리 추정에서 블록의 퍼짐을 뺀 만큼 전진하고, 각 픽셀의 마치는 그 깊이에서 시작합니다. 트인 공간에서는 최대 60 % 빨라지며, 추정이 크게 빗나간 곳에서는 얇은 부분이 사라질 수 있습니다.
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=반복마다 더해지는 상수. 형태를 옮기고 대칭을 깨뜨립니다
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=dIFS 형태: 거리 추정된 입체 (구, 상자, 관 ...). 다른 dIFS 수식과만 조합하세요. 이스케이프 타임 수식과 섞으면 'formula option is not valid' 오류가 납니다.
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=dIFS 변환: 뒤 슬롯의 dIFS 형태를 구부리고, 반복하고, 잘라냅니다.
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=이진 탐색보다 빠른 방법이지만, DE가 나쁘면 실패할 수 있습니다
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=몇 초 남음
@@ -61,12 +75,20 @@ AMultiplierThatDefinesTheMiximal=하드 섀도우 계산의 최대 길이를 정
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO 계산 시간:
 ;AO calc time:
+ARotationAppliedEachIterationIn=반복마다 적용되는 회전, 도 단위
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=어메이징 박스처럼 앞에서 폴딩을 적용하는 사인 정수 거듭제곱 벌브.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=공간의 구면 반전. 중심과 반지름이 어느 부분이 뒤집히는지 정합니다
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
 ASphericalPanoramaGetsTheEXIF=구형 파노라마에는 Photo Sphere 태그와 함께 360 카메라(RICOH THETA S)의 EXIF 카메라 정보가 기록되어 Facebook에서 360 사진으로 표시됩니다. 프로그램이 저장하는 모든 360 이미지에 적용됩니다.
 ;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=중지되거나 중단된 렌더링은 계산한 내용을 보존하며, 같은 파라미터로 3D 계산을 하면 이어서 계산합니다.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=변환: 점만 바꾸고 고유한 형태가 없습니다. 형태를 만드는 수식의 앞이나 사이 슬롯에서 쓰고, 단독으로는 쓰지 마세요.
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=변환은 단독으로는 아무것도 보여주지 않습니다: 슬롯 1에 형태, 슬롯 2에 이것을 넣거나 반대로 하세요.
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=투명 배경에는 PNG 프레임이 필요합니다. 출력 형식으로 PNG를 선택하십시오.
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=동영상에는 이미지가 필요합니다. 출력 형식으로 BMP, PNG 또는 JPG를 선택하십시오.
@@ -89,6 +111,8 @@ AboutHMinLeft=약 {}시간 {}분 남음
 ;about {} h {} min left
 AboutMinLeft=약 {}분 남음
 ;about {} min left
+AboutThisFormula=이 수식에 대해...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=재질 내부의 절대 흡수량입니다(높은 확대에는 큰 값이 필요합니다). 디퓨즈 물체 색상은 내부에도 적용됩니다.
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=부드러운 결합 함수의 절대 거리입니다.\n작은 값에는 3e-5 같은 과학적 표기법을 쓸 수 있습니다.\n1/확대율 정도에서 시작하면 쓸 만한 값에 가깝습니다.
@@ -157,6 +181,8 @@ AllFiles=모든 파일
 ;All files
 AllFilesParen=모든 파일 (*.*)
 ;All files (*.*)
+AllFormulas=모든 수식
+;All formulas
 AllKinds=모든 종류
 ;All kinds
 AllRealworldUnitsInMeter=실제 단위는 모두 미터입니다.
@@ -393,6 +419,8 @@ Browse=찾아보기...
 ;Browse...
 BuiltIn=내장
 ;built in
+BuiltInFormula=내장 수식
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=Intel Open Image Denoise 없이 빌드됨
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -527,6 +555,8 @@ ChangeParams=수식의
 ;Change Params
 ChangeTheJuliaValuesWithRadius=Julia 값을 반경, 경도, 위도로 변경합니다
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=색만 바꾸고 형태는 바꾸지 않습니다
+;changes the colouring only, not the shape
 CheckColors=색상 검사
 ;Check colors
 CheckThisIfYouWantTo=루프 애니메이션을 만들려면 선택하십시오.\n마지막 키프레임 뒤에 첫 키프레임이 다시 오는 것처럼\n보간되며, 반대도 같습니다.
@@ -545,6 +575,8 @@ ChooseASharedFolderFirstOne=먼저 공유 폴더를 선택하십시오(스웜의
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=옵션 선택:
 ;Choose Option:
+ChoosesAVariantOfTheFormula=수식의 변형을 고릅니다. 정수만
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=테마 선택:
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code (터미널에서)
@@ -741,6 +773,8 @@ CopyParamsToClipboard=파라미터를 클립보드에 복사
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=터미널에 붙여 넣을 수 있도록 명령을 복사합니다
 ;Copy the command, to paste it into a terminal
+CopyTheName=이름 복사
+;Copy the name
 CopyThePostText=게시물 텍스트 복사
 ;Copy the post text
 CopyTheSelectedLineOrAll=선택한 줄을 복사합니다. 선택한 줄이 없으면 표시된 모든 줄을 복사합니다
@@ -1157,6 +1191,12 @@ EveryNewPictureOfTheMain=메인 창의 새 이미지마다 필터가 적용됩�
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=전체
 ;Everything
+Example0=예제: {0}
+;Example: {0}
+ExampleFiles=예제 파일
+;Example files
+ExampleFilesUsingIt0=이 수식을 쓰는 예제 파일: {0}
+;Example files using it: {0}
 ExchangeAdd=수식을
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=이 공식을 다음 공식과 맞바꿉니다
@@ -1247,6 +1287,8 @@ Fine=정밀
 ;fine
 FineTuneThePositionsWithThe=화살표 버튼으로 위치를 미세 조정합니다
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=거리 추정의 미세 조정: 표면에 구멍이 보이면 올리고, 부풀어 보이면 내리세요
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=이미지 마무리
 ;Finish the picture
 FinishedRenderingSlices=슬라이스 렌더링을 마쳤습니다.
@@ -1309,10 +1351,14 @@ Formula1=공식1 •
 ;Formula1 •
 Formula12=공식1
 ;Formula1
+FormulaBook=수식 책
+;Formula book
 FormulaCombinationsInThisBatchThat=이 일괄 작업에서 그래픽 카드에 새로운 수식 조합 (셰이더를 먼저 컴파일합니다. 각각 10~30초, 그동안 CPU가 계산하며 메모리가 부족하면 컴파일이 기다립니다):
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=포뮬러 편집기
 ;Formula editor
+FormulaFile0=수식 파일: {0}
+;Formula file: {0}
 FormulaLower=포뮬러
 ;formula
 FormulaM3f=공식 (*.m3f)
@@ -1531,6 +1577,8 @@ GoToNext=다음으로 이동
 ;Go to next
 GoneLastSeenSAgo=사라짐(마지막 확인 {}초 전)
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=좋은 첫 수식: 값이 적고, 빠르며, 출발점이 될 예제 파일이 있습니다.
+;Good first formula: few values, fast, and example files to start from.
 Grain=입자
 ;Grain
 GraphicsCard=그래픽 카드
@@ -1583,6 +1631,8 @@ High=높음
 ;high
 HighlightsMoveAsInThePictures=하이라이트가 그림에서처럼 움직입니다. 스플랫 하나는 2에서 약 160바이트, 끄면 68바이트입니다.
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=힌트:
+;Hints:
 History=기록
 ;History
 HistoryThePicturesCalculatedTheFiles=기록: 계산한 이미지, 열고 저장한 파일 (클릭하여 살펴보기)
@@ -1591,6 +1641,8 @@ HoldShiftKeyForFinerSteps=(Shift 키를 누르면 더 미세한 단계)
 ;(Hold Shift key for finer steps)
 Hotkeys=단축키
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=형태 안에 복사본이 몇 단계 들어 있는지. 단계마다 시간이 듭니다
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=물이 통과시키는 빛의 양 (0에서 1, 0: 불투명): 반사 (후처리) 또는 몬테카를로에서 수면 아래의 프랙탈이 굴절로 휘어지고 깊이에 따라 흐려져 보입니다
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=평면의 반사 정도 (0에서 1): 하이라이트, 그리고 반사를 계산할 때의 거울 (후처리)
@@ -1603,6 +1655,8 @@ HowMurkyTheWaterIsHow=물이 얼마나 탁한지: 프랙털 단위당 빛이 줄
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=제거할 노이즈의 강도입니다(1~30, GIMP의 "Denoise DCT"와 동일).\n높을수록 노이즈를 더 많이 제거하지만 미세한 디테일도 더 사라집니다.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=반복 횟수에 따라 값이 바뀌는 방식. 0이면 일정합니다
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=구름의 짙기 (1: 꽉 찬 층은 빛의 약 2 %를 통과시킴) 와 하늘을 덮는 정도 (0에서 1)
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=스웜에서 이 컴퓨터가 표시되는 이름입니다
@@ -1883,6 +1937,8 @@ KeysThatBringAWindowTo=어느 창에서나 창을 앞으로 가져오는 키
 ;Keys that bring a window to the front from any window
 Kind=종류
 ;Kind
+Kind0=종류: {0}
+;Kind: {0}
 LGamma05=L-Gamma:  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=라이트 스트로크
@@ -2105,6 +2161,10 @@ MakesReflectionsALittleDiffuseValue=반사를 약간 흐릿하게 만듭니다. 
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=동영상 만드는 중...
 ;Making the video...
+MandelbulberSettingsFract=Mandelbulber 설정 (*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=값이 많음: 하나씩 바꾸고, 마음에 드는 것은 기록 창으로 남겨 두세요.
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=맵을 찾을 수\n없음
 ;Map not\nfound
 MapNumber=맵 번호
@@ -2285,6 +2345,8 @@ MutationType=변이 유형
 ;Mutation type
 N0No255FullTransparency=0: 없음, 255: 완전 투명
 ;0: no, 255: Full transparency
+N0Of1Formulas={1}개 중 {0}개 수식
+;{0} of {1} formulas
 N0To1DarkerCorners=0 ~ 1: 모서리를 어둡게
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 ~ 1: 렌즈처럼 모서리 쪽으로 빨강과 파랑 색 번짐
@@ -2323,14 +2385,22 @@ N360VR=360° VR
 ;360° VR
 N3DAnalyticFormula=3D 해석적 포뮬러
 ;3D analytic formula
+N3DEscapeTimeFormulas=3D 이스케이프 타임 수식
+;3D escape-time formulas
 N3DFormula=3D 포뮬러
 ;3D formula
+N3DFormulasWithAnalyticDEFast=해석적 DE의 3D 수식 (빠름)
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=4D 해석적 포뮬러
 ;4D analytic formula
 N4DFormula=4D 포뮬러
 ;4D formula
+N4DFormulas=4D 수식
+;4D formulas
+N4DFormulasWithAnalyticDE=해석적 DE의 4D 수식
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=벌브 전체의 4D 회전:
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2389,8 +2459,12 @@ No=없음
 ;no
 No2=아니요
 ;No
+NoDescriptionFromTheAuthor=작성자의 설명이 없습니다.
+;No description from the author.
 NoDoFOnTiles=타일에서는 DoF를 사용할 수 없습니다.
 ;No DoF on tiles.
+NoExampleFileUsesItTry=이 수식을 쓰는 예제 파일이 없습니다. 먼저 단독으로, 그다음 Amazing Box 뒤의 슬롯 2에서 시도해 보세요.
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=파일에 면이 없습니다
 ;no faces in the file
 NoFileAdded=추가된 파일 없음
@@ -2589,6 +2663,8 @@ OpenTextParameters=텍스트 파라미터 열기
 ;Open text parameters
 OpenTheAnimationMaker=애니메이션 메이커를 엽니다
 ;Open the animation maker
+OpenTheExample=예제 열기
+;Open the example
 OpenTheFolder=폴더 열기
 ;Open the folder
 OpenTheFolderOfTheFile=파일이 있는 폴더를 엽니다
@@ -2711,6 +2787,8 @@ Pass=패스 {}
 ;pass {}
 Passes=패스
 ;Passes
+PatienceA4DFormulaWithNumerical=인내: 수치적 DE의 4D 수식은 렌더링이 느립니다. 작게 시작하고 나중에 디테일을 높이세요.
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=렌더링 일시 중지
 ;Pause rendering
 PausedPressToContinue=일시 중지됨, 누르면 계속합니다
@@ -2885,6 +2963,8 @@ RaystepMultiplier=레이 스텝 배율:
 ;Raystep multiplier:
 RaystepSubDEstop=레이 스텝에서 DEstop 빼기:
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=예제 파일을 읽는 중 ...
+;Reading the example files ...
 ReadingTheHistoryEntries=기록을 읽는 중... 항목 {}개
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=언어 파일을 편집한 뒤 다시 읽어 들입니다.
@@ -3063,6 +3143,8 @@ RoughImage=대략적인 이미지
 ;rough image
 Roughness=거칠기
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=모서리를 둥글게 합니다. 작은 값은 형태를 지키고 큰 값은 녹입니다
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=X, Y의 Rout 각도
 ;Rout angle of X, Y
 RoutAngleOfXZ=X, Z의 Rout 각도
@@ -3189,6 +3271,8 @@ ScaleTheValuesByTheSelected=선택한 백분율로 값을 조정합니다.
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=시작 공식의 스케일 값으로, DE 정확도에 영향을 줍니다
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=반복마다 한 좌표의 크기를 바꿉니다. -1은 거울상, 0은 평평하게 만듭니다
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=계산할 앰비언트 광선의 최대 길이를 조정합니다.\n1보다 큰 값은 그림자에 더 깊이를 주고,\n1보다 작은 값은 더 국소적인 그림자를 만듭니다.
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=스캔 미리보기
@@ -3405,6 +3489,8 @@ StartBatchRendering=일괄 렌더링 시작
 ;Start batch rendering
 StartFrom=시작 위치
 ;Start from
+StartFromAnExampleOpenOne=예제에서 시작: 하나를 열고 값을 조금씩 바꿔 보세요.
+;Start from an example: open one and change the values a little at a time.
 StartIndex=시작 인덱스:
 ;Start index:
 StartRendering=렌더링 시작
@@ -3475,6 +3561,8 @@ StrengthOfDynamicFog=동적 안개의 강도입니다.
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=기복의 강도, 크기 (프랙탈 단위), 세밀함 (0.2 매끄럽게 ~ 0.8 거칠게)
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=반복마다 공간을 늘립니다. 2나 3 근처가 고전적인 형태, 음수는 거울상, 1과 1.5 사이는 녹은 형태가 됩니다
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=위아래 부분을 늘립니다. 일반 이미지를 전체 구 옵션에 쓸 때 유용할 수 있습니다.
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=서브프레임 수\n배율:
@@ -3553,6 +3641,8 @@ TheBailoutValueForEscapetimeFormulas=탈출 시간 공식의 bailout 값입니�
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=블러 반경이 이 값으로 제한됩니다.\n이미지 일부에서 반경이 매우 커질 때 렌더링 속도를 높일 수 있습니다.
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=상자 접기의 한계: 그 너머는 되접힙니다. 1이 고전적인 상자이고 작을수록 더 접힙니다
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=계산에 실패했습니다: {}
 ;The calculation failed: {}
 TheCalculationFailedLower=계산에 실패했습니다
@@ -3591,6 +3681,8 @@ TheEntriesUnderTheirDaysA=항목을 날짜별로 표시합니다. 날짜를 열�
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=항목을 제거할 수 없습니다.
 ;The entry could not be removed.
+TheExponentOfTheBulb8=벌브의 지수. 8은 고전적인 Mandelbulb, 2는 매끈하고, 높을수록 주름이 많아집니다
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=파일이 더 이상 없습니다.
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=<{}.m3f> 파일이 이미 있습니다. 덮어쓰시겠습니까?
@@ -3601,10 +3693,18 @@ TheFirstFocusPointTheValue=(첫 번째) 초점 지점입니다.\n값은 뷰어�
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=여기서는 플라이스루를 시작할 수 없습니다: {}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=한 축에서 접기의 어긋남. 1이 본래 형태이고 다른 값은 복사본을 옮깁니다
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=폴더가 없거나 접근할 수 없습니다
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=수식 하나만, 기본값으로
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=수식 책: 모든 수식을 말로, 그림과 값 설명과 예제 파일과 함께
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=JIT 공식을 ASM 기반 공식과 구별하기 위해 공식 이름은 "JIT"로 시작해야 합니다
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=네 번째 좌표: 이것으로 0에서 떨어진 곳에서 시작합니다. 4D 회전이 이를 돌립니다
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=프랙탈이 어떤 뷰에도 없습니다.
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=메인 창의 프랙탈을 가우시안 스플랫으로 만들어 Blender(5.3 이상)와 다른 스플랫 뷰어에서 모든 방향으로 볼 수 있게 합니다. 여러 방향에서 계산하며, 모든 픽셀이 자신의 색을 가진 스플랫이 됩니다.
@@ -3625,6 +3725,8 @@ TheImageSizeChangedCalculateThe=이미지 크기가 바뀌었습니다. 이미�
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap 모드는 "색상" 탭에서 계산된 옵션에 따라 달라집니다.
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=이 수식만의 줄리아 상수. 장면의 줄리아 모드는 수식 창에 있습니다
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=마지막 키프레임
 ;The last keyframe
 TheLastSessionCrashed=지난 세션이 비정상 종료되었습니다: {}. 자세한 내용은 로그 창(제목 표시줄의 아이콘)에 있습니다.
@@ -3657,6 +3759,8 @@ ThePictureSFinishingAfterAll=다른 모든 패스 다음에 하는 이미지 마
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=평면의 색 (클릭하여 변경)
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=구 접기의 안쪽 구 반지름. 그 안은 부풀려집니다. 0.5가 고전적인 값이고 0은 끕니다
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=회전은 중심점(Xmid, Ymid, Zmid)을 기준으로 수행됩니다
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=회전은 XW 평면부터 ZW 평면까지 차례로 수행됩니다.
@@ -3671,6 +3775,8 @@ TheSharedFolderOfTheSwarm=스웜의 공유 폴더
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=임의의 거듭제곱 값을 사용할 수 있는 사인 벌브로, 정수 거듭제곱보다 계산이 느립니다.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=기본 형태의 크기, 장면 단위
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=구름 모양의 크기 (프랙탈 단위) 와 색 (클릭)
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=타일 크기
@@ -3691,6 +3797,8 @@ TheViewIsFilledWithThe=화면이 프랙탈로 가득 찼습니다
 ;the view is filled with the fractal
 TheViewShowsOnlySky=화면에 하늘만 보입니다
 ;the view shows only sky
+TheWallThicknessOfAHollow=속이 빈 형태의 벽 두께
+;the wall thickness of a hollow shape
 Themes=테마
 ;Themes
 ThereIsAFileAlready=파일 {}이(가) 이미 있습니다.
@@ -3795,6 +3903,8 @@ TracingObject=객체 추적 중...
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=파일 시스템을 통해 렌더링 상태를 추적하여, 여러 인스턴스가 다른 노드의 작업을 덮어쓰지 않고 같은 파일 시퀀스를 렌더링할 수 있게 합니다
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=변환 (조합 전용)
+;Transformations (only in combination)
 Transparency=투명도
 ;Transparency
 TransparencyIntensity=투명도 강도
@@ -3865,6 +3975,8 @@ UseAmbientShadowsFromOriginalM3I=원본 M3I 파일의 주변광 그림자 사용
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=기본 방향 사용
 ;Use default orientation
+UseInTheFormulasWindow=수식 창에서 사용
+;Use in the Formulas window
 UseItInAnimationsToFix=애니메이션에서 조명을 장면에 고정하려면 사용하십시오.
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=법선(조명을 위한 표면 방향)이 좋지 않아 보일 때만 두 번째 선택지로 사용하십시오.
@@ -3893,6 +4005,8 @@ Value=값:
 ;Value:
 ValueNotGuilty=값이 유효하지 않습니다
 ;Value not guilty
+Values=값:
+;Values:
 ValuesHaveAFractionFieldThat=// 값은 가수부가 0이 아닙니다.
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=FOV에 따른 DEstop 변화:
@@ -3955,6 +4069,8 @@ WarningsAndErrors=경고와 오류
 ;Warnings and errors
 WasCopiedIntoTheMapsFolder={}를 맵 {}(으)로 맵 폴더에 복사했습니다: {}
 ;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=4D 회전(수식 창)에 주의: 형태가 완전히 바뀝니다.
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=물:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)

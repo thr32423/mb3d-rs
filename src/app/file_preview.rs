@@ -61,7 +61,7 @@ pub struct State {
 }
 
 fn is_params(p: &Path) -> bool {
-    matches!(p.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).as_deref(), Some("m3p" | "m3i" | "txt"))
+    matches!(p.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).as_deref(), Some("m3p" | "m3i" | "txt" | "fract"))
 }
 
 fn is_image(p: &Path) -> bool {
@@ -99,13 +99,14 @@ fn calculate(path: &Path) -> (Result<(Vec<u8>, usize, usize), String>, String) {
             Err(e) => (Err(e), String::new()),
         };
     }
-    let m = match crate::m3p::load(path) {
-        Ok(m) => m,
+    // (any kind of parameters: MB3D's, text scenes, Mandelbulber's)
+    let sc = match crate::animfile::load_scene(path) {
+        Ok((sc, _)) => sc,
         Err(e) => return (Err(e), String::new()),
     };
-    let text = describe(&m.scene);
+    let text = describe(&sc);
     let threads = std::thread::available_parallelism().map_or(4, |n| n.get()).saturating_sub(1).max(1);
-    (crate::mutagen::preview(&m.scene, W, H, false, threads), text)
+    (crate::mutagen::preview(&sc, W, H, false, threads), text)
 }
 
 fn start(app: &mut Mb3d, ui: &Ui, path: PathBuf) {
@@ -231,6 +232,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         if let Some((shown, t)) = &app.preview.shown {
             if *shown == p {
                 show(ui, &t.clone(), entry.0.clone(), &entry.1);
+                super::formula_book_form::picture_caption(app, ui);
             }
         }
         let m = modified(&p);

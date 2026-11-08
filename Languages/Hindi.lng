@@ -31,6 +31,14 @@ font = Hindi.ttf
 [Labels]
 A360DegreeAnimationForVR=वीआर हेडसेट के लिए 360 डिग्री एनिमेशन: हर फ़्रेम एक गोलाकार पैनोरमा, ऊँचाई से दोगुना चौड़ा; 'स्टीरियो एनिमेशन रेंडर करें' के साथ वीडियो में दोनों आँखें ऊपर-नीचे होती हैं, और ffmpeg कमांड MP4 को वीआर प्लेयर के लिए चिह्नित करती है
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=संख्यात्मक दूरी अनुमान वाला 3D एस्केप-टाइम सूत्र: आकार अकेले काम करता है और दूसरों के साथ जुड़ता है; विश्लेषी DE से धीमा।
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=विश्लेषी दूरी अनुमान वाला 3D एस्केप-टाइम सूत्र: तेज़ और भरोसेमंद; पहला सूत्र चुनने के लिए अच्छा।
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=4D सूत्र: चौथा निर्देशांक और सूत्र विंडो का 4D घुमाव लागू होते हैं; संख्यात्मक DE, इसलिए धीमा।
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=विश्लेषी दूरी अनुमान वाला 4D सूत्र: 4D घुमाव लागू होता है, और यह तेज़ी से रेंडर होता है।
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=4d क्वाटर्नियन फ़ॉर्मूला, एक पुनरावृत्ति:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=Aexion द्वारा सुझाया गया बल्ब (bulb) फ़ॉर्मूला:\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\nZ और C के वर्तमान सदिशों की दूरी के अनुसार स्थिरांक को घात से घुमाने के दो विकल्प जोड़े गए हैं (Cond Phi=1),\nऔर ये मोड विकल्प:\n(मोड मान के बिट)\nBit1: atan theta घटकों को पलटें\nBit2: atan phi घटकों को पलटें\nBit3: theta और phi को पलटें\nBit4: कोण गणना के लिए CyCz पलटें\nBit5: powerC को सदिश Z और C की दूरी से गुणा करें
@@ -39,6 +47,12 @@ ACalculationIsRunningStopIt=एक गणना चल रही है: पह�
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=16, फिर 4 पिक्सेल के हर ब्लॉक के लिए एक मोटी किरण मार्च करती है, जिसमें ब्लॉक का फैलाव दूरी अनुमान से घटा दिया जाता है, और हर पिक्सेल का मार्च उसकी गहराई से शुरू होता है। खुली जगह में 60 % तक तेज़; जहाँ अनुमान बहुत गलत हो वहाँ पतले हिस्से खो सकते हैं।
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=हर पुनरावृत्ति में जोड़ा गया स्थिरांक; यह आकार को खिसकाता है और उसकी समरूपता तोड़ता है
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=dIFS आकार: दूरी-अनुमानित ठोस (गोला, डिब्बा, नली ...)। इसे केवल दूसरे dIFS सूत्रों के साथ जोड़ें; एस्केप-टाइम सूत्रों के साथ मिलाने पर त्रुटि 'formula option is not valid' आती है।
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=dIFS रूपांतरण: यह अपने बाद के स्लॉट के dIFS आकारों को मोड़ता, दोहराता या काटता है।
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=बाइनरी खोज से तेज़ तरीका, लेकिन DE खराब होने पर विफलता हो सकती है
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=कुछ सेकंड शेष
@@ -61,12 +75,20 @@ AMultiplierThatDefinesTheMiximal=एक गुणक जो कठोर छा�
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=AO गणना समय:
 ;AO calc time:
+ARotationAppliedEachIterationIn=हर पुनरावृत्ति में लगाया गया घुमाव, अंशों में
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=पहले फ़ोल्डिंग वाला साइन पूर्णांक घात बल्ब, जैसा अमेज़िंग बॉक्स में होता है।
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=स्थान का गोलीय प्रतिलोमन; इसका केंद्र और त्रिज्या तय करते हैं कि कौन सा भाग उलटा जाए
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
 ASphericalPanoramaGetsTheEXIF=गोलाकार पैनोरमा को Photo Sphere टैग के साथ एक 360 कैमरे (RICOH THETA S) का EXIF कैमरा भी मिलता है, ताकि Facebook उसे 360 फ़ोटो की तरह दिखाए। प्रोग्राम द्वारा सहेजे गए हर 360 चित्र के लिए।
 ;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=रोका गया या बाधित रेंडर अपनी गणना रखता है; उन्हीं पैरामीटर की 3D गणना उसे जारी रखती है।
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=रूपांतरण: यह केवल बिंदु बदलता है और इसका अपना कोई आकार नहीं। इसे आकार देने वाले सूत्रों से पहले या उनके बीच के स्लॉट में उपयोग करें, कभी अकेले नहीं।
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=रूपांतरण अकेले कुछ नहीं दिखाता: स्लॉट 1 में कोई आकार और स्लॉट 2 में इसे रखें, या उल्टा।
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=पारदर्शी पृष्ठभूमि के लिए PNG फ़्रेम चाहिए: आउटपुट फ़ॉर्मैट के रूप में PNG चुनें।
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=वीडियो के लिए छवियाँ चाहिए: आउटपुट फ़ॉर्मैट के रूप में BMP, PNG या JPG चुनें।
@@ -89,6 +111,8 @@ AboutHMinLeft=लगभग {} घंटे {} मिनट शेष
 ;about {} h {} min left
 AboutMinLeft=लगभग {} मिनट शेष
 ;about {} min left
+AboutThisFormula=इस सूत्र के बारे में...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=सामग्री के अंदर निरपेक्ष अवशोषण मात्रा (अधिक ज़ूम के लिए बड़े मान चाहिए)। वस्तु का डिफ़्यूज़ रंग अंदर के लिए भी है।
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=स्मूद संयोजन फ़ंक्शनों की निरपेक्ष दूरी,\nछोटे मानों के लिए आप 3e-5 जैसा वैज्ञानिक संकेतन उपयोग कर सकते हैं।\nकाम करने लायक मान के पास पहुँचने के लिए 1/ज़ूम आज़माएँ।
@@ -157,6 +181,8 @@ AllFiles=सभी फ़ाइलें
 ;All files
 AllFilesParen=सभी फ़ाइलें (*.*)
 ;All files (*.*)
+AllFormulas=सभी सूत्र
+;All formulas
 AllKinds=सभी प्रकार
 ;All kinds
 AllRealworldUnitsInMeter=सभी वास्तविक इकाइयाँ मीटर में।
@@ -393,6 +419,8 @@ Browse=ब्राउज़ करें...
 ;Browse...
 BuiltIn=अंतर्निहित
 ;built in
+BuiltInFormula=अंतर्निर्मित सूत्र
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=Intel Open Image Denoise के बिना बनाया गया
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -527,6 +555,8 @@ ChangeParams=पैरामीटर बदलें
 ;Change Params
 ChangeTheJuliaValuesWithRadius=Julia मानों को त्रिज्या, देशांतर और अक्षांश से बदलें
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=केवल रंगाई बदलता है, आकार नहीं
+;changes the colouring only, not the shape
 CheckColors=रंग जाँचें
 ;Check colors
 CheckThisIfYouWantTo=यदि आप लूप एनिमेशन बनाना चाहते हैं तो इसे चुनें।\nइंटरपोलेशन ऐसे व्यवहार करता है मानो अंतिम कीफ़्रेम के बाद\nफिर से पहला कीफ़्रेम आता है और इसका उल्टा भी।
@@ -545,6 +575,8 @@ ChooseASharedFolderFirstOne=पहले एक साझा फ़ोल्ड�
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=विकल्प चुनें:
 ;Choose Option:
+ChoosesAVariantOfTheFormula=सूत्र का एक रूप चुनता है; केवल पूर्ण संख्याएँ
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=थीम चुनें:
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code (टर्मिनल में)
@@ -741,6 +773,8 @@ CopyParamsToClipboard=पैरामीटर क्लिपबोर्ड �
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=कमांड कॉपी करें, ताकि उसे टर्मिनल में पेस्ट किया जा सके
 ;Copy the command, to paste it into a terminal
+CopyTheName=नाम कॉपी करें
+;Copy the name
 CopyThePostText=पोस्ट टेक्स्ट कॉपी करें
 ;Copy the post text
 CopyTheSelectedLineOrAll=चुनी गई पंक्ति कॉपी करें, या कोई न चुनी हो तो दिखाई गई सभी पंक्तियाँ
@@ -1157,6 +1191,12 @@ EveryNewPictureOfTheMain=मुख्य विंडो का हर नया
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=सब कुछ
 ;Everything
+Example0=उदाहरण: {0}
+;Example: {0}
+ExampleFiles=उदाहरण फ़ाइलें
+;Example files
+ExampleFilesUsingIt0=इसका उपयोग करने वाली उदाहरण फ़ाइलें: {0}
+;Example files using it: {0}
 ExchangeAdd=बदलें, जोड़ें
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=इस फ़ॉर्मूले को अगले फ़ॉर्मूले से बदलें
@@ -1247,6 +1287,8 @@ Fine=बारीक
 ;fine
 FineTuneThePositionsWithThe=तीर बटनों से स्थितियों को बारीकी से समायोजित करें
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=दूरी अनुमान की बारीक ट्यूनिंग: सतह में छेद दिखें तो बढ़ाएँ, सूजी हुई लगे तो घटाएँ
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=चित्र पूरा करें
 ;Finish the picture
 FinishedRenderingSlices=स्लाइस रेंडरिंग पूरी हुई।
@@ -1309,10 +1351,14 @@ Formula1=फ़ॉर्मूला1 •
 ;Formula1 •
 Formula12=फ़ॉर्मूला1
 ;Formula1
+FormulaBook=सूत्र पुस्तिका
+;Formula book
 FormulaCombinationsInThisBatchThat=इस बैच में ग्राफ़िक्स कार्ड के लिए नए फ़ॉर्मूला संयोजन (पहले उनके शेडर कंपाइल होते हैं, हर एक 10 से 30 सेकंड; इस बीच CPU गणना करता है, और मेमोरी कम होने पर कंपाइल रुककर इंतज़ार करता है):
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=फ़ॉर्मूला संपादक
 ;Formula editor
+FormulaFile0=सूत्र फ़ाइल: {0}
+;Formula file: {0}
 FormulaLower=फ़ॉर्मूला
 ;formula
 FormulaM3f=फ़ॉर्मूला (*.m3f)
@@ -1531,6 +1577,8 @@ GoToNext=अगले पर जाएँ
 ;Go to next
 GoneLastSeenSAgo=चला गया (अंतिम बार {} से. पहले देखा गया)
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=अच्छा पहला सूत्र: कम मान, तेज़, और शुरू करने के लिए उदाहरण फ़ाइलें।
+;Good first formula: few values, fast, and example files to start from.
 Grain=दानेदार
 ;Grain
 GraphicsCard=ग्राफ़िक्स कार्ड
@@ -1583,6 +1631,8 @@ High=उच्च
 ;high
 HighlightsMoveAsInThePictures=चमक चित्रों की तरह खिसकती है। एक स्प्लैट 2 पर लगभग 160 बाइट लेता है, बंद होने पर 68।
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=सुझाव:
+;Hints:
 History=इतिहास
 ;History
 HistoryThePicturesCalculatedTheFiles=इतिहास: गणना किए गए चित्र, खोली और सहेजी गई फ़ाइलें (ब्राउज़ करने के लिए क्लिक करें)
@@ -1591,6 +1641,8 @@ HoldShiftKeyForFinerSteps=(बारीक कदमों के लिए Shif
 ;(Hold Shift key for finer steps)
 Hotkeys=हॉटकी
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=आकार में प्रतियों के भीतर कितनी प्रतियाँ हैं; हर स्तर समय लेता है
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=पानी कितना प्रकाश आर-पार जाने देता है (0 से 1, 0: अपारदर्शी): परावर्तन (पोस्ट प्रोसेसिंग) या मोंटे कार्लो में सतह के नीचे का फ्रैक्टल दिखता है, अपवर्तन से मुड़ा हुआ और गहराई के साथ धुंधला होता
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=तल कितना परावर्तित करता है (0 से 1): इसकी चमक, और परावर्तन गणना होने पर इसका दर्पण (पोस्ट प्रोसेसिंग)
@@ -1603,6 +1655,8 @@ HowMurkyTheWaterIsHow=पानी कितना धुंधला है: �
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=हटाया जाने वाला शोर कितना प्रबल है (1 से 30, जैसे GIMP का "Denoise DCT")।\nअधिक मान अधिक शोर हटाता है, और अधिक बारीक विवरण भी।
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=पुनरावृत्ति संख्या के साथ मान कैसे बदलता है; 0 इसे स्थिर रखता है
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=बादल कितने घने हैं (1: पूरी परत लगभग 2 % प्रकाश जाने देती है) और आकाश का कितना भाग ढकते हैं (0 से 1)
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=स्वार्म में यह कंप्यूटर किस नाम से दिखेगा
@@ -1883,6 +1937,8 @@ KeysThatBringAWindowTo=वे कुंजियाँ जो किसी भ�
 ;Keys that bring a window to the front from any window
 Kind=प्रकार
 ;Kind
+Kind0=प्रकार: {0}
+;Kind: {0}
 LGamma05=L-गामा:  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=प्रकाश धारियाँ
@@ -2105,6 +2161,10 @@ MakesReflectionsALittleDiffuseValue=परावर्तनों को थो
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=वीडियो बन रहा है...
 ;Making the video...
+MandelbulberSettingsFract=Mandelbulber सेटिंग्स (*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=बहुत से मान: एक बार में एक बदलें और जो पसंद आए उसे इतिहास विंडो से सँभालें।
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=मैप नहीं\nमिला
 ;Map not\nfound
 MapNumber=मैप संख्या
@@ -2285,6 +2345,8 @@ MutationType=म्यूटेशन प्रकार
 ;Mutation type
 N0No255FullTransparency=0: नहीं, 255: पूर्ण पारदर्शिता
 ;0: no, 255: Full transparency
+N0Of1Formulas={1} में से {0} सूत्र
+;{0} of {1} formulas
 N0To1DarkerCorners=0 से 1: गहरे कोने
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 से 1: कोनों की ओर लाल और नीले किनारे, जैसे लेंस दिखाता है
@@ -2323,14 +2385,22 @@ N360VR=360° वीआर
 ;360° VR
 N3DAnalyticFormula=3D विश्लेषणात्मक फ़ॉर्मूला
 ;3D analytic formula
+N3DEscapeTimeFormulas=3D एस्केप-टाइम सूत्र
+;3D escape-time formulas
 N3DFormula=3D फ़ॉर्मूला
 ;3D formula
+N3DFormulasWithAnalyticDEFast=विश्लेषी DE वाले 3D सूत्र (तेज़)
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=4D विश्लेषणात्मक फ़ॉर्मूला
 ;4D analytic formula
 N4DFormula=4D फ़ॉर्मूला
 ;4D formula
+N4DFormulas=4D सूत्र
+;4D formulas
+N4DFormulasWithAnalyticDE=विश्लेषी DE वाले 4D सूत्र
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=पूरे बल्ब का 4D घुमाव:
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2389,8 +2459,12 @@ No=नहीं
 ;no
 No2=नहीं
 ;No
+NoDescriptionFromTheAuthor=लेखक का कोई विवरण नहीं।
+;No description from the author.
 NoDoFOnTiles=टाइलों पर DoF नहीं।
 ;No DoF on tiles.
+NoExampleFileUsesItTry=कोई उदाहरण फ़ाइल इसका उपयोग नहीं करती; पहले इसे अकेले आज़माएँ, फिर Amazing Box के पीछे स्लॉट 2 में।
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=फ़ाइल में कोई फ़ेस नहीं
 ;no faces in the file
 NoFileAdded=कोई फ़ाइल नहीं जोड़ी गई
@@ -2589,6 +2663,8 @@ OpenTextParameters=टेक्स्ट पैरामीटर खोले�
 ;Open text parameters
 OpenTheAnimationMaker=एनिमेशन मेकर खोलें
 ;Open the animation maker
+OpenTheExample=उदाहरण खोलें
+;Open the example
 OpenTheFolder=फ़ोल्डर खोलें
 ;Open the folder
 OpenTheFolderOfTheFile=फ़ाइल का फ़ोल्डर खोलें
@@ -2711,6 +2787,8 @@ Pass=पास {}
 ;pass {}
 Passes=पास
 ;Passes
+PatienceA4DFormulaWithNumerical=धैर्य: संख्यात्मक DE वाला 4D सूत्र धीरे रेंडर होता है; छोटे से शुरू करें और बाद में विवरण बढ़ाएँ।
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=रेंडर रोकें
 ;Pause rendering
 PausedPressToContinue=रुका हुआ, जारी रखने के लिए दबाएँ
@@ -2885,6 +2963,8 @@ RaystepMultiplier=रे-स्टेप गुणक:
 ;Raystep multiplier:
 RaystepSubDEstop=रे-स्टेप से DEstop घटाएँ:
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=उदाहरण फ़ाइलें पढ़ी जा रही हैं ...
+;Reading the example files ...
 ReadingTheHistoryEntries=इतिहास पढ़ा जा रहा है... {} प्रविष्टियाँ
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=किसी फ़ाइल को संपादित करने के बाद भाषा फ़ाइलें फिर से पढ़ता है
@@ -3063,6 +3143,8 @@ RoughImage=कच्ची छवि
 ;rough image
 Roughness=खुरदरापन
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=किनारों को गोल करता है; छोटे मान आकार रखते हैं, बड़े उसे पिघला देते हैं
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=X, Y का Rout कोण
 ;Rout angle of X, Y
 RoutAngleOfXZ=X, Z का Rout कोण
@@ -3189,6 +3271,8 @@ ScaleTheValuesByTheSelected=मानों को चुने गए प्र
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=आरंभिक फ़ॉर्मूले का स्केल मान, DE की सटीकता को प्रभावित करता है
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=हर पुनरावृत्ति में एक निर्देशांक को मापता है; -1 इसे प्रतिबिंबित करता है, 0 इसे चपटा करता है
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=गणना की जाने वाली परिवेश किरणों की अधिकतम लंबाई को स्केल करता है।\nछायाओं को अधिक गहराई देने के लिए 1 से बड़ा मान उपयोग करें,\n1 से कम मान अधिक स्थानीय छायाएँ देते हैं।
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=स्कैन पूर्वावलोकन
@@ -3405,6 +3489,8 @@ StartBatchRendering=बैच रेंडरिंग शुरू करें
 ;Start batch rendering
 StartFrom=यहाँ से शुरू करें
 ;Start from
+StartFromAnExampleOpenOne=किसी उदाहरण से शुरू करें: उसे खोलें और मान थोड़ा-थोड़ा बदलें।
+;Start from an example: open one and change the values a little at a time.
 StartIndex=आरंभ सूचकांक:
 ;Start index:
 StartRendering=रेंडरिंग शुरू करें
@@ -3475,6 +3561,8 @@ StrengthOfDynamicFog=गतिशील कोहरे की तीव्र�
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=उभार की तीव्रता, आकार (फ़्रैक्टल इकाइयों में) और बारीकी (0.2 चिकना से 0.8 दानेदार)
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=हर पुनरावृत्ति में स्थान को खींचता है; 2 या 3 के आसपास क्लासिक आकार मिलता है, ऋण चिह्न इसे प्रतिबिंबित करता है, 1 और 1.5 के बीच के मान इसे पिघला देते हैं
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=ऊपरी और निचले भागों को खींचता है, पूर्ण गोला विकल्प में सामान्य छवि के लिए उपयोगी हो सकता है।
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=सबफ़्रेम संख्या\nगुणक:
@@ -3553,6 +3641,8 @@ TheBailoutValueForEscapetimeFormulas=एस्केपटाइम फ़ॉर
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=धुंधलापन त्रिज्या इस मान पर सीमित होगी।\nजब कुछ छवि भागों में त्रिज्या बहुत बड़ी हो जाए तो रेंडरिंग तेज़ हो सकती है।
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=डिब्बा-मोड़ की सीमा: उसके पार जो है वह वापस प्रतिबिंबित होता है; 1 क्लासिक डिब्बा है, छोटा मान ज़्यादा मोड़ता है
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=गणना विफल रही: {}
 ;The calculation failed: {}
 TheCalculationFailedLower=गणना विफल रही
@@ -3591,6 +3681,8 @@ TheEntriesUnderTheirDaysA=प्रविष्टियाँ अपने द�
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=प्रविष्टि हटाई नहीं जा सकी।
 ;The entry could not be removed.
+TheExponentOfTheBulb8=बल्ब का घातांक; 8 क्लासिक Mandelbulb देता है, 2 चिकना है, ऊँचे मान ज़्यादा सिलवटें देते हैं
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=फ़ाइल अब वहाँ नहीं है।
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=फ़ाइल <{}.m3f> पहले से मौजूद है। क्या आप इसे अधिलेखित करना चाहते हैं?
@@ -3601,10 +3693,18 @@ TheFirstFocusPointTheValue=(पहला) फ़ोकस बिंदु।\n�
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=भीतर उड़ान यहाँ शुरू नहीं हो सकती: {}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=एक अक्ष पर मोड़ का विस्थापन; 1 सादा आकार है, अन्य मान प्रतियों को खिसकाते हैं
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=फ़ोल्डर मौजूद नहीं है (या पहुँच योग्य नहीं है)
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=अकेला सूत्र, अपने डिफ़ॉल्ट मानों पर
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=सूत्र पुस्तिका: हर सूत्र शब्दों में, चित्र, समझाए गए मान और उदाहरण फ़ाइलों के साथ
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=फ़ॉर्मूले का नाम "JIT" से शुरू होना चाहिए, ताकि इन फ़ॉर्मूलों को ASM-आधारित फ़ॉर्मूलों से अलग पहचाना जा सके
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=चौथा निर्देशांक: यह उसे 0 से दूर से शुरू करता है; 4D घुमाव उसे घुमाता है
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=फ्रैक्टल किसी भी दृश्य में नहीं है।
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=मुख्य विंडो का फ्रैक्टल गॉसियन स्प्लैट के रूप में, ताकि उसे Blender (5.3 और बाद के) और दूसरे स्प्लैट व्यूअर में हर तरफ़ से देखा जा सके। इसकी गणना कई दिशाओं से होती है, और हर पिक्सेल अपने रंग का एक स्प्लैट बन जाता है।
@@ -3625,6 +3725,8 @@ TheImageSizeChangedCalculateThe=छवि का आकार बदल गय�
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=its.trap मोड "रंगाई" टैब में गणना किए गए विकल्प पर निर्भर करता है।
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=केवल इस सूत्र का जूलिया स्थिरांक; दृश्य का जूलिया मोड सूत्र विंडो में है
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=आख़िरी की-फ़्रेम
 ;The last keyframe
 TheLastSessionCrashed=पिछला सत्र क्रैश हो गया: {}। अधिक जानकारी लॉग विंडो में (शीर्षक पट्टी में आइकन)।
@@ -3657,6 +3759,8 @@ ThePictureSFinishingAfterAll=बाकी सभी चरणों के ब�
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=तल का रंग (बदलने के लिए क्लिक करें)
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=गोलीय मोड़ के भीतरी गोले की त्रिज्या; उसके भीतर जो है वह फुलाया जाता है; 0.5 क्लासिक मान है, 0 इसे बंद करता है
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=घुमाव मध्य बिंदु (Xmid, Ymid, Zmid) के चारों ओर किया जाता है
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=घुमाव क्रम से किए जाते हैं, पहले XW, अंत में ZW-तल।
@@ -3671,6 +3775,8 @@ TheSharedFolderOfTheSwarm=स्वार्म का साझा फ़ोल
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=साइन बल्ब, जिसमें कोई भी घात मान उपयोग किया जा सकता है; गणना पूर्णांक घातों से धीमी है।\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=आधार आकार का माप, दृश्य इकाइयों में
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=बादलों की आकृतियों का आकार फ़्रैक्टल इकाइयों में, और उनका रंग (क्लिक करें)
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=टाइलों का आकार
@@ -3691,6 +3797,8 @@ TheViewIsFilledWithThe=दृश्य फ़्रैक्टल से भर
 ;the view is filled with the fractal
 TheViewShowsOnlySky=दृश्य में केवल आकाश है
 ;the view shows only sky
+TheWallThicknessOfAHollow=खोखले आकार की दीवार की मोटाई
+;the wall thickness of a hollow shape
 Themes=थीम
 ;Themes
 ThereIsAFileAlready=फ़ाइल {} पहले से मौजूद है।
@@ -3795,6 +3903,8 @@ TracingObject=वस्तु ट्रेस हो रही है...
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=फ़ाइल सिस्टम के माध्यम से रेंडरिंग स्थिति पर नज़र रखें ताकि कई इंस्टेंस फ़ाइलों के एक ही अनुक्रम को अन्य नोड्स का काम ओवरराइट किए बिना रेंडर कर सकें
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=रूपांतरण (केवल संयोजन में)
+;Transformations (only in combination)
 Transparency=पारदर्शिता
 ;Transparency
 TransparencyIntensity=पारदर्शिता तीव्रता
@@ -3865,6 +3975,8 @@ UseAmbientShadowsFromOriginalM3I=मूल M3I फ़ाइल की परि�
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=डिफ़ॉल्ट दिशा उपयोग करें
 ;Use default orientation
+UseInTheFormulasWindow=सूत्र विंडो में उपयोग करें
+;Use in the Formulas window
 UseItInAnimationsToFix=एनिमेशन में प्रकाशों को दृश्य से जोड़े रखने के लिए इसका उपयोग करें।
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=केवल दूसरे विकल्प के रूप में उपयोग करें, यदि नॉर्मल (प्रकाश के लिए सतह की दिशा) खराब लगें।
@@ -3893,6 +4005,8 @@ Value=मान:
 ;Value:
 ValueNotGuilty=मान अमान्य
 ;Value not guilty
+Values=मान:
+;Values:
 ValuesHaveAFractionFieldThat=// मानों का भिन्न क्षेत्र 0 नहीं होता।
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=FOV पर DEstop बदलें:
@@ -3955,6 +4069,8 @@ WarningsAndErrors=चेतावनियाँ और त्रुटिया
 ;Warnings and errors
 WasCopiedIntoTheMapsFolder={} मैप फ़ोल्डर में मैप {} के रूप में कॉपी किया गया: {}
 ;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=4D घुमाव (सूत्र विंडो) पर ध्यान दें: यह आकार को पूरी तरह बदल देता है।
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=पानी:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)

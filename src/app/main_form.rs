@@ -2694,7 +2694,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         // ---- files
         "Button5Click" => {
             let o = crate::vcl::dialogs::FileOptions {
-                filter: format!("{}|*.m3p|{}|*.*", tr("@MB:M3DParameterM3p"), tr("@MB:AllFilesParen")),
+                filter: format!("{}|*.m3p|{}|*.fract|{}|*.*", tr("@MB:M3DParameterM3p"), tr("@MB:MandelbulberSettingsFract"), tr("@MB:AllFilesParen")),
                 initial_dir: Some(dlg_dir(app, "openm3p", super::ini::DIR_M3P)),
                 preview: true,
                 ..Default::default()
@@ -2848,7 +2848,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
 /// the program reads or writes (the title is a file's name without one,
 /// as MB3D shows it, which may itself contain a dot).
 pub(crate) fn stem(title: &str) -> String {
-    const TYPES: [&str; 11] = ["m3p", "m3i", "m3a", "big", "txt", "png", "jpg", "jpeg", "bmp", "exr", "m3c"];
+    const TYPES: [&str; 12] = ["m3p", "m3i", "m3a", "big", "txt", "png", "jpg", "jpeg", "bmp", "exr", "m3c", "fract"];
     let p = std::path::Path::new(title);
     let known = p.extension().is_some_and(|e| TYPES.iter().any(|t| e.eq_ignore_ascii_case(t)));
     let name = if known { p.file_stem() } else { p.file_name() };

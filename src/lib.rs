@@ -57,6 +57,7 @@ pub mod oidn;
 pub mod dof;
 pub mod exr;
 pub mod finish;
+pub mod formula_book;
 pub mod formulas;
 pub mod frames;
 pub mod gbuffer;
@@ -64,6 +65,7 @@ pub mod gif;
 pub mod history;
 pub mod json;
 pub mod log;
+pub mod mandelbulber;
 pub mod mcp;
 #[cfg(feature = "gpu")]
 pub mod gpu;

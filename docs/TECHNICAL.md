@@ -9,6 +9,8 @@ The technical side of [mb3d-rs](../README.md): how the graphics card is used, wh
 - [What is ported](#what-is-ported)
 - [Custom formulas (.m3f)](#custom-formulas-m3f)
 - [Scene files (.m3s)](#scene-files-m3s)
+- [Mandelbulber settings files (.fract)](#mandelbulber-settings-files-fract)
+- [The Formula book](#the-formula-book)
 - [Ambient occlusion and shadows](#ambient-occlusion-and-shadows)
 - [Lights, volumetric light, cutting planes, depth of field](#lights-volumetric-light-cutting-planes-depth-of-field)
 - [Reflections and transparency, normals on the z-buffer](#reflections-and-transparency-normals-on-the-z-buffer)
@@ -752,6 +754,74 @@ The light values use MB3D's slider units (for example `diffuse = 50` means
 onto them directly in phase 2. `color_start`/`color_end` are the colour-range
 sliders (`TBpos[9]`, `TBpos[10]`). `--auto-color` fits them to the rendered
 surface; this convenience is not in MB3D.
+
+## Mandelbulber settings files (`.fract`)
+
+`mandelbulber.rs` opens a Mandelbulber 2 settings file as a scene (not in
+MB3D): the GUI's *Open*, dropped files, `load_params`, the command line and
+the MCP tools recognise it by the `.fract` extension or the first line
+`# Mandelbulber settings file`. The file is `key value;` lines in the
+sections `[main_parameters]` and `[fractal_N]`, decimals in the writer's
+locale (commas are read), colours as three 16-bit hexadecimal channels, and
+only the values that differ from Mandelbulber's defaults (2.33,
+src/initparameters.cpp).
+
+The camera: Mandelbulber's eye `camera`, `target` and `camera_top` give the
+view direction and the up vector, which become the rows of `vgrads` (right,
+down, into the picture); the pivot `mid` is the target (or two units in
+front of the eye when the target sits on it), the start plane `z_start` is
+one hundredth of the eye-target distance in front of the eye, `z_end` thirty
+pivot distances behind the pivot, and `zoom` is set so that the pixel
+spacing on the start plane (`2.1345 / (zoom * width)`) matches the pixel
+angle there (`fov_y / height`), so the virtual eye of MB3D's rays falls on
+Mandelbulber's camera. Mandelbulber's `fov` is the horizontal angle whose
+half-tangent spans the width; MB3D's `fov_y` is the vertical one, so
+`fov_y = 2 atan(tan(fov/2) · h/w)`. `perspective_type` 2 becomes the
+spherical panorama (the rays start at the eye), 1 and 3 the fish eye.
+`detail_level` is the inverse of `de_stop`, `DE_factor` scales the ray step,
+`N` is the iteration count, `julia_mode`/`julia_c` the Julia constant (the
+file's or the first formula's own), `background_color_1/2` the ambient top
+and bottom (shown as the background).
+
+The formulas: a table of Mandelbulber's formula numbers
+(formula/definition/all_fractal_list_enums.hpp) to the formula here that is
+the same (`exact`: the values carry over by their keys, `mandelbox_scale`,
+`mandelbox_folding_limit`, `mandelbox_folding_min_radius`, `power`,
+`transf_scale_3`, `IFS_scale`, `cadd`, ...) or only similar (the defaults,
+and a note). Without `hybrid_fractal_enable` only `formula_1` counts; with
+it the enabled slots with `formula_iterations_N` become MB3D's six slots;
+`boolean_operators` makes a DE combination of the first two
+(OR/AND/SUB → min/max/max inverted). What is not carried over (lights,
+materials, colours, fog, the fractal rotation and constant factor, formulas
+without a counterpart) is listed in the notes, which the GUI shows in the
+message area and the command line prints; a file none of whose formulas
+has a counterpart is refused. `tests/mandelbulber.rs` checks the camera
+(the eye of the imported scene through `splat::eye`, the view direction
+through `splat::start_plane`, the up vector, the field of view), the
+formulas and values, the hybrid slots, the Julia constant and the notes
+against two fixture files in `tests/data`.
+
+## The Formula book
+
+`formula_book.rs` (the logic) and `app/formula_book_form.rs` (the window,
+`FormulaBookFrm`, not in MB3D) describe every formula the Formulas window
+lists in words: the kind from the DE option (the same numbers that sort the
+Formulas window's lists: 2/11 analytic 3D, 4 numerical 4D, 5/6 analytic 4D,
+-1/-2 transformations, 20 dIFS shapes, 21/22 dIFS transformations), the
+author's description from the `.m3f` file, the values with their defaults
+and an explanation chosen by the value's name (`option_explanation`: Scale,
+CScale, Fold, Min R, Power, Julia, angles, offsets, multipliers, vary, DE,
+thickness, levels, size, inversion, mode, smoothing, colour, W; the order of
+the tests matters, "Colour scale" is colour and "Scale vary" is vary),
+hints from the kind, the number of values and the examples, and the example
+files that use the formula (`example_index`: the parameter folder and the
+folder of the parameters opened last, read through `animfile::load_scene`,
+indexed by the names of the formulas with iterations). The picture is the
+first example's preview through `file_preview`'s queue; a formula no example
+uses gets `Scene::preset` written to `cache/formula-book/<name>.txt`, which
+the same queue calculates (the queue reads every kind of parameters through
+`animfile::load_scene` since). The texts are labels (`Languages/*.lng`), so
+the book is in all languages.
 
 ## Ambient occlusion and shadows
 

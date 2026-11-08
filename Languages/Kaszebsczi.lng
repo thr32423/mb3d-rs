@@ -30,6 +30,14 @@ code = CSB
 [Labels]
 A360DegreeAnimationForVR=Animacjô 360 grôdów dlô òkùlarów VR: kòżdô klatka to sferiwô panorama, dwa razë szersza jak wësokô; z 'Renderuj stereo animacjã' wideo mô òczë jedno nad drëdżim, a pòlecenié ffmpeg znaczi MP4 dlô òdgrëwników VR
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=Wzór 3D czasu ucékaniô z numericznym òszacowanim òdległoscë: sztôłt dzejô sóm i parłãczi sã z jinyma; pòmalszi jak analiticzné DE.
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=Wzór 3D czasu ucékaniô z analiticznym òszacowanim òdległoscë: chùtczi i mòcny; dobri pierszi wzór.
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=Wzór 4D: dzejô czwiôrtô kòòrdinata i òbrót 4D z òkna Wzorë; numericzné DE, tej je pòmali.
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=Wzór 4D z analiticznym òszacowanim òdległoscë: dzejô òbrót 4D, a renderëje sã chùtkò.
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=Cztërowymiarowô kwaternionowô fòrmùła, jedna iteracëjô:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=Fòrmùła bulba zaproponowónô przez Aexiona:\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\nDodóné dwie òpcëje òbracaniô stałi pòtãżno ò òdlegòscë midzë terôźnyma wektorama Z ë C (Cond Phi=1)\në nôslédné òpcëje Mode:\n(Bitë wôrtnotë Mode)\nBit1: òdwrócë skłôdniczi atan theta\nBit2: òdwrócë skłôdniczi atan phi\nBit3: òdwrócë theta ë phi\nBit4: òdwrócë CyCz przë rechòwanim kąta\nBit5: pòmnóż powerC przez òdlegòscã midzë wektorama Z ë C
@@ -38,6 +46,12 @@ ACalculationIsRunningStopIt=Jidze rechòwanié: nôprzód je zatrzëmôj.
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=Jeden grëbi parmiéń na blok 16, pòtemù 4 piksli maszerëje z rozrzutã blokù òdjãtim òd szacënkù òdległoscë, a marsz kòżdégò piksla zaczinô sã na jegò głãbòkòscë. Do 60 % chùtszi przez òtemkłą przestrzéń; cenczé dzéle mògą sã zgùbic tam, gdze szacënk je dalek òd prôwdë.
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=stałô dodôwónô w kòżdi iteracji; przesëwô sztôłt i łómie jegò symetriã
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=Sztôłt dIFS: bréła z òszacowanim òdległoscë (kùla, pùdełkò, rura ...). Parłãczë jã blós z jinyma wzorama dIFS; zmiészónô ze wzorama czasu ucékaniô dôwô zmiłkã 'formula option is not valid'.
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=Transformacjô dIFS: zgibô, pòwtôrzô abò przecynô sztôłtë dIFS w slotach za nią.
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=Chùtszô metoda jak binarné szëkanié, le mòże prowadzëc do felów, czej DE są lëché
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=òstało pôrã sekùnd
@@ -60,12 +74,20 @@ AMultiplierThatDefinesTheMiximal=Mnożnik, chtëren òkresliwô maksymalną dłu
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=Czas rechòwaniô AO:
 ;AO calc time:
+ARotationAppliedEachIterationIn=òbrót brëkòwóny w kòżdi iteracji, w stãpniach
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=Sinusowi bulb z całkòwitą pòtãdżą ë ze wczasnyma skłôdanyma, jak w Amazing Box.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=sfericznô inwersjô rumù; strzódk i promiéń rozsądzywają, chtërna czãsc òstónie wëwinionô
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
 ASphericalPanoramaGetsTheEXIF=Sferiwô panorama dostôwô kòl znaków Photo Sphere téż EXIF kamerë 360 (RICOH THETA S), tak żebë Facebook pòkôzôł jã jakno òdjimk 360. Dlô kòżdégò òbrôzka 360, chtëren programa zapisywô.
 ;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=Zatrzëmóny abò przerwóny render trzimô to, co wërechòwôł; Rechùj 3D z tima samima parametrama gò kòntinuëje.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=Transformacjô: zmieniwô blós pùnkt i ni mô swòjégò sztôłtu. Brëkùj ji w slocie przed abò midzë wzorama, chtërne dôwają sztôłt, nigdë samégò.
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=Transformacjô sama nick nie pòkazywô: wstawi sztôłt w slot 1, a jã w slot 2, abò òpaczno.
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=Przezérné tło pòtrzebùje klatków PNG: wëbierzë PNG jakno fòrmat wińdzeniô.
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=Wideò pòtrzebùje òbrôzków: wëbierzë BMP, PNG abò JPG jakno fòrmat wińdzeniô.
@@ -88,6 +110,8 @@ AboutHMinLeft=òstało kòl {} h {} min
 ;about {} h {} min left
 AboutMinLeft=òstało kòl {} min
 ;about {} min left
+AboutThisFormula=Ò tim wzorze...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=Absolutnô wielosc absorpcji bënë materiału (wiôldżé zbliżenia brëkùją wiôldżich wôrtnosców). Difuzyjnô farwa òbiektu je téż dlô bëna.
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=Absolutnô òdległosc głôdczich fùnkcjów kòmbinowaniô,\ndlô môłëch wôrtnotów mòże brëkòwac nôùkòwi zôpis, np. 3e-5.\nSpróbùj 1/zoom, żebë dostac przëbliżoną dzejającą wôrtnotã.
@@ -156,6 +180,8 @@ AllFiles=Wszëtczé lopczi
 ;All files
 AllFilesParen=Wszëtczé lopczi (*.*)
 ;All files (*.*)
+AllFormulas=Wszëtczé wzorë
+;All formulas
 AllKinds=Wszëtczé ôrtë
 ;All kinds
 AllRealworldUnitsInMeter=Wszëtczé realné jednostczi w métrach.
@@ -392,6 +418,8 @@ Browse=Przezdrzë...
 ;Browse...
 BuiltIn=wbùdowóné
 ;built in
+BuiltInFormula=Wbùdowóny wzór
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=zbùdowóné bez Intel Open Image Denoise
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -526,6 +554,8 @@ ChangeParams=Zmieni parametrë
 ;Change Params
 ChangeTheJuliaValuesWithRadius=Zmieniwô wôrtnotë Julia bez promiéń, dłëgòsc i szerokòsc geògraficzną
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=zmieniwô blós farwienié, nié sztôłt
+;changes the colouring only, not the shape
 CheckColors=Sprawdzë farwë
 ;Check colors
 CheckThisIfYouWantTo=Zaznaczë, żelë chcesz zrobic animacjã w pãtlë.\nInterpòlacjô zachòwùje sã tak, jakbë za slédną kluczową klatką\nznowa szła pierszô i òdwrotno.
@@ -544,6 +574,8 @@ ChooseASharedFolderFirstOne=nôprzód wëbierzë dzelony katalog (taczi, jaczi w
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=Wëbierzë òpcjã:
 ;Choose Option:
+ChoosesAVariantOfTheFormula=wëbiérô wariant wzoru; blós całé lëczbë
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=Wëbierzë témã:
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code (w terminalu)
@@ -740,6 +772,8 @@ CopyParamsToClipboard=Kòpérëj parametrë do schówkù
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=Kòpérëj kòmandã, żebë jã wkleic w terminalu
 ;Copy the command, to paste it into a terminal
+CopyTheName=Kòpiuj miono
+;Copy the name
 CopyThePostText=Kòpérëj tekst wpisu
 ;Copy the post text
 CopyTheSelectedLineOrAll=Kòpérëj zaznaczoną régã abò wszëtczé pòkazóné régi, czej niżódnô nie je zaznaczonô
@@ -1156,6 +1190,12 @@ EveryNewPictureOfTheMain=Kòżdi nowi òbrôzk głównégò òkna je filtrowóny
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=Wszëtkò
 ;Everything
+Example0=Przikłôd: {0}
+;Example: {0}
+ExampleFiles=Lopczi przikładów
+;Example files
+ExampleFilesUsingIt0=Lopczi przikładów, chtërne gò brëkùją: {0}
+;Example files using it: {0}
 ExchangeAdd=Wëmieni, dodôj
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=Zamieni tã fòrmùłã z nastãpną
@@ -1246,6 +1286,8 @@ Fine=dokł.
 ;fine
 FineTuneThePositionsWithThe=dokładno nastôw pòzycje knąpama ze strzélkama
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=dostrojiwanié òszacowaniô òdległoscë: pòdniesë, czej wiérzch mô dzurë, òbniżë, czej wëzdrzi napùchłi
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=Wëkùńczë òbrôzk
 ;Finish the picture
 FinishedRenderingSlices=Renderowanié skrôwków skùńczoné.
@@ -1308,10 +1350,14 @@ Formula1=Fòrmùła1 •
 ;Formula1 •
 Formula12=Fòrmùła1
 ;Formula1
+FormulaBook=Knéga wzorów
+;Formula book
 FormulaCombinationsInThisBatchThat=Kòmbinacje fòrmùłów w ti partii nowé dlô grawicznégò kartë (jich shaderë są nôprzód kòmpilowóné, pò 10 do 30 s; w tim czasu rechùje procesor, a kòmpilacjô żdaje, czej felëje pamiãcë):
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=Editora fòrmùłów
 ;Formula editor
+FormulaFile0=Lopk wzoru: {0}
+;Formula file: {0}
 FormulaLower=fòrmùła
 ;formula
 FormulaM3f=Fòrmùła (*.m3f)
@@ -1530,6 +1576,8 @@ GoToNext=Biéj do nastãpny
 ;Go to next
 GoneLastSeenSAgo=felëje (slédno widzóny {} s temù)
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=Dobri pierszi wzór: mało wôrtnotów, chùtczi, i lopczi przikładów na zôczątk.
+;Good first formula: few values, fast, and example files to start from.
 Grain=Zôrno
 ;Grain
 GraphicsCard=Graficznô karta
@@ -1582,6 +1630,8 @@ High=wësoczi
 ;high
 HighlightsMoveAsInThePictures=Blëszczi sã przesuwają jak na òbrôzkach. Splat bierze kòl 160 bajtów przë 2, 68 pò wëłączeniu.
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=Pòdpòwiescë:
+;Hints:
 History=Historiô
 ;History
 HistoryThePicturesCalculatedTheFiles=Historiô: wërechòwóné òbrôzczi, òtemkłé i zapisóné lopczi (klikni, żebë przezérac)
@@ -1590,6 +1640,8 @@ HoldShiftKeyForFinerSteps=(Trzëmôj Shift dlô drobniészich kroków)
 ;(Hold Shift key for finer steps)
 Hotkeys=Skrótë
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=kùli kòpiów w kòpiach mô sztôłt; kòżdi równik kòsztëje czas
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=Wiele swiatła wòda przepùszczô (òd 0 do 1, 0: nieprzezérnô): z òdbicama (Kùńcowô òbróbka) abò w Monte Carlo fraktal je widzec pòd wiéchrzëzną, przesëniãti przez załómanié ë zanikający z głãbòkòscą
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=Jak mòckò płaszczëzna òdbijô (òd 0 do 1): ji pòłësczi ë zdrzadło, czej są rechòwóné òdbicé (Kùńcowô òbróbka)
@@ -1602,6 +1654,8 @@ HowMurkyTheWaterIsHow=Jak mãtnô je wòda: jak chùtkò gasnie w ni swiatło, n
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=Jak mòcny je szëm, chtëren je ùsëwóny (1 do 30, jak "Denoise DCT" w GIMP).\nWëższé ùsëwô wicy szëmù, a téż wicy drobnëch detalów.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=jak wôrtnota zmieniwô sã z lëczbą iteracjów; 0 trzimô jã stałą
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=Jak gãsté są chmùrë (1: pełnô warstwa przepùszczô kòl 2 % swiatła) ë jak wiele nieba pòkriwają (òd 0 do 1)
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Jak nen kòmpùtr je wëpisóny w roju
@@ -1882,6 +1936,8 @@ KeysThatBringAWindowTo=Klawisze, co wëcygają òkno na wiéch z kòżdégò òk
 ;Keys that bring a window to the front from any window
 Kind=Ôrt
 ;Kind
+Kind0=Ôrt: {0}
+;Kind: {0}
 LGamma05=L-Gamma:  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=SMÙDŻI WIDU
@@ -2104,6 +2160,10 @@ MakesReflectionsALittleDiffuseValue=Robi òdbicô përznã rozpròszoné, wôrtn
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=Ùsôdzanié wideò...
 ;Making the video...
+MandelbulberSettingsFract=Nastôwë Mandelbulbera (*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=Wiele wôrtnotów: zmieniwôj pò jedny i zachòwùj to, co cë sã widzy, w òknie Historiô.
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=Mapa nie\nnalazłô
 ;Map not\nfound
 MapNumber=Numer mapë
@@ -2284,6 +2344,8 @@ MutationType=Ôrt mùtacji
 ;Mutation type
 N0No255FullTransparency=0: bez, 255: Całô przezérnosc
 ;0: no, 255: Full transparency
+N0Of1Formulas={0} z {1} wzorów
+;{0} of {1} formulas
 N0To1DarkerCorners=0 do 1: cemniészé nórtë
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 do 1: czerwòné ë mòdré òbrąbczi kù nórtóm, jak je pòkazywô òbiektiw
@@ -2322,14 +2384,22 @@ N360VR=VR 360°
 ;360° VR
 N3DAnalyticFormula=Analiticznô fòrmùła 3D
 ;3D analytic formula
+N3DEscapeTimeFormulas=Wzorë 3D czasu ucékaniô
+;3D escape-time formulas
 N3DFormula=Fòrmùła 3D
 ;3D formula
+N3DFormulasWithAnalyticDEFast=Wzorë 3D z analiticznym DE (chùtczé)
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=Analiticznô fòrmùła 4D
 ;4D analytic formula
 N4DFormula=Fòrmùła 4D
 ;4D formula
+N4DFormulas=Wzorë 4D
+;4D formulas
+N4DFormulasWithAnalyticDE=Wzorë 4D z analiticznym DE
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=Òbrôcanié 4D całégò bulba:
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2388,8 +2458,12 @@ No=nié
 ;no
 No2=Nié
 ;No
+NoDescriptionFromTheAuthor=Felëje òpisënk òd ùsôdzcë.
+;No description from the author.
 NoDoFOnTiles=Bez DoF na kachlach.
 ;No DoF on tiles.
+NoExampleFileUsesItTry=Niżóden lopk przikładu gò nie brëkùje; wëpróbùj gò nôprzód samégò, pòtemù w slocie 2 za Amazing Box.
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=w lopkù nie ma scónów
 ;no faces in the file
 NoFileAdded=Nie dodóny niżóden lopk
@@ -2588,6 +2662,8 @@ OpenTextParameters=Òtemkni parametrë jakno tekst
 ;Open text parameters
 OpenTheAnimationMaker=Òtemkni twòrzëdło animacjów
 ;Open the animation maker
+OpenTheExample=Òtemkni przikłôd
+;Open the example
 OpenTheFolder=Òtemkni katalog
 ;Open the folder
 OpenTheFolderOfTheFile=Òtemkni katalog lopka
@@ -2710,6 +2786,8 @@ Pass=przeńdzënk {}
 ;pass {}
 Passes=Przebiedżi
 ;Passes
+PatienceA4DFormulaWithNumerical=Cerplëwòscë: wzór 4D z numericznym DE renderëje sã pòmali; zacznij òd môłégò i pòdniesë detale pózni.
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=Wstrzëmôj renderowanié
 ;Pause rendering
 PausedPressToContinue=Wstrzëmóné, wcësni, bë jic dali
@@ -2884,6 +2962,8 @@ RaystepMultiplier=Mnożnik krokù parminia:
 ;Raystep multiplier:
 RaystepSubDEstop=Krok parminia minus DEstop:
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=Czëtanié lopków przikładów ...
+;Reading the example files ...
 ReadingTheHistoryEntries=Czëtanié historii... {} wpisów
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=Czëtô lopczi jãzëka znowa, pò zmianie jednégò z nich
@@ -3062,6 +3142,8 @@ RoughImage=zgrëbny òbrôzk
 ;rough image
 Roughness=Chropòwatosc
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=zaòkrãglô kantë; môłé wôrtnotë zachòwùją sztôłt, wiôldżé gò roztôpiają
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=Nórt Rout X, Y
 ;Rout angle of X, Y
 RoutAngleOfXZ=Nórt Rout X, Z
@@ -3188,6 +3270,8 @@ ScaleTheValuesByTheSelected=Skalëje wôrtnotë ò wëbróny procent.
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=Wôrtnota skalë zôczątkòwi fòrmùłë, mô cësk na dokładnosc DE
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=skalëje jednã kòòrdinatã w kòżdi iteracji; -1 jã òdbijô, 0 spłaszczô
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=Skalëje maksymalną długòsc rechòwónëch òkòlnëch parmieniów.\nBrëkùj wôrtnoscë wikszi òd 1, żebë dac céniom wicy głãbi,\nwôrtnoscë niżi 1 dôwają barżi môlowé cénie.
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=Pòdzérk skanowaniô
@@ -3404,6 +3488,8 @@ StartBatchRendering=Zacznij serijné renderowanié
 ;Start batch rendering
 StartFrom=Zaczni òd
 ;Start from
+StartFromAnExampleOpenOne=Zacznij òd przikładu: òtemkni gò i zmieniwôj wôrtnotë pò kąsku.
+;Start from an example: open one and change the values a little at a time.
 StartIndex=Pòczątkòwi indeks:
 ;Start index:
 StartRendering=Zacznij renderowanié
@@ -3474,6 +3560,8 @@ StrengthOfDynamicFog=Mòc dinamiczny dôczi.
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=Mòc, wiôlgòsc (jednotczi fraktala) ë drobnosc (0.2 gładkò do 0.8 zôrnisto) rzezbë
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=rozcygô rum w kòżdi iteracji; kòl 2 abò 3 dôwô klasyczny sztôłt, minus gò òdbijô, wôrtnotë midzë 1 a 1,5 gò roztôpiają
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=Rozcygô górné ë dólné partie, mòże przëdatné dlô zwëczajnégò òbrôzka w òptacji fùl kùlë.
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=Mnożnik lëczbë\npòdklatków:
@@ -3552,6 +3640,8 @@ TheBailoutValueForEscapetimeFormulas=Wôrtnota bailout dlô fòrmùłów escapet
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=Radius rozmazaniô bãdze ògrańczony do ti wôrtnoscë.\nMòże przërëchlëc renderowanié, czej radius w niechtërnëch dzélach òbrôzka robi sã baro wiôldżi.
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=grańca pùdełkòwégò zgibu: co leżi dali, je òdbijóné nazôd; 1 to klasyczné pùdełkò, mniészé zgibô mòcni
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=Rechòwanié sã nie ùdało: {}
 ;The calculation failed: {}
 TheCalculationFailedLower=rechòwanié sã nie ùdało
@@ -3590,6 +3680,8 @@ TheEntriesUnderTheirDaysA=Wpisë pòd swòjima dniama; wpisë i òbrôzczi dnia 
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=Nie dało sã rëmnąc wpisu.
 ;The entry could not be removed.
+TheExponentOfTheBulb8=wëkładnik bùlba; 8 dôwô klasyczny Mandelbulb, 2 je glatczé, wëższé wôrtnotë dôwają wicy zgibów
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=Lopka ju tam ni ma.
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=Lopk <{}.m3f> ju je. Czë chcesz gò nadpisac?
@@ -3600,10 +3692,18 @@ TheFirstFocusPointTheValue=(Pierszi) pùnkt òstroscë.\nWôrtnosc je wzglãdno 
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=Przelot nie mòże sã tu zacząc: {}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=przesëniãcé zgibu na jedny òsë; 1 to czësti sztôłt, jiné wôrtnotë przesëwają kòpie
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=katalog nie je (abò nie je przëstãpny)
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=Sóm wzór, z domëslnyma wôrtnotama
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=Knéga wzorów: kòżdi wzór słowama, z òbrôzkã, òbjasnionyma wôrtnotama i lopkama przikładów
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=Miono fòrmùłë pòwinno sã zaczënac òd "JIT", bë òdrozniwac te fòrmùłë òd fòrmùłów na spòdlim ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=czwiôrtô kòòrdinata: to ùstôwiô ji zôczątk bùten 0; òbrót 4D jã òbrôcô
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=Fraktala nie je w żódnym z widoków.
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=Fraktal z przédnégò òkna jakno gaussowsczé splatë, żebë òbzerac gò ze wszëtczich stronów w Blenderze (òd 5.3) ë jinëch przezérnikach splatów. Je rechòwóny z wielu kerënków, a kòżdi piksel stôwô sã splatã w swòji farwie.
@@ -3624,6 +3724,8 @@ TheImageSizeChangedCalculateThe=wiôlgòsc òbrôzka sã zmieniła: wërechùj �
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=Trib its.trap zanôlégô òd wërechòwóny òptacji w karce "Farwienié".
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=stałô Julii blós tegò wzoru; trib Julii scenë je w òknie Wzorë
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=Slédnô kluczowô klatka
 ;The last keyframe
 TheLastSessionCrashed=Òstatnô sesjô miała awariã: {}. Wiãcy w òknie Dzénnik (ikòna na pasku titla).
@@ -3656,6 +3758,8 @@ ThePictureSFinishingAfterAll=Wëkùńczenié òbrôzka pò wszëtczich jinszich 
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=Farwa płaszczëznë (klëknij, żebë zmienic)
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=promiéń bënowi kùlë sfericznégò zgibu; co leżi bëne, je rozdmùchiwóné; 0,5 to klasycznô wôrtnota, 0 gò wëłącziwô
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=Òbrôcanié je wëkònywóné wkół strzódka (Xmid, Ymid, Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Òbrotë są wëkònywóné pò se, nôprzód w płaszczëznie XW, na kùńcu ZW.
@@ -3670,6 +3774,8 @@ TheSharedFolderOfTheSwarm=Dzelony katalog roju
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=Sinusowi bulb, w chtërnym mòże bëc ùżëwóné lëbòwné wôrtnotë pòtãdżi; rechòwanié je pòwòlniészé jak przë całkòwitëch pòtãdżach.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=miara spòdlowégò sztôłtu, w jednostkach scenë
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=Wiôlgòsc ksztôłtów chmùrów w jednotkach fraktala ë jich farwa (klëknij)
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=Wiôlgòsc kachlów
@@ -3690,6 +3796,8 @@ TheViewIsFilledWithThe=pòzdrzatk je fùl fraktala
 ;the view is filled with the fractal
 TheViewShowsOnlySky=pòzdrzatk wëkazëje le niebò
 ;the view shows only sky
+TheWallThicknessOfAHollow=grëbòsc scanë pùstégò sztôłtu
+;the wall thickness of a hollow shape
 Themes=Témë
 ;Themes
 ThereIsAFileAlready=Lopk {} ju je.
@@ -3794,6 +3902,8 @@ TracingObject=Sledzenié òbiektu...
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=Szlachùje za stanã renderowaniô w systemie lopków, żebë wiele instancjów mògło renderowac tã samą sekwencjã lopków bez nadpisywaniô robòtë jinëch wãzłów
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=Transformacje (blós w sparłãczenim)
+;Transformations (only in combination)
 Transparency=Przezérnosc
 ;Transparency
 TransparencyIntensity=Mòc przezérnoscë
@@ -3864,6 +3974,8 @@ UseAmbientShadowsFromOriginalM3I=Brëkùj cénie òtoczeniô z òriginalnégò l
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=Brëkùj domëslną òrientacjã
 ;Use default orientation
+UseInTheFormulasWindow=Brëkùj w òknie Wzorë
+;Use in the Formulas window
 UseItInAnimationsToFix=Brëkùj tegò w animacjach, żebë przëwiązac widë do scenerii.
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=Brëkùj leno jakno drëdżi òptacji, jeżlë normalné (czerënk pòwiérzchni dlô òswieceniô) wëzdrzą lëchò.
@@ -3892,6 +4004,8 @@ Value=Wôrtnota:
 ;Value:
 ValueNotGuilty=Lëchô wôrtnota
 ;Value not guilty
+Values=Wôrtnotë:
+;Values:
 ValuesHaveAFractionFieldThat=// mają pòle ùłómka, jaczé nie je 0.
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=Zmieniwôj DEstop wedle FOV:
@@ -3954,6 +4068,8 @@ WarningsAndErrors=Bôczënczi i felë
 ;Warnings and errors
 WasCopiedIntoTheMapsFolder={} òstôł skòpérowóny do katalogù mapów jakno mapa {}: {}
 ;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=Bôczë na òbrót 4D (òkno Wzorë): òn całowno zmieniwô sztôłt.
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=Wòda:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)

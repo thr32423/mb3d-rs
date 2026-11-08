@@ -69,7 +69,7 @@ impl Default for BatchOptions {
 pub fn is_param_file(p: &Path) -> bool {
     p.extension()
         .and_then(|e| e.to_str())
-        .map(|e| matches!(e.to_ascii_lowercase().as_str(), "m3p" | "m3i" | "m3s" | "txt"))
+        .map(|e| matches!(e.to_ascii_lowercase().as_str(), "m3p" | "m3i" | "m3s" | "txt" | "fract"))
         .unwrap_or(false)
 }
 

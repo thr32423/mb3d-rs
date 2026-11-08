@@ -59,7 +59,7 @@ pub enum Kind {
 impl Kind {
     pub fn of(path: &Path) -> Kind {
         match path.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).as_deref() {
-            Some("m3p" | "txt") => Kind::Params,
+            Some("m3p" | "txt" | "fract") => Kind::Params,
             Some("m3i") => Kind::M3i,
             Some("png" | "jpg" | "jpeg" | "bmp" | "gif" | "tif" | "tiff" | "pgm") => Kind::Image,
             Some("m3a") => Kind::Animation,

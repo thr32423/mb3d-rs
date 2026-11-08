@@ -30,6 +30,14 @@ code = ID
 [Labels]
 A360DegreeAnimationForVR=Animasi 360 derajat untuk headset VR: setiap frame sebuah panorama bola, dua kali lebih lebar daripada tingginya; dengan 'Render animasi stereo' video berisi kedua mata atas-bawah, dan perintah ffmpeg menandai MP4 untuk pemutar VR
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=Rumus 3D waktu lolos dengan perkiraan jarak numerik: bentuknya bekerja sendiri dan bisa digabung dengan yang lain; lebih lambat dari DE analitik.
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=Rumus 3D waktu lolos dengan perkiraan jarak analitik: cepat dan andal; rumus pertama yang baik.
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=Rumus 4D: koordinat keempat dan rotasi 4D di jendela Rumus berpengaruh; DE numerik, jadi lambat.
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=Rumus 4D dengan perkiraan jarak analitik: rotasi 4D berpengaruh, dan rendernya cepat.
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=Formula quaternion 4d, satu iterasi:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=Formula bulb seperti yang disarankan oleh Aexion:\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\nDitambahkan dua opsi untuk memutar konstanta dengan pangkat menurut jarak vektor Z dan C saat ini (Cond Phi=1),\ndan opsi Mode berikut:\n(Bit dari nilai Mode)\nBit1: Balik komponen atan theta\nBit2: Balik komponen atan phi\nBit3: Balik theta dan phi\nBit4: Balik CyCz untuk perhitungan sudut\nBit5: Kalikan powerC dengan jarak vektor Z dan C
@@ -38,6 +46,12 @@ ACalculationIsRunningStopIt=Perhitungan sedang berjalan: hentikan dulu.
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=Satu sinar kasar per blok 16, lalu 4 piksel melakukan march dengan sebaran blok dikurangkan dari estimasi jarak, dan march setiap piksel mulai dari kedalamannya. Hingga 60 % lebih cepat melewati ruang terbuka; bagian tipis bisa hilang di tempat estimasinya jauh meleset.
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=konstanta yang ditambahkan tiap iterasi; menggeser bentuk dan memecah simetrinya
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=Bentuk dIFS: benda padat dengan perkiraan jarak (bola, kotak, tabung ...). Gabungkan hanya dengan rumus dIFS lain; dicampur dengan rumus waktu lolos muncul galat 'formula option is not valid'.
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=Transformasi dIFS: menekuk, mengulang atau memotong bentuk dIFS di slot sesudahnya.
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=Metode yang lebih cepat daripada binsearch, tetapi dapat gagal jika DE-nya buruk
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=tersisa beberapa detik
@@ -60,12 +74,20 @@ AMultiplierThatDefinesTheMiximal=Pengali yang menentukan panjang maksimal perhit
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=Waktu hitung AO:
 ;AO calc time:
+ARotationAppliedEachIterationIn=rotasi yang diterapkan tiap iterasi, dalam derajat
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=Bulb sinus pangkat bilangan bulat dengan pelipatan sebelumnya, seperti pada amazing box.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=inversi bola pada ruang; pusat dan jari-jarinya menentukan bagian mana yang dibalik
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
 ASphericalPanoramaGetsTheEXIF=Panorama bola mendapat kamera EXIF dari kamera 360 (RICOH THETA S) selain tag Photo Sphere, sehingga Facebook menampilkannya sebagai foto 360. Untuk setiap gambar 360 yang disimpan program.
 ;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=Render yang dihentikan atau terputus menyimpan apa yang sudah dihitung; Hitung 3D dengan parameter yang sama akan melanjutkannya.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=Transformasi: hanya mengubah titik dan tidak punya bentuk sendiri. Pakai di slot sebelum atau di antara rumus pembentuk, jangan sendiri.
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=Transformasi sendiri tidak menampilkan apa pun: taruh bentuk di slot 1 dan ini di slot 2, atau sebaliknya.
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=Latar belakang transparan memerlukan frame PNG: pilih PNG sebagai format keluaran.
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=Video memerlukan gambar: pilih BMP, PNG, atau JPG sebagai format keluaran.
@@ -88,6 +110,8 @@ AboutHMinLeft=sekitar {} jam {} mnt lagi
 ;about {} h {} min left
 AboutMinLeft=sekitar {} mnt lagi
 ;about {} min left
+AboutThisFormula=Tentang rumus ini...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=Jumlah absorpsi absolut di dalam material (zoom tinggi memerlukan nilai besar). Warna difus objek juga berlaku untuk bagian dalam.
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=Jarak absolut fungsi gabungan halus,\nAnda dapat memakai notasi ilmiah seperti 3e-5 untuk nilai kecil.\nCoba 1/zoom untuk mendekati nilai yang berfungsi.
@@ -156,6 +180,8 @@ AllFiles=Semua file
 ;All files
 AllFilesParen=Semua file (*.*)
 ;All files (*.*)
+AllFormulas=Semua rumus
+;All formulas
 AllKinds=Semua jenis
 ;All kinds
 AllRealworldUnitsInMeter=Semua satuan dunia nyata dalam meter.
@@ -392,6 +418,8 @@ Browse=Telusuri...
 ;Browse...
 BuiltIn=bawaan
 ;built in
+BuiltInFormula=Rumus bawaan
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=dibuat tanpa Intel Open Image Denoise
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -526,6 +554,8 @@ ChangeParams=Ubah Param
 ;Change Params
 ChangeTheJuliaValuesWithRadius=Ubah nilai julia dengan radius, bujur, dan lintang
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=hanya mengubah pewarnaan, bukan bentuk
+;changes the colouring only, not the shape
 CheckColors=Periksa warna
 ;Check colors
 CheckThisIfYouWantTo=Centang ini jika Anda ingin membuat animasi berulang.\nInterpolasi berlaku seolah-olah setelah keyframe terakhir\ndatang keyframe pertama lagi dan sebaliknya.
@@ -544,6 +574,8 @@ ChooseASharedFolderFirstOne=pilih folder bersama terlebih dahulu (yang dapat dil
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=Pilih Opsi:
 ;Choose Option:
+ChoosesAVariantOfTheFormula=memilih varian rumus; hanya bilangan bulat
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=Pilih Tema:
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code (di terminal)
@@ -740,6 +772,8 @@ CopyParamsToClipboard=Salin Param ke Clipboard
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=Salin perintah untuk ditempel di terminal
 ;Copy the command, to paste it into a terminal
+CopyTheName=Salin nama
+;Copy the name
 CopyThePostText=Salin teks postingan
 ;Copy the post text
 CopyTheSelectedLineOrAll=Salin baris yang dipilih, atau semua baris yang ditampilkan jika tidak ada yang dipilih
@@ -1156,6 +1190,12 @@ EveryNewPictureOfTheMain=Setiap gambar baru di jendela utama difilter (yang disi
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=Semuanya
 ;Everything
+Example0=Contoh: {0}
+;Example: {0}
+ExampleFiles=Berkas contoh
+;Example files
+ExampleFilesUsingIt0=Berkas contoh yang memakainya: {0}
+;Example files using it: {0}
 ExchangeAdd=Tukar, tambah
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=Tukar formula ini dengan yang berikutnya
@@ -1246,6 +1286,8 @@ Fine=halus
 ;fine
 FineTuneThePositionsWithThe=atur posisi secara halus dengan tombol panah
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=penyetelan halus perkiraan jarak: naikkan bila permukaan berlubang, turunkan bila tampak membengkak
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=Selesaikan gambar
 ;Finish the picture
 FinishedRenderingSlices=Render irisan selesai.
@@ -1308,10 +1350,14 @@ Formula1=Formula1 •
 ;Formula1 •
 Formula12=Formula1
 ;Formula1
+FormulaBook=Buku rumus
+;Formula book
 FormulaCombinationsInThisBatchThat=Kombinasi rumus dalam batch ini yang baru bagi kartu grafis (shader-nya dikompilasi lebih dulu, masing-masing 10 sampai 30 detik; CPU menghitung sementara itu, dan kompilasi menunggu selama memori kurang):
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=Editor formula
 ;Formula editor
+FormulaFile0=Berkas rumus: {0}
+;Formula file: {0}
 FormulaLower=formula
 ;formula
 FormulaM3f=Formula (*.m3f)
@@ -1530,6 +1576,8 @@ GoToNext=Ke berikutnya
 ;Go to next
 GoneLastSeenSAgo=hilang (terakhir terlihat {} d lalu)
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=Rumus pertama yang baik: nilainya sedikit, cepat, dan ada berkas contoh untuk memulai.
+;Good first formula: few values, fast, and example files to start from.
 Grain=Butiran
 ;Grain
 GraphicsCard=Kartu grafis
@@ -1582,6 +1630,8 @@ High=tinggi
 ;high
 HighlightsMoveAsInThePictures=Kilauan bergerak seperti pada gambar. Satu splat memakan sekitar 160 byte pada 2, 68 bila mati.
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=Petunjuk:
+;Hints:
 History=Riwayat
 ;History
 HistoryThePicturesCalculatedTheFiles=Riwayat: gambar yang dihitung, file yang dibuka dan disimpan (klik untuk menelusuri)
@@ -1590,6 +1640,8 @@ HoldShiftKeyForFinerSteps=(Tahan tombol Shift untuk langkah lebih halus)
 ;(Hold Shift key for finer steps)
 Hotkeys=Tombol pintas
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=berapa banyak salinan di dalam salinan yang dimiliki bentuk; tiap tingkat memakan waktu
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=Seberapa banyak cahaya yang diloloskan air (0 sampai 1, 0: buram): dengan pantulan (Pasca-proses) atau di Monte Carlo fraktal terlihat di bawah permukaan, dibelokkan oleh pembiasan dan memudar seiring kedalaman
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=Seberapa kuat bidang memantul (0 sampai 1): kilaunya, dan cerminnya bila pantulan dihitung (Pasca-proses)
@@ -1602,6 +1654,8 @@ HowMurkyTheWaterIsHow=Seberapa keruh air: seberapa cepat cahaya meredup di dalam
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=Seberapa kuat derau yang dihapus (1 sampai 30, seperti "Denoise DCT" GIMP).\nNilai lebih tinggi menghapus lebih banyak derau, dan lebih banyak detail halus.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=bagaimana nilai berubah dengan jumlah iterasi; 0 menjaganya tetap
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=Seberapa tebal awannya (1: lapisan penuh meloloskan sekitar 2 % cahaya) dan seberapa banyak langit yang tertutup (0 sampai 1)
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=Nama komputer ini di daftar swarm
@@ -1882,6 +1936,8 @@ KeysThatBringAWindowTo=Tombol yang membawa jendela ke depan dari jendela mana pu
 ;Keys that bring a window to the front from any window
 Kind=Jenis
 ;Kind
+Kind0=Jenis: {0}
+;Kind: {0}
 LGamma05=L-Gamma:  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=GORESAN CAHAYA
@@ -2104,6 +2160,10 @@ MakesReflectionsALittleDiffuseValue=Membuat refleksi sedikit difus, rentang nila
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=Membuat video...
 ;Making the video...
+MandelbulberSettingsFract=Pengaturan Mandelbulber (*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=Banyak nilai: ubah satu per satu dan simpan yang kamu suka dengan jendela Riwayat.
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=Peta tidak\nditemukan
 ;Map not\nfound
 MapNumber=Nomor peta
@@ -2284,6 +2344,8 @@ MutationType=Jenis mutasi
 ;Mutation type
 N0No255FullTransparency=0: tidak, 255: Transparansi penuh
 ;0: no, 255: Full transparency
+N0Of1Formulas={0} dari {1} rumus
+;{0} of {1} formulas
 N0To1DarkerCorners=0 sampai 1: sudut lebih gelap
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 sampai 1: pinggiran merah dan biru ke arah sudut, seperti yang ditunjukkan lensa
@@ -2322,14 +2384,22 @@ N360VR=VR 360°
 ;360° VR
 N3DAnalyticFormula=Formula 3D analitis
 ;3D analytic formula
+N3DEscapeTimeFormulas=Rumus 3D waktu lolos
+;3D escape-time formulas
 N3DFormula=Formula 3D
 ;3D formula
+N3DFormulasWithAnalyticDEFast=Rumus 3D dengan DE analitik (cepat)
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=Formula 4D analitis
 ;4D analytic formula
 N4DFormula=Formula 4D
 ;4D formula
+N4DFormulas=Rumus 4D
+;4D formulas
+N4DFormulasWithAnalyticDE=Rumus 4D dengan DE analitik
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=Rotasi 4D seluruh bulb:
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2388,8 +2458,12 @@ No=tidak
 ;no
 No2=Tidak
 ;No
+NoDescriptionFromTheAuthor=Tidak ada keterangan dari pembuatnya.
+;No description from the author.
 NoDoFOnTiles=Tidak ada DoF pada tile.
 ;No DoF on tiles.
+NoExampleFileUsesItTry=Tidak ada berkas contoh yang memakainya; coba dulu sendiri, lalu di slot 2 di belakang Amazing Box.
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=tidak ada face dalam file
 ;no faces in the file
 NoFileAdded=Tidak ada file yang ditambahkan
@@ -2588,6 +2662,8 @@ OpenTextParameters=Buka parameter teks
 ;Open text parameters
 OpenTheAnimationMaker=Buka pembuat animasi
 ;Open the animation maker
+OpenTheExample=Buka contoh
+;Open the example
 OpenTheFolder=Buka folder
 ;Open the folder
 OpenTheFolderOfTheFile=Buka folder file
@@ -2710,6 +2786,8 @@ Pass=lintasan {}
 ;pass {}
 Passes=Lintasan
 ;Passes
+PatienceA4DFormulaWithNumerical=Sabar: rumus 4D dengan DE numerik dirender lambat; mulai kecil dan naikkan detail nanti.
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=Jeda render
 ;Pause rendering
 PausedPressToContinue=Dijeda, tekan untuk melanjutkan
@@ -2884,6 +2962,8 @@ RaystepMultiplier=Pengali langkah sinar:
 ;Raystep multiplier:
 RaystepSubDEstop=Langkah sinar sub DEstop:
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=Membaca berkas contoh ...
+;Reading the example files ...
 ReadingTheHistoryEntries=Membaca riwayat... {} entri
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=Membaca ulang file bahasa, setelah Anda mengedit salah satunya
@@ -3062,6 +3142,8 @@ RoughImage=gambar kasar
 ;rough image
 Roughness=Kekasaran
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=membulatkan tepi; nilai kecil menjaga bentuk, nilai besar melelehkannya
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=Sudut rout X, Y
 ;Rout angle of X, Y
 RoutAngleOfXZ=Sudut rout X, Z
@@ -3188,6 +3270,8 @@ ScaleTheValuesByTheSelected=Skalakan nilai dengan persentase yang dipilih.
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=Nilai skala formula awal, memengaruhi akurasi DE
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=menskalakan satu koordinat tiap iterasi; -1 mencerminkannya, 0 meratakannya
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=Menskalakan panjang maksimum sinar ambien yang dihitung.\nGunakan nilai lebih dari 1 untuk memberi kedalaman lebih pada bayangan,\nnilai di bawah 1 memberi bayangan yang lebih lokal.
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=Pratinjau Pindai
@@ -3404,6 +3488,8 @@ StartBatchRendering=Mulai render batch
 ;Start batch rendering
 StartFrom=Mulai dari
 ;Start from
+StartFromAnExampleOpenOne=Mulai dari contoh: buka satu dan ubah nilainya sedikit demi sedikit.
+;Start from an example: open one and change the values a little at a time.
 StartIndex=Indeks awal:
 ;Start index:
 StartRendering=Mulai render
@@ -3474,6 +3560,8 @@ StrengthOfDynamicFog=Kekuatan kabut dinamis.
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=Kekuatan, ukuran (satuan fraktal) dan kehalusan (0.2 halus sampai 0.8 kasar) relief
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=merentangkan ruang tiap iterasi; sekitar 2 atau 3 memberi bentuk klasik, tanda minus mencerminkannya, nilai antara 1 dan 1,5 melelehkannya
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=Meregangkan bagian atas dan bawah, mungkin berguna untuk gambar biasa dalam opsi bola penuh.
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=Pengali jumlah\nsubframe:
@@ -3552,6 +3640,8 @@ TheBailoutValueForEscapetimeFormulas=Nilai bailout untuk formula escapetime.\nJi
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=Radius blur akan dibatasi pada nilai ini.\nDapat mempercepat render saat radius menjadi sangat besar di beberapa bagian gambar.
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=batas lipatan kotak: yang di luarnya dicerminkan kembali; 1 adalah kotak klasik, lebih kecil melipat lebih banyak
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=Perhitungan gagal: {}
 ;The calculation failed: {}
 TheCalculationFailedLower=perhitungan gagal
@@ -3590,6 +3680,8 @@ TheEntriesUnderTheirDaysA=Entri dikelompokkan per hari; entri dan gambar suatu h
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=Entri tidak dapat dihapus.
 ;The entry could not be removed.
+TheExponentOfTheBulb8=pangkat bulb; 8 memberi Mandelbulb klasik, 2 halus, nilai lebih tinggi memberi lebih banyak lipatan
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=File sudah tidak ada.
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=File <{}.m3f> sudah ada. Apakah Anda ingin menimpanya?
@@ -3600,10 +3692,18 @@ TheFirstFocusPointTheValue=Titik fokus (pertama).\nNilainya relatif terhadap nil
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=Terbang menembus tidak dapat dimulai di sini: {}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=geseran lipatan pada satu sumbu; 1 adalah bentuk murni, nilai lain menggeser salinannya
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=folder tidak ada (atau tidak dapat dijangkau)
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=Rumus itu sendiri, dengan nilai bawaannya
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=Buku rumus: setiap rumus dalam kata-kata, dengan gambar, nilai yang dijelaskan dan berkas contoh
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=Nama formula sebaiknya diawali "JIT" untuk membedakan formula tersebut dari formula berbasis ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=koordinat keempat: ini memulainya menjauh dari 0; rotasi 4D memutarnya
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=Fraktal tidak ada di tampilan mana pun.
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=Fraktal jendela utama sebagai splat Gaussian, untuk dilihat dari segala sisi di Blender (5.3 dan yang lebih baru) dan penampil splat lainnya. Fraktal dihitung dari beberapa arah, dan setiap piksel menjadi splat dengan warnanya.
@@ -3624,6 +3724,8 @@ TheImageSizeChangedCalculateThe=ukuran gambar berubah: hitung gambar lagi
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=Mode its.trap bergantung pada opsi yang dihitung di tab "Pewarnaan".
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=konstanta Julia rumus ini saja; mode Julia adegan ada di jendela Rumus
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=Keyframe terakhir
 ;The last keyframe
 TheLastSessionCrashed=Sesi terakhir crash: {}. Selengkapnya di jendela Log (ikon di bilah judul).
@@ -3656,6 +3758,8 @@ ThePictureSFinishingAfterAll=Penyelesaian gambar setelah semua tahap lain: ekspo
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=Warna bidang (klik untuk mengubah)
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=jari-jari bola dalam dari lipatan bola; yang di dalamnya dikembangkan; 0,5 nilai klasik, 0 mematikannya
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=Rotasi dilakukan di sekitar Titik tengah (Xmid, Ymid, Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=Rotasi dilakukan berurutan, pertama bidang XW, terakhir bidang ZW.
@@ -3670,6 +3774,8 @@ TheSharedFolderOfTheSwarm=Folder bersama swarm
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=Bulb sinus yang dapat memakai nilai pangkat sembarang, perhitungannya lebih lambat daripada pangkat bilangan bulat.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=ukuran bentuk dasar, dalam satuan adegan
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=Ukuran bentuk awan dalam satuan fraktal, dan warnanya (klik)
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=Ukuran tile
@@ -3690,6 +3796,8 @@ TheViewIsFilledWithThe=tampilan dipenuhi fraktal
 ;the view is filled with the fractal
 TheViewShowsOnlySky=tampilan hanya menunjukkan langit
 ;the view shows only sky
+TheWallThicknessOfAHollow=tebal dinding bentuk berongga
+;the wall thickness of a hollow shape
 Themes=Tema
 ;Themes
 ThereIsAFileAlready=Sudah ada file {}.
@@ -3794,6 +3902,8 @@ TracingObject=Menelusuri objek...
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=Lacak status render melalui sistem file agar beberapa instans dapat merender urutan file yang sama tanpa menimpa pekerjaan node lain
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=Transformasi (hanya dalam kombinasi)
+;Transformations (only in combination)
 Transparency=Transparansi
 ;Transparency
 TransparencyIntensity=Intensitas transparansi
@@ -3864,6 +3974,8 @@ UseAmbientShadowsFromOriginalM3I=Gunakan bayangan ambien dari file M3I asli
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=Gunakan orientasi bawaan
 ;Use default orientation
+UseInTheFormulasWindow=Gunakan di jendela Rumus
+;Use in the Formulas window
 UseItInAnimationsToFix=Gunakan dalam animasi untuk menambatkan cahaya pada pemandangan.
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=Gunakan hanya sebagai pilihan kedua jika normal (arah permukaan untuk pencahayaan) tampak buruk.
@@ -3892,6 +4004,8 @@ Value=Nilai:
 ;Value:
 ValueNotGuilty=Nilai tidak valid
 ;Value not guilty
+Values=Nilai:
+;Values:
 ValuesHaveAFractionFieldThat=// nilai memiliki bidang pecahan yang bukan 0.
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=Variasikan DEstop pd FOV:
@@ -3954,6 +4068,8 @@ WarningsAndErrors=Peringatan dan galat
 ;Warnings and errors
 WasCopiedIntoTheMapsFolder={} disalin ke folder peta sebagai peta {}: {}
 ;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=Perhatikan rotasi 4D (jendela Rumus): ia mengubah bentuk sepenuhnya.
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=Air:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)

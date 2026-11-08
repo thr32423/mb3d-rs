@@ -1,0 +1,24 @@
+# Mandelbulber settings file
+# version 2.33
+# only modified parameters
+[main_parameters]
+camera -0,201182879384107 -3,76820586004189 -0,626454631315866;
+camera_distance_to_target 0,8;
+camera_top -0,197169948373258 0,317787456913412 0,927434711279987;
+formula_1 8;
+formula_2 3;
+formula_3 1004;
+formula_4 7;
+formula_iterations_1 2;
+fov 28,07;
+hybrid_fractal_enable true;
+image_height 120;
+image_width 160;
+julia_c -1 0 0;
+julia_mode true;
+N 12;
+target -0,577914491332079 -3,12898786037095 -0,925576080656694;
+[fractal_1]
+mandelbox_generalized_fold_type fold_cube;
+[fractal_4]
+transf_scale_3 2,5;

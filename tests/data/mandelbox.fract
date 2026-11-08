@@ -1,0 +1,22 @@
+# Mandelbulber settings file
+# version 2.33
+# only modified parameters
+[main_parameters]
+ambient_occlusion_enabled true;
+camera 3 -6 2;
+camera_distance_to_target 7;
+camera_top -0,1277753 0,2555506 0,958314;
+detail_level 2;
+DE_factor 0,8;
+formula_1 8;
+fov 90;
+image_height 300;
+image_width 400;
+N 30;
+target 0 0 0;
+background_color_1 2000 4000 8000;
+background_color_2 ffff ffff ffff;
+[fractal_1]
+mandelbox_scale -1,5;
+mandelbox_folding_limit 1,1;
+mandelbox_folding_min_radius 0,6;

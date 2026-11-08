@@ -323,7 +323,7 @@ pub fn load_formula_names(app: &mut Mb3d, ui: &mut Ui) {
 /// The formulas MB3D leaves out of its lists (`LoadFormulaNames`): older
 /// versions of formulas whose newer file is there, and a few broken ones.
 /// `files` holds the lower-case names of the formula files.
-pub(crate) fn excluded_formula(name: &str, files: &std::collections::HashSet<String>) -> bool {
+pub fn excluded_formula(name: &str, files: &std::collections::HashSet<String>) -> bool {
     let has = |n: &str| files.contains(n);
     match name.to_ascii_uppercase().as_str() {
         "TRAFASSELQUAT" => has("commquat"),
@@ -461,7 +461,7 @@ fn check_4d_and_info(app: &mut Mb3d, ui: &mut Ui) {
 
 /// `DescrOfFName`: a custom formula's description, for the built-in ones
 /// `CFdescriptionIntern` (CustomFormulas.pas; Tricorn has none).
-fn description(f: &Formula) -> String {
+pub(crate) fn description(f: &Formula) -> String {
     let id = match f {
         Formula::Custom(c) => return c.def.description.clone(),
         Formula::IntPow { .. } => "@MB:TheTriplexMathSineBulbAs",
@@ -1135,6 +1135,17 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                     ui.popup_menu(F, "PopupMenu1", "ListBoxEx15", x + 3, y);
                 }
             }
+        }
+        // the Formula book: at the formula of the chosen slot, or at the
+        // one right-clicked in a list
+        "SpeedButton12Click" => {
+            let name = app.formula.slots[tab(ui)].as_ref().map(|f| f.name());
+            super::formula_book_form::open(app, ui, name.as_deref());
+        }
+        "AboutThisFormula1Click" => {
+            let name = app.formula.highlighted.clone();
+            ui.set_visible(F, "ListBoxEx15", false);
+            super::formula_book_form::open(app, ui, Some(&name));
         }
         "Hidethisformula1Click" => {
             let tg = ui.tag(F, &e.sender) as i32;

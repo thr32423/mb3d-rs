@@ -39,6 +39,7 @@ pub mod unfinished_form;
 pub mod history_form;
 pub mod log_form;
 pub mod share_form;
+pub mod formula_book_form;
 pub mod util;
 pub mod voxel_form;
 
@@ -50,7 +51,7 @@ use std::path::PathBuf;
 pub const FORMS: &[&str] = &[
     "Mand", "FormulaGUI", "LightAdjust", "PostProcessForm", "Navigator", "Animation", "AniPreviewWindow", "AniProcess",
     "BatchForm", "BRInfoWindow", "ColorOptionForm", "ColorPick", "FormulaParser", "IniDirsForm", "MapSequencesGUI",
-    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "Share", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
+    "MonteCarloForm", "MutaGenGUI", "ParamValueEditGUI", "Swarm", "TextBox", "Tiling", "Unfinished", "History", "Log", "Share", "FormulaBook", "AiConnect", "Experimental", "AnimTemplates", "Splat", "uMapCalcWindow", "VisualThemesGUI",
     "VoxelExport", "ZBuf16BitGenUI", "Curves", "BulbTracer2UI", "HeightMapGenUI", "JITFormulaEditGUI", "MeshPreviewUI", "LanguageGUI", "HotkeysGUI",
 ];
 
@@ -81,6 +82,7 @@ pub struct Mb3d {
     pub curves: curves_form::State,
     pub logview: log_form::State,
     pub share: share_form::State,
+    pub book: formula_book_form::State,
     pub voxel: voxel_form::State,
     pub btracer: bulbtracer_form::State,
     pub splat: splat_form::State,
@@ -148,7 +150,11 @@ impl Mb3d {
         let lower = name.to_ascii_lowercase();
         let is_m3i = lower.ends_with(".m3i");
         let text = String::from_utf8_lossy(&data);
-        let (sc, notes) = if lower.ends_with(".m3p") || is_m3i || text.contains("Mandelbulb3Dv") {
+        let (sc, notes) = if crate::mandelbulber::is_fract(&lower, &text) {
+            // a Mandelbulber settings file: what it shares with MB3D
+            let im = crate::mandelbulber::import(&text)?;
+            (im.scene, im.notes)
+        } else if lower.ends_with(".m3p") || is_m3i || text.contains("Mandelbulb3Dv") {
             let (raw, _) = crate::m3p::raw_from_bytes(data.clone(), is_m3i)?;
             let m = crate::m3p::parse(&raw)?;
             (m.scene, m.warnings)
@@ -240,6 +246,7 @@ impl App for Mb3d {
             "HistoryFrm" => history_form::event(self, ui, e),
             "LogFrm" => log_form::event(self, ui, e),
             "ShareFrm" => share_form::event(self, ui, e),
+            "FormulaBookFrm" => formula_book_form::event(self, ui, e),
             "AiConnectFrm" => ai_form::event(self, ui, e),
             "ExperimentalFrm" => experimental_form::event(self, ui, e),
             "AnimTemplatesFrm" => anim_templates_form::event(self, ui, e),
@@ -430,6 +437,7 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         curves: Default::default(),
         logview: Default::default(),
         share: Default::default(),
+        book: Default::default(),
         voxel: voxel_form::State::default(),
         btracer: bulbtracer_form::State::default(),
         splat: splat_form::State::default(),

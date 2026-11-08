@@ -483,7 +483,7 @@ fn preview_folder(opt: &Options, a: &Value) -> Result<Vec<Value>, String> {
         .map_err(|e| format!("{folder}: {e}"))?
         .flatten()
         .map(|e| e.path())
-        .filter(|p| p.is_file() && matches!(p.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).as_deref(), Some("m3p" | "m3i" | "m3s" | "txt")))
+        .filter(|p| p.is_file() && matches!(p.extension().map(|e| e.to_string_lossy().to_ascii_lowercase()).as_deref(), Some("m3p" | "m3i" | "m3s" | "txt" | "fract")))
         .map(|p| (std::fs::metadata(&p).and_then(|m| m.modified()).unwrap_or(std::time::UNIX_EPOCH), p))
         .collect();
     if files.is_empty() {

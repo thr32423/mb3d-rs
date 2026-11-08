@@ -31,6 +31,14 @@ font = Arabic.ttf
 [Labels]
 A360DegreeAnimationForVR=تحريك بزاوية 360 درجة لنظارات الواقع الافتراضي: كل إطار بانوراما كروية عرضها ضعف ارتفاعها؛ مع 'تصيير تحريك مجسم' يضع الفيديو العينين إحداهما فوق الأخرى، ويعلّم أمر ffmpeg ملف MP4 لمشغلات الواقع الافتراضي
 ;A 360 degree animation for VR headsets: every frame a spherical panorama, twice as wide as high; with 'Render stereo animation' the video has the eyes one above the other, and the ffmpeg command marks the MP4 for VR players
+A3DEscapeTimeFormulaWith=صيغة ثلاثية الأبعاد بزمن الهروب مع تقدير مسافة عددي: الشكل يعمل وحده ويتركّب مع غيره؛ أبطأ من التقدير التحليلي.
+;A 3D escape-time formula with a numerical distance estimate: the shape works alone and combines with others; slower than analytic DE.
+A3DEscapeTimeFormulaWith2=صيغة ثلاثية الأبعاد بزمن الهروب مع تقدير مسافة تحليلي: سريعة ومتينة؛ صيغة أولى جيدة.
+;A 3D escape-time formula with an analytic distance estimate: fast and robust; a good first formula.
+A4DFormulaTheFourthCoordinate=صيغة رباعية الأبعاد: يعمل الإحداثي الرابع ودوران 4D في نافذة الصيغ؛ تقدير مسافة عددي، لذا هي بطيئة.
+;A 4D formula: the fourth coordinate and the 4D rotation of the Formulas window apply; numerical DE, so it is slow.
+A4DFormulaWithAnAnalytic=صيغة رباعية الأبعاد مع تقدير مسافة تحليلي: يعمل دوران 4D، وتُرسم بسرعة.
+;A 4D formula with an analytic distance estimate: the 4D rotation applies, and it renders fast.
 A4dQuaternionFormulaOneIteration=صيغة كواترنيون رباعية الأبعاد (4d)، تكرار واحد:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ;A 4d quaternion formula, one iteration:\n\nx' = x*x - y*y - z*z - w*w + Cx\ny' = 2*(y*x + z*w) + Cy\nz' = 2*(z*x + YW_multiplier*y*w) + Cz\nw' = 2*(w*x + y*z) + W_add + Cw
 ABulbFormulaAsSuggestedBy=صيغة بصلة (bulb) اقترحها Aexion:\nhttp://www.fractalforums.com/the-3d-mandelbulb/iterating-c/\n\nتمت إضافة خيارين لتدوير الثابت بالقوة حسب المسافة بين المتجهين الحاليين Z وC (Cond Phi=1)،\nوخيارات الوضع (Mode) التالية:\n(بتات قيمة الوضع)\nBit1: عكس مركّبات atan لـ theta\nBit2: عكس مركّبات atan لـ phi\nBit3: عكس theta وphi\nBit4: عكس CyCz عند حساب الزاوية\nBit5: ضرب powerC في المسافة بين المتجهين Z وC
@@ -39,6 +47,12 @@ ACalculationIsRunningStopIt=يجري حساب الآن: أوقفه أولًا.
 ;A calculation is running: stop it first.
 ACoarseRayPerBlockOf=شعاع خشن لكل كتلة من 16 بكسلًا ثم من 4 يتقدّم مع طرح اتساع الكتلة من تقدير المسافة، ويبدأ تقدّم كل بكسل من عمقه. أسرع حتى 60 % عبر الفضاء المفتوح؛ قد تُفقد الأجزاء الرقيقة حيث يكون التقدير بعيدًا عن الصواب.
 ;A coarse ray per block of 16, then of 4 pixels marches with the block's spread taken off the distance estimate, and every pixel's march starts at its depth. Up to 60 % faster through open space; thin parts can be lost where the estimate is far off.
+AConstantAddedEachIterationIt=ثابت يُضاف في كل تكرار؛ يحرّك الشكل ويكسر تناظره
+;a constant added each iteration; it moves the shape and breaks its symmetry
+ADIFSShapeADistanceEstimated=شكل dIFS: مجسّم بتقدير مسافة (كرة، صندوق، أنبوب ...). ركّبه مع صيغ dIFS أخرى فقط؛ خلطه بصيغ زمن الهروب يعطي الخطأ 'formula option is not valid'.
+;A dIFS shape: a distance-estimated solid (sphere, box, tube ...). Combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'.
+ADIFSTransformationItBendsRepeats=تحويل dIFS: يحني أشكال dIFS في الخانات التالية أو يكرّرها أو يقطعها.
+;A dIFS transformation: it bends, repeats or cuts the dIFS shapes in the slots after it.
 AFasterMethodThanBinsearchBut=طريقة أسرع من البحث الثنائي، لكنها قد تخفق إذا كانت قيم DE سيئة
 ;A faster method than binsearch, but can lead to failures if DE's are bad
 AFewSecondsLeft=بقيت ثوانٍ قليلة
@@ -61,12 +75,20 @@ AMultiplierThatDefinesTheMiximal=مُعامل ضرب يحدد الطول الأ�
 ;A multiplier that defines the miximal length of the hard shadow calculation,\nrelative to some image size parameters (default = 1).\nIncrease the value if shadows of far objects are missing.
 AOCalcTime=زمن حساب AO:
 ;AO calc time:
+ARotationAppliedEachIterationIn=دوران يُطبَّق في كل تكرار، بالدرجات
+;a rotation applied each iteration, in degrees
 ASineIntegerPowerBulbWith=بصلة جيبية بقوة صحيحة مع طيّات قبلها، كما في الصندوق المذهل.
 ;A sine integer power bulb with foldings before, like in the amazing box.
+ASphereInversionOfTheSpace=انعكاس كروي للفضاء؛ مركزه ونصف قطره يحدّدان الجزء الذي يُقلب
+;a sphere inversion of the space; its centre and radius decide which part is turned inside out
 ASphericalPanoramaGetsTheEXIF=تحصل البانوراما الكروية على بيانات EXIF لكاميرا 360 (RICOH THETA S) إلى جانب وسوم Photo Sphere، فيعرضها Facebook صورةَ 360. لكل صورة 360 يحفظها البرنامج.
 ;A spherical panorama gets the EXIF camera of a 360 camera (RICOH THETA S) besides the Photo Sphere tags, so Facebook shows it as a 360 photo. For every 360 picture the program saves.
 AStoppedOrInterruptedRenderKeeps=التصيير الموقوف أو المنقطع يحتفظ بما حسبه؛ و«احسب ثلاثي الأبعاد» للمعاملات نفسها يتابعه.
 ;A stopped or interrupted render keeps what it calculated; Calculate 3D of the same parameters continues it.
+ATransformationItChangesThePoint=تحويل: يغيّر النقطة فقط وليس له شكل خاص. استخدمه في خانة قبل الصيغ المشكِّلة أو بينها، لا وحده أبداً.
+;A transformation: it changes the point only and has no shape of its own. Use it in a slot before or between shaping formulas, never alone.
+ATransformationShowsNothingAlonePut=التحويل وحده لا يُظهر شيئاً: ضع شكلاً في الخانة 1 وهذا في الخانة 2، أو بالعكس.
+;A transformation shows nothing alone: put a shape in slot 1 and this in slot 2, or the other way round.
 ATransparentBackgroundNeedsPNGFrames=الخلفية الشفافة تحتاج إلى إطارات PNG: اختر PNG صيغةً للإخراج.
 ;A transparent background needs PNG frames: choose PNG as the output format.
 AVideoNeedsImagesChooseBMP=الفيديو يحتاج إلى صور: اختر BMP أو PNG أو JPG صيغةً للإخراج.
@@ -89,6 +111,8 @@ AboutHMinLeft=بقي نحو {} س {} د
 ;about {} h {} min left
 AboutMinLeft=بقي نحو {} د
 ;about {} min left
+AboutThisFormula=عن هذه الصيغة...
+;About this formula...
 AbsoluteAbsorptionAmountInsideTheMaterial=مقدار الامتصاص المطلق داخل المادة (التكبيرات العالية تحتاج إلى قيم كبيرة). لون الجسم الانتشاري يُستخدم للداخل أيضًا.
 ;Absolute absorption amount inside the material (high zooms need big values). The diffuse object color is also for inside.
 AbsoluteDistanceOfTheSmoothCombine=المسافة المطلقة لدوال الدمج الناعم،\nيمكنك استخدام الصيغة العلمية مثل 3e-5 للقيم الصغيرة.\nجرّب 1/zoom لتقترب من قيمة صالحة.
@@ -157,6 +181,8 @@ AllFiles=كل الملفات
 ;All files
 AllFilesParen=كل الملفات (*.*)
 ;All files (*.*)
+AllFormulas=كل الصيغ
+;All formulas
 AllKinds=كل الأنواع
 ;All kinds
 AllRealworldUnitsInMeter=كل وحدات العالم الحقيقي بالمتر.
@@ -393,6 +419,8 @@ Browse=استعراض...
 ;Browse...
 BuiltIn=مدمج
 ;built in
+BuiltInFormula=صيغة مضمّنة
+;Built-in formula
 BuiltWithoutIntelOpenImageDenoise=مبني دون Intel Open Image Denoise
 ;built without Intel Open Image Denoise
 BulbTracer2=Bulb Tracer2
@@ -527,6 +555,8 @@ ChangeParams=تغيير المعاملات
 ;Change Params
 ChangeTheJuliaValuesWithRadius=تغيير قيم جوليا بنصف القطر وخط الطول وخط العرض
 ;Change the julia values with radius, longitude and latitude
+ChangesTheColouringOnlyNotThe=يغيّر التلوين فقط، لا الشكل
+;changes the colouring only, not the shape
 CheckColors=فحص الألوان
 ;Check colors
 CheckThisIfYouWantTo=فعّل هذا إذا أردت صنع تحريك حلقي.\nيتصرف الاستيفاء كأن الإطار المفتاحي الأول يأتي من جديد\nبعد الإطار المفتاحي الأخير والعكس بالعكس.
@@ -545,6 +575,8 @@ ChooseASharedFolderFirstOne=اختر مجلدًا مشتركًا أولًا (ي�
 ;choose a shared folder first (one every computer of the swarm can see)
 ChooseOption=اختر خيارًا:
 ;Choose Option:
+ChoosesAVariantOfTheFormula=يختار نوعاً من الصيغة؛ أعداد صحيحة فقط
+;chooses a variant of the formula; whole numbers only
 ChoseTheme=اختر السمة:
 ;Chose Theme:
 ClaudeCodeInATerminal=Claude Code (في الطرفية)
@@ -741,6 +773,8 @@ CopyParamsToClipboard=نسخ المعاملات إلى الحافظة
 ;Copy Params to Clipboard
 CopyTheCommandToPasteIt=انسخ الأمر لتلصقه في الطرفية
 ;Copy the command, to paste it into a terminal
+CopyTheName=نسخ الاسم
+;Copy the name
 CopyThePostText=نسخ نص المنشور
 ;Copy the post text
 CopyTheSelectedLineOrAll=نسخ السطر المحدد، أو كل الأسطر المعروضة إن لم يُحدَّد شيء
@@ -1157,6 +1191,12 @@ EveryNewPictureOfTheMain=كل صورة جديدة في النافذة الرئي
 ;Every new picture of the main window is filtered (the saved one too).
 Everything=كل شيء
 ;Everything
+Example0=مثال: {0}
+;Example: {0}
+ExampleFiles=ملفات الأمثلة
+;Example files
+ExampleFilesUsingIt0=ملفات الأمثلة التي تستخدمها: {0}
+;Example files using it: {0}
 ExchangeAdd=تبديل، إضافة
 ;Exchange, add
 ExchangeThisFormulaWithTheNext=تبديل هذه الصيغة مع التالية
@@ -1247,6 +1287,8 @@ Fine=دقيق
 ;fine
 FineTuneThePositionsWithThe=اضبط المواضع بدقة بأزرار الأسهم
 ;fine tune the positions with the arrow buttons
+FineTuningOfTheDistanceEstimate=ضبط دقيق لتقدير المسافة: ارفعه إذا ظهرت ثقوب في السطح، واخفضه إذا بدا متورّماً
+;fine-tuning of the distance estimate: raise it when the surface shows holes, lower it when it looks swollen
 FinishThePicture=إنهاء الصورة
 ;Finish the picture
 FinishedRenderingSlices=اكتمل تصيير الشرائح.
@@ -1309,10 +1351,14 @@ Formula1=الصيغة1 •
 ;Formula1 •
 Formula12=الصيغة1
 ;Formula1
+FormulaBook=كتاب الصيغ
+;Formula book
 FormulaCombinationsInThisBatchThat=تركيبات الصيغ في هذه الدفعة الجديدة على بطاقة الرسوميات (تُترجم مظلّلاتها أولًا، من 10 إلى 30 ثانية لكل منها؛ يحسب المعالج في أثناء ذلك، وتنتظر الترجمة ما دامت الذاكرة غير كافية):
 ;Formula combinations in this batch that are new to the graphics card (their shaders compile first, 10 to 30 s each; the CPU calculates meanwhile, and a compile waits while memory is short):
 FormulaEditor=محرر الصيغ
 ;Formula editor
+FormulaFile0=ملف الصيغة: {0}
+;Formula file: {0}
 FormulaLower=صيغة
 ;formula
 FormulaM3f=صيغة (*.m3f)
@@ -1531,6 +1577,8 @@ GoToNext=الانتقال إلى التالي
 ;Go to next
 GoneLastSeenSAgo=غائب (شوهد آخر مرة قبل {} ث)
 ;gone (last seen {} s ago)
+GoodFirstFormulaFewValuesFast=صيغة أولى جيدة: قيم قليلة، سريعة، وملفات أمثلة للبدء منها.
+;Good first formula: few values, fast, and example files to start from.
 Grain=حبيبي
 ;Grain
 GraphicsCard=بطاقة الرسوميات
@@ -1583,6 +1631,8 @@ High=عالٍ
 ;high
 HighlightsMoveAsInThePictures=تتحرك اللمعات كما في الصور. تأخذ البقعة نحو 160 بايت عند 2، و68 عند الإيقاف.
 ;Highlights move as in the pictures. A splat takes about 160 bytes at 2, 68 when off.
+Hints=تلميحات:
+;Hints:
 History=السجل
 ;History
 HistoryThePicturesCalculatedTheFiles=السجل: الصور المحسوبة، والملفات المفتوحة والمحفوظة (انقر للتصفح)
@@ -1591,6 +1641,8 @@ HoldShiftKeyForFinerSteps=(اضغط مفتاح Shift لخطوات أدق)
 ;(Hold Shift key for finer steps)
 Hotkeys=مفاتيح الاختصار
 ;Hotkeys
+HowManyCopiesWithinCopiesThe=عدد النسخ المتداخلة في الشكل؛ كل مستوى يكلّف وقتاً
+;how many copies within copies the shape has; each level costs time
 HowMuchLightTheWaterLets=مقدار الضوء الذي يمرره الماء (من 0 إلى 1، 0: معتم): مع الانعكاسات (المعالجة اللاحقة) أو في مونت كارلو يظهر الكسيري تحت السطح، منحرفًا بالانكسار ويتلاشى مع العمق
 ;How much light the water lets through (0 to 1, 0: opaque): with the reflections (Post processing) or in Monte Carlo the fractal shows under the surface, bent by the refraction and fading with depth
 HowMuchThePlaneReflects0=مقدار انعكاس المستوى (من 0 إلى 1): لمعانه، ومرآته عند حساب الانعكاسات (المعالجة اللاحقة)
@@ -1603,6 +1655,8 @@ HowMurkyTheWaterIsHow=مدى عكارة الماء: سرعة خفوت الضوء
 ;How murky the water is: how fast light fades in it, per fractal unit (0: perfectly clear; 1: you see about one fractal unit deep; 3: murky). In blue-green water red fades first.
 HowStrongTheNoiseIsThat=مدى قوة التشويش الذي يُزال (من 1 إلى 30، كما في "Denoise DCT" في GIMP).\nالأعلى يزيل تشويشًا أكثر، وتفاصيل دقيقة أكثر.
 ;How strong the noise is that is removed (1 to 30, as GIMP's "Denoise DCT").\nHigher removes more noise, and more fine detail.
+HowTheValueChangesWithThe=كيف تتغيّر القيمة مع عدد التكرارات؛ 0 يبقيها ثابتة
+;how the value changes with the iteration count; 0 keeps it constant
 HowThickTheCloudsAre1=مدى كثافة السحب (1: الطبقة الكاملة تمرر نحو 2 % من الضوء) وكم تغطي من السماء (من 0 إلى 1)
 ;How thick the clouds are (1: a full layer lets about 2 % of the light through) and how much of the sky they cover (0 to 1)
 HowThisComputerIsListedIn=كيف يظهر هذا الحاسوب في السرب
@@ -1883,6 +1937,8 @@ KeysThatBringAWindowTo=مفاتيح تُحضر نافذة إلى الأمام م
 ;Keys that bring a window to the front from any window
 Kind=النوع
 ;Kind
+Kind0=النوع: {0}
+;Kind: {0}
 LGamma05=L-Gamma:  0.5
 ;L-Gamma:  0.5
 LIGHTSTROKES=ضربات الضوء
@@ -2105,6 +2161,10 @@ MakesReflectionsALittleDiffuseValue=يجعل الانعكاسات منتشرة �
 ;Makes reflections a little diffuse, value range from 0 to 2.5
 MakingTheVideo=جارٍ صنع الفيديو...
 ;Making the video...
+MandelbulberSettingsFract=إعدادات Mandelbulber ‏(*.fract)
+;Mandelbulber settings (*.fract)
+ManyValuesChangeOneAtA=قيم كثيرة: غيّر واحدة في كل مرة واحتفظ بما يعجبك عبر نافذة السجل.
+;Many values: change one at a time and keep what you like with the History window.
 MapNotFound=الخريطة غير\nموجودة
 ;Map not\nfound
 MapNumber=رقم الخريطة
@@ -2285,6 +2345,8 @@ MutationType=نوع الطفرة
 ;Mutation type
 N0No255FullTransparency=0: لا، 255: شفافية كاملة
 ;0: no, 255: Full transparency
+N0Of1Formulas={0} من {1} صيغة
+;{0} of {1} formulas
 N0To1DarkerCorners=0 إلى 1: زوايا أغمق
 ;0 to 1: darker corners
 N0To1RedAndBlue=0 إلى 1: حواف حمراء وزرقاء نحو الزوايا، كما تظهرها العدسة
@@ -2323,14 +2385,22 @@ N360VR=واقع افتراضي 360°
 ;360° VR
 N3DAnalyticFormula=صيغة تحليلية ثلاثية الأبعاد
 ;3D analytic formula
+N3DEscapeTimeFormulas=صيغ ثلاثية الأبعاد بزمن الهروب
+;3D escape-time formulas
 N3DFormula=صيغة ثلاثية الأبعاد
 ;3D formula
+N3DFormulasWithAnalyticDEFast=صيغ ثلاثية الأبعاد بتقدير مسافة تحليلي (سريعة)
+;3D formulas with analytic DE (fast)
 N3Da=3Da
 ;3Da
 N4DAnalyticFormula=صيغة تحليلية رباعية الأبعاد
 ;4D analytic formula
 N4DFormula=صيغة رباعية الأبعاد
 ;4D formula
+N4DFormulas=صيغ رباعية الأبعاد
+;4D formulas
+N4DFormulasWithAnalyticDE=صيغ رباعية الأبعاد بتقدير مسافة تحليلي
+;4D formulas with analytic DE
 N4DRotationOfTheWholeBulb=دوران رباعي الأبعاد للجسم كله:
 ;4D rotation of the whole bulb:
 N4Da=4Da
@@ -2389,8 +2459,12 @@ No=لا
 ;no
 No2=لا
 ;No
+NoDescriptionFromTheAuthor=لا وصف من المؤلف.
+;No description from the author.
 NoDoFOnTiles=لا DoF على البلاطات.
 ;No DoF on tiles.
+NoExampleFileUsesItTry=لا يستخدمها أي ملف مثال؛ جرّبها وحدها أولاً، ثم في الخانة 2 خلف Amazing Box.
+;No example file uses it; try it alone first, then in slot 2 behind an Amazing Box.
 NoFacesInTheFile=لا وجوه في الملف
 ;no faces in the file
 NoFileAdded=لم يُضف أي ملف
@@ -2589,6 +2663,8 @@ OpenTextParameters=فتح معاملات نصية
 ;Open text parameters
 OpenTheAnimationMaker=فتح صانع التحريك
 ;Open the animation maker
+OpenTheExample=فتح المثال
+;Open the example
 OpenTheFolder=فتح المجلد
 ;Open the folder
 OpenTheFolderOfTheFile=فتح مجلد الملف
@@ -2711,6 +2787,8 @@ Pass=التمريرة {}
 ;pass {}
 Passes=التمريرات
 ;Passes
+PatienceA4DFormulaWithNumerical=صبراً: صيغة 4D بتقدير مسافة عددي تُرسم ببطء؛ ابدأ صغيراً وارفع التفاصيل لاحقاً.
+;Patience: a 4D formula with numerical DE renders slowly; start small and raise the detail later.
 PauseRendering=إيقاف التصيير مؤقتًا
 ;Pause rendering
 PausedPressToContinue=متوقف مؤقتًا، اضغط للمتابعة
@@ -2885,6 +2963,8 @@ RaystepMultiplier=مضاعف خطوة الشعاع:
 ;Raystep multiplier:
 RaystepSubDEstop=خطوة الشعاع تحت DEstop:
 ;Raystep sub DEstop:
+ReadingTheExampleFiles=قراءة ملفات الأمثلة ...
+;Reading the example files ...
 ReadingTheHistoryEntries=جارٍ قراءة السجل... {} مدخلات
 ;Reading the history... {} entries
 ReadsTheLanguageFilesAgainAfter=يعيد قراءة ملفات اللغة بعد أن تحرر أحدها
@@ -3063,6 +3143,8 @@ RoughImage=صورة تقريبية
 ;rough image
 Roughness=الخشونة
 ;Roughness
+RoundsTheEdgesSmallValuesKeep=يدوّر الحواف؛ القيم الصغيرة تحفظ الشكل، والكبيرة تُذيبه
+;rounds the edges; small values keep the shape, large ones melt it
 RoutAngleOfXY=زاوية دوران X، Y
 ;Rout angle of X, Y
 RoutAngleOfXZ=زاوية دوران X، Z
@@ -3189,6 +3271,8 @@ ScaleTheValuesByTheSelected=تحجيم القيم بالنسبة المئوية 
 ;Scale the values by the selected percentage.
 ScaleValueOfTheBeginningFormula=قيمة المقياس للصيغة الأولى، تؤثر في دقة DE
 ;Scale value of the beginning formula, affects the DE accuracy
+ScalesOneCoordinateEachIteration1=يقيس إحداثياً واحداً في كل تكرار؛ -1 يعكسه، و0 يسطّحه
+;scales one coordinate each iteration; -1 mirrors it, 0 flattens it
 ScalesTheMaximumLengthOfThe=يحجّم الطول الأقصى للأشعة المحيطية المراد حسابها.\nاستخدم قيمة أكبر من 1 لإعطاء الظلال عمقًا أكبر،\nوالقيم الأقل من 1 تعطي ظلالًا أكثر محلية.
 ;Scales the maximum length of the ambient rays to be calculated.\nUse a value bigger than 1 to give more depth to the shadows,\nvalues below 1 gives more local shadows.
 ScanPreview=معاينة المسح
@@ -3405,6 +3489,8 @@ StartBatchRendering=بدء التصيير الدفعي
 ;Start batch rendering
 StartFrom=البدء من
 ;Start from
+StartFromAnExampleOpenOne=ابدأ من مثال: افتحه وغيّر القيم شيئاً فشيئاً.
+;Start from an example: open one and change the values a little at a time.
 StartIndex=رقم البداية:
 ;Start index:
 StartRendering=بدء التصيير
@@ -3475,6 +3561,8 @@ StrengthOfDynamicFog=شدة الضباب الديناميكي.
 ;Strength of dynamic fog.
 StrengthSizeFractalUnitsAndFineness=قوة النتوء وحجمه (بوحدات الكسورية) ودقته (0.2 ناعم إلى 0.8 محبب)
 ;Strength, size (fractal units) and fineness (0.2 smooth to 0.8 grainy) of the relief
+StretchesTheSpaceEachIterationAround=يمدّد الفضاء في كل تكرار؛ نحو 2 أو 3 يعطي الشكل الكلاسيكي، والسالب يعكسه، والقيم بين 1 و1.5 تُذيبه
+;stretches the space each iteration; around 2 or 3 gives the classic shape, a minus sign mirrors it, values between 1 and 1.5 melt it
 StretchesUpperAndLowerPartsMaybe=يمطّ الجزأين العلوي والسفلي، قد يفيد لصورة عادية في خيار الكرة الكاملة.
 ;Stretches upper and lower parts, maybe useful for a common image in full sphere option.
 SubframeCountMultiplicator=مضاعف عدد\nالإطارات الفرعية:
@@ -3553,6 +3641,8 @@ TheBailoutValueForEscapetimeFormulas=قيمة حد الهروب لصيغ زمن 
 ;The bailout value for escapetime formulas.\nIf the 3d value exceeds this value while iterating,\nthe current point does not belong to the object.
 TheBlurRadiusWillBeLimited=يُحد نصف قطر التمويه بهذه القيمة.\nقد يسرّع التصيير حين يصبح نصف القطر ضخمًا جدًّا في بعض أجزاء الصورة.
 ;The blur radius will be limited at this value.\nCan speedup rendering when the radius becomes very huge in some image parts.
+TheBoxFoldSLimitWhat=حدّ طيّ الصندوق: ما يتجاوزه يُعكس إلى الداخل؛ 1 هو الصندوق الكلاسيكي، والأصغر يطوي أكثر
+;the box fold's limit: what lies beyond is mirrored back; 1 is the classic box, smaller folds more
 TheCalculationFailed=أخفق الحساب: {}
 ;The calculation failed: {}
 TheCalculationFailedLower=أخفق الحساب
@@ -3591,6 +3681,8 @@ TheEntriesUnderTheirDaysA=المدخلات تحت أيامها؛ تظهر مدخ
 ;The entries under their days; a day's entries and pictures show when it is opened (a click on it)
 TheEntryCouldNotBeRemoved=تعذرت إزالة المدخل.
 ;The entry could not be removed.
+TheExponentOfTheBulb8=أسّ البصلة؛ 8 يعطي Mandelbulb الكلاسيكي، و2 أملس، والقيم الأعلى تعطي طيّات أكثر
+;the exponent of the bulb; 8 gives the classic Mandelbulb, 2 is smooth, higher values give more folds
 TheFileIsNotThereAny=لم يعد الملف موجودًا.
 ;The file is not there any more.
 TheFileM3fAlreadyExistsDo=الملف <{}.m3f> موجود مسبقًا. أتريد الكتابة فوقه؟
@@ -3601,10 +3693,18 @@ TheFirstFocusPointTheValue=نقطة التركيز (الأولى).\nالقيمة
 ;The (first) focus point.\nThe value is relative to the viewers Zstart value,\nnormalized to the imagewidth.
 TheFlyThroughCannotStartHere=لا يمكن أن يبدأ الطيران عبر هنا: {}
 ;The fly-through cannot start here: {}
+TheFoldSOffsetOnOne=إزاحة الطيّ على محور واحد؛ 1 هو الشكل الصافي، والقيم الأخرى تزيح النسخ
+;the fold's offset on one axis; 1 is the plain shape, other values shift the copies
 TheFolderDoesNotExistOr=المجلد غير موجود (أو يتعذر الوصول إليه)
 ;the folder does not exist (or is not reachable)
+TheFormulaAloneAtItsDefault=الصيغة وحدها، بقيمها الافتراضية
+;The formula alone, at its default values
+TheFormulaBookEveryFormulaIn=كتاب الصيغ: كل صيغة بالكلمات، مع صورة وشرح لقيمها وملفات أمثلة
+;The formula book: every formula in words, with a picture, its values explained and example files
 TheFormulaNameShouldStartWith=يجب أن يبدأ اسم الصيغة بـ "JIT" لتمييز هذه الصيغ من الصيغ المبنية على ASM
 ;The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas
+TheFourthCoordinateThisStartsIt=الإحداثي الرابع: هذا يبدأه بعيداً عن 0؛ ودوران 4D يديره
+;the fourth coordinate: this starts it away from 0; the 4D rotation turns it
 TheFractalIsInNoneOf=الكسيريّة ليست في أيٍّ من المناظر.
 ;The fractal is in none of the views.
 TheFractalOfTheMainWindow=كسيريّة النافذة الرئيسية بقعًا غاوسية لمشاهدتها من كل الجهات في Blender (الإصدار 5.3 وما بعده) وعارضات البقع الأخرى. تُحسب من عدة اتجاهات، ويصبح كل بكسل بقعة بلونه.
@@ -3625,6 +3725,8 @@ TheImageSizeChangedCalculateThe=تغير حجم الصورة: احسب الصو�
 ;the image size changed: calculate the image again
 TheItsTrapModeDependsOn=يعتمد وضع its.trap على الخيار المحسوب في تبويب «التلوين».
 ;The its.trap mode depends on the calculated option in the "Coloring" tab.
+TheJuliaConstantOfThisFormula=ثابت جوليا لهذه الصيغة وحدها؛ وضع جوليا للمشهد في نافذة الصيغ
+;the Julia constant of this formula alone; the scene's Julia mode is in the Formulas window
 TheLastKeyframe=آخر إطار مفتاحي
 ;The last keyframe
 TheLastSessionCrashed=تعطلت الجلسة الأخيرة: {}. المزيد في نافذة سجل الأحداث (الأيقونة في شريط العنوان).
@@ -3657,6 +3759,8 @@ ThePictureSFinishingAfterAll=إنهاء الصورة بعد كل المراحل 
 ;The picture's finishing after all other passes: exposure, glow around bright light, filmic tone mapping, colour grading, a vignette and colour fringes
 ThePlaneSColourClickTo=لون المستوى (انقر للتغيير)
 ;The plane's colour (click to change)
+TheRadiusOfTheSphericalFold=نصف قطر الكرة الداخلية للطيّ الكروي؛ ما بداخلها يُضخَّم؛ 0.5 هي القيمة الكلاسيكية، و0 تعطّله
+;the radius of the spherical fold's inner sphere; what lies inside is blown up; 0.5 is the classic value, 0 switches it off
 TheRotationIsPerformedAroundThe=يجري الدوران حول نقطة المنتصف (Xmid، Ymid، Zmid)
 ;The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)
 TheRotationsArePerformedInA=تجري الدورانات بالتتابع، أولًا المستوى XW، وأخيرًا المستوى ZW.
@@ -3671,6 +3775,8 @@ TheSharedFolderOfTheSwarm=المجلد المشترك للسرب
 ;The shared folder of the swarm
 TheSineBulbWhereArbitraryPower=البصلة الجيبية التي يمكن فيها استخدام قيم قوة اعتباطية، والحساب فيها أبطأ منه مع القوى الصحيحة.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
 ;The sine bulb where arbitrary power values can be used, the calculation is slower than of integer powers.\n\nr  = sqrt(x*x + y*y + z*z)\nth = ArcTan2(y, x) * Float_power\nph = ArcSin(z/r) * Float_power\nr  = Power(r, Float_power)\nx  = r * cos(ph) * cos(th) + Cx\ny  = r * cos(ph) * sin(th) + Cy\nz  = Z_multiplier * r * sin(ph) + Cz
+TheSizeOfTheBaseShape=حجم الشكل الأساسي، بوحدات المشهد
+;the size of the base shape, in scene units
 TheSizeOfTheCloudsFeatures=حجم أشكال السحب بوحدات الكسورية، ولونها (انقر)
 ;The size of the clouds' features in fractal units, and their colour (click)
 TheSizeOfTheTiles=حجم المربعات
@@ -3691,6 +3797,8 @@ TheViewIsFilledWithThe=المنظر ممتلئ بالكسورية
 ;the view is filled with the fractal
 TheViewShowsOnlySky=المنظر لا يُظهر إلا السماء
 ;the view shows only sky
+TheWallThicknessOfAHollow=سُمك جدار الشكل المجوّف
+;the wall thickness of a hollow shape
 Themes=السمات
 ;Themes
 ThereIsAFileAlready=يوجد ملف {} مسبقًا.
@@ -3795,6 +3903,8 @@ TracingObject=جارٍ تتبع الجسم...
 ;Tracing object...
 TrackRenderingStatusAcrossTheFile=تتبع حالة التصيير عبر نظام الملفات لتتمكن نسخ متعددة من تصيير تسلسل الملفات نفسه دون الكتابة فوق عمل العُقد الأخرى
 ;Track rendering status across the file system so that multiple instances can render the same sequence of files without overwriting the work of the other nodes
+TransformationsOnlyInCombination=تحويلات (في التركيب فقط)
+;Transformations (only in combination)
 Transparency=الشفافية
 ;Transparency
 TransparencyIntensity=شدة الشفافية
@@ -3865,6 +3975,8 @@ UseAmbientShadowsFromOriginalM3I=استخدام الظلال المحيطية م
 ;Use ambient shadows from original M3I file
 UseDefaultOrientation=استخدام الاتجاه الافتراضي
 ;Use default orientation
+UseInTheFormulasWindow=استخدام في نافذة الصيغ
+;Use in the Formulas window
 UseItInAnimationsToFix=استخدمه في التحريكات لتثبيت الأضواء على المشهد.
 ;Use it in animations to fix the lights to the scenery.
 UseOnlyAsSecondOptionIf=استخدمه خيارًا ثانيًا فقط إن بدت العموديات (اتجاه السطح للإضاءة) رديئة.
@@ -3893,6 +4005,8 @@ Value=القيمة:
 ;Value:
 ValueNotGuilty=القيمة غير صالحة
 ;Value not guilty
+Values=القيم:
+;Values:
 ValuesHaveAFractionFieldThat=// لها حقل كسري لا يساوي 0.
 ;// values have a fraction field that is not 0.
 VaryDEstopOnFOV=تغيير DEstop حسب FOV:
@@ -3955,6 +4069,8 @@ WarningsAndErrors=التحذيرات والأخطاء
 ;Warnings and errors
 WasCopiedIntoTheMapsFolder=نُسخت {} إلى مجلد الخرائط كخريطة {}: {}
 ;{} was copied into the maps folder as map {}: {}
+WatchThe4DRotationFormulasWindow=انتبه لدوران 4D (نافذة الصيغ): يغيّر الشكل تماماً.
+;Watch the 4D rotation (Formulas window): it changes the shape completely.
 Water=الماء:
 ;Water:
 WavefrontOBJObj=Wavefront OBJ (*.obj)

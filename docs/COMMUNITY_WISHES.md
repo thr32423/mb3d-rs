@@ -1,12 +1,14 @@
-# Five wishes of the Mandelbulb Maniacs group
+# Seven wishes of the Mandelbulb Maniacs group
 
-The Facebook group *Mandelbulb Maniacs* (about 20 000 members) has used MB3D since 2013. Its posts were read for what people ask for, what trips them up and what they do by hand. These five changes answer the most common small wishes:
+The Facebook group *Mandelbulb Maniacs* (about 20 000 members) has used MB3D since 2013. Its posts were read for what people ask for, what trips them up and what they do by hand. These seven changes answer the most common wishes:
 
 1. [360 photos that Facebook recognises](#1-360-photos-that-facebook-recognises)
 2. [Maps of any name](#2-maps-of-any-name)
 3. [A better colour picker](#3-a-better-colour-picker)
 4. [Errors in plain words](#4-errors-in-plain-words)
 5. [The Share window](#5-the-share-window)
+6. [Mandelbulber settings files open](#6-mandelbulber-settings-files-open)
+7. [The Formula book](#7-the-formula-book)
 
 The pictures on this page come from the program itself (`cargo run --example communityshots`).
 
@@ -176,6 +178,52 @@ Formulas: Integer Power
 Made with mb3d-rs 0.3.4 (Mandelbulb3D for Windows, Linux and macOS)
 Parameters: Blue Bulb.txt (attached)
 ```
+
+## 6. Mandelbulber settings files open
+
+**What the group asks.** "How do I input this Mandelbulber settings file?" Parameters traded in the group come from both programs, and nobody wants to type a camera and a formula over by hand.
+
+**What the program does.** A Mandelbulber settings file (`.fract`) opens like any parameter file: through *Open* (the file type "Mandelbulber settings"), by dropping it on the main window, on the command line (`mb3d file.fract -o out.png`) and in the MCP tools. Pasted text that starts with `# Mandelbulber settings file` is recognised by that line, whatever the file is called.
+
+<a href="img/community/import_main.png"><img src="img/community/import_main.png" width="640" alt="A Mandelbulber mandelbox file opened and calculated; the notes in the message area"></a>
+
+What is carried over:
+
+* **The camera.** Mandelbulber keeps an eye, a target and a top vector; MB3D keeps a pivot, a start plane, a rotation matrix and a zoom. The eye, the view direction, the up vector and the field of view come out the same (Mandelbulber's angle is the horizontal one, MB3D's the vertical, the file's aspect ratio converts between them). Equirectangular cameras become a spherical panorama, fish eyes MB3D's fish eye.
+* **Picture size, iteration count, Julia mode and constant, detail level** (the inverse of MB3D's DE stop), **DE factor** (the ray step), and the two **background colours** (MB3D's ambient top and bottom, which it shows as the background).
+* **The formulas both programs have.** A good part of Mandelbulber's list was ported from MB3D, so those map one to one with their values: Mandelbox and Mandelbox fast (Amazing Box with scale, fold and min radius), the Mandelbulbs (Integer or Real Power by the power), Mandelbulb power 2, Quaternion, Menger sponge (Menger3), Menger smooth, Amazing Surf and ASurfMod1, ABoxMod1, ABoxMod2, ABoxModKali, ABoxVS_icen1, Aexion, BristorBrot, the MsltoeSym2/3/4 mods, Kalisets1, IQ-bulb, Sierpinski 3D, box fold bulb pow2 (Folding Int Pow). A formula that only resembles one here (Benesi, the Riemann spheres, kaleidoscopic IFS, pseudo Kleinian, the Mandelbulb variants ...) becomes that similar formula at its default values, and the notes say so.
+* **Hybrids** become MB3D's slots with their iteration counts. Mandelbulber's boolean objects become a DE combination of the first two.
+
+What is not: lights, materials, colours, fog, effects, Mandelbulber-only formulas (hypercomplex, the transforms of the 1000 series, its newer variants) and the fractal rotation and constant factor. Every one of these is named in the notes, which go to the main window's message area and the log, so the user knows what to set by hand. A file whose formulas all lack a counterpart is refused with that reason rather than opened empty.
+
+<a href="img/community/import_formulas.png"><img src="img/community/import_formulas.png" width="320" alt="The Formulas window after the import: Amazing Box with the file's scale, fold and min radius"></a>
+
+The import is in `src/mandelbulber.rs`; its tests (`tests/mandelbulber.rs`) check the camera against the file's eye, direction and top vector, the formulas and values, the hybrid slots, the Julia constant and the notes.
+
+## 7. The Formula book
+
+**What the group asks.** "Plain-language documentation of each formula and parameter"; what dIFS means; why Amazing Surf did nothing for two years; what the error "formula option is not valid, mixing of dIFS will not work" is about. MB3D's formula window shows a description only when the formula's author wrote one, and never says what *Scale* or *Min R* do.
+
+**What the window does.** The `?` button of the Formulas window (right of *Hidden*) opens the Formula book; *About this formula...* in the right-click menu of a formula name opens it at that formula.
+
+<a href="img/community/book_button.png"><img src="img/community/book_button.png" width="320" alt="The Formulas window with the book button and its hint"></a>
+
+<a href="img/community/book_window.png"><img src="img/community/book_window.png" width="900" alt="The Formula book at the Amazing Box"></a>
+
+The left side lists every formula the Formulas window lists (the built-in ones and the formula files), filtered by a search box and by kind: 3D escape-time formulas, 3D formulas with analytic DE, 4D, 4D analytic, transformations, dIFS shapes, dIFS transformations. The page of the chosen formula has:
+
+* **A picture.** The first example file that uses the formula, rendered by the same preview queue as the History window; a formula no example uses is shown alone at its default values (a transformation with a bulb or a dIFS box behind it, since it shows nothing alone).
+* **Its kind in words.** What the DE option means for the user: a 3D formula with analytic DE "is fast and robust; a good first formula"; a transformation "changes the point only and has no shape of its own, use it before or between shaping formulas, never alone"; a dIFS shape "combine it only with other dIFS formulas; mixing it with escape-time formulas gives the error 'formula option is not valid'".
+* **The author's description** from the `.m3f` file (563 of the 593 shipped formula files have one).
+* **The values explained.** Each value with its default and, for the names that follow the conventions (Scale, Fold, Min R, CScale, Power, Julia, angles, offsets, multipliers, vary, DE, thickness, levels, size, inversion, mode, smoothing, colour, W), a sentence on what it does and which values are the classic ones.
+* **Hints.** "Good first formula" for a fast formula with few values and examples; "patience" for 4D formulas with numerical DE; "watch the 4D rotation"; "start from an example"; "a transformation shows nothing alone"; "many values: change one at a time and keep what you like with the History window".
+* **Example files** from the parameter folder and the folder of the parameters opened last, by the formulas they use; *Open the example* loads one. *Use in the Formulas window* puts the formula into the chosen slot; a double click on a name does the same.
+
+<a href="img/community/book_search.png"><img src="img/community/book_search.png" width="900" alt="The book filtered by the word surf"></a>
+
+<a href="img/community/book_difs.png"><img src="img/community/book_difs.png" width="900" alt="The book showing the dIFS shapes"></a>
+
+The texts are labels, so the book comes in all 17 languages. What the book says comes from what the program has (the DE option, the formula file, the value names, the example files): it is not a hand-written encyclopedia, and a formula whose values have unusual names shows them with their defaults alone. The logic is in `src/formula_book.rs` (tested), the window in `src/app/formula_book_form.rs`.
 
 ## Two small fixes found on the way
 

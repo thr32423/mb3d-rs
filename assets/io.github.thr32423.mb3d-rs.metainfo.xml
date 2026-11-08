@@ -88,6 +88,12 @@
   </recommends>
 
   <releases>
+    <release version="0.3.5" date="2026-11-08">
+      <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.5</url>
+      <description>
+        <p>Twelve wishes of the Mandelbulb Maniacs group: 360 photos that Facebook recognises, maps of any name, a colour picker with a hex field and an eyedropper, errors explained in plain words, a Share window, Mandelbulber settings files opening, a Formula book that explains every formula and its values, own step settings for the passes after the main one and a noise doctor, background pictures shown 1:1, texture export (height, normal and occlusion maps), mesh export without flying parts and decimated, and a benchmark with a result to post. Tamil as the 18th interface language.</p>
+      </description>
+    </release>
     <release version="0.3.4" date="2026-11-08">
       <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.4</url>
       <description>

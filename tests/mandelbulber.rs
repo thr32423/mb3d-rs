@@ -60,16 +60,25 @@ fn hybrid_slots_julia_and_notes() {
     let im = import(&text("hybrid_julia.fract")).unwrap();
     let sc = &im.scene;
     let names: Vec<(String, i32)> = sc.formulas.iter().map(|f| (f.formula.name(), f.iterations)).collect();
-    // the transform 1004 has no counterpart, Menger3 gets the scale of the file
-    assert_eq!(names.len(), 3, "{names:?}");
-    assert_eq!(names[0], ("Amazing Box".to_string(), 2));
-    assert_eq!(names[1], ("Integer Power".to_string(), 1));
+    // the transform 1004 has no counterpart
+    assert_eq!(names[0], ("Amazing Box".to_string(), 2), "{names:?}");
+    assert_eq!(names[1], ("Integer Power".to_string(), 1), "{names:?}");
     assert_eq!(option(&sc.formulas[1].formula, "Power"), 2.0);
-    assert_eq!(names[2].0, "Menger3");
-    assert_eq!(option(&sc.formulas[2].formula, "Scale"), 2.5);
     assert!(sc.julia && sc.julia_c == [-1.0, 0.0, 0.0, 0.0]);
     assert!(im.notes.iter().any(|n| n.contains("a transform") && n.contains("left out")), "{:?}", im.notes);
-    assert!(im.notes[0].contains("3 formulas carried over, 1 left out"), "{:?}", im.notes);
+    // Menger3 is a formula file of the MB3D bundle, not of this repository:
+    // where it is installed it gets the scale of the file, elsewhere the
+    // notes say that it is missing and the slot is left out
+    if mb3d::formulas::lookup("Menger3").is_ok() {
+        assert_eq!(names.len(), 3, "{names:?}");
+        assert_eq!(names[2].0, "Menger3");
+        assert_eq!(option(&sc.formulas[2].formula, "Scale"), 2.5);
+        assert!(im.notes[0].contains("3 formulas carried over, 1 left out"), "{:?}", im.notes);
+    } else {
+        assert_eq!(names.len(), 2, "{names:?}");
+        assert!(im.notes.iter().any(|n| n.contains("Menger3") && n.contains("not installed")), "{:?}", im.notes);
+        assert!(im.notes[0].contains("2 formulas carried over, 2 left out"), "{:?}", im.notes);
+    }
 }
 
 #[test]

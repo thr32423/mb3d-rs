@@ -7,7 +7,7 @@
 <!-- languages:end -->
 
 <!-- latest:start -->
-**Latest release: [v0.3.5](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.5)** (8 Nov 2026, 16:24 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
+**Latest release: [v0.3.6](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.6)** (9 Nov 2026, 06:14 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
 <!-- latest:end -->
 
 mb3d-rs is [Mandelbulb3D](https://github.com/thargor6/mb3d) (MB3D), the
@@ -1489,6 +1489,14 @@ Each commit links to its full description and code on GitHub; the downloads
 of a release are on its page. Times are in UTC.
 
 <!-- updates:start -->
+### [v0.3.6](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.6) · 9 Nov 2026, 06:14 UTC
+
+| Commit | What it does |
+|---|---|
+| [`0c6171c`](https://github.com/thr32423/mb3d-rs/commit/0c6171cab8682b9adf3615c0ac18939ea453f70e) | Version number and release notes of this release |
+| [`16b0475`](https://github.com/thr32423/mb3d-rs/commit/16b0475effdfe2f21eeedfbac0be1ad0291d2caa) | The Droste effect (not in MB3D): the picture repeated in itself as in Escher's Print Gallery, a last pass over the whole picture after the finishing (src/droste.rs). The ring between two radii around a centre is kept and repeated towards the centre and outwards in log-polar coordinates; Escher's factor alpha = 1 + twist * ln(outer / inner) / (2 pi i) (de Smit and Lenstra, 2003) joins the copies along a spiral (twist 1), 0 gives concentric copies; the phase zooms through one shrink step and phase 1 is phase 0, so an animation of the phase from 0 to 1 is an endless zoom from one calculated picture; neighbouring copies crossfade over a part of a step, the copies that shrink below the pixels fade into the ring's mean colour, four reads per pixel, a source point outside the picture takes the copy one step inward. Scene keys droste = cx, cy, inner, outer (parts of the picture's size) or off, droste_twist, droste_phase, droste_blend in the mb3d-rs block, blended between keyframes (phase not wrapped, so a keyframe at 1 zooms); whole pictures only (not tiles, parts, panoramas, the splat views); Monte Carlo pictures after the noise filter. The Droste window (DrosteFrm, Post processing > Finishing > Droste effect...): the calculated picture at a reduced size with the effect live, the centre set by a click or a drag on it, the radii by the mouse wheel (Shift: the inner), the centre and both radii drawn over it, twist, crossfade, phase with a slider, Paint now repaints the finishing at full size; the engine keeps the picture before the effect (Output::plain, render::paint_with_plain) so the preview never applies it twice. 20 labels in all 18 languages, README with a picture (docs/img/droste.jpg, Dodeca Torus mix) in all 17 READMEs, TECHNICAL.md, the MCP scene guide, examples/drosteshots.rs makes the screenshots headless. Tests: the ring stays without twist and blend, phase 1 is phase 0, thread independence, clamping and keys round trip, a panorama has none, the effect leaves the G-buffer and a part of the picture alone and off is byte-identical, the keyframe blend. The filter's controls follow Josh Sommers's MathMap script and Tom Beddard's Pixel Bender filter. |
+| [`9f3774a`](https://github.com/thr32423/mb3d-rs/commit/9f3774ac3a454bac4582640ef72c1cb0d796f2c1) | README: Updates for v0.3.5 |
+
 ### [v0.3.5](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.5) · 8 Nov 2026, 16:24 UTC
 
 | Commit | What it does |
@@ -1522,15 +1530,7 @@ of a release are on its page. Times are in UTC.
 | [`38db5f3`](https://github.com/thr32423/mb3d-rs/commit/38db5f33f46a3b356b704390762b32d767ea9799) | Test: a render stopped in the march or in a post pass and continued from its checkpoint equals the uninterrupted render byte for byte, also with another thread count |
 | [`4c037d1`](https://github.com/thr32423/mb3d-rs/commit/4c037d1dc2c3b102e214150c3634280e9c26e4c5) | README: Updates for v0.3.3 |
 
-### [v0.3.3](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.3) · 7 Nov 2026, 16:03 UTC
-
-| Commit | What it does |
-|---|---|
-| [`7f9f78d`](https://github.com/thr32423/mb3d-rs/commit/7f9f78d87161becb0c8b32277f523dc97fccdadc) | Version number and release notes of this release |
-| [`5b98668`](https://github.com/thr32423/mb3d-rs/commit/5b98668d0c22e06eeb04ed2a21b367fe0da0637d) | Both parts of a DE combination run through compiled loops: the machine keeps one loop per slot range and the iteration takes the one of the range it is switched to, so part 2 no longer calls its formulas one by one (the dIFS loop the same); the timing that decides whether a loop is kept runs the whole distance estimate for a DE combination (the iteration alone never ran part 2). Two objects side by side render up to 27 % faster on the CPU (the example files DEcomb1 14 %, julia on box 21 %, ExcludeBulbMeng 6 %), the pictures the same to the bit (80 example files, tools/jit_check.sh, and the 11 DE combinations against v0.3.2); a test renders a two-object scene through both loops against the formulas called one by one. README (17 languages) and TECHNICAL.md |
-| [`767c6ad`](https://github.com/thr32423/mb3d-rs/commit/767c6ad5212555522f2acb5e505f40a9925e1429) | README: Updates for v0.3.2 |
-
-All 116 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
+All 117 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
 <!-- updates:end -->
 
 ## For developers

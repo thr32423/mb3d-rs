@@ -205,7 +205,8 @@ mod tests {
             assert!(!keys[..i].contains(k), "{} twice", k.text());
         }
         // the window has a field per action, its tag the action's place
-        let dfm = include_str!("forms/HotkeysGUI.dfm");
+        // a Windows checkout has CRLF line ends (git core.autocrlf)
+        let dfm = include_str!("forms/HotkeysGUI.dfm").replace("\r\n", "\n");
         for i in 0..ACTIONS.len() {
             let at = dfm.find(&format!("object Edit{}: TEdit", i + 1)).unwrap();
             assert!(dfm[at..].contains(&format!("Tag = {i}\n")), "Edit{}", i + 1);

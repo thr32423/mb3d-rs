@@ -202,9 +202,9 @@ pub struct State {
     /// session (MB3D's dialogs keep their own `InitialDir`, `ChangeFName`;
     /// the folders of the Ini-dirs window stay as they are)
     pub last_dirs: std::collections::HashMap<String, PathBuf>,
-    /// the lighting History kept last (`LHPSLight`) and when Timer2 looked
-    /// (every minute)
-    pub history_light: String,
+    /// the parameters History kept last (MB3D: the lighting, `LHPSLight`)
+    /// and when Timer2 looked (every minute)
+    pub history_scene: String,
     pub history_tick: Instant,
     /// the controls of other windows greyed while a calculation runs, with
     /// whether they were enabled before (`DisableButtons`)
@@ -302,7 +302,7 @@ impl Default for State {
             ground_color: crate::scene::Ground::default().color,
             ground_water_color: crate::scene::Ground::default().water_color,
             last_dirs: Default::default(),
-            history_light: String::new(),
+            history_scene: String::new(),
             history_tick: Instant::now(),
             greyed: Vec::new(),
             ani_stick: false,
@@ -2199,35 +2199,41 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         m_buttons_up(ui);
     }
     // Timer2 (every minute, Mand.pas:4122): the history keeps the
-    // parameters after the lighting changed, at most every 5 minutes, not
-    // while animating or batch rendering
+    // parameters after they changed, at most every 5 minutes, not while
+    // animating or batch rendering
     if app.main.history_tick.elapsed().as_secs() >= 60 {
         app.main.history_tick = Instant::now();
-        history_timer(app);
+        history_timer(app, ui);
     }
 }
 
-/// `Timer2Timer`: the parameters into History when the lighting changed
-/// since History kept it last.
-fn history_timer(app: &mut Mb3d) {
+/// `Timer2Timer`: the parameters into History when they changed since
+/// History kept them last. MB3D looked at the lighting only; here the
+/// parameters as the windows show them now (a formula or the camera changed
+/// without a calculation too), so a crash loses at most five minutes of
+/// work. The current scene stays as it is.
+fn history_timer(app: &mut Mb3d, ui: &mut Ui) {
     let animating = app.anim.job.locked().running;
     if app.main.calculating || animating || app.batch.status != 0 || app.main.last_history.elapsed().as_secs() <= 300 {
         return;
     }
-    let light = format!("{:?}", app.scene.lighting);
-    if light == app.main.history_light {
+    let saved = app.scene.clone();
+    app.make_scene(ui);
+    let shown = std::mem::replace(&mut app.scene, saved);
+    let text = shown.to_text();
+    if text == app.main.history_scene {
         return;
     }
-    crate::appdirs::store_history(&app.scene, &stem(&app.title));
+    crate::appdirs::store_history(&shown, &stem(&app.title));
     app.main.last_history = Instant::now();
-    app.main.history_light = light;
+    app.main.history_scene = text;
 }
 
 /// History kept the parameters now (`StoreHistoryPars`, a file loaded:
 /// `LastHisParSaveTime`, `LHPSLight`).
 pub fn history_kept(app: &mut Mb3d) {
     app.main.last_history = Instant::now();
-    app.main.history_light = format!("{:?}", app.scene.lighting);
+    app.main.history_scene = app.scene.to_text();
 }
 
 /// `MButtonsUp`: zoom, move and Z of the image released.

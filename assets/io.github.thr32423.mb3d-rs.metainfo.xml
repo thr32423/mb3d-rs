@@ -88,6 +88,12 @@
   </recommends>
 
   <releases>
+    <release version="0.3.7" date="2026-11-10">
+      <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.7</url>
+      <description>
+        <p>Safer and easier to use: damaged or hostile files and swarm jobs end in an error instead of a crash or a hang; parameter files are saved so that a full disk keeps the old file, and failed saves are reported. In the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5 and Ctrl+Z / Ctrl+Y open, save, calculate and undo. File dialogs and windows open where they were left, the five-minute History copy keeps every change, and the command line names a mistyped option with the one meant.</p>
+      </description>
+    </release>
     <release version="0.3.6" date="2026-11-09">
       <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.6</url>
       <description>

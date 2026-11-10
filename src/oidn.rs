@@ -2,8 +2,9 @@
 //! the neural network noise filter for path traced pictures, here for the
 //! Monte Carlo renders.  The library is not built in: it is loaded when
 //! first needed, from the folder `oidn` next to the program (or the
-//! program's own folder), the folder named by `MB3D_OIDN`, or the
-//! system's libraries (e.g. Arch Linux's package `openimagedenoise`).
+//! program's own folder), the folder named by `MB3D_OIDN`, or (not on
+//! Windows) the system's libraries (e.g. Arch Linux's package
+//! `openimagedenoise`).
 //! Its own device libraries (the CPU's, and NVIDIA's, AMD's or Intel's
 //! cards when they are there) lie next to it; the library picks the
 //! fastest device itself.
@@ -77,8 +78,13 @@ fn candidates() -> Vec<std::path::PathBuf> {
             out.push(d.join(n));
         }
     }
-    for n in lib_names() {
-        out.push(std::path::PathBuf::from(n));
+    // the system's search for a bare name: not on Windows, whose search
+    // includes the current folder (the folder of an opened file), where a
+    // downloaded folder could hold a planted OpenImageDenoise.dll
+    if !cfg!(windows) {
+        for n in lib_names() {
+            out.push(std::path::PathBuf::from(n));
+        }
     }
     out
 }

@@ -1,2 +1,5 @@
-*.cmd text eol=crlf
-*.sh text eol=lf
+# Line ends: git never converts them, so every computer (Windows CI with
+# core.autocrlf too) checks out the bytes in the repository; tests that read
+# text files then see the same text everywhere. The community .m3f keep the
+# CRLF their authors gave them.
+* -text

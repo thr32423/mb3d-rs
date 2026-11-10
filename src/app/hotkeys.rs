@@ -12,9 +12,10 @@ use crate::vcl::{Ev, Event, Ui};
 const HK: &str = "HotkeysFrm";
 
 /// The windows a hotkey brings up: the ini name, the form (none: closes
-/// the window the key is pressed in), the key combination it has unless
+/// the window the key is pressed in; `=action`: a button of the main
+/// window, pressed in the main window), the key combination it has unless
 /// the user chose another.
-const ACTIONS: [(&str, &str, &str); 8] = [
+const ACTIONS: [(&str, &str, &str); 14] = [
     ("Main", "Mand3DForm", "Ctrl+1"),
     ("Navigator", "FNavigator", "Ctrl+2"),
     ("Animation", "AnimationForm", "Ctrl+3"),
@@ -23,6 +24,15 @@ const ACTIONS: [(&str, &str, &str); 8] = [
     ("PostProcessing", "PostProForm", "Ctrl+6"),
     ("MonteCarlo", "MCForm", "Ctrl+7"),
     ("CloseWindow", "", "Ctrl+W"),
+    // the main window's own (not in MB3D): only there, so the keys of the
+    // other windows stay theirs (F5 and F9 in the formula editor, Ctrl+Enter
+    // in text boxes)
+    ("Open", "=open", "Ctrl+O"),
+    ("SaveParameters", "=savem3p", "Ctrl+S"),
+    ("SavePicture", "=savepic", "Ctrl+Shift+S"),
+    ("Calculate", "=calc", "F5"),
+    ("Undo", "=undo", "Ctrl+Z"),
+    ("Redo", "=redo", "Ctrl+Y"),
 ];
 
 /// A key combination: the virtual key code and the Ctrl / Alt / Shift state.
@@ -114,6 +124,7 @@ pub fn hotkey(app: &mut Mb3d, ui: &mut Ui, form: usize, key: u16, shift: u8) -> 
     let c = Combo { key, mods: shift & MODS };
     let Some(i) = combos(app).iter().position(|k| *k == Some(c)) else { return false };
     match ACTIONS[i].1 {
+        a if a.starts_with('=') => return form == ui.main_form && super::main_form::hotkey_action(app, ui, &a[1..]),
         // as its X button does; the main window stays (it would end the program)
         "" if form != ui.main_form => {
             let name = ui.forms[form].name.clone();
@@ -185,5 +196,20 @@ mod tests {
         assert_eq!(Combo::parse(""), None);
         assert_eq!(Combo::parse("Ctrl+"), None);
         assert_eq!(Combo::parse("Hyper+X"), None);
+    }
+
+    #[test]
+    fn every_action_has_its_own_key_and_field() {
+        let keys: Vec<Combo> = ACTIONS.iter().map(|(_, _, d)| Combo::parse(d).unwrap()).collect();
+        for (i, k) in keys.iter().enumerate() {
+            assert!(!keys[..i].contains(k), "{} twice", k.text());
+        }
+        // the window has a field per action, its tag the action's place
+        let dfm = include_str!("forms/HotkeysGUI.dfm");
+        for i in 0..ACTIONS.len() {
+            let at = dfm.find(&format!("object Edit{}: TEdit", i + 1)).unwrap();
+            assert!(dfm[at..].contains(&format!("Tag = {i}\n")), "Edit{}", i + 1);
+        }
+        assert!(!dfm.contains(&format!("object Edit{}: TEdit", ACTIONS.len() + 1)));
     }
 }

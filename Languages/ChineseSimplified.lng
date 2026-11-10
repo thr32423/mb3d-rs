@@ -459,6 +459,8 @@ Calculate3D=计算 3D
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=用集群渲染计算 3D 和批量窗口，分为
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=计算 3D / 停止:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=快速计算 8x8 块状图像，不含正确光照
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=请先计算一幅画面。
@@ -863,8 +865,8 @@ CrossEyedPreview=交叉眼预览
 ;Cross-eyed preview
 Crossfade=交叉渐变:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 到 Ctrl+7 按列表顺序，Ctrl+W 关闭
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 到 Ctrl+7 按列表顺序，Ctrl+W 关闭；主窗口中 Ctrl+O、Ctrl+S、Ctrl+Shift+S、F5、Ctrl+Z 和 Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=曲线
 ;Curves
 CustomPreset1=自定义预设 1
@@ -1781,6 +1783,8 @@ InOut=内+外
 ;In+Out
 InOutOption=内/外选项：
 ;In/out option:
+InTheMainWindow=在主窗口中:
+;In the main window:
 InTheSwarm=集群中：
 ;In the swarm:
 InThisModeRightAndLeft=此模式下每个子帧都会渲染右眼和左眼图像。
@@ -2711,6 +2715,8 @@ OpenParameter=打开参数
 ;Open parameter
 OpenParameterFromClipboardTextSelect=从剪贴板文本打开参数：\n选中包含 'Mandel...{..}' 的参数文本，\n按 ctrl+c，然后点击打开文本按钮。
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=打开参数:
+;Open parameters:
 OpenProject=打开项目
 ;Open project
 OpenTextParameters=打开文本参数
@@ -3049,6 +3055,8 @@ RectLower=直线
 ;rect.
 Rectilinear=直线
 ;Rectilinear
+Redo=重做:
+;Redo:
 ReduceTheMeshToThisShare=把网格减到其顶点的此比例（百分比，顶点聚类）；100 保持计算原样
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=减少块状伪影，由于采用样条插值，现已不那么重要。
@@ -3287,12 +3295,16 @@ SaveM3iFiles=保存 m3i 文件
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=保存 m3i 文件时包含内部图像缓冲区，保留反射等。
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=保存参数:
+;Save parameters:
 SaveParametersOnly=仅保存参数
 ;Save parameters only
 SaveParametersToClipboardAsText=将参数以文本形式保存到剪贴板，\n之后可按 ctrl+v 将文本粘贴到其他地方。
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=保存图片
 ;Save pic
+SavePicture=保存图像:
+;Save picture:
 SaveProject=保存项目
 ;Save project
 SaveTextParametersInThePNG=选中时，将文本参数保存到 PNG 文件中。\n例如在 gimp 中可通过\n"图像属性" -> 注释查看。
@@ -4055,6 +4067,8 @@ UncheckToNotOverwriteImagesThat=取消勾选则不覆盖已计算好的图像。
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} 进行中
 ;, {} under way
+Undo=撤销:
+;Undo:
 UnfinishedCalculation=未完成的计算
 ;Unfinished calculation
 UnfinishedRender=未完成的渲染

@@ -458,6 +458,8 @@ Calculate3D=3D berekenen
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=3D berekenen en het batchvenster met de zwerm, in
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=3D berekenen / Stoppen:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=Berekent snel een blokkerige 8x8-afbeelding zonder echte belichting
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=Bereken eerst een beeld.
@@ -862,8 +864,8 @@ CrossEyedPreview=Kruislings voorbeeld
 ;Cross-eyed preview
 Crossfade=Overvloeiing:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 tot Ctrl+7 in de volgorde van de lijst, Ctrl+W om te sluiten
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 tot Ctrl+7 in de volgorde van de lijst, Ctrl+W om te sluiten; in het hoofdvenster Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z en Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=Curven
 ;Curves
 CustomPreset1=eigen voorinstelling 1
@@ -1780,6 +1782,8 @@ InOut=Binnen+buiten
 ;In+Out
 InOutOption=Binnen/buiten-optie:
 ;In/out option:
+InTheMainWindow=In het hoofdvenster:
+;In the main window:
 InTheSwarm=In de zwerm:
 ;In the swarm:
 InThisModeRightAndLeft=In deze modus worden voor elk subframe afbeeldingen voor het rechter- en linkeroog gerenderd.
@@ -2710,6 +2714,8 @@ OpenParameter=Parameters openen
 ;Open parameter
 OpenParameterFromClipboardTextSelect=Parameters openen uit klembordtekst:\nselecteer de parametertekst inclusief 'Mandel...{..}',\ndruk op Ctrl+C en daarna op de knop open-txt.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=Parameters openen:
+;Open parameters:
 OpenProject=Project openen
 ;Open project
 OpenTextParameters=Tekstparameters openen
@@ -3048,6 +3054,8 @@ RectLower=recht.
 ;rect.
 Rectilinear=Rectilineair
 ;Rectilinear
+Redo=Opnieuw:
+;Redo:
 ReduceTheMeshToThisShare=De mesh terugbrengen tot dit aandeel van zijn hoekpunten (procent, vertexclustering); 100 laat hem zoals berekend
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Vermindert blokkerige artefacten; minder belangrijk geworden dankzij spline-interpolatie.
@@ -3286,12 +3294,16 @@ SaveM3iFiles=m3i-bestanden opslaan
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=m3i-bestanden opslaan inclusief de interne beeldbuffer, zodat reflecties enz. bewaard blijven.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=Parameters opslaan:
+;Save parameters:
 SaveParametersOnly=Alleen parameters opslaan
 ;Save parameters only
 SaveParametersToClipboardAsText=Parameters als tekst op het klembord opslaan;\ndaarna kunt u de tekst met Ctrl+V elders invoegen.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=Afb. opslaan
 ;Save pic
+SavePicture=Afbeelding opslaan:
+;Save picture:
 SaveProject=Project opslaan
 ;Save project
 SaveTextParametersInThePNG=Slaat de tekstparameters op in het PNG-bestand, indien aangevinkt.\nU kunt deze bijvoorbeeld in GIMP bekijken onder\n'Afbeeldingseigenschappen' -> Commentaar.
@@ -4054,6 +4066,8 @@ UncheckToNotOverwriteImagesThat=Vink uit om al berekende afbeeldingen niet te ov
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} bezig
 ;, {} under way
+Undo=Ongedaan maken:
+;Undo:
 UnfinishedCalculation=Onvoltooide berekening
 ;Unfinished calculation
 UnfinishedRender=Onvoltooide rendering

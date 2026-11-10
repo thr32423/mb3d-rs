@@ -3,7 +3,7 @@ object HotkeysFrm: THotkeysFrm
   Top = 170
   BorderStyle = bsToolWindow
   Caption = '@MB:Hotkeys'
-  ClientHeight = 318
+  ClientHeight = 506
   ClientWidth = 300
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -194,28 +194,162 @@ object HotkeysFrm: THotkeysFrm
     TabOrder = 7
     OnKeyDown = HotkeyEditKeyDown
   end
+  object Label15: TLabel
+    Left = 8
+    Top = 281
+    Width = 284
+    Height = 13
+    AutoSize = False
+    Caption = '@MB:InTheMainWindow'
+  end
+  object Label9: TLabel
+    Left = 8
+    Top = 303
+    Width = 130
+    Height = 13
+    AutoSize = False
+    Caption = '@MB:OpenParameters'
+  end
+  object Edit9: TEdit
+    Tag = 8
+    Left = 144
+    Top = 300
+    Width = 148
+    Height = 21
+    Hint = '@MB:ClickAndPressTheKeysOf'
+    ParentShowHint = False
+    ReadOnly = True
+    ShowHint = True
+    TabOrder = 8
+    OnKeyDown = HotkeyEditKeyDown
+  end
+  object Label10: TLabel
+    Left = 8
+    Top = 331
+    Width = 130
+    Height = 13
+    AutoSize = False
+    Caption = '@MB:SaveParameters'
+  end
+  object Edit10: TEdit
+    Tag = 9
+    Left = 144
+    Top = 328
+    Width = 148
+    Height = 21
+    Hint = '@MB:ClickAndPressTheKeysOf'
+    ParentShowHint = False
+    ReadOnly = True
+    ShowHint = True
+    TabOrder = 9
+    OnKeyDown = HotkeyEditKeyDown
+  end
+  object Label11: TLabel
+    Left = 8
+    Top = 359
+    Width = 130
+    Height = 13
+    AutoSize = False
+    Caption = '@MB:SavePicture'
+  end
+  object Edit11: TEdit
+    Tag = 10
+    Left = 144
+    Top = 356
+    Width = 148
+    Height = 21
+    Hint = '@MB:ClickAndPressTheKeysOf'
+    ParentShowHint = False
+    ReadOnly = True
+    ShowHint = True
+    TabOrder = 10
+    OnKeyDown = HotkeyEditKeyDown
+  end
+  object Label12: TLabel
+    Left = 8
+    Top = 387
+    Width = 130
+    Height = 13
+    AutoSize = False
+    Caption = '@MB:Calculate3DStop'
+  end
+  object Edit12: TEdit
+    Tag = 11
+    Left = 144
+    Top = 384
+    Width = 148
+    Height = 21
+    Hint = '@MB:ClickAndPressTheKeysOf'
+    ParentShowHint = False
+    ReadOnly = True
+    ShowHint = True
+    TabOrder = 11
+    OnKeyDown = HotkeyEditKeyDown
+  end
+  object Label13: TLabel
+    Left = 8
+    Top = 415
+    Width = 130
+    Height = 13
+    AutoSize = False
+    Caption = '@MB:Undo'
+  end
+  object Edit13: TEdit
+    Tag = 12
+    Left = 144
+    Top = 412
+    Width = 148
+    Height = 21
+    Hint = '@MB:ClickAndPressTheKeysOf'
+    ParentShowHint = False
+    ReadOnly = True
+    ShowHint = True
+    TabOrder = 12
+    OnKeyDown = HotkeyEditKeyDown
+  end
+  object Label14: TLabel
+    Left = 8
+    Top = 443
+    Width = 130
+    Height = 13
+    AutoSize = False
+    Caption = '@MB:Redo'
+  end
+  object Edit14: TEdit
+    Tag = 13
+    Left = 144
+    Top = 440
+    Width = 148
+    Height = 21
+    Hint = '@MB:ClickAndPressTheKeysOf'
+    ParentShowHint = False
+    ReadOnly = True
+    ShowHint = True
+    TabOrder = 13
+    OnKeyDown = HotkeyEditKeyDown
+  end
   object DefaultsBtn: TButton
     Left = 8
-    Top = 287
+    Top = 475
     Width = 137
     Height = 25
-    Hint = '@MB:Ctrl1ToCtrl7In'
+    Hint = '@MB:Ctrl1ToCtrl7In2'
     Caption = '@MB:Defaults'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 8
+    TabOrder = 14
     OnClick = DefaultsBtnClick
   end
   object SaveAndExitBtn: TButton
     Left = 155
-    Top = 287
+    Top = 475
     Width = 137
     Height = 25
     Hint = '@MB:KeepsTheHotkeysForTheNext'
     Caption = '@MB:SaveExit'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 9
+    TabOrder = 15
     OnClick = SaveAndExitBtnClick
   end
 end

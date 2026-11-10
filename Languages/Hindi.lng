@@ -459,6 +459,8 @@ Calculate3D=3D गणना करें
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=3D गणना और बैच विंडो स्वार्म के साथ, इतनी
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=3D गणना / रोकें:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=सही प्रकाश व्यवस्था के बिना एक तेज़ 8x8 ब्लॉकी छवि की गणना करें
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=पहले एक चित्र की गणना करें।
@@ -863,8 +865,8 @@ CrossEyedPreview=क्रॉस-आई पूर्वावलोकन
 ;Cross-eyed preview
 Crossfade=मिश्रण:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 से Ctrl+7 सूची के क्रम में, बंद करने के लिए Ctrl+W
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 से Ctrl+7 सूची के क्रम में, बंद करने के लिए Ctrl+W; मुख्य विंडो में Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z और Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=वक्र
 ;Curves
 CustomPreset1=कस्टम प्रीसेट 1
@@ -1781,6 +1783,8 @@ InOut=अंदर+बाहर
 ;In+Out
 InOutOption=अंदर/बाहर विकल्प:
 ;In/out option:
+InTheMainWindow=मुख्य विंडो में:
+;In the main window:
 InTheSwarm=स्वार्म में:
 ;In the swarm:
 InThisModeRightAndLeft=इस मोड में हर सबफ़्रेम के लिए दाईं और बाईं आँख की छवियाँ रेंडर की जाती हैं।
@@ -2711,6 +2715,8 @@ OpenParameter=पैरामीटर खोलें
 ;Open parameter
 OpenParameterFromClipboardTextSelect=क्लिपबोर्ड टेक्स्ट से पैरामीटर खोलें:\n'Mandel...{..}' सहित पैरामीटर टेक्स्ट चुनें,\nCtrl+C दबाएँ और फिर open-txt बटन दबाएँ।
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=पैरामीटर खोलें:
+;Open parameters:
 OpenProject=प्रोजेक्ट खोलें
 ;Open project
 OpenTextParameters=टेक्स्ट पैरामीटर खोलें
@@ -3049,6 +3055,8 @@ RectLower=रेक्ट.
 ;rect.
 Rectilinear=रेक्टिलिनियर
 ;Rectilinear
+Redo=फिर से करें:
+;Redo:
 ReduceTheMeshToThisShare=मेश को उसके शीर्षों के इस हिस्से (प्रतिशत, शीर्ष समूहन) तक घटाएँ; 100 उसे गणना जैसा रखता है
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=ब्लॉक जैसी विकृतियाँ कम करता है, स्प्लाइन इंटरपोलेशन के कारण अब उतना महत्वपूर्ण नहीं।
@@ -3287,12 +3295,16 @@ SaveM3iFiles=m3i फ़ाइलें सहेजें
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=आंतरिक छवि बफ़र सहित m3i फ़ाइलें सहेजें, जिससे परावर्तन आदि सहेजे जाते हैं।
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=पैरामीटर सहेजें:
+;Save parameters:
 SaveParametersOnly=केवल पैरामीटर सहेजें
 ;Save parameters only
 SaveParametersToClipboardAsText=पैरामीटर को टेक्स्ट के रूप में क्लिपबोर्ड में सहेजें,\nफिर आप Ctrl+V दबाकर टेक्स्ट कहीं और डाल सकते हैं।
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=चित्र सहेजें
 ;Save pic
+SavePicture=चित्र सहेजें:
+;Save picture:
 SaveProject=प्रोजेक्ट सहेजें
 ;Save project
 SaveTextParametersInThePNG=चयनित होने पर टेक्स्ट पैरामीटर PNG फ़ाइल में सहेजें।\nआप इन्हें उदाहरण के लिए gimp में\n'Image Properties' -> Comment में देख सकते हैं।
@@ -4055,6 +4067,8 @@ UncheckToNotOverwriteImagesThat=पहले से गणना की गई �
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} जारी
 ;, {} under way
+Undo=पूर्ववत करें:
+;Undo:
 UnfinishedCalculation=अधूरी गणना
 ;Unfinished calculation
 UnfinishedRender=अधूरा रेंडर

@@ -458,6 +458,8 @@ Calculate3D=Hitung 3D
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=Hitung 3D dan jendela Batch dengan swarm, di
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=Hitung 3D / Berhenti:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=Hitung gambar kotak-kotak 8x8 yang cepat tanpa pencahayaan yang tepat
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=Hitung gambar dulu.
@@ -862,8 +864,8 @@ CrossEyedPreview=Pratinjau cross-eyed
 ;Cross-eyed preview
 Crossfade=Pembauran:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 sampai Ctrl+7 sesuai urutan daftar, Ctrl+W untuk menutup
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 sampai Ctrl+7 sesuai urutan daftar, Ctrl+W untuk menutup; di jendela utama Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z dan Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=Kurva
 ;Curves
 CustomPreset1=preset kustom 1
@@ -1780,6 +1782,8 @@ InOut=Dlm+Luar
 ;In+Out
 InOutOption=Opsi dalam/luar:
 ;In/out option:
+InTheMainWindow=Di jendela utama:
+;In the main window:
 InTheSwarm=Dalam swarm:
 ;In the swarm:
 InThisModeRightAndLeft=Dalam mode ini gambar mata kanan dan kiri dirender untuk setiap subframe.
@@ -2710,6 +2714,8 @@ OpenParameter=Buka parameter
 ;Open parameter
 OpenParameterFromClipboardTextSelect=Buka parameter dari teks Clipboard:\nPilih teks parameter termasuk 'Mandel...{..}',\ntekan ctrl+c lalu tombol buka-txt.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=Buka parameter:
+;Open parameters:
 OpenProject=Buka proyek
 ;Open project
 OpenTextParameters=Buka parameter teks
@@ -3048,6 +3054,8 @@ RectLower=persegi
 ;rect.
 Rectilinear=Rectilinear
 ;Rectilinear
+Redo=Ulangi:
+;Redo:
 ReduceTheMeshToThisShare=Kurangi mesh ke bagian simpulnya ini (persen, pengelompokan simpul); 100 membiarkannya seperti dihitung
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Mengurangi artefak kotak-kotak, tidak terlalu penting lagi karena interpolasi spline.
@@ -3286,12 +3294,16 @@ SaveM3iFiles=Simpan file m3i
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=Simpan file m3i termasuk buffer gambar internal, menyimpan refleksi dll.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=Simpan parameter:
+;Save parameters:
 SaveParametersOnly=Simpan parameter saja
 ;Save parameters only
 SaveParametersToClipboardAsText=Simpan parameter ke Clipboard sebagai teks,\nlalu Anda dapat menekan ctrl+v untuk menyisipkan teks di tempat lain.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=Simpan gbr
 ;Save pic
+SavePicture=Simpan gambar:
+;Save picture:
 SaveProject=Simpan proyek
 ;Save project
 SaveTextParametersInThePNG=Simpan parameter teks dalam file PNG, jika dipilih.\nAnda dapat melihatnya misalnya di gimp pada\n'Image Properties' -> Comment.
@@ -4054,6 +4066,8 @@ UncheckToNotOverwriteImagesThat=Hapus centang agar gambar yang sudah dihitung ti
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} sedang dikerjakan
 ;, {} under way
+Undo=Urungkan:
+;Undo:
 UnfinishedCalculation=Perhitungan belum selesai
 ;Unfinished calculation
 UnfinishedRender=Render belum selesai

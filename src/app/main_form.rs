@@ -2655,20 +2655,10 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "Edit34Change" => app.main.authors[1] = t(ui, "Edit34"),
         "SpeedButton9MouseUp" => {
             if let Ev::MouseUp { button, .. } = e.ev {
-                let n = app.main.undo.len();
                 match button {
-                    MouseButton::Left if app.main.undo_pos > 1 => app.main.undo_pos -= 1,
-                    MouseButton::Right if app.main.undo_pos < n => app.main.undo_pos += 1,
-                    _ => return,
-                }
-                if let Some((s, title)) = app.main.undo.get(app.main.undo_pos.saturating_sub(1)).cloned() {
-                    app.scene = s;
-                    // the window title of the step too (SetM3DUndo, Undo.pas:50)
-                    app.title = title;
-                    set_caption(app, ui);
-                    app.scene_to_forms(ui);
-                    paras_changed(app, ui);
-                    all_presets_up(ui);
+                    MouseButton::Left => undo_step(app, ui, true),
+                    MouseButton::Right => undo_step(app, ui, false),
+                    _ => {}
                 }
             }
         }
@@ -2920,6 +2910,53 @@ fn button2_click(app: &mut Mb3d, ui: &mut Ui) {
     app.main.history_file = crate::appdirs::store_history(&app.scene, &title);
     history_kept(app);
     calc_mand(app, ui, true);
+}
+
+/// One step back (the undo button's left click) or forward (its right
+/// click) through the parameters of the calculations.
+fn undo_step(app: &mut Mb3d, ui: &mut Ui, back: bool) {
+    let n = app.main.undo.len();
+    if back && app.main.undo_pos > 1 {
+        app.main.undo_pos -= 1;
+    } else if !back && app.main.undo_pos < n {
+        app.main.undo_pos += 1;
+    } else {
+        return;
+    }
+    if let Some((s, title)) = app.main.undo.get(app.main.undo_pos.saturating_sub(1)).cloned() {
+        app.scene = s;
+        // the window title of the step too (SetM3DUndo, Undo.pas:50)
+        app.title = title;
+        set_caption(app, ui);
+        app.scene_to_forms(ui);
+        paras_changed(app, ui);
+        all_presets_up(ui);
+    }
+}
+
+/// A key of the Hotkeys window for this window's buttons (not in MB3D),
+/// pressed in this window: `action` as in hotkeys.rs. False when the
+/// button cannot be used now (disabled, hidden), or for undo and redo while
+/// a text field has the keyboard (Ctrl+Z there is the field's): the key
+/// then goes on as before.
+pub fn hotkey_action(app: &mut Mb3d, ui: &mut Ui, action: &str) -> bool {
+    let typing = ui.focused(F).is_some_and(|n| matches!(ui.c(F, &n).kind, crate::vcl::control::Kind::Edit | crate::vcl::control::Kind::Memo));
+    let button = match action {
+        "open" => "Button5",
+        "savem3p" => "Button4",
+        "savepic" => "Button3",
+        "calc" => "Button2",
+        "undo" | "redo" if !typing => "SpeedButton9",
+        _ => return false,
+    };
+    if !ui.enabled(F, button) || !ui.visible(F, button) {
+        return false;
+    }
+    match action {
+        "undo" | "redo" => undo_step(app, ui, action == "undo"),
+        _ => event(app, ui, &Event { form: F.to_string(), sender: button.to_string(), handler: format!("{button}Click"), ev: Ev::Click }),
+    }
+    true
 }
 
 /// The Stop button: the running calculation ends.

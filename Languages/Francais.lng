@@ -458,6 +458,8 @@ Calculate3D=Calculer 3D
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=Calculer 3D et la fenêtre de traitement par lot avec l'essaim, en
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=Calculer en 3D / Arrêter :
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=Calcule rapidement une image en blocs de 8x8 sans éclairage correct
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=Calculez d'abord une image.
@@ -862,8 +864,8 @@ CrossEyedPreview=Aperçu en vision croisée
 ;Cross-eyed preview
 Crossfade=Fondu :
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 à Ctrl+7 dans l'ordre de la liste, Ctrl+W pour fermer
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 à Ctrl+7 dans l'ordre de la liste, Ctrl+W pour fermer ; dans la fenêtre principale Ctrl+O, Ctrl+S, Ctrl+Maj+S, F5, Ctrl+Z et Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=Courbes
 ;Curves
 CustomPreset1=préréglage personnalisé 1
@@ -1780,6 +1782,8 @@ InOut=Int+Ext
 ;In+Out
 InOutOption=Option int./ext. :
 ;In/out option:
+InTheMainWindow=Dans la fenêtre principale :
+;In the main window:
 InTheSwarm=Dans l'essaim :
 ;In the swarm:
 InThisModeRightAndLeft=Dans ce mode, les images œil droit et œil gauche sont rendues pour chaque sous-image.
@@ -2710,6 +2714,8 @@ OpenParameter=Ouvre des paramètres
 ;Open parameter
 OpenParameterFromClipboardTextSelect=Ouvre des paramètres depuis le texte du presse-papiers :\nsélectionnez le texte des paramètres y compris « Mandel...{..} »,\nappuyez sur Ctrl+C puis sur le bouton ouvrir-txt.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=Ouvrir les paramètres :
+;Open parameters:
 OpenProject=Ouvrir un projet
 ;Open project
 OpenTextParameters=Ouvrir des paramètres texte
@@ -3048,6 +3054,8 @@ RectLower=rect.
 ;rect.
 Rectilinear=Rectilinéaire
 ;Rectilinear
+Redo=Rétablir :
+;Redo:
 ReduceTheMeshToThisShare=Réduire le maillage à cette part de ses sommets (pour cent, regroupement de sommets) ; 100 le laisse tel que tracé
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Réduit les artefacts en blocs ; moins important depuis l'interpolation par splines.
@@ -3286,12 +3294,16 @@ SaveM3iFiles=Enregistrer les fichiers m3i
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=Enregistre les fichiers m3i avec le tampon d'image interne, ce qui conserve les réflexions, etc.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=Enregistrer les paramètres :
+;Save parameters:
 SaveParametersOnly=Enregistre les paramètres seuls
 ;Save parameters only
 SaveParametersToClipboardAsText=Enregistre les paramètres dans le presse-papiers comme texte ;\nvous pouvez ensuite appuyer sur Ctrl+V pour coller le texte ailleurs.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=Enreg. image
 ;Save pic
+SavePicture=Enregistrer l'image :
+;Save picture:
 SaveProject=Enregistrer le projet
 ;Save project
 SaveTextParametersInThePNG=Enregistre les paramètres en texte dans le fichier PNG, si coché.\nVous pouvez les voir par exemple dans GIMP sous\n« Propriétés de l'image » -> Commentaire.
@@ -4054,6 +4066,8 @@ UncheckToNotOverwriteImagesThat=Décochez pour ne pas écraser les images déjà
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} en cours
 ;, {} under way
+Undo=Annuler :
+;Undo:
 UnfinishedCalculation=Calcul inachevé
 ;Unfinished calculation
 UnfinishedRender=Rendu inachevé

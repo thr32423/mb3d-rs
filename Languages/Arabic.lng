@@ -459,6 +459,8 @@ Calculate3D=احسب ثلاثي الأبعاد
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=«احسب ثلاثي الأبعاد» ونافذة الدفعات مع السرب، في
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=حساب ثلاثي الأبعاد / إيقاف:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=حساب صورة سريعة بكتل 8x8 دون إضاءة صحيحة
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=احسب صورة أولاً.
@@ -863,8 +865,8 @@ CrossEyedPreview=معاينة بالعينين المتقاطعتين
 ;Cross-eyed preview
 Crossfade=التمازج:
 ;Crossfade:
-Ctrl1ToCtrl7In=من Ctrl+1 إلى Ctrl+7 بترتيب القائمة، وCtrl+W للإغلاق
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=من Ctrl+1 إلى Ctrl+7 بترتيب القائمة، وCtrl+W للإغلاق؛ وفي النافذة الرئيسية Ctrl+O وCtrl+S وCtrl+Shift+S وF5 وCtrl+Z وCtrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=المنحنيات
 ;Curves
 CustomPreset1=إعداد مسبق مخصص 1
@@ -1781,6 +1783,8 @@ InOut=داخل+خارج
 ;In+Out
 InOutOption=خيار الداخل/الخارج:
 ;In/out option:
+InTheMainWindow=في النافذة الرئيسية:
+;In the main window:
 InTheSwarm=في السرب:
 ;In the swarm:
 InThisModeRightAndLeft=في هذا الوضع تُصيّر صورتا العين اليمنى واليسرى لكل إطار فرعي.
@@ -2711,6 +2715,8 @@ OpenParameter=فتح المعاملات
 ;Open parameter
 OpenParameterFromClipboardTextSelect=فتح المعاملات من نص الحافظة:\nحدّد نص المعاملات بما فيه 'Mandel...{..}'،\nواضغط ctrl+c ثم زر فتح النص.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=فتح المعاملات:
+;Open parameters:
 OpenProject=فتح مشروع
 ;Open project
 OpenTextParameters=فتح معاملات نصية
@@ -3049,6 +3055,8 @@ RectLower=مستطيل
 ;rect.
 Rectilinear=مستقيمة
 ;Rectilinear
+Redo=إعادة:
+;Redo:
 ReduceTheMeshToThisShare=تقليل الشبكة إلى هذه النسبة من رؤوسها (بالمئة، تجميع الرؤوس)؛ 100 يتركها كما حُسبت
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=يقلل العيوب الكتلية، ولم يعد ذلك مهمًّا بفضل استيفاء الشرائح (spline).
@@ -3287,12 +3295,16 @@ SaveM3iFiles=حفظ ملفات m3i
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=حفظ ملفات m3i بما فيها مخزن الصورة الداخلي، لحفظ الانعكاسات وغيرها.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=حفظ المعاملات:
+;Save parameters:
 SaveParametersOnly=حفظ المعاملات فقط
 ;Save parameters only
 SaveParametersToClipboardAsText=حفظ المعاملات في الحافظة نصًّا،\nثم يمكنك ضغط ctrl+v لإدراج النص في مكان آخر.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=حفظ الصورة
 ;Save pic
+SavePicture=حفظ الصورة:
+;Save picture:
 SaveProject=حفظ المشروع
 ;Save project
 SaveTextParametersInThePNG=حفظ المعاملات النصية في ملف PNG، إن حُدد.\nيمكنك رؤيتها مثلًا في gimp تحت\n'Image Properties' -> Comment.
@@ -4055,6 +4067,8 @@ UncheckToNotOverwriteImagesThat=ألغِ التحديد لعدم الكتابة 
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=، {} قيد التنفيذ
 ;, {} under way
+Undo=تراجع:
+;Undo:
 UnfinishedCalculation=حساب غير مكتمل
 ;Unfinished calculation
 UnfinishedRender=تصيير غير مكتمل

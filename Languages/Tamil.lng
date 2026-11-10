@@ -459,6 +459,8 @@ Calculate3D=3D ஐக் கணக்கிடு
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=Calculate 3D மற்றும் Batch சாளரம் ஸ்வார்முடன், இதில்
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=3D கணக்கிடு / நிறுத்து:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=சரியான ஒளியமைப்பு இல்லாத விரைவான 8x8 தொகுதிப் படத்தைக் கணக்கிடு
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=முதலில் ஒரு படத்தைக் கணக்கிடவும்.
@@ -863,8 +865,8 @@ CrossEyedPreview=குறுக்குப் பார்வை முன்�
 ;Cross-eyed preview
 Crossfade=ஊடுகலப்பு:
 ;Crossfade:
-Ctrl1ToCtrl7In=பட்டியலின் வரிசையில் Ctrl+1 முதல் Ctrl+7 வரை, மூட Ctrl+W
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=பட்டியலின் வரிசையில் Ctrl+1 முதல் Ctrl+7 வரை, மூட Ctrl+W; முதன்மைச் சாளரத்தில் Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z, Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=வளைவுகள்
 ;Curves
 CustomPreset1=தனிப்பயன் முன்னமைவு 1
@@ -1781,6 +1783,8 @@ InOut=உள்+வெளி
 ;In+Out
 InOutOption=உள்/வெளி விருப்பம்:
 ;In/out option:
+InTheMainWindow=முதன்மைச் சாளரத்தில்:
+;In the main window:
 InTheSwarm=ஸ்வார்மில்:
 ;In the swarm:
 InThisModeRightAndLeft=இந்த முறையில் ஒவ்வொரு துணை பிரேமுக்கும் வலது மற்றும் இடது கண் படங்கள் ரெண்டர் செய்யப்படும்.
@@ -2711,6 +2715,8 @@ OpenParameter=அளவுருவைத் திற
 ;Open parameter
 OpenParameterFromClipboardTextSelect=கிளிப்போர்டு உரையிலிருந்து அளவுருவைத் திற:\n'Mandel...{..}' உட்பட அளவுரு உரையைத் தேர்ந்தெடுத்து,\nctrl+c ஐ அழுத்தி பின் open-txt பொத்தானை அழுத்தவும்.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=அளவுருக்களைத் திற:
+;Open parameters:
 OpenProject=திட்டத்தைத் திற
 ;Open project
 OpenTextParameters=உரை அளவுருக்களைத் திற
@@ -3049,6 +3055,8 @@ RectLower=செவ்.
 ;rect.
 Rectilinear=நேர்கோட்டு
 ;Rectilinear
+Redo=மீண்டும் செய்:
+;Redo:
 ReduceTheMeshToThisShare=வலையை அதன் முனைகளின் இந்தப் பங்கிற்குக் குறை (சதவீதம், முனைக் கொத்தாக்கம்); 100 வரைந்தபடியே வைக்கும்
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=தொகுதிப் பிழைகளைக் குறைக்கிறது, ஸ்ப்லைன் இடைக்கணிப்பால் இனி அவ்வளவு முக்கியமில்லை.
@@ -3287,12 +3295,16 @@ SaveM3iFiles=m3i கோப்புகளைச் சேமி
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=உள்ளகப் படத் தாங்கல் உட்பட m3i கோப்புகளைச் சேமி, பிரதிபலிப்புகள் முதலியவற்றைச் சேமித்து.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=அளவுருக்களைச் சேமி:
+;Save parameters:
 SaveParametersOnly=அளவுருக்களை மட்டும் சேமி
 ;Save parameters only
 SaveParametersToClipboardAsText=அளவுருக்களைக் கிளிப்போர்டுக்கு உரையாகச் சேமி,\nபின்னர் ctrl+v ஐ அழுத்தி உரையை வேறு இடத்தில் செருகலாம்.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=படத்தைச் சேமி
 ;Save pic
+SavePicture=படத்தைச் சேமி:
+;Save picture:
 SaveProject=திட்டத்தைச் சேமி
 ;Save project
 SaveTextParametersInThePNG=தேர்ந்தால் PNG கோப்பில் உரை அளவுருக்களைச் சேமி.\nஎடுத்துக்காட்டாக gimp இல்\n'Image Properties' -> Comment இல் இவற்றைப் பார்க்கலாம்.
@@ -4055,6 +4067,8 @@ UncheckToNotOverwriteImagesThat=ஏற்கனவே கணக்கிட்�
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} நடந்து கொண்டிருக்கிறது
 ;, {} under way
+Undo=செயல்தவிர்:
+;Undo:
 UnfinishedCalculation=முடிக்கப்படாத கணக்கீடு
 ;Unfinished calculation
 UnfinishedRender=முடிக்கப்படாத ரெண்டர்

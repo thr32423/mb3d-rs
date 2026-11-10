@@ -459,6 +459,8 @@ Calculate3D=3D حساب کریں
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=3D حساب اور بیچ ونڈو سوارم کے ساتھ، اس میں
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=3D حساب / روکیں:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=درست روشنی کے بغیر ایک تیز 8x8 بلاک دار تصویر کا حساب کریں
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=پہلے ایک تصویر کا حساب کریں۔
@@ -863,8 +865,8 @@ CrossEyedPreview=کراس آئیڈ پیش منظر
 ;Cross-eyed preview
 Crossfade=آمیزش:
 ;Crossfade:
-Ctrl1ToCtrl7In=فہرست کی ترتیب میں Ctrl+1 سے Ctrl+7، بند کرنے کے لیے Ctrl+W
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=فہرست کی ترتیب میں Ctrl+1 سے Ctrl+7، بند کرنے کے لیے Ctrl+W؛ مرکزی ونڈو میں Ctrl+O، Ctrl+S، Ctrl+Shift+S، F5، Ctrl+Z اور Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=خم
 ;Curves
 CustomPreset1=حسب ضرورت پری سیٹ 1
@@ -1781,6 +1783,8 @@ InOut=اندر+باہر
 ;In+Out
 InOutOption=اندر/باہر اختیار:
 ;In/out option:
+InTheMainWindow=مرکزی ونڈو میں:
+;In the main window:
 InTheSwarm=سوارم میں:
 ;In the swarm:
 InThisModeRightAndLeft=اس موڈ میں ہر ذیلی فریم کے لیے دائیں اور بائیں آنکھ کی تصاویر رینڈر ہوتی ہیں۔
@@ -2711,6 +2715,8 @@ OpenParameter=پیرامیٹر کھولیں
 ;Open parameter
 OpenParameterFromClipboardTextSelect=کلپ بورڈ متن سے پیرامیٹر کھولیں:\n'Mandel...{..}' سمیت پیرامیٹر متن منتخب کریں،\nctrl+c دبائیں اور پھر open-txt بٹن۔
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=پیرامیٹر کھولیں:
+;Open parameters:
 OpenProject=پروجیکٹ کھولیں
 ;Open project
 OpenTextParameters=متنی پیرامیٹرز کھولیں
@@ -3049,6 +3055,8 @@ RectLower=مستطیل
 ;rect.
 Rectilinear=سیدھی لکیری
 ;Rectilinear
+Redo=دوبارہ کریں:
+;Redo:
 ReduceTheMeshToThisShare=میش کو اس کے راسوں کے اس حصے (فیصد، راس گروہ بندی) تک کم کریں؛ 100 اسے حساب جیسا رکھتا ہے
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=بلاک دار نقائص کم کرتا ہے، spline انٹرپولیشن کی وجہ سے اب اتنا اہم نہیں۔
@@ -3287,12 +3295,16 @@ SaveM3iFiles=m3i فائلیں محفوظ کریں
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=اندرونی تصویری بفر سمیت m3i فائلیں محفوظ کریں، عکس وغیرہ محفوظ کرتے ہوئے۔
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=پیرامیٹر محفوظ کریں:
+;Save parameters:
 SaveParametersOnly=صرف پیرامیٹرز محفوظ کریں
 ;Save parameters only
 SaveParametersToClipboardAsText=پیرامیٹرز کلپ بورڈ پر متن کے طور پر محفوظ کریں،\nپھر ctrl+v دبا کر متن کہیں اور ڈال سکتے ہیں۔
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=تصویر محفوظ
 ;Save pic
+SavePicture=تصویر محفوظ کریں:
+;Save picture:
 SaveProject=پروجیکٹ محفوظ کریں
 ;Save project
 SaveTextParametersInThePNG=منتخب ہو تو متنی پیرامیٹرز PNG فائل میں محفوظ کریں۔\nآپ انہیں مثلاً gimp میں\n'Image Properties' -> Comment کے تحت دیکھ سکتے ہیں۔
@@ -4055,6 +4067,8 @@ UncheckToNotOverwriteImagesThat=پہلے سے حساب شدہ تصاویر پر 
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=، {} جاری
 ;, {} under way
+Undo=واپس کریں:
+;Undo:
 UnfinishedCalculation=نامکمل حساب
 ;Unfinished calculation
 UnfinishedRender=نامکمل رینڈر

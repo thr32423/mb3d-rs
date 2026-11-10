@@ -458,6 +458,8 @@ Calculate3D=Calcular 3D
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=Calcular 3D e a janela Lote com o enxame, em
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=Calcular 3D / Parar:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=Calcular uma imagem rápida em blocos de 8x8 sem iluminação correta
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=Calcule uma imagem primeiro.
@@ -862,8 +864,8 @@ CrossEyedPreview=Prévia de olhos cruzados
 ;Cross-eyed preview
 Crossfade=Fusão:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 a Ctrl+7 na ordem da lista, Ctrl+W para fechar
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 a Ctrl+7 na ordem da lista, Ctrl+W para fechar; na janela principal Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z e Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=Curvas
 ;Curves
 CustomPreset1=predefinição pessoal 1
@@ -1780,6 +1782,8 @@ InOut=Dentro+Fora
 ;In+Out
 InOutOption=Opção dentro/fora:
 ;In/out option:
+InTheMainWindow=Na janela principal:
+;In the main window:
 InTheSwarm=No enxame:
 ;In the swarm:
 InThisModeRightAndLeft=Neste modo, as imagens dos olhos direito e esquerdo são renderizadas para cada subquadro.
@@ -2710,6 +2714,8 @@ OpenParameter=Abrir parâmetros
 ;Open parameter
 OpenParameterFromClipboardTextSelect=Abrir parâmetros do texto da área de transferência:\nselecione o texto dos parâmetros incluindo 'Mandel...{..}',\npressione ctrl+c e depois o botão de abrir txt.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=Abrir parâmetros:
+;Open parameters:
 OpenProject=Abrir projeto
 ;Open project
 OpenTextParameters=Abrir parâmetros em texto
@@ -3048,6 +3054,8 @@ RectLower=ret.
 ;rect.
 Rectilinear=Retilínea
 ;Rectilinear
+Redo=Refazer:
+;Redo:
 ReduceTheMeshToThisShare=Reduzir a malha a esta parte dos seus vértices (percentagem, agrupamento de vértices); 100 deixa-a como traçada
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Reduz artefatos em blocos; já não é tão importante devido à interpolação spline.
@@ -3286,12 +3294,16 @@ SaveM3iFiles=Salvar arquivos m3i
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=Salvar arquivos m3i incluindo o buffer interno da imagem, guardando reflexos etc.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=Salvar parâmetros:
+;Save parameters:
 SaveParametersOnly=Salvar só os parâmetros
 ;Save parameters only
 SaveParametersToClipboardAsText=Salvar os parâmetros na área de transferência como texto;\ndepois você pode pressionar ctrl+v para inserir o texto em outro lugar.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=Salvar img.
 ;Save pic
+SavePicture=Salvar imagem:
+;Save picture:
 SaveProject=Salvar projeto
 ;Save project
 SaveTextParametersInThePNG=Salvar os parâmetros em texto no arquivo PNG, se selecionado.\nPor exemplo, no gimp eles aparecem em\n'Propriedades da imagem' -> Comentário.
@@ -4054,6 +4066,8 @@ UncheckToNotOverwriteImagesThat=Desmarque para não sobrescrever imagens já cal
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} em andamento
 ;, {} under way
+Undo=Desfazer:
+;Undo:
 UnfinishedCalculation=Cálculo inacabado
 ;Unfinished calculation
 UnfinishedRender=Render inacabado

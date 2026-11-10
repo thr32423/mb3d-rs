@@ -459,6 +459,8 @@ Calculate3D=3D計算
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=3D計算とバッチウィンドウをスウォームで行う。分割数:
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=3D 計算 / 停止:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=適切なライティングなしで、8x8 のブロック状画像を高速に計算します
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=まず画像を計算してください。
@@ -863,8 +865,8 @@ CrossEyedPreview=交差法プレビュー
 ;Cross-eyed preview
 Crossfade=クロスフェード:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 から Ctrl+7 はリストの順、Ctrl+W で閉じる
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 から Ctrl+7 はリストの順、Ctrl+W で閉じる。メインウィンドウでは Ctrl+O、Ctrl+S、Ctrl+Shift+S、F5、Ctrl+Z、Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=カーブ
 ;Curves
 CustomPreset1=カスタムプリセット 1
@@ -1781,6 +1783,8 @@ InOut=内+外
 ;In+Out
 InOutOption=内/外オプション:
 ;In/out option:
+InTheMainWindow=メインウィンドウで:
+;In the main window:
 InTheSwarm=スウォーム内:
 ;In the swarm:
 InThisModeRightAndLeft=このモードでは、各サブフレームについて右目用と左目用の画像をレンダリングします。
@@ -2711,6 +2715,8 @@ OpenParameter=パラメーターを開きます
 ;Open parameter
 OpenParameterFromClipboardTextSelect=クリップボードのテキストからパラメーターを開きます:\n'Mandel...{..}' を含むパラメーターテキストを選択し、\nctrl+c を押してからこのボタンを押します。
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=パラメーターを開く:
+;Open parameters:
 OpenProject=プロジェクトを開く
 ;Open project
 OpenTextParameters=テキストパラメータを開く
@@ -3049,6 +3055,8 @@ RectLower=直線
 ;rect.
 Rectilinear=直線的
 ;Rectilinear
+Redo=やり直し:
+;Redo:
 ReduceTheMeshToThisShare=メッシュを頂点のこの割合（パーセント、頂点クラスタリング）まで減らします。100 で計算のままにします
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=ブロック状のアーティファクトを減らします。スプライン補間のため、現在はあまり重要ではありません。
@@ -3287,12 +3295,16 @@ SaveM3iFiles=m3iファイルを保存
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=内部画像バッファを含めて m3i ファイルを保存し、反射などを保持します。
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=パラメーターを保存:
+;Save parameters:
 SaveParametersOnly=パラメーターのみを保存します
 ;Save parameters only
 SaveParametersToClipboardAsText=パラメーターをテキストとしてクリップボードに保存します。\nその後 ctrl+v で別の場所にテキストを貼り付けられます。
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=画像保存
 ;Save pic
+SavePicture=画像を保存:
+;Save picture:
 SaveProject=プロジェクトを保存
 ;Save project
 SaveTextParametersInThePNG=選択すると、テキストパラメーターを PNG ファイルに保存します。\n例えば gimp の「画像の情報」-> コメントで\n確認できます。
@@ -4055,6 +4067,8 @@ UncheckToNotOverwriteImagesThat=すでに計算済みの画像を上書きしな
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} を実行中
 ;, {} under way
+Undo=元に戻す:
+;Undo:
 UnfinishedCalculation=未完了の計算
 ;Unfinished calculation
 UnfinishedRender=未完了のレンダリング

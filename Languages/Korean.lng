@@ -459,6 +459,8 @@ Calculate3D=3D 계산
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=3D 계산과 일괄 처리 창을 스웜으로 계산, 분할:
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=3D 계산 / 중지:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=정식 조명 없이 8x8 블록 이미지를 빠르게 계산합니다
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=먼저 그림을 계산하세요.
@@ -863,8 +865,8 @@ CrossEyedPreview=교차시 미리보기
 ;Cross-eyed preview
 Crossfade=크로스페이드:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1부터 Ctrl+7까지 목록 순서대로, Ctrl+W로 닫기
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1부터 Ctrl+7까지 목록 순서대로, Ctrl+W로 닫기; 메인 창에서 Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z, Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=곡선
 ;Curves
 CustomPreset1=사용자 프리셋 1
@@ -1781,6 +1783,8 @@ InOut=안+밖
 ;In+Out
 InOutOption=안/밖 옵션:
 ;In/out option:
+InTheMainWindow=메인 창에서:
+;In the main window:
 InTheSwarm=스웜에 참여 중:
 ;In the swarm:
 InThisModeRightAndLeft=이 모드에서는 서브프레임마다 오른쪽 눈과 왼쪽 눈 이미지가 렌더링됩니다.
@@ -2711,6 +2715,8 @@ OpenParameter=매개변수를 엽니다
 ;Open parameter
 OpenParameterFromClipboardTextSelect=클립보드 텍스트에서 매개변수를 엽니다:\n'Mandel...{..}'을 포함한 매개변수 텍스트를 선택하고\nctrl+c를 누른 다음 텍스트 열기 버튼을 누르십시오.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=매개변수 열기:
+;Open parameters:
 OpenProject=프로젝트 열기
 ;Open project
 OpenTextParameters=텍스트 파라미터 열기
@@ -3049,6 +3055,8 @@ RectLower=직선
 ;rect.
 Rectilinear=직선형
 ;Rectilinear
+Redo=다시 실행:
+;Redo:
 ReduceTheMeshToThisShare=메시를 정점의 이 비율(퍼센트, 정점 클러스터링)로 줄입니다. 100이면 계산된 그대로 둡니다
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=블록 결함을 줄입니다. 스플라인 보간 덕분에 이제는 그리 중요하지 않습니다.
@@ -3287,12 +3295,16 @@ SaveM3iFiles=m3i 파일 저장
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=m3i 파일에 내부 이미지 버퍼를 포함해 저장하여 반사 등을 보존합니다.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=매개변수 저장:
+;Save parameters:
 SaveParametersOnly=매개변수만 저장합니다
 ;Save parameters only
 SaveParametersToClipboardAsText=매개변수를 텍스트로 클립보드에 저장합니다.\n그다음 ctrl+v를 눌러 다른 곳에 텍스트를 붙일 수 있습니다.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=그림 저장
 ;Save pic
+SavePicture=그림 저장:
+;Save picture:
 SaveProject=프로젝트 저장
 ;Save project
 SaveTextParametersInThePNG=선택하면 텍스트 매개변수를 PNG 파일에 저장합니다.\n예를 들어 GIMP의 '이미지 속성' -> 주석에서\n확인할 수 있습니다.
@@ -4055,6 +4067,8 @@ UncheckToNotOverwriteImagesThat=이미 계산된 이미지를 덮어쓰지 않�
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} 진행 중
 ;, {} under way
+Undo=실행 취소:
+;Undo:
 UnfinishedCalculation=완료되지 않은 계산
 ;Unfinished calculation
 UnfinishedRender=완료되지 않은 렌더링

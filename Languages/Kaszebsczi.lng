@@ -458,6 +458,8 @@ Calculate3D=Rechùj 3D
 ;Calculate 3D
 Calculate3DAndTheBatchWindow=Rechùj 3D ë òkno rzeszowégò renderowaniô z rojã, w
 ;Calculate 3D and the Batch window with the swarm, in
+Calculate3DStop=Rechùjë 3D / Zatrzëmôj:
+;Calculate 3D / Stop:
 CalculateAFast8x8BlockyImage=Rechùje chùtczi klockòwi òbrôzk 8x8 bez pòrządnégò òswieceniô
 ;Calculate a fast 8x8 blocky image without proper lighting
 CalculateAPictureFirst=Nôprzód wërechùj òbrôz.
@@ -862,8 +864,8 @@ CrossEyedPreview=Pòdzérk na krziż
 ;Cross-eyed preview
 Crossfade=Przenikanié:
 ;Crossfade:
-Ctrl1ToCtrl7In=Ctrl+1 do Ctrl+7 w pòrządkù lëstë, Ctrl+W zamikô
-;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 do Ctrl+7 w pòrządkù lëstë, Ctrl+W zamikô; w przédnym òknie Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z ë Ctrl+Y
+;Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 Curves=Krzëwé
 ;Curves
 CustomPreset1=włôsny preset 1
@@ -1780,6 +1782,8 @@ InOut=Bënë+bùten
 ;In+Out
 InOutOption=Òptacjô bënë/bùten:
 ;In/out option:
+InTheMainWindow=W przédnym òknie:
+;In the main window:
 InTheSwarm=W roju:
 ;In the swarm:
 InThisModeRightAndLeft=W tim tribie dlô kòżdi pòdklatczi renderowóné są òbrôzczi dlô prawégò i lewégò òka.
@@ -2710,6 +2714,8 @@ OpenParameter=Òtemkni parametrë
 ;Open parameter
 OpenParameterFromClipboardTextSelect=Òtemkni parametrë z tekstu w schówkù:\nZaznaczë tekst parametrów razã z 'Mandel...{..}',\nwcësni ctrl+c, a pòtemù knąpã open-txt.
 ;Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
+OpenParameters=Òtemkni parametrë:
+;Open parameters:
 OpenProject=Òtemkni projekt
 ;Open project
 OpenTextParameters=Òtemkni parametrë jakno tekst
@@ -3048,6 +3054,8 @@ RectLower=rekt.
 ;rect.
 Rectilinear=Prostolinijny
 ;Rectilinear
+Redo=Pòwtórzë:
+;Redo:
 ReduceTheMeshToThisShare=Zmniészë sécã do tegò dzélu ji wiérzchòłków (procent, grëpòwanié wiérzchòłków); 100 òstôwiô jã jak wërechòwóną
 ;Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ReducesBlockyArtifactsNoMoreThat=Zmniésziwô klockòwaté artefaktë, przez interpòlacjã spline ju nie tak wôżné.
@@ -3286,12 +3294,16 @@ SaveM3iFiles=Zapiszë lopczi m3i
 ;Save m3i files
 SaveM3iFilesIncludingTheInternal=Zapisywô lopczi m3i razã z bënowim bùforã òbrôzka, co zachòwùje òdbicô itd.
 ;Save m3i files including the internal image buffer, saving reflections etc.
+SaveParameters=Zapiszë parametrë:
+;Save parameters:
 SaveParametersOnly=Zapiszë blós parametrë
 ;Save parameters only
 SaveParametersToClipboardAsText=Zapisywô parametrë do schówkù jakò tekst,\npòtemù mòże wcësnąc ctrl+v, żebë wstawic tekst dze jindze.
 ;Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 SavePic=Zapiszë òbr.
 ;Save pic
+SavePicture=Zapiszë òbrôzk:
+;Save picture:
 SaveProject=Zapiszë projekt
 ;Save project
 SaveTextParametersInThePNG=Zapisywô tekstowé parametrë w lopkù PNG, jeżlë zaznaczoné.\nMòże je òbaczëc np. w gimpie pòd\n'Image Properties' -> Comment.
@@ -4054,6 +4066,8 @@ UncheckToNotOverwriteImagesThat=Òdznaczë, żebë nie nadpisëwac ju òbliczon�
 ;Uncheck to not overwrite images that has already been calculated.\nThe filename must be equal (same output format, index and 'left' or 'right'\nsuffix in stereo mode).
 UnderWay=, {} w robòce
 ;, {} under way
+Undo=Copnij:
+;Undo:
 UnfinishedCalculation=Nieskùńczoné rechòwanié
 ;Unfinished calculation
 UnfinishedRender=Nieskùńczony render

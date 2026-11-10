@@ -458,6 +458,8 @@ Calculate3D=Calculate 3D
 ;Mand3DForm.Button2.Caption; the program
 Calculate3DAndTheBatchWindow=Calculate 3D and the Batch window with the swarm, in
 ;SwarmFrm.Label11.Caption
+Calculate3DStop=Calculate 3D / Stop:
+;HotkeysFrm.Label12.Caption
 CalculateAFast8x8BlockyImage=Calculate a fast 8x8 blocky image without proper lighting
 ;Mand3DForm.Button11.Hint
 CalculateAPictureFirst=Calculate a picture first.
@@ -619,7 +621,7 @@ ClickALanguageToSwitchThe=Click a language to switch the windows to it
 ClickAParameterFileForIts=Click a parameter file for its preview.
 ;the program
 ClickAndPressTheKeysOf=Click and press the keys of the hotkey
-;HotkeysFrm.Edit1.Hint, HotkeysFrm.Edit2.Hint, HotkeysFrm.Edit3.Hint and 5 more
+;HotkeysFrm.Edit1.Hint, HotkeysFrm.Edit2.Hint, HotkeysFrm.Edit3.Hint and 11 more
 ClickImage=click image
 ;the program
 ClickOnButtonAndAfterwardsOn=Click on button and afterwards on the object in image\nto set the midpoint for the light.
@@ -862,7 +864,7 @@ CrossEyedPreview=Cross-eyed preview
 ;Mand3DForm.StereoCrossCheck.Caption
 Crossfade=Crossfade:
 ;DrosteFrm.BlendLabel.Caption
-Ctrl1ToCtrl7In=Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close
+Ctrl1ToCtrl7In2=Ctrl+1 to Ctrl+7 in the order of the list, Ctrl+W to close; in the main window Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, Ctrl+Z and Ctrl+Y
 ;HotkeysFrm.DefaultsBtn.Hint
 Curves=Curves
 ;AnimationForm.CurvesBtn.Caption
@@ -1780,6 +1782,8 @@ InOut=In+Out
 ;FVoxelExport.RadioGroup4.Items
 InOutOption=In/out option:
 ;FVoxelExport.RadioGroup4.Caption
+InTheMainWindow=In the main window:
+;HotkeysFrm.Label15.Caption
 InTheSwarm=In the swarm:
 ;SwarmFrm.Label5.Caption
 InThisModeRightAndLeft=In this mode right and left-eye images are rendered for each subframe.
@@ -2710,6 +2714,8 @@ OpenParameter=Open parameter
 ;Mand3DForm.Button5.Hint
 OpenParameterFromClipboardTextSelect=Open parameter from Clipboard text:\nSelect parameter text including 'Mandel...{..}',\npress ctrl+c and afterwards the open-txt button.
 ;Mand3DForm.SpeedButton8.Hint
+OpenParameters=Open parameters:
+;HotkeysFrm.Label9.Caption
 OpenProject=Open project
 ;TilingForm.SpeedButton11.Caption
 OpenTextParameters=Open text parameters
@@ -3048,6 +3054,8 @@ RectLower=rect.
 ;FNavigator.RadioGroup2.Items
 Rectilinear=Rectilinear
 ;Mand3DForm.RadioGroup2.Items
+Redo=Redo:
+;HotkeysFrm.Label14.Caption
 ReduceTheMeshToThisShare=Reduce the mesh to this share of its vertices (percent, vertex clustering); 100 keeps it as traced
 ;BulbTracer2Frm.KeepLbl.Hint, BulbTracer2Frm.KeepEdit.Hint
 ReducesBlockyArtifactsNoMoreThat=Reduces blocky artifacts, no more that important due to spline interpolation.
@@ -3286,12 +3294,16 @@ SaveM3iFiles=Save m3i files
 ;TilingForm.CheckBox3.Caption
 SaveM3iFilesIncludingTheInternal=Save m3i files including the internal image buffer, saving reflections etc.
 ;Mand3DForm.CheckBox16.Hint
+SaveParameters=Save parameters:
+;HotkeysFrm.Label10.Caption
 SaveParametersOnly=Save parameters only
 ;Mand3DForm.Button4.Hint
 SaveParametersToClipboardAsText=Save parameters to Clipboard as text,\nafterwards you can press ctrl+v to insert the text somewhere else.
 ;Mand3DForm.SpeedButton7.Hint
 SavePic=Save pic
 ;Mand3DForm.TabSheet12.Caption
+SavePicture=Save picture:
+;HotkeysFrm.Label11.Caption
 SaveProject=Save project
 ;TilingForm.SpeedButton9.Caption
 SaveTextParametersInThePNG=Save text parameters in the PNG file, if selected.\nYou can see these for example in gimp under\n'Image Properties' -> Comment.
@@ -4054,6 +4066,8 @@ UncheckToNotOverwriteImagesThat=Uncheck to not overwrite images that has already
 ;AnimationForm.CheckBox6.Hint
 UnderWay=, {} under way
 ;the program
+Undo=Undo:
+;HotkeysFrm.Label13.Caption
 UnfinishedCalculation=Unfinished calculation
 ;the program
 UnfinishedRender=Unfinished render

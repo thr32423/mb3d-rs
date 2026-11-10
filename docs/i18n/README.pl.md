@@ -189,7 +189,7 @@ możesz sprawdzić sam:
   Postprocessingu lub Monte Carlo z dowolnego okna (Ctrl+1 do Ctrl+7), a
   Ctrl+W zamyka okno, w którym jesteś (na macOS Cmd). Własne ustawisz w
   *Ustaw. > Skróty*: kliknij pole i naciśnij klawisze, Backspace usuwa
-  skrót.
+  skrót. W oknie głównym Ctrl+O otwiera parametry, Ctrl+S je zapisuje, Ctrl+Shift+S zapisuje obraz, F5 oblicza lub zatrzymuje, a Ctrl+Z / Ctrl+Y cofają i ponawiają obliczone parametry.
 * **Interfejs w Twoim języku**: każdy tekst okien pochodzi z pliku
   językowego; dołączonych jest dwanaście języków, a program sam zapisze
   plik nowego języka do przetłumaczenia.

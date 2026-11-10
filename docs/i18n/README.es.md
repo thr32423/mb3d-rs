@@ -198,7 +198,7 @@ esto puede comprobar más por su cuenta:
   ventanas Animación, Fórmulas, Iluminación, Posprocesado o Monte Carlo
   (Ctrl+1 a Ctrl+7), y Ctrl+W cierra la ventana en la que está (en macOS,
   Cmd). Defina los suyos en *Prefs > Atajos*: pulse un campo y
-  pulse las teclas; Retroceso quita un atajo.
+  pulse las teclas; Retroceso quita un atajo. En la ventana principal, Ctrl+O abre parámetros, Ctrl+S los guarda, Ctrl+Mayús+S guarda la imagen, F5 calcula o detiene, y Ctrl+Z / Ctrl+Y retroceden y avanzan por los parámetros calculados.
 * **La interfaz en su idioma**: todos los textos de las ventanas vienen de
   un archivo de idioma; se incluyen doce idiomas, y el programa le escribe
   el archivo de un idioma nuevo para que lo traduzca.

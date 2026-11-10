@@ -53,11 +53,14 @@ installation) can be added with options; `mb3d` searches, in this order:
 
 | what | searched in |
 |---|---|
-| formulas | `--formulas DIR` (may be repeated), `$MB3D_FORMULAS` (a path list), `./M3Formulas`, `M3Formulas` next to the program, next to the parameter file's folder, `~/mb3d-rs/M3Formulas` |
-| maps | `--maps DIR`, `$MB3D_MAPS`, `./M3Maps`, `M3Maps` next to the program, `M3Maps` next to every formula folder |
+| formulas | `--formulas DIR` (may be repeated), `$MB3D_FORMULAS` (a path list), `./M3Formulas`, your own `M3Formulas` (`~/.local/share/mb3d-rs`, on Windows `%APPDATA%\mb3d-rs`: newer formulas there replace the shipped ones), `M3Formulas` next to the program, a system-wide installation's (`/usr/local/share/mb3d-rs`, `/usr/share/mb3d-rs`), next to the parameter file's folder, `~/mb3d-rs/M3Formulas` |
+| maps | `--maps DIR`, `$MB3D_MAPS`, `./M3Maps`, your own `M3Maps` (the same folder as above), `M3Maps` next to the program, a system-wide installation's, `M3Maps` next to every formula folder |
 
-In Mandelbulb3D, *Prefs ▸ Ini dirs* sets the folders, as in MB3D; they are
-kept in `Mandelbulb3D.ini` next to the program.
+In Mandelbulb3D, *Prefs ▸ Ini dirs* sets the folders, as in MB3D. They are
+kept in `Mandelbulb3D.ini`: next to the program when its folder can be
+written (the release archives, MB3D's way), otherwise in your settings
+folder (`~/.config/mb3d-rs`, on Windows `%APPDATA%\mb3d-rs`), for example
+with a distribution package. `MB3D_PORTABLE=1` or `0` chooses one way.
 
 ## 3. The Mandelbulb3D program
 
@@ -87,8 +90,15 @@ tutorials apply. A short tour:
   then *View to main*.
 * **Lighting:** changes repaint the calculated image right away; the
   presets and the palette are at the top.
-* **Prefs ▸ Visual themes** switches between MB3D's Glossy look and the
-  Windows look.
+* **Prefs ▸ Visual themes** chooses the look: MB3D's Glossy and Windows
+  looks and six more (Daylight, Ember, Forest, Graphite, High contrast,
+  Midnight); *Interface size* there makes every window larger or smaller
+  (75 to 200 %, on top of the system's scaling).
+* **Keys:** Ctrl+1 to Ctrl+7 bring the windows to the front, Ctrl+W closes
+  one; in the main window Ctrl+O opens parameters, Ctrl+S saves them,
+  Ctrl+Shift+S saves the picture, F5 calculates or stops, Ctrl+Z and
+  Ctrl+Y step back and forward through the calculated parameters. *Prefs
+  ▸ Hotkeys* changes them.
 * **Language:** the badge at the right end of the title bar shows the
   interface language; click it to choose another or to create the file
   of your own translation.

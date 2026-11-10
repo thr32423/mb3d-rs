@@ -1965,7 +1965,83 @@ gh attestation verify mb3d-rs-linux-x64.tar.gz --repo thr32423/mb3d-rs
 * Environment: `MB3D_FORMULAS` and `MB3D_MAPS` (folders, separated like
   `PATH`), `MB3D_GPU=0` (CPU only), `MB3D_PORTABLE` (see [Where the
   program keeps its files](#where-the-program-keeps-its-files), also for
-  the order in which formulas are searched).
+  the order in which formulas are searched); all of them in [Environment
+  variables](#environment-variables).
+
+## Environment variables
+
+Every `MB3D_*` variable the programs read. "Any value": set means on.
+
+### For users
+
+| Variable | Values | What it does | Read in |
+|---|---|---|---|
+| `MB3D_360_CAMERA_TAG` | `0`; unset: tag written | `0` leaves the EXIF camera tag (RICOH THETA S) out of 360 panoramas. Only the command line program reads it; the desktop app uses the ini key `Pano360CameraTag`. | src/main.rs:118 |
+| `MB3D_AUTOSAVE_SECS` | seconds; default `300` | How often a render's checkpoint files are flushed to the disk. examples/resumecheck2.rs sets it to `1`. | src/checkpoint.rs:66 |
+| `MB3D_COMPILE_WAIT_SECS` | seconds; unset: no limit | How long the command line program waits at its end for a shader still compiling in the background (so the driver caches it); `0` ends without waiting. | src/main.rs:126 |
+| `MB3D_FORMULAS` | folder list (path separator) | Folders searched for `.m3f` formula files before the usual places; same as `--formulas`. | src/formulas.rs:75 |
+| `MB3D_FREE_MEMORY_MB` | MB; unset: the system's free memory | Pretends this much free memory, to try the big-picture checks and the reflection bands on a smaller computer. | src/render.rs:2782 |
+| `MB3D_GPU` | `0`; unset or other: on | `0` keeps every calculation on the CPU (same as `--cpu` on the command line). | src/gpu.rs:372 |
+| `MB3D_MAPS` | folder list (path separator) | Folders searched for maps and background pictures before the usual places; same as `--maps`. | src/maps.rs:394 |
+| `MB3D_MAP_SEQUENCES` | file path; default `Mandelbulb3DMSeq.ini` in the working folder | The map sequence list file (MB3D's format). | src/maps.rs:768 |
+| `MB3D_NO_JIT` | `1` (any non-empty value except `0`); unset, empty or `0`: on | Switches off the Cranelift-compiled hybrid loops on the CPU. | src/x86/clif_jit.rs:26 |
+| `MB3D_NO_NATIVE` | any value | Switches off the translated native formulas (the formulas then run through the x86 interpreter or compiler). | src/x86.rs:3244 |
+| `MB3D_OIDN` | folder | Folder of Intel Open Image Denoise (its `lib`, `bin` or the folder itself is tried first), before the `oidn` folder next to the program and the system's libraries. | src/oidn.rs:59 |
+| `MB3D_PORTABLE` | `1` or `0`; unset: decided by the folder | `1` keeps settings and data in the program's folder, `0` uses the user's folders; unset, it is portable when the program's folder is writable and not below `/usr`. | src/appdirs.rs:41 |
+| `MB3D_RESUME_DIR` | folder; default the cache folder's `resume` | Folder of the render checkpoints (created if missing). Tests and examples set it to a temporary folder. | src/checkpoint.rs:78 |
+| `MB3D_RESUME_KEEP_SECS` | seconds; default `10` | A stopped render shorter than this deletes its checkpoint. Tests and examples set it to `0`. | src/checkpoint.rs:54 |
+| `MB3D_RESUME_MAX_GB` | GB (decimal allowed); default `50` | The space all checkpoints may take; the oldest go beyond it. | src/checkpoint.rs:72 |
+| `MB3D_UI_SCALE` | percent, e.g. `150` or `150%` | Size of the desktop app's interface; the command line option wins over it, the ini setting comes after it. | src/app/mod.rs:416 |
+| `MB3D_WAYLAND` | any value | Linux: the desktop app uses Wayland instead of X11/XWayland (Wayland does not let it place its windows). | src/vcl/run.rs:101 |
+
+### For finding faults and measuring
+
+| Variable | Values | What it does | Read in |
+|---|---|---|---|
+| `MB3D_CARDS_DEBUG` | any value | Prints what each graphics card did with several cards (rows marched, slow frames copied from another card). | src/render.rs:1670, src/render.rs:1886, src/frames.rs:510, src/gpu.rs:2704 |
+| `MB3D_COMPILE_LOG` | file path | Appends one JSON line per shader compile (lines, bytes, double, constants, seconds); the compile time estimate is fitted on them. | src/gpu.rs:1092 |
+| `MB3D_DEBUG_COMPILE` | any value | Prints why a formula could not be compiled by the x86 compiler. | src/x86.rs:1307 |
+| `MB3D_DEBUG_LIGHTS` | any value | Prints each light's computed values (position, direction, colour, visibility). | src/lighting.rs:1300 |
+| `MB3D_DOF_CARD` | `0`, `1`; unset: card when on and the job is big enough | Depth of field on the card: `0` keeps it on the CPU, `1` uses the card even for small jobs in Auto mode. | src/dof.rs:444, src/dof.rs:472 |
+| `MB3D_ETA_DEBUG` | any value | Prints the remaining-time estimator's inputs in the main window and the Monte Carlo window. | src/app/main_form.rs:1726, src/app/mc_form.rs:798 |
+| `MB3D_ETA_LOG` | file path | Each finished calculation in the desktop app adds a line with its features and stage times, to fit the time model on. | src/app/eta.rs:346 |
+| `MB3D_GPU_ALLOW_SOFTWARE` | any value | Lets software renderers (llvmpipe, lavapipe, WARP) count as graphics cards, for tests. | src/gpu.rs:1697 |
+| `MB3D_GPU_BAND_MS` | milliseconds; default `50` | The target time of one card submission of the resumable march (so the desktop does not freeze). | src/gpu.rs:180 |
+| `MB3D_GPU_DOUBLE` | `1` | Forces the shader's double precision mode, for checks. | src/gpu.rs:559 |
+| `MB3D_GPU_DUMP` | file path | Writes the generated scene shader (WGSL) to the file; examples/wgslcompile times such a file. | src/gpu.rs:953 |
+| `MB3D_GPU_MIN_PRECISION` | number; default `3.0` | Experiment: the precision limit below which a numeric-DE scene uses the double mode. | src/gpu.rs:564 |
+| `MB3D_GPU_MIN_STEP` | number; default `64.0` | Experiment: the step precision limit below which a scene uses the double mode. | src/gpu.rs:564 |
+| `MB3D_GPU_MIXED` | `0`; unset or other: on | `0` turns off the mixed mode (card in single precision, finished on the CPU in double) and marches such scenes on the card in double, as before. | src/render.rs:872 |
+| `MB3D_GPU_NOCACHE` | any value | Makes every shader text unique, defeating the driver's cache, to measure cold compile times; `gpu::compile_time` sets it. | src/gpu.rs:1062, src/gpu.rs:1106 |
+| `MB3D_GPU_NOPROBE` | any value | No probe of whether single precision is fine enough for the scene. | src/render.rs:1117 |
+| `MB3D_GPU_NOSPLIT` | any value | Shadow and occlusion states stay in the march's pipeline instead of a pipeline of their own, for comparisons. | src/gpu.rs:1487, src/gpu.rs:2401, src/gpu.rs:2445 |
+| `MB3D_GPU_RETRY_DOUBLE` | any value | When single precision overflows, tries the card again in double mode (off by default: the NVIDIA driver crashes on some of these shaders). | src/gpu.rs:2269 |
+| `MB3D_GPU_SLOTS` | number; default `32768` | Number of resumable march slots on the card (rounded to 64, at least 64, capped at 96 MB of state). | src/gpu.rs:165 |
+| `MB3D_GPU_TIMING` | any value | Prints card timings and process memory per stage (compiles, work probe, shadows, occlusion, reflections, volumetric light, depth of field). | src/gpu.rs:183 (also src/gpu.rs:1086, src/render.rs:187, src/render.rs:597, src/reflect.rs:2230, src/dof.rs:549, src/vollight.rs:328) |
+| `MB3D_GPU_TURNS` | number; unset: adaptive, starting at `64` | A fixed work budget per card submission instead of the adaptive one, to check the suspending. | src/gpu.rs:182 |
+| `MB3D_GPU_TWICE` | any value | Opens the first card a second time as a second device, standing in for a second card in tests. | src/gpu.rs:1756 |
+| `MB3D_JIT` | `force` | Uses the compiled hybrid loops without timing them against the formulas called one by one; examples/pascalfused sets it. | src/x86/clif_jit.rs:34 |
+| `MB3D_JIT_ASM` | any value | Prints the machine code of each compiled hybrid. | src/x86/clif_jit.rs:784 |
+| `MB3D_JIT_DUMP` | any value | Prints the Cranelift code of each compiled hybrid and each compiled Pascal formula. | src/x86/clif_jit.rs:781, src/jit_pascal.rs:829 |
+| `MB3D_MC_CPU_SHARE` | `0`; unset or other: shared | `0` leaves the Monte Carlo batches to the card alone, the CPU threads take no part. | src/mc.rs:3413 |
+| `MB3D_MC_DEBUG` | any value | Prints the Monte Carlo pass's state when a worker or the pass waits (for hangs). | src/mc.rs:3497, src/mc.rs:3654 |
+| `MB3D_MC_TIMING` | any value | Prints the Monte Carlo pass's card times per batch and the time waited for the threads. | src/mc.rs:3652 |
+| `MB3D_NO_COMPILE` | any value | Switches off the x86 formula compiler (formulas run in the interpreter). | src/x86.rs:1302 |
+| `MB3D_NO_WATER_LAYER` | any value | Switches off the water layer pass of a ground plane. | src/water_layer.rs:39 |
+| `MB3D_NO_WORKMAP` | any value | No work probe: the rows are weighed equally when the work is shared. | src/render.rs:155 |
+| `MB3D_PROBE_DEBUG` | any value | Prints the single precision probe's results (colour differences, counts of clear differences). | src/render.rs:1153, src/render.rs:1299 |
+| `MB3D_PROBE_DETAIL` | any value | The card's DE probe mode returns the details of part 1's numerical DE instead of its usual debug values (what reads them is not clear). | src/gpu.rs:1947 |
+| `MB3D_PROBE_LIMIT` | share; default `0.015` | The mean colour difference above which the probe judges single precision too coarse. | src/render.rs:1096 |
+| `MB3D_PROBE_MS` | milliseconds; default `150` | Time budget of the probe's CPU marches. | src/render.rs:1236 |
+| `MB3D_REFLECT_BAND_PIXELS` | pixels; default from free memory (2M at most) | Sets the band size of the reflection pass, for tests. | src/reflect.rs:1907 |
+| `MB3D_REFLECT_CPU_FINISH` | share; default `0.6` | Once the CPU's part of both kinds of reflection round reaches this, the rest of the rounds run on the CPU. | src/reflect.rs:2450 |
+| `MB3D_REFLECT_CPU_FINISH_ONE` | share; default `0.75` | Once the CPU's part of one reflection round reaches this, the rest of the rounds run on the CPU. | src/reflect.rs:2606 |
+| `MB3D_REFLECT_CPU_PRIOR` | share; default `0.5` for few rays, else `0` | The CPU's share of the first reflection round, before any rates are measured; `0` none. | src/reflect.rs:2557 |
+| `MB3D_REFLECT_CPU_SHARE` | `0` | `0` puts all reflection rays on the card, for comparisons. | src/reflect.rs:2439 |
+| `MB3D_REFLECT_DEBUG` | `x,y` | Prints the reflection bounces of that pixel. | src/reflect.rs:382 |
+| `MB3D_REPO` | folder of the MB3D repository | Tests only (set by CI): where MB3D's `M3Formulas` are taken from for the JIT, shader and cone tests; tests/jit.rs defaults to `../mb3d`. | tests/jit.rs:81, src/gpu.rs:3969, src/cone.rs:231 |
+| `MB3D_STAGE_TIMES` | `1` (any value except `0`) | Measures every stage of a render and prints their times at the end, plus cone march and water layer lines (those check only that it is set). | src/render.rs:362 (also src/render.rs:392, src/cone.rs:150, src/water_layer.rs:171) |
+| `MB3D_TRACE_REDRAW` | any value | Writes the desktop app's window events, resizes and redraws to `mb3d_trace.txt` in the working folder. | src/vcl/run.rs:546 (also src/vcl/run.rs:348, 1081, 1097, 1124) |
 
 ## Building from source
 

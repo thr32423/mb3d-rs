@@ -195,7 +195,7 @@ permettono di verificare ulteriormente da solo:
   l'Animazione, Formule, Illuminazione, Postproduzione o la finestra Monte
   Carlo (da Ctrl+1 a Ctrl+7), e Ctrl+W chiude la finestra in cui ti trovi
   (su macOS Cmd). Imposta le tue in *Prefer. > Scorciatoie*: clicca un campo
-  e premi i tasti; Backspace toglie una scorciatoia.
+  e premi i tasti; Backspace toglie una scorciatoia. Nella finestra principale Ctrl+O apre i parametri, Ctrl+S li salva, Ctrl+Maiusc+S salva l'immagine, F5 calcola o ferma, e Ctrl+Z / Ctrl+Y vanno indietro e avanti tra i parametri calcolati.
 * **L'interfaccia nella tua lingua**: ogni testo delle finestre viene da un
   file di lingua; ne sono incluse dodici, e il programma scrive per te il
   file di una nuova lingua da tradurre.

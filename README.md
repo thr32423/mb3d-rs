@@ -183,7 +183,7 @@ you check further on your own:
   the Navigator, the Animation, Formulas, Lighting, Post processing or
   Monte Carlo window to the front from any window (Ctrl+1 to Ctrl+7), and
   Ctrl+W closes the window you are in (on macOS Cmd). Set your own under *Prefs > Hotkeys*: click a field and
-  press the keys, Backspace takes a hotkey away.
+  press the keys, Backspace takes a hotkey away. In the main window Ctrl+O opens parameters, Ctrl+S saves them, Ctrl+Shift+S saves the picture, F5 calculates or stops, and Ctrl+Z / Ctrl+Y step back and forward through the calculated parameters.
 * **The interface in your language**: every text of the windows comes
   from a language file; twelve languages ship, and the program writes the
   file of a new language for you to translate.

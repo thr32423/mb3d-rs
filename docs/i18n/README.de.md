@@ -193,7 +193,7 @@ können Sie selbst weiter prüfen:
   Nachbearbeitung oder das Monte-Carlo-Fenster nach vorne (Strg+1 bis
   Strg+7), und Strg+W schließt das Fenster, in dem Sie sind (unter macOS
   Cmd). Eigene legen Sie unter *Einstellungen > Hotkeys* fest: in ein Feld
-  klicken und die Tasten drücken, Rücktaste entfernt einen Hotkey.
+  klicken und die Tasten drücken, Rücktaste entfernt einen Hotkey. Im Hauptfenster öffnet Strg+O Parameter, Strg+S speichert sie, Strg+Umschalt+S speichert das Bild, F5 berechnet oder hält an, und Strg+Z / Strg+Y gehen durch die berechneten Parameter zurück und vor.
 * **Die Oberfläche in Ihrer Sprache**: jeder Text der Fenster stammt aus
   einer Sprachdatei; zwölf Sprachen werden mitgeliefert, und das Programm
   schreibt die Datei einer neuen Sprache, damit Sie sie übersetzen können.

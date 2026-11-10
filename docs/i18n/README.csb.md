@@ -190,7 +190,7 @@ sprawdzëc sóm:
   przédné òkno, Nawigatór, òkno Animacje, Fòrmùłë, Òswiecenié,
   Pòstprodukcja abò Monte Carlo z kòżdégò òkna (Ctrl+1 do Ctrl+7), a
   Ctrl+W zamikô òkno, w jakim jes (na macOS Cmd). Nastôw swòje w *Nastawë > Skrótë*: klikni pòle ë
-  naceskni klawisze, Backspace rëmô skrót.
+  naceskni klawisze, Backspace rëmô skrót. W przédnym òknie Ctrl+O òtmikô parametrë, Ctrl+S je zapisëje, Ctrl+Shift+S zapisëje òbrôzk, F5 rechùje abò zatrzëmiwô, a Ctrl+Z / Ctrl+Y jidą w tił ë w przód pò rechòwónëch parametrach.
 * **Interfejs w twòjim jãzëkù**: kòżdi tekst w òknach pòchòdzy z lopka
   jãzëka; programa mô dwanôsce jãzëków, a lopk nowégò jãzëka napisze
   dlô ce sama, żebë të gò przełożił.

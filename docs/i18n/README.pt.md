@@ -193,7 +193,7 @@ pontos permitem que você confira mais por conta própria:
   Animação, Fórmulas, Iluminação, Pós-processamento ou Monte Carlo (Ctrl+1 a
   Ctrl+7), e Ctrl+W fecha a janela em que você está (no macOS, Cmd). Defina
   os seus em *Prefs > Atalhos*: clique num campo e
-  pressione as teclas; Backspace remove um atalho.
+  pressione as teclas; Backspace remove um atalho. Na janela principal, Ctrl+O abre parâmetros, Ctrl+S os salva, Ctrl+Shift+S salva a imagem, F5 calcula ou para, e Ctrl+Z / Ctrl+Y voltam e avançam pelos parâmetros calculados.
 * **A interface no seu idioma**: todo texto das janelas vem de um arquivo
   de idioma; doze idiomas acompanham o programa, e ele grava o arquivo de um
   novo idioma para você traduzir.

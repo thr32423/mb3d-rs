@@ -192,7 +192,7 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   Monte Carlo ke depan dari jendela mana pun (Ctrl+1 hingga Ctrl+7), dan
   Ctrl+W menutup jendela tempat Anda berada (di macOS Cmd). Atur sendiri di
   *Prefs > Tombol pintas*: klik sebuah kolom lalu tekan tombolnya, Backspace
-  menghapus tombol pintas.
+  menghapus tombol pintas. Di jendela utama Ctrl+O membuka parameter, Ctrl+S menyimpannya, Ctrl+Shift+S menyimpan gambar, F5 menghitung atau berhenti, dan Ctrl+Z / Ctrl+Y mundur dan maju melalui parameter yang telah dihitung.
 * **Antarmuka dalam bahasa Anda**: setiap teks jendela berasal dari file
   bahasa; dua belas bahasa disertakan, dan program menulis file untuk bahasa
   baru agar Anda terjemahkan.

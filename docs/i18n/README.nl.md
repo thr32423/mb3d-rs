@@ -185,7 +185,7 @@ kunt u zelf verder controleren:
   de Navigator, de Animatiemaker, Formules, Belichting, Nabewerking of het
   Monte Carlo-venster vanuit elk venster naar voren (Ctrl+1 tot Ctrl+7), en
   Ctrl+W sluit het venster waarin u zit (op macOS Cmd). Stel uw eigen sneltoetsen in onder *Voork. > Sneltoetsen*: klik op een veld en
-  druk de toetsen in; Backspace haalt een sneltoets weg.
+  druk de toetsen in; Backspace haalt een sneltoets weg. In het hoofdvenster opent Ctrl+O parameters, slaat Ctrl+S ze op, slaat Ctrl+Shift+S de afbeelding op, berekent of stopt F5, en gaan Ctrl+Z / Ctrl+Y terug en vooruit door de berekende parameters.
 * **De interface in uw taal**: elke tekst van de vensters komt
   uit een taalbestand; er worden twaalf talen meegeleverd, en het programma schrijft het
   bestand van een nieuwe taal voor u om te vertalen.

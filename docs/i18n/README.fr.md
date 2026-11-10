@@ -200,7 +200,7 @@ Voici de quoi vérifier plus loin par vous-même :
   d'animation, Formules, Éclairage, Post-traitement ou Monte-Carlo depuis
   n'importe quelle fenêtre (Ctrl+1 à Ctrl+7), et Ctrl+W ferme la fenêtre où
   vous êtes (sur macOS, Cmd). Définissez les vôtres dans *Préfs > Raccourcis* : cliquez sur un champ et
-  appuyez sur les touches ; Retour arrière supprime un raccourci.
+  appuyez sur les touches ; Retour arrière supprime un raccourci. Dans la fenêtre principale, Ctrl+O ouvre des paramètres, Ctrl+S les enregistre, Ctrl+Maj+S enregistre l'image, F5 calcule ou arrête, et Ctrl+Z / Ctrl+Y reculent et avancent dans les paramètres calculés.
 * **L'interface dans votre langue** : chaque texte des fenêtres vient d'un
   fichier de langue ; douze langues sont fournies, et le programme écrit pour
   vous le fichier d'une nouvelle langue à traduire.

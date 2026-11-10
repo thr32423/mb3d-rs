@@ -519,7 +519,10 @@ fn save_acc_preset(app: &Mb3d, i: usize) {
         p.image_scale,
         fts_single(p.ray_limiter)
     );
-    let _ = std::fs::write(crate::appdirs::config_folder().join(PRESET_FILES[i]), t);
+    let p = crate::appdirs::config_folder().join(PRESET_FILES[i]);
+    if let Err(e) = std::fs::write(&p, t) {
+        crate::log::error("save", &format!("{}: {e}", p.display()));
+    }
 }
 
 /// Where the calculations run (not in MB3D): on the graphics card when the
@@ -1179,6 +1182,9 @@ pub fn calc_mand(app: &mut Mb3d, ui: &mut Ui, calc3d: bool) {
         store_undo(app);
     }
     if app.scene.width < 1 || app.scene.height < 1 {
+        // (a size field that is no number reads as 0: said, not a silent
+        // nothing)
+        app.message(ui, &tr("@MB:NothingCalculatedThePictureSWidth"));
         app.main.auto_m3i = None;
         return;
     }
@@ -3739,7 +3745,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             dlg_used(app, what, p);
             app.make_scene(ui);
             let p = p.with_extension("m3p");
-            match std::fs::write(&p, crate::m3p::write(&app.scene)) {
+            match crate::m3p::write_file(&p, &crate::m3p::write(&app.scene)) {
                 Ok(()) => {
                     set_save_names(app, ui, &p);
                     app.message(ui, &trf("@MB:Saved2", &[&p.display()]));
@@ -3788,7 +3794,10 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
         ("savejpgp", DialogResult::File(Some(p))) => {
             dlg_used(app, what, p);
             app.make_scene(ui);
-            let _ = std::fs::write(p.with_extension("m3p"), crate::m3p::write(&app.scene));
+            let m3p = p.with_extension("m3p");
+            if let Err(e) = crate::m3p::write_file(&m3p, &crate::m3p::write(&app.scene)) {
+                app.message(ui, &format!("{}: {e}", m3p.display()));
+            }
             // (the picture follows on a background thread; the window takes
             // its name when it is done, in save_done)
             save_image(app, ui, p);

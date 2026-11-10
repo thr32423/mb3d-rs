@@ -251,7 +251,9 @@ pub fn raw_from_text(text: &str) -> Result<(Vec<u8>, String), String> {
 fn apply_extras(s: Scene, text: &str) -> (Scene, Vec<String>) {
     let mut lines: Vec<&str> = text.lines().collect();
     let mut warnings = Vec::new();
-    for _ in 0..=lines.len() {
+    // (every line left out reads the others again: a block of nothing but
+    // unreadable lines is given up after 200 of them, not after hours)
+    for _ in 0..=lines.len().min(200) {
         match s.clone().apply(&lines.join("\n")) {
             Ok(sc) => return (sc, warnings),
             Err(e) => {
@@ -1159,6 +1161,37 @@ pub(crate) fn to_short_float(v: f32) -> u16 {
 /// Writes a scene as a MB3D parameter file (`.m3p`, MandId 44): the
 /// `TMandHeader10` with the light record and the formula block.  Settings
 /// that this port does not model keep MB3D's neutral values.
+/// Writes a parameter file so that a write that fails (a full disk) leaves
+/// the file that was there: into a temporary file next to it, which then
+/// takes its name. What is not an ordinary file (a link, a device) and a
+/// folder that takes no new file are written directly, as before.
+pub fn write_file(path: &std::path::Path, data: &[u8]) -> std::io::Result<()> {
+    use std::io::Write;
+    let old = std::fs::symlink_metadata(path).ok();
+    let Some(name) = path.file_name().filter(|_| old.as_ref().is_none_or(|m| m.is_file())) else {
+        return std::fs::write(path, data);
+    };
+    let mut tmp_name = std::ffi::OsString::from(".");
+    tmp_name.push(name);
+    tmp_name.push(format!(".tmp{}", std::process::id()));
+    let tmp = path.with_file_name(tmp_name);
+    let Ok(mut f) = std::fs::File::create(&tmp) else {
+        return std::fs::write(path, data);
+    };
+    let done = f.write_all(data).and_then(|_| f.flush());
+    drop(f);
+    let done = done.and_then(|_| {
+        if let Some(m) = &old {
+            let _ = std::fs::set_permissions(&tmp, m.permissions());
+        }
+        std::fs::rename(&tmp, path)
+    });
+    if done.is_err() {
+        let _ = std::fs::remove_file(&tmp);
+    }
+    done
+}
+
 pub fn write(sc: &Scene) -> Vec<u8> {
     let mut d = vec![0u8; HEADER_SIZE + ADDON_SIZE];
     fn put(d: &mut [u8], o: usize, b: &[u8]) {

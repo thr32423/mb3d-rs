@@ -104,7 +104,7 @@ pub fn parse(text: &str) -> Result<Settings, String> {
         let value = value.replace(',', ".");
         let target = if sec == "main_parameters" {
             &mut s.main
-        } else if let Some(n) = sec.strip_prefix("fractal_").and_then(|n| n.parse::<usize>().ok()).filter(|&n| n >= 1) {
+        } else if let Some(n) = sec.strip_prefix("fractal_").and_then(|n| n.parse::<usize>().ok()).filter(|n| (1..=1000).contains(n)) {
             if s.fractals.len() < n {
                 s.fractals.resize(n, Section::default());
             }

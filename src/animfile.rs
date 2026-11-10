@@ -96,6 +96,15 @@ pub fn load(path: &Path) -> Result<AnimFile, String> {
     }
 }
 
+/// Like [`load`] for the `.m3k` of a swarm job, which another computer
+/// wrote: its keyframes carry their parameters, a `file =` line (a path on
+/// this computer) is refused.
+pub fn load_inline(path: &Path) -> Result<AnimFile, String> {
+    let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
+    let name = path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "anim".into());
+    parse_m3k_from(&text, path.parent().unwrap_or(Path::new(".")), &name, false)
+}
+
 /// Saves by extension: `.m3a` (MB3D) or anything else as `.m3k` text.
 /// Missing previews are written as empty images in `.m3a` files.
 pub fn save(path: &Path, anim: &Animation, previews: &[Option<Preview>]) -> Result<(), String> {
@@ -347,6 +356,11 @@ pub fn write_m3a(a: &Animation, previews: &[Option<Preview>]) -> Vec<u8> {
 /// }
 /// ```
 pub fn parse_m3k(text: &str, base_dir: &Path, name: &str) -> Result<AnimFile, String> {
+    parse_m3k_from(text, base_dir, name, true)
+}
+
+/// [`parse_m3k`]; without `files` a keyframe's `file =` line is an error.
+fn parse_m3k_from(text: &str, base_dir: &Path, name: &str, files: bool) -> Result<AnimFile, String> {
     let mut a = Animation { name: name.to_string(), ..Default::default() };
     let mut size_set = false;
     let mut warnings = Vec::new();
@@ -400,7 +414,18 @@ pub fn parse_m3k(text: &str, base_dir: &Path, name: &str) -> Result<AnimFile, St
                 "set" => kf.sets.push(v.to_string()),
                 "file" => {
                     let f = plain(v);
+                    if !files {
+                        return Err(err(format!("file = {f}: a job's keyframes carry their parameters")));
+                    }
+                    // not a file on another computer (Windows would log on
+                    // to it), and nothing but a file (a device never ends)
+                    if crate::maps::network_name(&f) {
+                        return Err(err(format!("file = {f}: a file on another computer is not opened from a keyframe list")));
+                    }
                     let p = base_dir.join(&f);
+                    if p.exists() && !p.is_file() {
+                        return Err(err(format!("{f}: not a file")));
+                    }
                     let (s, w) = load_scene(&p).map_err(|e| err(e))?;
                     for w in w {
                         warnings.push(format!("{f}: {w}"));

@@ -2598,6 +2598,8 @@ NotSharingTickShareThisComputer2=Bez dzeleniô: zaznaczë "Dzelë nen kòmpùtr"
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=Bôczënk: bë òbaczëc farwë wiérzków, wëbierzë trib pùnktów w òknie pòdzérkù
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=Nic nie je rechòwóné: szérzô ë wiżô òbrôzka mùszą bëc całima lëczbama òd 1 w górã.
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: jesz nick nie wërenderowóné
 ;{}: nothing rendered yet
 NothingToSave=nie ma czegò zapisac

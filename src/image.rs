@@ -38,6 +38,7 @@ pub fn decode(bytes: &[u8]) -> Result<Image, String> {
 /// The pixels of a `w`×`h` image, refusing sizes no picture file has.
 fn pixels(w: usize, h: usize) -> Result<Vec<[u16; 3]>, String> {
     match w.checked_mul(h) {
+        Some(0) => Err(format!("image size {w}x{h}: no picture")),
         Some(n) if n <= 1 << 28 => Ok(vec![[0u16; 3]; n]),
         _ => Err(format!("image size {w}x{h} is too large")),
     }
@@ -602,6 +603,7 @@ fn decode_jpeg(b: &[u8]) -> Result<Image, String> {
     let (mut mcux, mut mcuy) = (0usize, 0usize);
     let mut progressive = false;
     let mut restart = 0usize;
+    let mut scans = 0u32;
     let mut eobrun: u32;
     let mut adobe_rgb = false;
     let mut p = 2;
@@ -675,6 +677,12 @@ fn decode_jpeg(b: &[u8]) -> Result<Image, String> {
                 }
                 h = u16::from_be_bytes([seg[1], seg[2]]) as usize;
                 w = u16::from_be_bytes([seg[3], seg[4]]) as usize;
+                // (as the other formats: the blocks below take 256 bytes a
+                // pixel and component, a header of 30 bytes could ask for
+                // 50 GB)
+                if w.checked_mul(h).is_none_or(|n| n > 1 << 28) {
+                    return Err(format!("image size {w}x{h} is too large"));
+                }
                 let n = seg[5] as usize;
                 if n != 1 && n != 3 {
                     return Err(format!("jpeg: {n} components are not supported"));
@@ -725,6 +733,13 @@ fn decode_jpeg(b: &[u8]) -> Result<Image, String> {
                 let (ss, se, ah, al) = (seg[o] as usize, seg[o + 1] as usize, (seg[o + 2] >> 4) as u32, (seg[o + 2] & 15) as u32);
                 if progressive && (ss > se || se > 63) {
                     return Err("jpeg: bad spectral selection".into());
+                }
+                // (a progressive picture has about ten scans; each one walks
+                // every block, so a file of nothing but scan headers would
+                // keep the reader busy for hours)
+                scans += 1;
+                if scans > 1000 {
+                    return Err("jpeg: too many scans".into());
                 }
                 let data = &b[p + len..];
                 let mut br = JBits { d: data, pos: 0, acc: 0, n: 0, marker: false };

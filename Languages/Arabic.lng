@@ -2599,6 +2599,8 @@ NotSharingTickShareThisComputer2=لا مشاركة: فعّل «مشاركة هذ
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=ملاحظة: لمعاينة ألوان الرؤوس، اختر وضع النقاط في نافذة المعاينة
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=لم يُحسب شيء: يجب أن يكون عرض الصورة وارتفاعها عددين صحيحين لا يقلان عن 1.
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: لم يُصيَّر شيء بعد
 ;{}: nothing rendered yet
 NothingToSave=لا شيء للحفظ

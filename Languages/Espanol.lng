@@ -2598,6 +2598,8 @@ NotSharingTickShareThisComputer2=Sin compartir: marque "Compartir este equipo" p
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=Nota: para ver los colores de vértice, elija el modo puntos en la ventana de vista previa
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=No se calculó nada: el ancho y el alto de la imagen deben ser números enteros de al menos 1.
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: aún no se ha renderizado nada
 ;{}: nothing rendered yet
 NothingToSave=nada que guardar

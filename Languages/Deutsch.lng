@@ -2598,6 +2598,8 @@ NotSharingTickShareThisComputer2=Nicht geteilt: Aktivieren Sie „Diesen Compute
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=Hinweis: Für die Vorschau der Vertexfarben wählen Sie im Vorschaufenster den Punktmodus
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=Nichts berechnet: Breite und Höhe des Bildes müssen ganze Zahlen von mindestens 1 sein.
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: noch nichts gerendert
 ;{}: nothing rendered yet
 NothingToSave=nichts zu speichern

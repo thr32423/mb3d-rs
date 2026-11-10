@@ -642,10 +642,22 @@ fn write_job(job: &Job) -> Result<(), String> {
     write_atomic(&job.dir.join("job.txt"), format_kv(&m).as_bytes())
 }
 
+/// The most units (frames times eyes, tiles, blocks) and the longest side
+/// of a picture a job's `job.txt` may name.
+const MAX_UNITS: u64 = 4_000_000;
+const MAX_SIDE: u64 = 1 << 24;
+
 fn read_job(dir: &Path) -> Option<Job> {
     let text = std::fs::read_to_string(dir.join("job.txt")).ok()?;
     let mut m = parse_kv(&text);
     let kind = JobKind::parse(m.remove("kind")?.as_str())?;
+    // numbers no job of this program has: not a job (a damaged or forged
+    // job.txt must not stop the computers that only list it: a division by
+    // zero columns, a list of 10^11 units)
+    let within = |key: &str, lo: u64, hi: u64| m.get(key).is_none_or(|v| v.parse::<u64>().is_ok_and(|n| (lo..=hi).contains(&n)));
+    if !(within("units", 0, MAX_UNITS) && within("cols", 1, 65536) && within("rows", 1, 65536) && within("width", 1, MAX_SIDE) && within("height", 1, MAX_SIDE)) {
+        return None;
+    }
     Some(Job {
         id: dir.file_name()?.to_string_lossy().into_owned(),
         dir: dir.to_path_buf(),
@@ -902,7 +914,7 @@ pub fn work_on(job: &Job, heart: &Heart, threads: usize, quiet: bool, seen: &mut
     let mut n = 0;
     match job.kind {
         JobKind::Animation => {
-            let f = crate::animfile::load(&job.in_dir().join("anim.m3k"))?;
+            let f = crate::animfile::load_inline(&job.in_dir().join("anim.m3k"))?;
             let mut a = f.anim;
             a.output_folder = job.out_dir().to_string_lossy().into_owned();
             a.overwrite = false;
@@ -989,6 +1001,9 @@ pub fn work_on(job: &Job, heart: &Heart, threads: usize, quiet: bool, seen: &mut
             if threads > 0 {
                 scene.threads = threads;
             }
+            // (the size is the job's word: a picture that cannot fit into
+            // this computer's memory is not begun)
+            crate::render::check_memory(crate::render::MemoryUse { w: scene.width.max(0) as usize, h: scene.height.max(0) as usize, reflections: false, dof: false, march: false, window: false })?;
             let units: usize = job.setting("units").unwrap_or(1);
             let rays: f64 = job.setting("rays").unwrap_or(16.0);
             let passes: u32 = job.setting("passes").unwrap_or(0);
@@ -1151,7 +1166,9 @@ pub fn work_on(job: &Job, heart: &Heart, threads: usize, quiet: bool, seen: &mut
                     break;
                 }
                 // the picture of the tile for the previews, then the buffer
-                let _ = std::fs::write(job.out_dir().join(format!("tile_{k}.png")), crate::png::encode_rgb(res.width, res.height, &res.rgb));
+                // (renamed into place: a link put there by another computer
+                // is replaced, not written through)
+                let _ = write_atomic(&job.out_dir().join(format!("tile_{k}.png")), &crate::png::encode_rgb(res.width, res.height, &res.rgb));
                 let mut tile_scene = scene.clone();
                 tile_scene.width = res.width as i32;
                 tile_scene.height = res.height as i32;
@@ -1295,7 +1312,20 @@ fn participate_open(job: &Job, heart: &Heart, opts: &RunOptions, report: Report)
 }
 
 fn finish(job: &Job, keep: bool) {
-    let _ = std::fs::write(job.dir.join("done"), b"done\n");
+    // (the others wait for this marker: a network folder that fails once
+    // is asked again, and a marker that cannot be written is logged)
+    let done = job.dir.join("done");
+    let mut r = Ok(());
+    for _ in 0..3 {
+        r = std::fs::write(&done, b"done\n");
+        if r.is_ok() {
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(200));
+    }
+    if let Err(e) = r {
+        crate::log::error("swarm", &format!("{}: {e}", done.display()));
+    }
     if !keep {
         // (the computers at it stop when its job.txt is gone; one may still
         // write into it meanwhile)
@@ -2187,6 +2217,9 @@ pub fn job_preview_merged(job: &Job, max_w: usize, merge: Option<&mut BlockMerge
             let (cols, rows): (u32, u32) = (job.setting("cols")?, job.setting("rows")?);
             let f = if max_w > 0 && w > max_w { w as f64 / max_w as f64 } else { 1.0 };
             let (pw, ph) = ((w as f64 / f).round().max(1.0) as usize, (h as f64 / f).round().max(1.0) as usize);
+            if cols == 0 || rows == 0 || pw.checked_mul(ph).is_none_or(|n| n > 1 << 28) {
+                return None;
+            }
             let mut rgb = vec![40u8; pw * ph * 3];
             let mut working = Vec::new();
             let tl = crate::scene::Tiling { cols, rows, pos: None, downscale: 1 };

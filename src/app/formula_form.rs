@@ -241,7 +241,9 @@ fn store_favourite(app: &Mb3d, name: &str, status: i32) {
         m.push((status, name.to_string()));
     }
     let t: String = m.iter().map(|(s, n)| format!("{s} {n}\r\n")).collect();
-    let _ = std::fs::write(p, t);
+    if let Err(e) = std::fs::write(&p, t) {
+        crate::log::error("save", &format!("{}: {e}", p.display()));
+    }
 }
 
 /// `LoadFormulaNames`: fills the formula lists by DE type.

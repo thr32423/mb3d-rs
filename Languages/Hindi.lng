@@ -2599,6 +2599,8 @@ NotSharingTickShareThisComputer2=साझा नहीं: {} के साथ 
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=ध्यान दें: वर्टेक्स रंगों का पूर्वावलोकन देखने के लिए पूर्वावलोकन विंडो में पॉइंट-मोड चुनें
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=कुछ भी गणना नहीं हुई: चित्र की चौड़ाई और ऊँचाई कम से कम 1 की पूर्ण संख्याएँ होनी चाहिए।
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: अभी तक कुछ रेंडर नहीं हुआ
 ;{}: nothing rendered yet
 NothingToSave=सहेजने के लिए कुछ नहीं

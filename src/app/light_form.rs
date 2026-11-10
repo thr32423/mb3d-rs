@@ -267,7 +267,10 @@ fn save_custom_preset(app: &Mb3d, i: usize) {
     d[28..32].copy_from_slice(&5i32.to_le_bytes());
     d[32..224].copy_from_slice(&rec[b + 68..b + 68 + 192]);
     d[224..348].copy_from_slice(&rec[b + 260..b + 260 + 124]);
-    let _ = std::fs::write(crate::appdirs::config_folder().join(format!("color_preset_{}.bin", i + 1)), d);
+    let p = crate::appdirs::config_folder().join(format!("color_preset_{}.bin", i + 1));
+    if let Err(e) = std::fs::write(&p, d) {
+        crate::log::error("save", &format!("{}: {e}", p.display()));
+    }
 }
 
 /// `RenderPresetQuat`: the little quaternion of the preset buttons, 34 x 34

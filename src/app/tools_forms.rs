@@ -812,7 +812,8 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
                         let (zw, zh, g) = crate::m3p::gbuffer_from_m3i(&data).ok_or_else(|| tr("@MB:TheTileHasNoImageBuffer"))?;
                         if d.save_zbuf {
                             let z: Vec<u16> = g.iter().map(|s| if s.is_background() { 0 } else { (65535 - (s.zpos() * 2).min(65535)) as u16 }).collect();
-                            let _ = std::fs::write(zbase.with_extension("png"), crate::png::encode_gray16(zw, zh, &z));
+                            let zp = zbase.with_extension("png");
+                    std::fs::write(&zp, crate::png::encode_gray16(zw, zh, &z)).map_err(|e| format!("{}: {e}", zp.display()))?;
                         }
                         if d.save_m3i {
                             let mut ts = sc.clone();
@@ -861,7 +862,8 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
                 if d.save_zbuf {
                     let z: Vec<u16> = g.iter().map(|s| if s.is_background() { 0 } else { (65535 - (s.zpos() * 2).min(65535)) as u16 }).collect();
                     let (zw, zh) = (res.width, res.height);
-                    let _ = std::fs::write(zbase.with_extension("png"), crate::png::encode_gray16(zw, zh, &z));
+                    let zp = zbase.with_extension("png");
+                    std::fs::write(&zp, crate::png::encode_gray16(zw, zh, &z)).map_err(|e| format!("{}: {e}", zp.display()))?;
                 }
                 if d.save_m3i {
                     let mut ts = sc.clone();

@@ -1016,7 +1016,9 @@ fn save_picture(app: &mut Mb3d, ui: &mut Ui, path: &Path, jpeg_q: u8) {
                 let z: Vec<u16> = g.iter().map(|s| if s.is_background() { 0 } else { (65535 - (s.zpos() * 2).min(65535)) as u16 }).collect();
                 let name = format!("ZBuf {}", path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default());
                 let zp = path.with_file_name(name).with_extension("png");
-                let _ = std::fs::write(zp, crate::png::encode_gray16(w, h, &z));
+                if let Err(e) = std::fs::write(&zp, crate::png::encode_gray16(w, h, &z)) {
+                    app.message(ui, &format!("{}: {e}", zp.display()));
+                }
             }
             Err(e) => app.message(ui, &trf("@MB:ZBuffer", &[&e])),
         }

@@ -2598,6 +2598,8 @@ NotSharingTickShareThisComputer2=Tidak berbagi: centang "Bagikan komputer ini" u
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=Catatan: untuk melihat pratinjau warna vertex, pilih mode titik di jendela pratinjau
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=Tidak ada yang dihitung: lebar dan tinggi gambar harus bilangan bulat minimal 1.
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: belum ada yang dirender
 ;{}: nothing rendered yet
 NothingToSave=tidak ada yang disimpan

@@ -2599,6 +2599,8 @@ NotSharingTickShareThisComputer2=共有していません: {} と一緒にレン
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=注: 頂点カラーをプレビューするには、プレビューウィンドウで点モードを選んでください
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=計算されませんでした：画像の幅と高さは 1 以上の整数である必要があります。
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: まだ何もレンダリングされていません
 ;{}: nothing rendered yet
 NothingToSave=保存するものがありません

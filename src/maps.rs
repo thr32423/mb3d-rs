@@ -816,10 +816,24 @@ pub fn set_map_sequences(list: Vec<MapSequence>) -> Result<(), String> {
     std::fs::write(&p, sequences_text(&list)).map_err(|e| format!("{}: {e}", p.display()))
 }
 
+/// A name that begins with two separators: a file on another computer
+/// (Windows: `\\host\share\x.png`). Names out of parameter files are not
+/// opened as such paths: Windows logs on to the named host to look, which
+/// hands the user's login to whoever wrote the file.
+pub fn network_name(name: &str) -> bool {
+    let mut c = name.trim_start().chars();
+    matches!((c.next(), c.next()), (Some('/' | '\\'), Some('/' | '\\')))
+}
+
 /// A picture by file name (background pictures), searched in the map dirs.
+/// A name on another computer ([`network_name`]) is searched by its file
+/// name only.
 pub fn by_name(name: &str) -> Option<Arc<LightMap>> {
-    let name = name.trim().to_string();
-    if name.is_empty() {
+    let mut name = name.trim().to_string();
+    if network_name(&name) {
+        name = name.rsplit(['/', '\\']).next().unwrap_or_default().to_string();
+    }
+    if name.is_empty() || name == "." || name == ".." {
         return None;
     }
     load_cached(format!("f:{name}"), || {

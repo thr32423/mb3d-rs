@@ -1221,7 +1221,9 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             if ui.c(F, &e.sender).cursor == "crUpArrow" {
                 let rec = crate::m3p::write(&app.navi.scene);
                 let p = crate::appdirs::config_folder().join(format!("NaviLightPreset{}.m3l", t + 1));
-                let _ = std::fs::write(p, &rec[432..840]);
+                if let Err(e) = std::fs::write(&p, &rec[432..840]) {
+                    app.message(ui, &format!("{}: {e}", p.display()));
+                }
                 app.navi.presets[t] = Some(app.navi.scene.lighting.clone());
                 app.navi.storing = false;
                 for k in 0..3 {

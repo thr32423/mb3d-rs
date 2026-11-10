@@ -2598,6 +2598,8 @@ NotSharingTickShareThisComputer2=Niet gedeeld: vink "Deze computer delen" aan om
 ;Not sharing: tick "Share this computer" to render together with {}
 NoteToPreviewVertexColorsChoose=Opmerking: kies de puntmodus in het voorbeeldvenster om vertexkleuren te bekijken
 ;Note: to preview vertex colors, choose point-mode in the preview-window
+NothingCalculatedThePictureSWidth=Niets berekend: de breedte en hoogte van de afbeelding moeten gehele getallen van minstens 1 zijn.
+;Nothing calculated: the picture's width and height must be whole numbers of at least 1.
 NothingRenderedYet={}: nog niets gerenderd
 ;{}: nothing rendered yet
 NothingToSave=niets om op te slaan

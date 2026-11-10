@@ -10,6 +10,7 @@
 //! The last [`KEEP`] pictures are kept (read again when the file
 //! changed).
 
+use crate::sync::Locked;
 use super::Mb3d;
 use crate::vcl::lang::{tr, trf};
 use crate::vcl::{bitmap::Bitmap, Ui};
@@ -116,7 +117,7 @@ fn start(app: &mut Mb3d, ui: &Ui, path: PathBuf) {
     std::thread::spawn(move || {
         // (a panic must not leave `busy` set: no more previews then)
         let (r, text) = std::panic::catch_unwind(|| calculate(&path)).unwrap_or_else(|_| (Err(tr("@MB:TheCalculationFailedLower")), String::new()));
-        *slot.lock().unwrap() = Some((path, r, text));
+        *slot.locked() = Some((path, r, text));
         if let Some(w) = &waker {
             w.wake();
         }
@@ -222,7 +223,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             show(ui, &t, None, &tr("@MB:NoPreviewForThisFile"));
         }
     }
-    let done = app.preview.result.lock().unwrap().take();
+    let done = app.preview.result.locked().take();
     if let Some((p, r, text)) = done {
         app.preview.busy = false;
         let entry = match r {

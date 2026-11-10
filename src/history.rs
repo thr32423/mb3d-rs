@@ -10,6 +10,7 @@
 //! contents kept between sessions ([`Keys`]): a history of a million
 //! entries lists while it is read and never holds the window.
 
+use crate::sync::Locked;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -360,12 +361,12 @@ pub fn hash_keys(keys: Arc<Mutex<Keys>>, jobs: Vec<(PathBuf, u64, i64)>, wake: B
     std::thread::spawn(move || {
         for (i, (path, bytes, modified)) in jobs.into_iter().enumerate() {
             let key = content_key(&path);
-            keys.lock().unwrap().put(path, bytes, modified, key);
+            keys.locked().put(path, bytes, modified, key);
             if i % 32 == 31 {
                 wake();
             }
         }
-        keys.lock().unwrap().save();
+        keys.locked().save();
         flag.store(false, Ordering::Relaxed);
         wake();
     });
@@ -677,7 +678,7 @@ mod tests {
             std::thread::sleep(std::time::Duration::from_millis(10));
         }
         assert!(!busy.load(Ordering::Relaxed));
-        let k3 = shared.lock().unwrap();
+        let k3 = shared.locked();
         assert_eq!(k3.get(&a, 10, 5), Some(content_key(&a)));
         assert_eq!(k3.get(&root.join("none.m3p"), 1, 1), Some(None));
         let _ = std::fs::remove_dir_all(&root);

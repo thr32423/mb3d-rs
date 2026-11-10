@@ -17,6 +17,7 @@
 //! one took the window with it): a bar shows the frames flown, Stop ends
 //! the flight there and adds what was flown.
 
+use crate::sync::Locked;
 use super::util::{pti, ptf};
 use super::{Mb3d, Ui};
 use crate::vcl::lang::{tr, trf};
@@ -188,7 +189,7 @@ fn add(app: &mut Mb3d, ui: &mut Ui) {
                 }
             };
             let r = crate::autopilot::fly_through(&sc, &fp, &progress, &|| cancel.load(Ordering::Relaxed));
-            *result.lock().unwrap() = Some(r);
+            *result.locked() = Some(r);
             if let Some(w) = waker {
                 w.wake();
             }
@@ -225,7 +226,7 @@ fn show_flying(app: &Mb3d, ui: &mut Ui) {
 /// The flight's progress, and its keyframes added when it has ended.
 pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     let Some(fl) = &app.anim_tpl.flying else { return };
-    let r = fl.result.lock().unwrap().take();
+    let r = fl.result.locked().take();
     let Some(r) = r else {
         show_flying(app, ui);
         return;

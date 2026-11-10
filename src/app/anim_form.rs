@@ -4,6 +4,7 @@
 //! number of subframes to the next one; the frames are interpolated with
 //! MB3D's functions ([`crate::anim`]) and written into the output folder.
 
+use crate::sync::Locked;
 use crate::vcl::lang::{tr, trf};
 use super::eta::{ItemsLeft, Pace};
 use super::util::{fts_single, left_str, parse_float, pti, ptf, smooth_shown, Shown};
@@ -300,7 +301,7 @@ fn render_thumb(app: &mut Mb3d, ui: &Ui, i: usize) {
         if let Ok(p) = crate::frames::keyframe_preview(&a, i) {
             let ms = t0.elapsed().as_millis().min(i32::MAX as u128) as i32;
             let b = Bitmap::from_rgb(p.width, p.height, &p.rgb);
-            let mut j = job.lock().unwrap();
+            let mut j = job.locked();
             j.thumbs.push((i, id, b, ms));
             j.changed = true;
         }
@@ -333,7 +334,7 @@ fn paint_box(app: &Mb3d, ui: &mut Ui) {
     if vis {
         ui.set_text(F, "Edit1", &st.anim.keyframes[cur - 1].frames.to_string());
     }
-    let running = st.job.lock().unwrap().running;
+    let running = st.job.locked().running;
     if !running {
         ui.set_enabled(F, "SpeedButton2", cur > 1 && cur <= n);
         ui.set_enabled(F, "SpeedButton3", cur < n);
@@ -567,7 +568,7 @@ fn main_scene(app: &mut Mb3d, ui: &mut Ui) -> Scene {
 
 pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     let (making_video, video) = {
-        let mut j = app.anim.job.lock().unwrap();
+        let mut j = app.anim.job.locked();
         let v = if j.running { None } else { j.video.take() };
         (j.making_video, v)
     };
@@ -575,7 +576,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         app.message(ui, &trf("@MB:AnimationVideoWritten", &[&v.display()]));
     }
     let (changed, thumbs, running, done, total, err, last, frames_len, paused) = {
-        let mut j = app.anim.job.lock().unwrap();
+        let mut j = app.anim.job.locked();
         let c = j.changed;
         j.changed = false;
         (c, std::mem::take(&mut j.thumbs), j.running, j.done, j.total, j.error.clone(), j.last.take(), j.frames.len(), j.paused)
@@ -714,7 +715,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
         return;
     }
     // (a preview still runs)
-    if app.anim.job.lock().unwrap().running {
+    if app.anim.job.locked().running {
         return;
     }
     let (a, run, frames) = match output_plan(app, ui) {
@@ -749,7 +750,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
     app.anim.last_done = 0;
     app.anim.left_shown = None;
     {
-        let mut j = app.anim.job.lock().unwrap();
+        let mut j = app.anim.job.locked();
         *j = Job { running: true, total: frames.len(), changed: true, ..Default::default() };
     }
     let job = app.anim.job.clone();
@@ -771,7 +772,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
             let opts = crate::swarm::RunOptions { name: swarm_name, threads: run.threads, quiet: true, keep: false, cancel: Some(cancel_fn), resume: crate::checkpoint::Policy::Continue };
             let report = |st: &str| {
                 if let Some((left, all)) = parse_waiting(st) {
-                    let mut j = job.lock().unwrap();
+                    let mut j = job.locked();
                     j.total = all;
                     j.done = all.saturating_sub(left);
                     j.changed = true;
@@ -781,7 +782,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
                 }
             };
             let r = crate::swarm::run_animation(&dir, &a, Some(&frames), &opts, &report);
-            let mut j = job.lock().unwrap();
+            let mut j = job.locked();
             match r {
                 Ok(files) => {
                     j.done = files.len();
@@ -808,7 +809,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
         // cards: see `frames::render_frames`)
         let before = || {
             let tell = |p: bool| {
-                let mut j = job.lock().unwrap();
+                let mut j = job.locked();
                 j.paused = p;
                 j.changed = true;
                 drop(j);
@@ -826,7 +827,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
         };
         let progress = |_f: usize, d: usize, t: usize| prog.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
         crate::frames::render_frames(&a, &frames, &run, &before, &progress, &cancel, &mut |_f, r| {
-            let mut j = job.lock().unwrap();
+            let mut j = job.locked();
             let go = match r {
                 Ok(FrameResult::Written { path, .. }) => {
                     j.done += 1;
@@ -859,9 +860,9 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
         });
         }
         // the video of the frames, when all of them are there
-        if let Some((path, fps)) = video.filter(|_| !cancel() && job.lock().unwrap().error.is_empty()) {
+        if let Some((path, fps)) = video.filter(|_| !cancel() && job.locked().error.is_empty()) {
             {
-                let mut j = job.lock().unwrap();
+                let mut j = job.locked();
                 j.making_video = true;
                 j.changed = true;
             }
@@ -870,7 +871,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
             }
             let progress = |d: usize, t: usize| prog.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
             let r = crate::vr::video_frames(&a, &frames).and_then(|files| crate::video::frames_to_avi(&files, fps, &path, &progress, &cancel));
-            let mut j = job.lock().unwrap();
+            let mut j = job.locked();
             j.making_video = false;
             match r {
                 Ok(_) => j.video = Some(path),
@@ -878,7 +879,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
                 Err(e) => j.error = trf("@MB:VideoLower", &[&e]),
             }
         }
-        let mut j = job.lock().unwrap();
+        let mut j = job.locked();
         j.running = false;
         j.changed = true;
         drop(j);
@@ -892,7 +893,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
 fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
     read_settings(app, ui);
     let a = app.anim.anim.clone();
-    if a.keyframes.len() < 2 || app.anim.job.lock().unwrap().running {
+    if a.keyframes.len() < 2 || app.anim.job.locked().running {
         return;
     }
     let every = ui.position(F, "UpDown1").max(1) as usize;
@@ -914,7 +915,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
     app.anim.playing = false;
     app.anim.stop.store(false, Ordering::SeqCst);
     {
-        let mut j = app.anim.job.lock().unwrap();
+        let mut j = app.anim.job.locked();
         *j = Job { running: true, total: frames.len(), frames: vec![None; frames.len()], changed: true, ..Default::default() };
     }
     // no new job while this one runs (end_rendering enables them again)
@@ -951,7 +952,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
                 }
                 crate::frames::render_scaled(&s, 1, false, false, &|_, _| {}, &cancel)
             });
-            let mut j = job.lock().unwrap();
+            let mut j = job.locked();
             match r {
                 Ok(img) => {
                     if let Some(s) = j.frames.get_mut(k) {
@@ -973,7 +974,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
                 w.wake();
             }
         }
-        let mut j = job.lock().unwrap();
+        let mut j = job.locked();
         j.running = false;
         j.changed = true;
         drop(j);
@@ -1004,7 +1005,7 @@ fn setup_preview_window(ui: &mut Ui, w: i32, h: i32, n: usize) {
 
 /// Preview frame `k` as shown: with its number when "Frame nr." is on.
 fn frame_picture(app: &Mb3d, ui: &Ui, k: usize) -> Option<Bitmap> {
-    let j = app.anim.job.lock().unwrap();
+    let j = app.anim.job.locked();
     let mut b = j.frames.get(k)?.clone()?;
     drop(j);
     if ui.checked(PV, "CheckBox1") {
@@ -1025,7 +1026,7 @@ fn show_frame(app: &Mb3d, ui: &mut Ui, k: usize) {
 /// `SpeedButton1Click` (AniGif): the preview frames as an animated GIF at
 /// the preview's speed.
 fn save_ani_gif(app: &mut Mb3d, ui: &mut Ui, p: &std::path::Path) {
-    let n = app.anim.job.lock().unwrap().frames.len();
+    let n = app.anim.job.locked().frames.len();
     let pics: Vec<Bitmap> = (0..n).filter_map(|k| frame_picture(app, ui, k)).collect();
     if pics.is_empty() {
         return;
@@ -1067,7 +1068,7 @@ fn play_tick(app: &mut Mb3d, ui: &mut Ui) {
     }
     app.anim.started = Instant::now();
     // (the frames rendered: a cancelled preview plays those)
-    let n = app.anim.job.lock().unwrap().frames.iter().take_while(|f| f.is_some()).count();
+    let n = app.anim.job.locked().frames.iter().take_while(|f| f.is_some()).count();
     if n == 0 {
         return;
     }
@@ -1083,7 +1084,7 @@ pub fn preview_event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             // a running preview is only cancelled (the frames done play
             // then), a finished one closes (AniPreviewWindow.pas Button1Click)
             app.anim.stop.store(true, Ordering::SeqCst);
-            if !app.anim.job.lock().unwrap().running {
+            if !app.anim.job.locked().running {
                 app.anim.playing = false;
                 ui.hide(PV);
             }
@@ -1099,7 +1100,7 @@ pub fn preview_event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             app.anim.stop.store(true, Ordering::SeqCst);
             app.anim.playing = false;
             // (while the preview thread still runs, end_rendering does this)
-            if !app.anim.job.lock().unwrap().running {
+            if !app.anim.job.locked().running {
                 ui.set_enabled(F, "Button4", count(app) > 1);
             }
             // the speed for the next start (IniVal[8], AniPrevFPS)

@@ -1,5 +1,6 @@
 //! The main window (Mand.pas, `TMand3DForm`).
 
+use crate::sync::Locked;
 use crate::vcl::lang::{tr, trf};
 use super::engine::Job;
 use super::eta::RateEma;
@@ -1947,7 +1948,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         save_done(app, ui);
     }
     let (ver, finished, running, stage, base, kept, err, stats, cancelled) = {
-        let o = app.eng.0.out.lock().unwrap();
+        let o = app.eng.0.out.locked();
         (o.ver, o.finished, o.running, o.stage.clone(), o.stage_base, o.kept_secs, o.error.clone(), o.stats, o.cancelled)
     };
     // the status line pulses while the card's shaders compile
@@ -2209,7 +2210,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
 /// `Timer2Timer`: the parameters into History when the lighting changed
 /// since History kept it last.
 fn history_timer(app: &mut Mb3d) {
-    let animating = app.anim.job.lock().unwrap().running;
+    let animating = app.anim.job.locked().running;
     if app.main.calculating || animating || app.batch.status != 0 || app.main.last_history.elapsed().as_secs() <= 300 {
         return;
     }
@@ -2239,7 +2240,7 @@ fn m_buttons_up(ui: &mut Ui) {
 /// Shows the engine's image at the viewing scale (`UpdateScaledImage`).
 pub fn show_image(app: &mut Mb3d, ui: &mut Ui) {
     let (rgb, w, h) = {
-        let o = app.eng.0.out.lock().unwrap();
+        let o = app.eng.0.out.locked();
         (o.rgb.clone(), o.w, o.h)
     };
     match rgb {
@@ -2923,7 +2924,7 @@ fn button2_click(app: &mut Mb3d, ui: &mut Ui) {
 
 /// The Stop button: the running calculation ends.
 fn stop_calc(app: &mut Mb3d, ui: &mut Ui) {
-    let anim = app.anim.job.lock().unwrap().running;
+    let anim = app.anim.job.locked().running;
     app.anim.stop.store(true, std::sync::atomic::Ordering::SeqCst);
     app.eng.stop();
     super::voxel_form::stop(app);
@@ -3379,7 +3380,7 @@ fn spawn_save(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path, ok: String, e
     app.message(ui, &format!("{} {}", tr("@MB:Saving"), p.display()));
     std::thread::spawn(move || {
         let res = enc().and_then(|data| std::fs::write(&p, data).map_err(|e| format!("{}: {e}", p.display())));
-        *slot.lock().unwrap() = Some(res.map(|()| ok));
+        *slot.locked() = Some(res.map(|()| ok));
         if let Some(w) = waker {
             w.wake();
         }
@@ -3390,7 +3391,7 @@ fn spawn_save(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path, ok: String, e
 /// its message, the buttons back, the window named after the file as a
 /// foreground save did (`SetSaveDialogNames`).  A no-op until it is done.
 pub fn save_done(app: &mut Mb3d, ui: &mut Ui) {
-    let Some(res) = app.main.save_slot.lock().unwrap().take() else { return };
+    let Some(res) = app.main.save_slot.locked().take() else { return };
     app.main.saving = false;
     for b in SAVE_LOCK {
         ui.set_enabled(F, b, true);

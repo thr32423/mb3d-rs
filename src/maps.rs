@@ -5,6 +5,7 @@
 //! maps, map transforms), light maps, the background picture and the
 //! diffuse colour map.
 
+use crate::sync::Locked;
 use crate::math::make_spline_coeff;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -408,7 +409,7 @@ fn map_dirs() -> &'static Mutex<Vec<PathBuf>> {
 
 /// Adds a directory searched for maps and background pictures (first).
 pub fn add_map_dir(dir: PathBuf) {
-    map_dirs().lock().unwrap().insert(0, dir);
+    map_dirs().locked().insert(0, dir);
     GENERATION.fetch_add(1, std::sync::atomic::Ordering::Release);
 }
 
@@ -459,7 +460,7 @@ pub fn map_dir_list() -> Vec<PathBuf> {
 
 /// All directories searched, including `M3Maps` next to the formula dirs.
 fn search_dirs() -> Vec<PathBuf> {
-    let mut v = map_dirs().lock().unwrap().clone();
+    let mut v = map_dirs().locked().clone();
     for f in crate::formulas::formula_dir_list() {
         if let Some(p) = f.parent() {
             v.push(p.join("M3Maps"));
@@ -627,14 +628,14 @@ pub fn import_background(p: &std::path::Path, maps_dir: &std::path::Path) -> Res
     if !search_dirs().iter().any(|d| std::fs::canonicalize(d).ok() == std::fs::canonicalize(maps_dir).ok()) {
         add_map_dir(maps_dir.to_path_buf());
     }
-    cache().lock().unwrap().remove(&format!("f:{target_name}"));
+    cache().locked().remove(&format!("f:{target_name}"));
     GENERATION.fetch_add(1, std::sync::atomic::Ordering::Release);
     Ok((target_name, true))
 }
 
 /// Drops map number `nr` from the caches (a new file for it).
 fn forget(nr: i32) {
-    cache().lock().unwrap().remove(&format!("#{nr}"));
+    cache().locked().remove(&format!("#{nr}"));
     GENERATION.fetch_add(1, std::sync::atomic::Ordering::Release);
 }
 
@@ -646,7 +647,7 @@ fn cache() -> &'static Cache {
 }
 
 fn load_cached(key: String, find: impl FnOnce() -> Option<PathBuf>) -> Option<Arc<LightMap>> {
-    if let Some(m) = cache().lock().unwrap().get(&key) {
+    if let Some(m) = cache().locked().get(&key) {
         return m.clone();
     }
     let m = find().and_then(|p| match load_map(&p) {
@@ -657,7 +658,7 @@ fn load_cached(key: String, find: impl FnOnce() -> Option<PathBuf>) -> Option<Ar
             None
         }
     });
-    cache().lock().unwrap().insert(key, m.clone());
+    cache().locked().insert(key, m.clone());
     m
 }
 
@@ -678,12 +679,12 @@ pub fn by_number(nr: i32) -> Option<Arc<LightMap>> {
     if !(1..=32000).contains(&nr) {
         return None;
     }
-    if let Some(seq) = sequences().lock().unwrap().iter().find(|q| q.channel == nr).cloned() {
+    if let Some(seq) = sequences().locked().iter().find(|q| q.channel == nr).cloned() {
         let name = seq.filename(current_frame())?;
         let key = format!("s:{name}");
         {
             // keep only a few frames of sequences in memory
-            let mut c = cache().lock().unwrap();
+            let mut c = cache().locked();
             if !c.contains_key(&key) && c.keys().filter(|k| k.starts_with("s:")).count() >= 16 {
                 c.retain(|k, _| !k.starts_with("s:"));
             }
@@ -804,13 +805,13 @@ pub fn sequences_text(list: &[MapSequence]) -> String {
 }
 
 pub fn map_sequences() -> Vec<MapSequence> {
-    sequences().lock().unwrap().clone()
+    sequences().locked().clone()
 }
 
 /// Replaces the sequence list and saves it to [`sequence_file`].
 pub fn set_map_sequences(list: Vec<MapSequence>) -> Result<(), String> {
-    *sequences().lock().unwrap() = list.clone();
-    cache().lock().unwrap().retain(|k, _| !k.starts_with("s:"));
+    *sequences().locked() = list.clone();
+    cache().locked().retain(|k, _| !k.starts_with("s:"));
     GENERATION.fetch_add(1, std::sync::atomic::Ordering::Release);
     let p = sequence_file();
     std::fs::write(&p, sequences_text(&list)).map_err(|e| format!("{}: {e}", p.display()))
@@ -848,7 +849,7 @@ pub fn by_name(name: &str) -> Option<Arc<LightMap>> {
 /// Map numbers that were requested but not found.
 pub fn missing() -> Vec<String> {
     let mut v: Vec<String> =
-        cache().lock().unwrap().iter().filter(|(_, m)| m.is_none()).map(|(k, _)| k.trim_start_matches("f:").to_string()).collect();
+        cache().locked().iter().filter(|(_, m)| m.is_none()).map(|(k, _)| k.trim_start_matches("f:").to_string()).collect();
     v.sort();
     v
 }
@@ -1099,11 +1100,11 @@ pub fn background(name: &str, smooth: bool, geographic: bool, fit_borders: bool)
         return Some(raw);
     }
     let key = format!("bg:{}{}{}:{}", smooth as u8, geographic as u8, fit_borders as u8, name.trim());
-    if let Some(m) = cache().lock().unwrap().get(&key) {
+    if let Some(m) = cache().locked().get(&key) {
         return m.clone();
     }
     let m = Arc::new(raw.background_copy(smooth, geographic, fit_borders));
-    cache().lock().unwrap().insert(key, Some(m.clone()));
+    cache().locked().insert(key, Some(m.clone()));
     Some(m)
 }
 

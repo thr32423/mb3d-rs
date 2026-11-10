@@ -26,6 +26,7 @@
 //! ran for less than [`keep_after`]).  Old ones go after [`MAX_AGE_DAYS`],
 //! and the oldest when all of them take more than [`max_bytes`].
 
+use crate::sync::Locked;
 use std::collections::BTreeMap;
 use std::fs::{File, OpenOptions};
 use std::path::{Path, PathBuf};
@@ -331,16 +332,16 @@ impl Store {
     }
 
     pub fn is_done(&self, unit: usize) -> bool {
-        self.done.lock().unwrap().get(unit).is_some_and(|d| d.is_some())
+        self.done.locked().get(unit).is_some_and(|d| d.is_some())
     }
 
     pub fn get(&self, unit: usize) -> Option<Done> {
-        self.done.lock().unwrap().get(unit).copied().flatten()
+        self.done.locked().get(unit).copied().flatten()
     }
 
     /// Forgets all units (the data stays, it is overwritten).
     pub fn reset(&self) {
-        let mut d = self.done.lock().unwrap();
+        let mut d = self.done.locked();
         d.iter_mut().for_each(|u| *u = None);
         self.n_done.store(0, Ordering::Relaxed);
         let _ = write_at(&self.marks, &vec![0u8; self.spec.units * MARK], 0);
@@ -348,18 +349,18 @@ impl Store {
 
     /// A text value of the render (`info.txt`).
     pub fn value(&self, k: &str) -> Option<String> {
-        self.info.lock().unwrap().get(k).cloned()
+        self.info.locked().get(k).cloned()
     }
 
     pub fn set_value(&self, k: &str, v: &str) {
-        let changed = self.info.lock().unwrap().insert(k.into(), v.into()).as_deref() != Some(v);
+        let changed = self.info.locked().insert(k.into(), v.into()).as_deref() != Some(v);
         if changed {
             self.write_info();
         }
     }
 
     fn write_info(&self) {
-        let mut info = self.info.lock().unwrap();
+        let mut info = self.info.locked();
         info.insert("done".into(), self.done_count().to_string());
         info.insert("saved".into(), now_secs().to_string());
         let _ = write_atomic(&self.dir.join("info.txt"), format_kv(&info).as_bytes());
@@ -388,7 +389,7 @@ impl Store {
             }
             return;
         }
-        let mut d = self.done.lock().unwrap();
+        let mut d = self.done.locked();
         if d[unit].is_none() {
             self.n_done.fetch_add(1, Ordering::Relaxed);
         }

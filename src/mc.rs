@@ -14,6 +14,7 @@
 //! The image is refined in passes: the first pass shoots 4 rays per pixel,
 //! every further pass adds rays where the noise estimate asks for them.
 
+use crate::sync::Locked;
 use crate::calc::{CalcParams, Marcher};
 use crate::gbuffer::SiLight;
 use crate::lighting::{pos_light_shape, LightVals, PaintCamera};
@@ -2944,7 +2945,7 @@ impl McCheckpoint {
         img.passes = p;
         img.seconds = self.store.value("seconds").and_then(|v| v.parse().ok()).unwrap_or(0.0);
         img.seed_salt = self.store.value("seed_salt").and_then(|v| v.parse().ok()).unwrap_or(0);
-        *self.partial.lock().unwrap() = (!rows.is_empty()).then_some((done, rows));
+        *self.partial.locked() = (!rows.is_empty()).then_some((done, rows));
         true
     }
 
@@ -2953,7 +2954,7 @@ impl McCheckpoint {
     /// show while the pass goes on.
     pub fn with_partial(&self, img: &McImage) -> McImage {
         let mut out = img.clone();
-        if let Some((_, rows)) = self.partial.lock().unwrap().as_ref() {
+        if let Some((_, rows)) = self.partial.locked().as_ref() {
             for (y, recs) in rows {
                 out.recs[y * img.width..(y + 1) * img.width].copy_from_slice(recs);
             }
@@ -2963,7 +2964,7 @@ impl McCheckpoint {
 
     /// The rows of the pass under way it had (see [`McCheckpoint::restore`]).
     pub fn partial_rows(&self) -> usize {
-        self.partial.lock().unwrap().as_ref().map_or(0, |(_, r)| r.len())
+        self.partial.locked().as_ref().map_or(0, |(_, r)| r.len())
     }
 
     fn put_row(&self, gen: u32, y: usize, recs: &[McRecord]) {
@@ -3002,7 +3003,7 @@ pub fn pass_with(
     let Some(ck) = ck.filter(|c| (c.width, c.height) == (img.width, img.height)) else {
         return pass_inner(sc, img, threads, progress, cancel, rows, None, start);
     };
-    let partial = ck.partial.lock().unwrap().take();
+    let partial = ck.partial.locked().take();
     let gen = img.passes + 1;
     let sink = |y: usize, recs: &[McRecord]| {
         ck.put_row(gen, y, recs);
@@ -3084,13 +3085,13 @@ fn pass_inner(
                 format!("{sc:?}").hash(&mut h);
                 h.finish()
             };
-            let last = LAST.lock().unwrap().as_ref().filter(|(k, _)| *k == key).map(|(_, m)| m.clone());
+            let last = LAST.locked().as_ref().filter(|(k, _)| *k == key).map(|(_, m)| m.clone());
             p.vol = Some(match last {
                 Some(m) => m,
                 None => {
                     let hs_len = sc.shadows.map(|h| h.max_len_mul).unwrap_or(1.0);
                     let m = std::sync::Arc::new(crate::vollight::build(&p, sc.stereo_mid(), ln, positional, l.lights[vp.light].amplitude, vp, hs_len, threads));
-                    *LAST.lock().unwrap() = Some((key, m.clone()));
+                    *LAST.locked() = Some((key, m.clone()));
                     m
                 }
             });
@@ -3199,7 +3200,7 @@ fn pass_inner(
         let pa = PassArgs { snap, skip_nonzero, avrg_vari, avrg_rcount, max_new, pass_nr: pass_nr as u32 };
         match pass_gpu(ctx, img, threads, &pa, progress, wt, cancel, rows, &skipped, done.load(std::sync::atomic::Ordering::Relaxed)) {
             Ok(status) => {
-                *MC_STATUS.lock().unwrap() = status;
+                *MC_STATUS.locked() = status;
                 img.seconds += t0.elapsed().as_secs_f64();
                 if cancel() {
                     return Err("cancelled".into());
@@ -3212,7 +3213,7 @@ fn pass_inner(
             Err(e) => crate::elog!("Monte Carlo on the GPU failed, calculated on the CPU: {e}"),
         }
     }
-    *MC_STATUS.lock().unwrap() = "CPU".into();
+    *MC_STATUS.locked() = "CPU".into();
     std::thread::scope(|s| {
         let mut per: Vec<Vec<(usize, &mut [McRecord])>> = (0..threads).map(|_| Vec::new()).collect();
         for (y, row) in img.recs.chunks_mut(w).enumerate().filter(|(y, _)| !skipped(*y)) {
@@ -3265,7 +3266,7 @@ static MC_STATUS: std::sync::Mutex<String> = std::sync::Mutex::new(String::new()
 
 /// Where the last pass was calculated.
 pub fn last_status() -> String {
-    MC_STATUS.lock().unwrap().clone()
+    MC_STATUS.locked().clone()
 }
 
 /// The per-pass values of [`Tracer::pixel`].
@@ -3311,7 +3312,7 @@ impl SharedRound {
         use std::sync::atomic::Ordering;
         const PIECE: usize = 16;
         let piece = {
-            let mut st = self.share.state.lock().unwrap();
+            let mut st = self.share.state.locked();
             let lo = st.1.saturating_sub(PIECE).max(st.0);
             let r = lo..st.1;
             st.1 = lo;
@@ -3326,7 +3327,7 @@ impl SharedRound {
             return true;
         }
         if self.published.load(Ordering::SeqCst) {
-            let i = self.left.lock().unwrap().pop();
+            let i = self.left.locked().pop();
             if let Some(i) = i {
                 let _ = self.cpu_res[i].set(m.run(&self.reqs[i]));
                 return true;
@@ -3338,8 +3339,8 @@ impl SharedRound {
     /// There may be something to take
     fn open(&self) -> bool {
         use std::sync::atomic::Ordering;
-        let st = self.share.state.lock().unwrap();
-        st.0 < st.1 || !self.published.load(Ordering::SeqCst) || !self.left.lock().unwrap().is_empty()
+        let st = self.share.state.locked();
+        st.0 < st.1 || !self.published.load(Ordering::SeqCst) || !self.left.locked().is_empty()
     }
 }
 
@@ -3719,7 +3720,7 @@ fn pass_gpu(
                                     for r in &replies {
                                         let _ = r.send(ToWorker::Quit);
                                     }
-                                    *failed.lock().unwrap() = Some("cancelled".into());
+                                    *failed.locked() = Some("cancelled".into());
                                     break 'pass;
                                 }
                                 if debug && tw.elapsed().as_secs() >= 5 && !stalled {
@@ -3771,7 +3772,7 @@ fn pass_gpu(
                     // the rest of the pass on the CPU (this batch: the
                     // threads march what the card did not)
                     if e == "cancelled" {
-                        *failed.lock().unwrap() = Some(e);
+                        *failed.locked() = Some(e);
                     } else {
                         crate::elog!("Monte Carlo on the GPU failed, calculated on the CPU: {e}");
                     }
@@ -3782,7 +3783,7 @@ fn pass_gpu(
             // what the card did not finish: its own part it gave up, or
             // all of it when it failed; nothing more for the helpers
             let meet = {
-                let mut st = sr.share.state.lock().unwrap();
+                let mut st = sr.share.state.locked();
                 st.0 = st.1;
                 st.1
             };
@@ -3790,7 +3791,7 @@ fn pass_gpu(
             if !on_card {
                 mine.extend(0..meet.min(total));
             }
-            *sr.left.lock().unwrap() = mine.clone();
+            *sr.left.locked() = mine.clone();
             sr.published.store(true, Ordering::SeqCst);
             while sr.help_piece(&mut main_march) {}
             // the pieces the threads took
@@ -4037,7 +4038,7 @@ fn hdr_sun(lv: &mut LightVals, m1: &Mat3, soft_radius: f64) {
     };
     let key = std::sync::Arc::as_ptr(&bg.map) as usize;
     let split = {
-        let mut last = LAST.lock().unwrap();
+        let mut last = LAST.locked();
         match last.as_ref().filter(|(k, _)| *k == key) {
             Some((_, s)) => s.clone(),
             None => {

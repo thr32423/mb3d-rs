@@ -1,5 +1,6 @@
 //! The mesh export window (bulbtracer2/BulbTracer2UI.pas).
 
+use crate::sync::Locked;
 use crate::vcl::lang::{tr, trf};
 use super::util::{fts, fts_single, parse_float, pti};
 use super::Mb3d;
@@ -424,7 +425,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
                                 for (x, b) in buf.iter_mut().enumerate() {
                                     *b = sampler.de(&mut m, g(x), g(y), g(nr)) < de_stop;
                                 }
-                                rows.lock().unwrap()[y * pw..(y + 1) * pw].copy_from_slice(&buf);
+                                rows.locked()[y * pw..(y + 1) * pw].copy_from_slice(&buf);
                                 y += threads.clamp(1, ph);
                             }
                         });
@@ -435,7 +436,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
                 }
                 paint_slice(&mut bmp, &on, size, nr, pw, ph, pd, ik, im);
                 progress.store(((10.0 * (size - nr + 1) as f64) / size as f64).round() as usize, Ordering::Relaxed);
-                let mut sh = shared.lock().unwrap();
+                let mut sh = shared.locked();
                 sh.preview = Some(bmp.clone());
                 sh.preview_changed = true;
                 drop(sh);
@@ -445,7 +446,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
             }
             Ok(())
         })();
-        let mut sh = shared.lock().unwrap();
+        let mut sh = shared.locked();
         sh.preview_done = true;
         if let Err(e) = r {
             sh.mesh = Some(Err(e));
@@ -534,7 +535,7 @@ fn start_calc(app: &mut Mb3d, ui: &mut Ui) {
     let progress = app.btracer.progress.clone();
     progress.store(0, Ordering::SeqCst);
     let shared = app.btracer.shared.clone();
-    shared.lock().unwrap().mesh = None;
+    shared.locked().mesh = None;
     app.btracer.calculating = true;
     app.btracer.t0 = Instant::now();
     enable_controls(app, ui, false);
@@ -556,7 +557,7 @@ fn start_calc(app: &mut Mb3d, ui: &mut Ui) {
         if let (Ok(_), Some(c)) = (&r, ck) {
             c.finish();
         }
-        shared.lock().unwrap().mesh = Some(r);
+        shared.locked().mesh = Some(r);
         if let Some(w) = &waker {
             w.wake();
         }
@@ -568,7 +569,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         return;
     }
     let (pv, pv_done, mesh) = {
-        let mut sh = app.btracer.shared.lock().unwrap();
+        let mut sh = app.btracer.shared.locked();
         let pv = if sh.preview_changed {
             sh.preview_changed = false;
             sh.preview.clone()

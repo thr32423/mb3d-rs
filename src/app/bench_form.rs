@@ -3,6 +3,7 @@
 //! and the graphics card in a thread of its own and shows the result as
 //! text to copy and post.
 
+use crate::sync::Locked;
 use super::{Mb3d, Ui};
 use crate::vcl::lang::{tr, trf};
 use crate::vcl::Event;
@@ -34,16 +35,16 @@ fn run(app: &mut Mb3d, ui: &mut Ui) {
     }
     app.bench.running = true;
     app.bench.cancel.store(false, Ordering::Relaxed);
-    *app.bench.result.lock().unwrap() = None;
+    *app.bench.result.locked() = None;
     ui.set_enabled(F, "RunBtn", false);
     ui.set_enabled(F, "CopyBtn", false);
     ui.set_text(F, "ResultMemo", "");
     let (slot, stage, cancel) = (app.bench.result.clone(), app.bench.stage.clone(), app.bench.cancel.clone());
     std::thread::spawn(move || {
         let st = stage.clone();
-        let r = std::panic::catch_unwind(|| crate::bench::run(true, &|s| *st.lock().unwrap() = s.to_string(), &|| cancel.load(Ordering::Relaxed)))
+        let r = std::panic::catch_unwind(|| crate::bench::run(true, &|s| *st.locked() = s.to_string(), &|| cancel.load(Ordering::Relaxed)))
             .unwrap_or_else(|_| Err(tr("@MB:TheCalculationFailedLower")));
-        *slot.lock().unwrap() = Some(r);
+        *slot.locked() = Some(r);
     });
     ui.set_timer(F, "Timer1", true);
 }
@@ -56,10 +57,10 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
 }
 
 fn poll(app: &mut Mb3d, ui: &mut Ui) {
-    let done = app.bench.result.lock().unwrap().take();
+    let done = app.bench.result.locked().take();
     match done {
         None => {
-            let s = app.bench.stage.lock().unwrap().clone();
+            let s = app.bench.stage.locked().clone();
             ui.set_caption(F, "StatusLabel", &trf("@MB:Running0", &[&s]));
         }
         Some(r) => {

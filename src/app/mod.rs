@@ -5,6 +5,7 @@
 //! module has the equivalents of MB3D's `SetEditsFromHeader` (scene ->
 //! controls) and `MakeHeader` (controls -> scene).
 
+use crate::sync::Locked;
 pub mod ai_form;
 pub mod anim_form;
 pub mod anim_templates_form;
@@ -190,7 +191,7 @@ impl Mb3d {
                     // (FileHandling.pas:2309); a lighting change repaints
                     if let Some((iw, ih, rgb)) = crate::m3p::image_from_m3i(&data) {
                         if (iw, ih) == (w, h) {
-                            let mut o = self.eng.0.out.lock().unwrap();
+                            let mut o = self.eng.0.out.locked();
                             o.rgb = Some(std::sync::Arc::new(rgb));
                             o.ver += 1;
                         }

@@ -11,6 +11,7 @@
 //! ("Show unique") on a thread with their keys kept between sessions,
 //! and the pictures are made for what is in sight.
 
+use crate::sync::Locked;
 use super::{Mb3d, Ui};
 use crate::history::{Action, Day, Entry, Found, Keys, Kind, Scan};
 use crate::vcl::bitmap::Bitmap;
@@ -332,7 +333,7 @@ fn apply(app: &mut Mb3d, ui: &mut Ui) {
     // the files whose keys are not known yet, to be compared
     let mut missing: Vec<(PathBuf, u64, i64)> = Vec::new();
     {
-        let keys = keys.as_ref().map(|k| k.lock().unwrap());
+        let keys = keys.as_ref().map(|k| k.locked());
         let all = &app.history.all;
         let passes = |i: usize| -> bool {
             let r = &all[i];
@@ -385,7 +386,7 @@ fn apply(app: &mut Mb3d, ui: &mut Ui) {
     // the files not compared yet, compared now (a batch at a time)
     if !missing.is_empty() && app.history.hashing.is_none() {
         if let Some(k) = &keys {
-            app.history.keys_seen = k.lock().unwrap().len();
+            app.history.keys_seen = k.locked().len();
             app.history.hashing = Some(crate::history::hash_keys(k.clone(), missing, waker(ui)));
         }
     }
@@ -876,7 +877,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     receive(app);
     if let Some(h) = &app.history.hashing {
         if let Some(k) = &app.history.keys {
-            let n = k.lock().unwrap().len();
+            let n = k.locked().len();
             if n != app.history.keys_seen {
                 app.history.keys_seen = n;
                 app.history.stale = true;

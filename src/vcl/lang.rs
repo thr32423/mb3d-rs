@@ -30,6 +30,7 @@
 //! equals sign in a key.  `tools/labels.py` finds labels to reuse, adds new
 //! ones, checks the references and puts the files in order.
 
+use crate::sync::RwLocked;
 use super::control::{Control, Kind};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -406,13 +407,13 @@ pub fn load_dirs(dirs: &[PathBuf]) -> (Vec<Arc<Language>>, Vec<String>) {
 
 fn registry() -> Vec<Arc<Language>> {
     {
-        let r = REGISTRY.read().unwrap();
+        let r = REGISTRY.read_locked();
         if !r.is_empty() {
             return r.clone();
         }
     }
     reload();
-    REGISTRY.read().unwrap().clone()
+    REGISTRY.read_locked().clone()
 }
 
 /// Reads the language files again (the current language is kept by name,
@@ -425,7 +426,7 @@ pub fn reload() {
     if !langs.iter().any(|l| l.name.eq_ignore_ascii_case("English")) {
         langs.insert(0, Arc::new(Language::english()));
     }
-    *REGISTRY.write().unwrap() = langs;
+    *REGISTRY.write_locked() = langs;
     let name = current().name.clone();
     if !select(&name) {
         apply_fonts();
@@ -440,7 +441,7 @@ fn apply_fonts() {
     let cur = current();
     let mut order = vec![cur.clone()];
     order.extend(registry().into_iter().filter(|l| l.name != cur.name));
-    let mut loaded = LOADED.write().unwrap();
+    let mut loaded = LOADED.write_locked();
     let loaded = loaded.get_or_insert_with(HashMap::new);
     let mut fonts = Vec::new();
     for l in order {
@@ -466,7 +467,7 @@ pub fn all() -> Vec<Arc<Language>> {
 
 /// The language in use (English until one is selected).
 pub fn current() -> Arc<Language> {
-    if let Some(l) = CURRENT.read().unwrap().as_ref() {
+    if let Some(l) = CURRENT.read_locked().as_ref() {
         return l.clone();
     }
     registry().into_iter().find(|l| l.name.eq_ignore_ascii_case("English")).unwrap_or_else(|| Arc::new(Language::english()))
@@ -476,7 +477,7 @@ pub fn current() -> Arc<Language> {
 /// in); false if there is no such language file.
 pub fn select(name: &str) -> bool {
     let Some(l) = registry().into_iter().find(|l| l.name.eq_ignore_ascii_case(name.trim())) else { return false };
-    *CURRENT.write().unwrap() = Some(l);
+    *CURRENT.write_locked() = Some(l);
     apply_fonts();
     true
 }
@@ -485,14 +486,14 @@ pub fn select(name: &str) -> bool {
 /// (the form file's text) is remembered as the original and returned when
 /// the language has no text for `key`.
 pub fn text(key: &str, english: &str) -> String {
-    ORIGINALS.write().unwrap().get_or_insert_with(HashMap::new).entry(key.to_string()).or_insert_with(|| english.to_string());
+    ORIGINALS.write_locked().get_or_insert_with(HashMap::new).entry(key.to_string()).or_insert_with(|| english.to_string());
     let l = current();
     l.get(key).map(str::to_string).unwrap_or_else(|| l.tr(english))
 }
 
 /// The form file's text of a control property built with [`text`].
 pub fn original(key: &str) -> Option<String> {
-    ORIGINALS.read().unwrap().as_ref().and_then(|m| m.get(key).cloned())
+    ORIGINALS.read_locked().as_ref().and_then(|m| m.get(key).cloned())
 }
 
 /// A text the program shows, in the current language: `tr("@MB:Stop")`,

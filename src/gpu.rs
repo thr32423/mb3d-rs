@@ -10,6 +10,7 @@
 //! 0, 2, 11), dIFS hybrids (option 20) and the DE combinations of two
 //! parts; [`unsupported`] says why a scene is calculated on the CPU.
 
+use crate::sync::Locked;
 use crate::calc::{CalcParams, PostJob};
 use crate::formulas::Formula;
 use crate::gbuffer::SiLight;
@@ -1034,7 +1035,7 @@ fn pipeline(g: &Gpu, code: &str, constants: &[(&str, f64)]) -> Result<std::sync:
 fn pipeline_entry(g: &Gpu, code: &str, entry: &str, layout: Option<&wgpu::PipelineLayout>, constants: &[(&str, f64)]) -> Result<std::sync::Arc<wgpu::ComputePipeline>, String> {
     let key = pipeline_key(code, entry, constants);
     // compiled in the background (see [`prepare`]): wait for it
-    let pending = PREPARING.lock().unwrap().iter().find(|(c, k, _)| (*c, *k) == (g.index, key)).map(|(.., f)| f.clone());
+    let pending = PREPARING.locked().iter().find(|(c, k, _)| (*c, *k) == (g.index, key)).map(|(.., f)| f.clone());
     if let Some(f) = pending {
         while !f.load(Ordering::SeqCst) {
             std::thread::sleep(std::time::Duration::from_millis(5));
@@ -1156,20 +1157,20 @@ pub struct CompileJob {
 static JOBS: Mutex<Vec<CompileJob>> = Mutex::new(Vec::new());
 
 fn start_job(start: std::time::Instant, code: &str, constants: usize) -> usize {
-    let mut j = JOBS.lock().unwrap();
+    let mut j = JOBS.locked();
     j.push(CompileJob { start, secs: None, bytes: code.len(), lines: code.lines().count(), double: code.contains("f64"), constants });
     j.len() - 1
 }
 
 fn end_job(i: usize, secs: f64) {
-    if let Some(j) = JOBS.lock().unwrap().get_mut(i) {
+    if let Some(j) = JOBS.locked().get_mut(i) {
         j.secs = Some(secs);
     }
 }
 
 /// The compiles that ran at some time after `since` (or still run).
 pub fn compile_jobs(since: std::time::Instant) -> Vec<CompileJob> {
-    JOBS.lock().unwrap().iter().filter(|j| j.secs.is_none_or(|s| j.start + std::time::Duration::from_secs_f64(s) > since)).cloned().collect()
+    JOBS.locked().iter().filter(|j| j.secs.is_none_or(|s| j.start + std::time::Duration::from_secs_f64(s) > since)).cloned().collect()
 }
 
 fn pipeline_key(code: &str, entry: &str, constants: &[(&str, f64)]) -> u64 {
@@ -1369,7 +1370,7 @@ fn prepare(g: &'static Gpu, code: String, entry: &'static str, constants: Vec<(&
     if g.pipelines.lock().is_ok_and(|m| m.contains_key(&key)) {
         return std::sync::Arc::new(AtomicBool::new(true));
     }
-    let mut list = PREPARING.lock().unwrap();
+    let mut list = PREPARING.locked();
     if let Some((.., f)) = list.iter().find(|(c, k, _)| (*c, *k) == (g.index, key)) {
         return f.clone();
     }
@@ -1391,7 +1392,7 @@ fn prepare(g: &'static Gpu, code: String, entry: &'static str, constants: Vec<(&
             }
         }
         f.store(true, Ordering::SeqCst);
-        PREPARING.lock().unwrap().retain(|(c, k, _)| (*c, *k) != (g.index, key));
+        PREPARING.locked().retain(|(c, k, _)| (*c, *k) != (g.index, key));
     });
     flag
 }
@@ -1575,7 +1576,7 @@ pub fn post_on_card(
         // (no copy of the whole buffer: 15360 x 15360 is 4.7 GB, issue #7)
         let buf = std::sync::Mutex::new(gbuf);
         let band = |row0: usize, rows: usize| {
-            let g = buf.lock().unwrap();
+            let g = buf.locked();
             let (a, b) = ((row0 * w).min(g.len()), ((row0 + rows) * w).min(g.len()));
             g[a..b].to_vec()
         };
@@ -1588,7 +1589,7 @@ pub fn post_on_card(
             progress,
             cancel,
             &mut |y, row| {
-                let mut g = buf.lock().unwrap();
+                let mut g = buf.locked();
                 if y * w + row.len() <= g.len() {
                     g[y * w..y * w + row.len()].copy_from_slice(row);
                 }
@@ -2524,7 +2525,7 @@ fn reflect_batch_card(p: &CalcParams, tasks: &[ReflectTask], offset: usize, o: &
             // still need the shadow and occlusion pass after the march,
             // which the CPU does with each ray)
             want = want.min(sh.cap.max(started));
-            let mut st = sh.state.lock().unwrap();
+            let mut st = sh.state.locked();
             st.0 = st.0.max(want.min(st.1));
             st.0.saturating_sub(offset)
         };
@@ -2532,7 +2533,7 @@ fn reflect_batch_card(p: &CalcParams, tasks: &[ReflectTask], offset: usize, o: &
         // to do, is faster for single long rays
         let give_up = |left: usize| -> bool {
             share.filter(|_| pi == 0).is_some_and(|sh| {
-                let st = sh.state.lock().unwrap();
+                let st = sh.state.locked();
                 left <= sh.tail && st.0 >= st.1
             })
         };
@@ -2625,7 +2626,7 @@ static MC_RESUMER: std::sync::Mutex<Vec<(usize, u64, Resumer)>> = std::sync::Mut
 /// a new one (one is kept per card: see [`keep_resumer`]).
 fn cached_resumer(cache: &Mutex<Vec<(usize, u64, Resumer)>>, key: u64, g: &Gpu, sh: &SceneShader) -> Resumer {
     let card = CARD.with(|c| c.get());
-    let mut c = cache.lock().unwrap();
+    let mut c = cache.locked();
     match c.iter().position(|(k, h, _)| *k == card && *h == key) {
         Some(i) => c.swap_remove(i).2,
         None => Resumer::new(g, sh),
@@ -2634,7 +2635,7 @@ fn cached_resumer(cache: &Mutex<Vec<(usize, u64, Resumer)>>, key: u64, g: &Gpu, 
 
 fn keep_resumer(cache: &Mutex<Vec<(usize, u64, Resumer)>>, key: u64, r: Resumer) {
     let card = CARD.with(|c| c.get());
-    let mut c = cache.lock().unwrap();
+    let mut c = cache.locked();
     c.retain(|(k, ..)| *k != card);
     c.push((card, key, r));
 }
@@ -2670,7 +2671,7 @@ fn on_cards<T: Clone + Default + Send>(
     }
     // the cards' part: before the CPU's (with one card its limit)
     let region = share.map_or(n, |sh| sh.cap.min(n));
-    let rates = RAY_RATES.lock().unwrap()[kind];
+    let rates = RAY_RATES.locked()[kind];
     let rate = |i: usize| if rates[i.min(63)] > 0.0 { rates[i.min(63)] } else { 1.0 };
     let all: f64 = rate(0) + extra.iter().map(|&k| rate(k)).sum::<f64>();
     let mut slices = Vec::new();
@@ -2682,7 +2683,7 @@ fn on_cards<T: Clone + Default + Send>(
     }
     // (the CPU stays behind them)
     if let Some(sh) = share {
-        let mut st = sh.state.lock().unwrap();
+        let mut st = sh.state.locked();
         st.0 = st.0.max(at.min(st.1));
     }
     // each slice's counts: the rays its card started (`.0`), the end it may
@@ -2695,7 +2696,7 @@ fn on_cards<T: Clone + Default + Send>(
     let stops: Vec<AtomicBool> = slices.iter().map(|_| AtomicBool::new(false)).collect();
     let set_rate = |k: usize, rays: usize, secs: f64| {
         if rays > 0 && secs > 0.0 {
-            let r = &mut RAY_RATES.lock().unwrap()[kind][k.min(63)];
+            let r = &mut RAY_RATES.locked()[kind][k.min(63)];
             let now = rays as f64 / secs;
             *r = if *r > 0.0 { 0.7 * *r + 0.3 * now } else { now };
         }
@@ -2732,7 +2733,7 @@ fn on_cards<T: Clone + Default + Send>(
                 }
                 // what it has not started: no more for it, the first card's
                 let s0 = {
-                    let mut st = counts[i].state.lock().unwrap();
+                    let mut st = counts[i].state.locked();
                     st.1 = st.0;
                     st.0
                 };
@@ -3015,13 +3016,13 @@ fn mc_batch_card(p: &CalcParams, tasks: &[crate::mc::McReq], offset: usize, seca
         if want > sh.cap && (started < sh.cap || slots.get() - free > slots.get() / 4) {
             want = sh.cap.max(started);
         }
-        let mut st = sh.state.lock().unwrap();
+        let mut st = sh.state.locked();
         st.0 = st.0.max(want.min(st.1));
         st.0.saturating_sub(offset)
     };
     let give_up = |left: usize| -> bool {
         share.is_some_and(|sh| {
-            let st = sh.state.lock().unwrap();
+            let st = sh.state.locked();
             left <= sh.tail && st.0 >= st.1
         })
     };

@@ -4,6 +4,7 @@
 //! optionally mirrored to a tileable set, and the camera preset of the
 //! group's texture recipe.
 
+use crate::sync::Locked;
 use super::{Mb3d, Ui};
 use crate::vcl::lang::{tr, trf};
 use crate::vcl::{DialogResult, Event};
@@ -43,7 +44,7 @@ fn write(app: &mut Mb3d, ui: &mut Ui) {
         ui.set_caption(F, "StatusLabel", &tr("@MB:CalculateAPictureFirst"));
         return;
     };
-    let rgb = app.eng.0.out.lock().unwrap().rgb.clone();
+    let rgb = app.eng.0.out.locked().rgb.clone();
     let Some(rgb) = rgb.filter(|r| r.len() == b.w * b.h * 3) else {
         ui.set_caption(F, "StatusLabel", &tr("@MB:CalculateAPictureFirst"));
         return;

@@ -3,6 +3,7 @@
 //! (MB3D's siLight5 array) that the lighting and post processing repaint
 //! without a new ray march, 2D slices and recalculated selections.
 
+use crate::sync::Locked;
 use crate::calc::CalcParams;
 use crate::gbuffer::SiLight;
 use crate::scene::Scene;
@@ -317,7 +318,7 @@ impl Engine {
     }
 
     pub fn set_waker(&self, w: Option<Waker>) {
-        *self.0.waker.lock().unwrap() = w;
+        *self.0.waker.locked() = w;
     }
 
     /// Starts a job; a running one is cancelled.
@@ -325,9 +326,9 @@ impl Engine {
         let gen = self.0.gen.fetch_add(1, Ordering::SeqCst) + 1;
         // (under the job's lock: the worker ending the last job does not
         // see it running without the new one, see `worker`)
-        let mut j = self.0.job.lock().unwrap();
+        let mut j = self.0.job.locked();
         {
-            let mut o = self.0.out.lock().unwrap();
+            let mut o = self.0.out.locked();
             o.running = true;
             o.error.clear();
             // (the last job's stage is not this one's)
@@ -345,11 +346,11 @@ impl Engine {
     /// Stops the running calculation (the "Stop" button).
     pub fn stop(&self) {
         self.0.gen.fetch_add(1, Ordering::SeqCst);
-        *self.0.job.lock().unwrap() = None;
+        *self.0.job.locked() = None;
     }
 
     pub fn running(&self) -> bool {
-        self.0.out.lock().unwrap().running || self.0.busy.load(Ordering::SeqCst)
+        self.0.out.locked().running || self.0.busy.load(Ordering::SeqCst)
     }
 
     /// Progress of the running job, 0..1.
@@ -364,14 +365,14 @@ impl Engine {
     /// The image is at the size the window shows it (see
     /// [`Engine::set_preview_step`]), painted only where new rows came.
     pub fn partial_image(&self) -> Option<(Vec<u8>, usize, usize)> {
-        if let Some(img) = self.0.preview.lock().unwrap().take() {
+        if let Some(img) = self.0.preview.locked().take() {
             return Some(img);
         }
         if self.0.painting.load(Ordering::SeqCst) {
             return None;
         }
         let (scene, params, rows, step, dw, dh, id) = {
-            let mut p = self.0.partial.lock().unwrap();
+            let mut p = self.0.partial.locked();
             let p = p.as_mut()?;
             if p.pending.is_empty() {
                 return None;
@@ -381,7 +382,7 @@ impl Engine {
         self.0.painting.store(true, Ordering::SeqCst);
         let e = self.0.clone();
         std::thread::spawn(move || {
-            let mut c = e.canvas.lock().unwrap();
+            let mut c = e.canvas.locked();
             if c.as_ref().is_none_or(|(cid, _, cw, ch)| *cid != id || (*cw, *ch) != (dw, dh)) {
                 let mut rgb = vec![0u8; dw * dh * 3];
                 crate::render::paint_display_rows(&scene, &params, step, None, &mut rgb, dw);
@@ -391,7 +392,7 @@ impl Engine {
             crate::render::paint_display_rows(&scene, &params, step, Some(&rows), rgb, dw);
             let out = rgb.clone();
             drop(c);
-            *e.preview.lock().unwrap() = Some((out, dw, dh));
+            *e.preview.locked() = Some((out, dw, dh));
             e.painting.store(false, Ordering::SeqCst);
             e.wake();
         });
@@ -406,7 +407,7 @@ impl Engine {
     }
 
     pub fn base(&self) -> Option<Arc<Base>> {
-        self.0.base.lock().unwrap().clone()
+        self.0.base.locked().clone()
     }
 
     /// The object position (absolute) under pixel `x`, `y` of the kept
@@ -435,7 +436,7 @@ impl Engine {
     /// for the buffer before and once for the one after the shadows when
     /// they differ.  The caller repaints.  False without a kept image.
     pub fn edit_gbuffer(&self, f: impl Fn(&Scene, &CalcParams, &mut [SiLight])) -> bool {
-        let mut g = self.0.base.lock().unwrap();
+        let mut g = self.0.base.locked();
         let Some(arc) = g.as_mut() else { return false };
         let b = Arc::make_mut(arc);
         let shared = Arc::ptr_eq(&b.raw, &b.post);
@@ -456,10 +457,10 @@ impl Engine {
     /// under way stops (its picture is of the old parameters).
     pub fn clear(&self) {
         self.stop();
-        *self.0.partial.lock().unwrap() = None;
-        *self.0.preview.lock().unwrap() = None;
-        *self.0.base.lock().unwrap() = None;
-        let mut o = self.0.out.lock().unwrap();
+        *self.0.partial.locked() = None;
+        *self.0.preview.locked() = None;
+        *self.0.base.locked() = None;
+        let mut o = self.0.out.locked();
         o.rgb = None;
         o.plain = None;
         o.ver += 1;
@@ -476,8 +477,8 @@ impl Engine {
         }
         let raw = Arc::new(gbuf);
         let (rgb, plain) = crate::render::paint_plain(sc, &p, &raw);
-        *self.0.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(sc), w, h }));
-        let mut o = self.0.out.lock().unwrap();
+        *self.0.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(sc), w, h }));
+        let mut o = self.0.out.locked();
         o.rgb = Some(Arc::new(rgb));
         o.plain = plain.map(Arc::new);
         o.w = w;
@@ -489,7 +490,7 @@ impl Engine {
 
 impl Inner {
     fn wake(&self) {
-        if let Some(w) = self.waker.lock().unwrap().as_ref() {
+        if let Some(w) = self.waker.locked().as_ref() {
             w.wake();
         }
     }
@@ -501,7 +502,7 @@ impl Inner {
     /// [`publish`] with the picture before the Droste effect (None: the
     /// scene has none).
     fn publish_plain(&self, rgb: Vec<u8>, plain: Option<Vec<u8>>, w: usize, h: usize, stage: &str, stats: Option<Stats>) {
-        let mut o = self.out.lock().unwrap();
+        let mut o = self.out.locked();
         o.rgb = Some(Arc::new(rgb));
         o.plain = plain.map(Arc::new);
         o.w = w;
@@ -515,7 +516,7 @@ impl Inner {
 
     fn finish(&self, err: Option<String>) {
         {
-            let mut o = self.out.lock().unwrap();
+            let mut o = self.out.locked();
             o.running = false;
             o.finished += 1;
             o.cancelled = err.as_deref() == Some("cancelled");
@@ -525,8 +526,8 @@ impl Inner {
                 }
             }
         }
-        *self.partial.lock().unwrap() = None;
-        *self.canvas.lock().unwrap() = None;
+        *self.partial.locked() = None;
+        *self.canvas.locked() = None;
         self.wake();
     }
 
@@ -537,7 +538,7 @@ impl Inner {
         for a in [&self.rows_px, &self.rows_hits, &self.rows_steps, &self.rows] {
             a.store(0, Ordering::Relaxed);
         }
-        *self.partial.lock().unwrap() = Some(Partial { params, scene: scene.clone(), w, h, step, id, pending: Vec::new() });
+        *self.partial.locked() = Some(Partial { params, scene: scene.clone(), w, h, step, id, pending: Vec::new() });
     }
 
     /// A row `y` of the calculation, kept for its live picture as the
@@ -549,7 +550,7 @@ impl Inner {
         self.rows_hits.fetch_add(hits, Ordering::Relaxed);
         self.rows_steps.fetch_add(steps, Ordering::Relaxed);
         self.rows.fetch_add(1, Ordering::Relaxed);
-        if let Some(p) = self.partial.lock().unwrap().as_mut() {
+        if let Some(p) = self.partial.locked().as_mut() {
             let s = p.step;
             if y % s == 0 && y / s < p.h / s {
                 p.pending.push((y / s, row.iter().step_by(s).take(p.w / s).copied().collect()));
@@ -561,7 +562,7 @@ impl Inner {
     /// G-buffers and the new one together do not fit, issue #7).  A
     /// stopped calculation then leaves no picture to repaint.
     fn free_big_base(&self, w: usize, h: usize) {
-        let mut b = self.base.lock().unwrap();
+        let mut b = self.base.locked();
         let old = b.as_ref().map_or(0, |b| b.w * b.h);
         if w * h + old > BIG_PICTURE_PIXELS {
             *b = None;
@@ -577,7 +578,7 @@ const BIG_PICTURE_PIXELS: usize = 64 << 20;
 fn worker(e: Arc<Inner>) {
     loop {
         let (gen, job) = {
-            let mut j = e.job.lock().unwrap();
+            let mut j = e.job.locked();
             while j.is_none() {
                 j = e.cv.wait(j).unwrap();
             }
@@ -605,7 +606,7 @@ fn worker(e: Arc<Inner>) {
         });
         e.busy.store(false, Ordering::SeqCst);
         // a newer job may already wait: only report when this one is the last
-        let j = e.job.lock().unwrap();
+        let j = e.job.locked();
         if j.is_none() {
             e.finish(res.err());
         }
@@ -624,7 +625,7 @@ fn stereo(e: &Arc<Inner>, sc: &Scene, layout: crate::render::StereoLayout, cance
         s.slice_2d = 0;
         s.calc_rect = None;
         s.stereo_mode = mode;
-        e.out.lock().unwrap().stage = format!("stereo: rendering {name} eye");
+        e.out.locked().stage = format!("stereo: rendering {name} eye");
         e.progress.store(offset as u32, Ordering::Relaxed);
         let started = Instant::now();
         let progress = |done: usize, total: usize| {
@@ -649,9 +650,9 @@ fn stereo(e: &Arc<Inner>, sc: &Scene, layout: crate::render::StereoLayout, cance
     if cancel() {
         return Err("cancelled".into());
     }
-    e.out.lock().unwrap().stage = "stereo: composing preview".into();
+    e.out.locked().stage = "stereo: composing preview".into();
     let (rgb, ow, oh) = crate::render::compose_stereo(&left, &right, w, h, layout);
-    *e.base.lock().unwrap() = None;
+    *e.base.locked() = None;
     e.publish(rgb, ow, oh, "stereo preview ready", Some(Stats {
         calc_s: left_calc + right_calc,
         post_s: left_paint + right_paint,
@@ -668,13 +669,13 @@ fn swarm_tiles(e: &Arc<Inner>, sc: &Scene, dir: &std::path::Path, cols: u32, row
     let mut sc = sc.clone();
     sc.slice_2d = 0;
     sc.calc_rect = None;
-    e.out.lock().unwrap().stage = "swarm: creating the job".into();
+    e.out.locked().stage = "swarm: creating the job".into();
     // (the job's own generation: one started since cancels it)
     let e2 = e.clone();
     let cancel_fn: Arc<dyn Fn() -> bool + Send + Sync> = Arc::new(move || e2.gen.load(Ordering::SeqCst) != gen);
     let opts = crate::swarm::RunOptions { name, threads: 0, quiet: true, keep: false, cancel: Some(cancel_fn), resume: crate::checkpoint::Policy::Continue };
     let report = |st: &str| {
-        e.out.lock().unwrap().stage = format!("swarm: {st}");
+        e.out.locked().stage = format!("swarm: {st}");
         e.wake();
     };
     let total = (cols * rows) as usize;
@@ -695,7 +696,7 @@ fn swarm_tiles(e: &Arc<Inner>, sc: &Scene, dir: &std::path::Path, cols: u32, row
     // the Stop button, as the calculation here has them
     report("all tiles done, painting the picture");
     let stage = |name: &str| {
-        let mut o = e.out.lock().unwrap();
+        let mut o = e.out.locked();
         o.stage = name.to_string();
         o.stage_base = 0.0;
         e.progress.store(0, Ordering::Relaxed);
@@ -707,7 +708,7 @@ fn swarm_tiles(e: &Arc<Inner>, sc: &Scene, dir: &std::path::Path, cols: u32, row
     }
     let mut stats = stats_of(&raw, &p, t0.elapsed().as_secs_f64(), 0.0);
     stats.stages.reflections = refl_s;
-    *e.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(&sc), w, h }));
+    *e.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(&sc), w, h }));
     e.publish_plain(rgb, plain, w, h, "done (swarm)", Some(stats));
     Ok(())
 }
@@ -748,7 +749,7 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, resume: crate::checkpoint::Policy, nam
         }
     };
     {
-        let mut o = e.out.lock().unwrap();
+        let mut o = e.out.locked();
         o.stage_base = ck.as_ref().map_or(0.0, |s| s.resumed() as f32 / h.max(1) as f32);
         o.kept_secs = kept_secs as f32;
         o.stage = match (slice, ck.as_ref().is_some_and(|s| s.resumed() > 0)) {
@@ -763,14 +764,14 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, resume: crate::checkpoint::Policy, nam
     let progress = |d: usize, t: usize| {
         e.progress.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
         if d > 0 && base_pending.swap(false, Ordering::Relaxed) {
-            e.out.lock().unwrap().stage_base = d as f32 / t.max(1) as f32;
+            e.out.locked().stage_base = d as f32 / t.max(1) as f32;
         }
     };
     // each stage after the march: its name for the window, the bar from zero
     let stage = |name: &str| {
         base_pending.store(false, Ordering::Relaxed);
         note_secs(true);
-        let mut o = e.out.lock().unwrap();
+        let mut o = e.out.locked();
         o.stage = name.to_string();
         o.stage_base = 0.0;
         e.progress.store(0, Ordering::Relaxed);
@@ -781,7 +782,7 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, resume: crate::checkpoint::Policy, nam
     // of its own: its time so far)
     note_secs(true);
     let (p, raw) = r?;
-    *e.partial.lock().unwrap() = None;
+    *e.partial.locked() = None;
     let t1 = Instant::now();
     let raw = Arc::new(raw);
     let mut stages = crate::render::card_post_times(&sc, &p);
@@ -806,7 +807,7 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, resume: crate::checkpoint::Policy, nam
     let mut stats = stats_of(&post, &p, (t1 - t0).as_secs_f64(), post_s);
     stats.stages = stages;
     e.publish_plain(rgb, plain, w, h, "", Some(stats));
-    *e.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw, post, post_sig: post_sig(&sc), w, h }));
+    *e.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw, post, post_sig: post_sig(&sc), w, h }));
     if let Some(ck) = ck {
         ck.finish();
     }
@@ -823,17 +824,17 @@ fn blocky(e: &Inner, sc: &Scene, cancel: &(dyn Fn() -> bool + Sync)) -> Result<(
     let (w, h) = (w as usize, h as usize);
     e.free_big_base(w, h);
     e.begin_partial(params, &sc, w, h);
-    e.out.lock().unwrap().stage = "rough image".into();
+    e.out.locked().stage = "rough image".into();
     let progress = |d: usize, t: usize| e.progress.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
     let sink = |y: usize, row: &[SiLight]| e.partial_row(y, row);
     let (p, g) = crate::render::calculate_blocky(&sc, &progress, cancel, &sink)?;
-    *e.partial.lock().unwrap() = None;
+    *e.partial.locked() = None;
     // painted without the post calculations, as MB3D's PaintRowsNoThreadBlocky
     let (rgb, plain) = crate::render::paint_preview_plain(&sc, &p, &g);
     let stats = stats_of(&g, &p, t0.elapsed().as_secs_f64(), 0.0);
     e.publish_plain(rgb, plain, w, h, "", Some(stats));
     let g = Arc::new(g);
-    *e.base.lock().unwrap() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: g.clone(), post: g, post_sig: post_sig(&sc), w, h }));
+    *e.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: g.clone(), post: g, post_sig: post_sig(&sc), w, h }));
     Ok(())
 }
 
@@ -863,7 +864,7 @@ fn preview(e: &Inner, sc: &Scene, cancel: &(dyn Fn() -> bool + Sync)) -> Result<
         e.publish_plain(rgb, plain, pw, ph, "", None);
         if div == 1 {
             let g = Arc::new(g);
-            *e.base.lock().unwrap() = Some(Arc::new(Base { scene: ps.clone(), params: p, raw: g.clone(), post: g, post_sig: post_sig(&ps), w: pw, h: ph }));
+            *e.base.locked() = Some(Arc::new(Base { scene: ps.clone(), params: p, raw: g.clone(), post: g, post_sig: post_sig(&ps), w: pw, h: ph }));
         }
     }
     Ok(())
@@ -879,14 +880,14 @@ fn stage_progress(e: &Inner) -> impl Fn(usize, usize) + Sync + '_ {
 /// the bar from zero.
 fn stage_namer(e: &Inner) -> impl Fn(&str) + Sync + '_ {
     move |name| {
-        e.out.lock().unwrap().stage = name.to_string();
+        e.out.locked().stage = name.to_string();
         e.progress.store(0, Ordering::Relaxed);
     }
 }
 
 fn repaint(e: &Inner, sc: &Scene, opts: (bool, Option<PostStep>, u8), cancel: &(dyn Fn() -> bool + Sync)) -> Result<(), String> {
     let (reflections, step, hs_off) = opts;
-    let Some(b) = e.base.lock().unwrap().clone() else { return Ok(()) };
+    let Some(b) = e.base.locked().clone() else { return Ok(()) };
     let mut target = sc.clone();
     target.width = b.scene.width;
     target.height = b.scene.height;
@@ -952,7 +953,7 @@ fn repaint(e: &Inner, sc: &Scene, opts: (bool, Option<PostStep>, u8), cancel: &(
         return Err("cancelled".into());
     }
     e.publish_plain(rgb, plain, b.w, b.h, "", None);
-    let mut g = e.base.lock().unwrap();
+    let mut g = e.base.locked();
     // (the buffers painted on meanwhile ("Paint on image") are kept: their
     // own repaint follows)
     let (raw, post) = match g.as_ref() {
@@ -992,12 +993,12 @@ fn steps_on_kept(old: &PostSig, new: &PostSig, forced: Option<PostStep>) -> Opti
 /// (all its passes) once more on the picture shown, with the depths of
 /// the kept G-buffer, so that it accumulates with each press.
 fn depth_of_field(e: &Inner, d: &crate::dof::DofParams, cancel: &(dyn Fn() -> bool + Sync)) -> Result<(), String> {
-    let Some(b) = e.base.lock().unwrap().clone() else { return Ok(()) };
+    let Some(b) = e.base.locked().clone() else { return Ok(()) };
     if b.params.slice_2d != 0 {
         return Ok(());
     }
     let (w, h) = (b.w, b.h);
-    let cur = e.out.lock().unwrap().rgb.clone().filter(|c| c.len() == w * h * 3);
+    let cur = e.out.locked().rgb.clone().filter(|c| c.len() == w * h * 3);
     let mut rgb = match cur {
         Some(c) => (*c).clone(),
         None => crate::render::paint_preview(&b.scene, &b.params, &b.post),
@@ -1018,7 +1019,7 @@ fn depth_of_field(e: &Inner, d: &crate::dof::DofParams, cancel: &(dyn Fn() -> bo
 /// as the calculation). The kept buffers and their signature stay, so a
 /// following `Repaint` knows what to calculate again.
 fn relight(e: &Inner, sc: &Scene, hs_off: u8) -> Result<(), String> {
-    let Some(b) = e.base.lock().unwrap().clone() else { return Ok(()) };
+    let Some(b) = e.base.locked().clone() else { return Ok(()) };
     let mut target = sc.clone();
     target.width = b.scene.width;
     target.height = b.scene.height;
@@ -1032,7 +1033,7 @@ fn relight(e: &Inner, sc: &Scene, hs_off: u8) -> Result<(), String> {
     }
     let rgb = crate::render::paint_preview(&paint, &b.params, &b.post);
     e.publish(rgb, b.w, b.h, "", None);
-    let mut g = e.base.lock().unwrap();
+    let mut g = e.base.locked();
     let (raw, post, post_sig) = match g.as_ref() {
         Some(cur) => (cur.raw.clone(), cur.post.clone(), cur.post_sig.clone()),
         None => (b.raw.clone(), b.post.clone(), b.post_sig.clone()),
@@ -1050,7 +1051,7 @@ fn relight(e: &Inner, sc: &Scene, hs_off: u8) -> Result<(), String> {
 /// (`PaintRows`); the rest of the image stays as it is.
 fn recalc(e: &Inner, sc: &Scene, rect: [i32; 4], div: f64, nearer: bool, opts: (bool, bool, bool), cancel: &(dyn Fn() -> bool + Sync)) -> Result<(), String> {
     let (hs, deao, keep_as) = opts;
-    let b = e.base.lock().unwrap().clone().ok_or_else(|| tr("@MB:CalculateTheImageFirstCalculate3D"))?;
+    let b = e.base.locked().clone().ok_or_else(|| tr("@MB:CalculateTheImageFirstCalculate3D"))?;
     if sc.width != b.scene.width || sc.height != b.scene.height {
         return Err(tr("@MB:TheImageSizeChangedCalculateThe"));
     }
@@ -1111,7 +1112,7 @@ fn recalc(e: &Inner, sc: &Scene, rect: [i32; 4], div: f64, nearer: bool, opts: (
     // PaintRows: the rows of the selection, the whole width
     let rows = rect_params(&p, [0, y0, w, rh]);
     let painted = crate::render::paint_preview(&target, &rows, &post[y0 * w..(y0 + rh) * w]);
-    let cur = e.out.lock().unwrap().rgb.clone().filter(|c| c.len() == w * h * 3);
+    let cur = e.out.locked().rgb.clone().filter(|c| c.len() == w * h * 3);
     let mut rgb = match cur {
         Some(c) => (*c).clone(),
         None => crate::render::paint_preview(&target, &p, &post),
@@ -1120,7 +1121,7 @@ fn recalc(e: &Inner, sc: &Scene, rect: [i32; 4], div: f64, nearer: bool, opts: (
     e.publish(rgb, w, h, "", None);
     // (post_sig stays the old one: outside the selection the processing is
     // the old image's)
-    *e.base.lock().unwrap() = Some(Arc::new(Base { scene: target.clone(), params: p, raw: Arc::new(raw), post: Arc::new(post), post_sig: b.post_sig.clone(), w, h }));
+    *e.base.locked() = Some(Arc::new(Base { scene: target.clone(), params: p, raw: Arc::new(raw), post: Arc::new(post), post_sig: b.post_sig.clone(), w, h }));
     Ok(())
 }
 
@@ -1129,7 +1130,7 @@ fn recalc(e: &Inner, sc: &Scene, rect: [i32; 4], div: f64, nearer: bool, opts: (
 /// image stays as it is (the depth of field needs the whole image: not
 /// here).
 fn reflect_sel(e: &Inner, sc: &Scene, rect: [i32; 4], cancel: &(dyn Fn() -> bool + Sync)) -> Result<(), String> {
-    let b = e.base.lock().unwrap().clone().ok_or_else(|| tr("@MB:CalculateTheImageFirstCalculate3D"))?;
+    let b = e.base.locked().clone().ok_or_else(|| tr("@MB:CalculateTheImageFirstCalculate3D"))?;
     let (w, h) = (b.w, b.h);
     let r = clip_rect(rect, w, h).ok_or_else(|| tr("@MB:TheSelectionMustBeBiggerThanLower"))?;
     let (progress, stage) = (stage_progress(e), stage_namer(e));
@@ -1148,7 +1149,7 @@ fn reflect_sel(e: &Inner, sc: &Scene, rect: [i32; 4], cancel: &(dyn Fn() -> bool
     if cancel() {
         return Err("cancelled".into());
     }
-    let cur = e.out.lock().unwrap().rgb.clone().filter(|c| c.len() == w * h * 3);
+    let cur = e.out.locked().rgb.clone().filter(|c| c.len() == w * h * 3);
     let mut rgb = match cur {
         Some(c) => (*c).clone(),
         None => crate::render::paint_preview(&target, &b.params, &b.post),

@@ -1,5 +1,6 @@
 //! MutaGen (mutagen/MutaGenGUI.pas): random variations of the parameters.
 
+use crate::sync::Locked;
 use super::Mb3d;
 use crate::mutagen::{Member, MutationConfig, Rng, TREE};
 use crate::vcl::bitmap::Bitmap;
@@ -328,7 +329,7 @@ fn create_mutation(app: &mut Mb3d, ui: &mut Ui, from: usize, root_only: bool) {
     let cancel = app.mutagen.cancel.clone();
     cancel.store(false, Ordering::SeqCst);
     let shared = app.mutagen.shared.clone();
-    *shared.lock().unwrap() = Shared::default();
+    *shared.locked() = Shared::default();
     let waker = ui.waker();
     std::thread::spawn(move || {
         let mut rng = Rng::from_time();
@@ -366,14 +367,14 @@ fn create_mutation(app: &mut Mb3d, ui: &mut Ui, from: usize, root_only: bool) {
                     }
                 };
                 out.push(m.clone());
-                shared.lock().unwrap().done.push((i, m, img));
+                shared.locked().done.push((i, m, img));
                 if let Some(w) = &waker {
                     w.wake();
                 }
             }
             Ok(())
         })();
-        let mut s = shared.lock().unwrap();
+        let mut s = shared.locked();
         s.finished = true;
         if let Err(e) = r {
             s.error = e;
@@ -394,7 +395,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         return;
     }
     let (done, finished, err) = {
-        let mut s = app.mutagen.shared.lock().unwrap();
+        let mut s = app.mutagen.shared.locked();
         (std::mem::take(&mut s.done), s.finished, std::mem::take(&mut s.error))
     };
     let gi = app.mutagen.generations.len() - 1;

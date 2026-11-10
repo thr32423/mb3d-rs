@@ -9,6 +9,7 @@
 //! middle, `2.2 / (zoom * scale)` scene units wide, turned by its own three
 //! angles (not the camera), and the mesh is centred and scaled to size 1.
 
+use crate::sync::Locked;
 use crate::calc::{CalcParams, Marcher};
 use crate::math::{normalise_matrix_to, Mat3, Vec3};
 use crate::mclut::{AMBIGUOUS_CASES, FACES_AMBIGUOUS, FACES_STANDARD};
@@ -333,7 +334,7 @@ pub fn trace_with(
                                 smp.w = smp.w.min(0.0) - 100.0;
                             }
                         }
-                        rows.lock().unwrap()[j * side..(j + 1) * side].copy_from_slice(&buf);
+                        rows.locked()[j * side..(j + 1) * side].copy_from_slice(&buf);
                         j += threads;
                     }
                 });
@@ -492,13 +493,13 @@ impl MeshCheckpoint {
                 k
             })
             .collect();
-        *self.written.lock().unwrap() = (nv, nf, file);
+        *self.written.locked() = (nv, nf, file);
         Some((fb, samples, plane))
     }
 
     /// Keeps the state after the layers before plane `plane` (of `n`).
     fn save(&self, fb: &FaceBuilder, a: &[Sample], plane: usize, n: usize) {
-        let mut w = self.written.lock().unwrap();
+        let mut w = self.written.locked();
         let (nv, nf) = (fb.mesh.vertices.len(), fb.mesh.faces.len());
         let append = |name: &str, from: usize, data: Vec<u8>| -> std::io::Result<()> {
             let f = std::fs::OpenOptions::new().create(true).write(true).truncate(false).open(self.store.extra_path(name))?;

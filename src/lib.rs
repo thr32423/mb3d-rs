@@ -105,6 +105,7 @@ pub mod texture;
 pub mod ssao;
 pub mod ssao15;
 pub mod swarm;
+pub mod sync;
 pub mod video;
 pub mod vr;
 pub mod vollight;

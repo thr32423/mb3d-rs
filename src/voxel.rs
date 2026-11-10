@@ -9,6 +9,7 @@
 //! point belongs to the object when its distance estimate is below the DE
 //! threshold (default) or when the iterations reach the maximum.
 
+use crate::sync::Locked;
 use crate::calc::{CalcParams, Marcher};
 use crate::math::{normalise_matrix_to, Mat3, Vec3, IDENTITY3};
 use crate::scene::Scene;
@@ -204,7 +205,7 @@ pub fn calc_slice(
                     for (x, b) in buf.iter_mut().enumerate() {
                         *b = voxel(&mut m, p, vp, grid.pos(x as f64, y as f64, nr as f64));
                     }
-                    rows.lock().unwrap()[y * w..(y + 1) * w].copy_from_slice(&buf);
+                    rows.locked()[y * w..(y + 1) * w].copy_from_slice(&buf);
                     y += threads;
                 }
             });

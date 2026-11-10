@@ -4,6 +4,7 @@
 //! (`crate::noise`), which renders the middle of the picture under three
 //! step settings and says which gives the fewest specks.
 
+use crate::sync::Locked;
 use super::util::{fts_single, ptf};
 use super::{Mb3d, Ui};
 use crate::noise::Trial;
@@ -86,7 +87,7 @@ fn run(app: &mut Mb3d, ui: &mut Ui) {
     app.steps.running = true;
     app.steps.trials.clear();
     app.steps.cancel.store(false, Ordering::Relaxed);
-    *app.steps.result.lock().unwrap() = None;
+    *app.steps.result.locked() = None;
     ui.set_text(F, "ResultMemo", &tr("@MB:RunningTheNoiseDoctor"));
     ui.set_enabled(F, "RunBtn", false);
     ui.set_enabled(F, "ApplyBtn", false);
@@ -95,7 +96,7 @@ fn run(app: &mut Mb3d, ui: &mut Ui) {
     std::thread::spawn(move || {
         let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| crate::noise::diagnose(&sc, &|| cancel.load(Ordering::Relaxed))))
             .unwrap_or_else(|_| Err(tr("@MB:TheCalculationFailedLower")));
-        *slot.lock().unwrap() = Some(r);
+        *slot.locked() = Some(r);
     });
     ui.set_timer(F, "Timer1", true);
 }
@@ -109,7 +110,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
 
 /// The doctor's result, when it is there.
 fn poll(app: &mut Mb3d, ui: &mut Ui) {
-    let done = app.steps.result.lock().unwrap().take();
+    let done = app.steps.result.locked().take();
     let Some(r) = done else { return };
     ui.set_timer(F, "Timer1", false);
     app.steps.running = false;

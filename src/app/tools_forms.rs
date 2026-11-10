@@ -1,5 +1,6 @@
 //! Batch processing (BatchForm.pas) and big renders in tiles (Tiling.pas).
 
+use crate::sync::Locked;
 use crate::vcl::lang::{tr, trf};
 use super::eta::ItemsLeft;
 use super::util::{fts, left_str, pti, ptf, smooth_shown, Shown};
@@ -769,7 +770,7 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
     app.tiling.cancel.store(false, Ordering::SeqCst);
     app.tiling.saved.store(0, Ordering::SeqCst);
     app.tiling.shown_saved = 0;
-    *app.tiling.status.lock().unwrap() = String::new();
+    *app.tiling.status.locked() = String::new();
     app.tiling.tile_start = Instant::now();
     let cancel = app.tiling.cancel.clone();
     super::main_form::disable_buttons(app, ui);
@@ -830,7 +831,7 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
                     Ok(())
                 };
                 let report = |st: &str| {
-                    *status.lock().unwrap() = st.to_string();
+                    *status.locked() = st.to_string();
                     if let Some(w) = &waker {
                         w.wake();
                     }
@@ -838,7 +839,7 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
                 crate::swarm::run_tiles_files(&dir, &full, d.cols as u32, d.rows as u32, Some(&subset), &opts, &report, None, &collect)?;
                 Ok(last)
             })();
-            *job.lock().unwrap() = Some(r);
+            *job.locked() = Some(r);
             if let Some(w) = waker {
                 w.wake();
             }
@@ -875,7 +876,7 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
             }
             Ok((x, y))
         })();
-        *job.lock().unwrap() = Some(r);
+        *job.locked() = Some(r);
         if let Some(w) = waker {
             w.wake();
         }
@@ -901,7 +902,7 @@ pub fn tiling_idle(app: &mut Mb3d, ui: &mut Ui) {
         app.tiling.shown_saved = saved;
         scan_project(app, ui);
     }
-    let st = app.tiling.status.lock().unwrap().clone();
+    let st = app.tiling.status.locked().clone();
     if !st.is_empty() && !app.tiling.cancel.load(Ordering::SeqCst) {
         let text = if saved == 1 { trf("@MB:TileSaved", &[&saved, &st]) } else { trf("@MB:TilesSaved", &[&saved, &st]) };
         if ui.caption(MAIN, "Label6") != text {
@@ -922,7 +923,7 @@ pub fn tiling_idle(app: &mut Mb3d, ui: &mut Ui) {
             ui.set_caption(MAIN, "Label6", &text);
         }
     }
-    let Some(r) = app.tiling.job.lock().unwrap().take() else { return };
+    let Some(r) = app.tiling.job.locked().take() else { return };
     app.tiling.running = false;
     app.tiling.items.done(app.tiling.tile_start.elapsed().as_secs_f64());
     super::main_form::enable_buttons(app, ui);

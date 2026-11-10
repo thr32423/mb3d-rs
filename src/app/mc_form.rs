@@ -1,6 +1,7 @@
 //! The Monte Carlo rendering window (MonteCarloForm.pas) and the colour
 //! scaling question (ColorOptionForm.pas).
 
+use crate::sync::Locked;
 use crate::vcl::lang::{tr, trf};
 use super::light_form::short_float_str;
 use super::eta::{ItemsLeft, Pace};
@@ -526,7 +527,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
     app.mc.stop.store(false, Ordering::SeqCst);
     app.mc.progress.store(0, Ordering::SeqCst);
     app.mc.total.store(0, Ordering::SeqCst);
-    *app.mc.shared.lock().unwrap() = Shared::default();
+    *app.mc.shared.locked() = Shared::default();
     app.mc.seen_ver = 0;
     app.mc.seen_live = 0;
     app.mc.running = true;
@@ -578,7 +579,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
         ui.set_caption(F, "Label8", &if rays > 0.0 { trf("@MB:SwarmBlocksOfRaysPixel", &[&units, &format!("{rays:.0}")]) } else { tr("@MB:SwarmABlockOnEveryComputer") });
         std::thread::spawn(move || {
             let report = |st: &str| {
-                shared.lock().unwrap().status = st.to_string();
+                shared.locked().status = st.to_string();
                 if let Some(w) = &waker {
                     w.wake();
                 }
@@ -586,7 +587,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
             let opts = crate::swarm::RunOptions { name, threads: 0, quiet: true, keep: false, cancel: Some(cancel_fn), resume: crate::checkpoint::Policy::Continue };
             // the blocks merged so far, shown as the running pass is
             let live = |img: McImage| {
-                let mut s = shared.lock().unwrap();
+                let mut s = shared.locked();
                 s.live = Some(Arc::new(img));
                 s.live_ver += 1;
                 drop(s);
@@ -595,7 +596,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
                 }
             };
             let r = crate::swarm::run_montecarlo_live(&dir, &p, units, rays, 0, 0.0, &opts, &report, Some(&live));
-            let mut s = shared.lock().unwrap();
+            let mut s = shared.locked();
             match r {
                 Ok(merged) => {
                     s.img = Some(Arc::new(merged));
@@ -626,18 +627,18 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
             };
             let cancel = || stop.load(Ordering::Relaxed);
             {
-                let mut s = shared.lock().unwrap();
+                let mut s = shared.locked();
                 s.rows.clear();
                 s.rows_reset = true;
             }
             let row = |y: usize, recs: &[McRecord]| {
-                shared.lock().unwrap().rows.push((y, recs.to_vec()));
+                shared.locked().rows.push((y, recs.to_vec()));
                 if let Some(wk) = &waker {
                     wk.wake();
                 }
             };
             let r = crate::mc::pass_with(&p, &mut img, 0, &pr, &cancel, Some(&row), ck.as_ref(), Some(&start.recs));
-            let mut s = shared.lock().unwrap();
+            let mut s = shared.locked();
             // the image of the pass to the window (the next one starts from
             // it), and the image before it
             let mut before = None;
@@ -766,7 +767,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         ui.cm(F, "ProgressBar1").position = pr;
     }
     let (ver, finished, err, img, live, rows, status) = {
-        let mut s = app.mc.shared.lock().unwrap();
+        let mut s = app.mc.shared.locked();
         let img = if s.ver != app.mc.seen_ver { s.img.take() } else { None };
         // the lines of the running pass (or the swarm's merged blocks), a
         // few times a second

@@ -10,6 +10,8 @@
 //! `SRreflectioncount` times.  The specular colour of the palette is the
 //! amount of reflected light, its alpha the transparency.
 
+#[cfg(feature = "gpu")]
+use crate::sync::Locked;
 use crate::calc::{CalcParams, Marcher};
 use crate::gbuffer::SiLight;
 use crate::lighting::{LightVals, PaintCamera, Plv, Sample, ShadeOpts};
@@ -2395,7 +2397,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
                         let mut out = Vec::new();
                         loop {
                             let (lo, cur) = {
-                                let mut st = sh.state.lock().unwrap();
+                                let mut st = sh.state.locked();
                                 let (lim, cur) = *st;
                                 if cur > lim {
                                     st.1 = cur.saturating_sub(PIECE).max(lim);

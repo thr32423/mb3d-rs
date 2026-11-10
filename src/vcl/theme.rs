@@ -4,6 +4,7 @@
 //! (MB3D's default VCL style "Glossy": dark, glossy buttons) or `flat` (the
 //! system look, MB3D's "Themes off").
 
+use crate::sync::RwLocked;
 use super::canvas::{mix, Canvas, Rect};
 use std::collections::HashMap;
 use std::sync::RwLock;
@@ -84,13 +85,13 @@ fn theme_dirs() -> Vec<std::path::PathBuf> {
 /// The registry, read from the `Themes` folder at the first use.
 fn registry() -> std::sync::RwLockReadGuard<'static, Vec<&'static ThemeData>> {
     {
-        let r = REGISTRY.read().unwrap();
+        let r = REGISTRY.read_locked();
         if !r.is_empty() {
             return r;
         }
     }
     {
-        let mut w = REGISTRY.write().unwrap();
+        let mut w = REGISTRY.write_locked();
         if w.is_empty() {
             let (themes, errors) = load_dirs(&theme_dirs());
             for e in errors {
@@ -99,7 +100,7 @@ fn registry() -> std::sync::RwLockReadGuard<'static, Vec<&'static ThemeData>> {
             *w = themes;
         }
     }
-    REGISTRY.read().unwrap()
+    REGISTRY.read_locked()
 }
 
 fn data(s: Style) -> &'static ThemeData {

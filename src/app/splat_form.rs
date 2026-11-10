@@ -3,6 +3,7 @@
 //! scene exported as Gaussian splats (`crate::splat`), calculated in the
 //! background with a progress bar and a Stop button.
 
+use crate::sync::Locked;
 use super::Mb3d;
 use crate::splat::{Around, SplatParams};
 use crate::vcl::lang::{tr, trf};
@@ -121,7 +122,7 @@ fn start(app: &mut Mb3d, ui: &mut Ui) {
             crate::splat::write_ply(&out, &r, sp.degree)?;
             Ok((r.splats.len(), out))
         });
-        *result.lock().unwrap() = Some(r);
+        *result.locked() = Some(r);
         if let Some(w) = &waker {
             w.wake();
         }
@@ -135,7 +136,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     let v = app.splat.view.load(Ordering::Relaxed);
     let n = app.splat.views.max(1);
     ui.cm(F, "ProgressBar").position = (v.min(n) * 1000 / n) as i64;
-    let Some(r) = app.splat.result.lock().unwrap().take() else {
+    let Some(r) = app.splat.result.locked().take() else {
         ui.set_caption(F, "StatusLabel", &trf("@MB:DirectionOf", &[&(v + 1).min(n), &n]));
         return;
     };

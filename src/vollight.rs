@@ -8,6 +8,7 @@
 //! global light.  During the main ray march the lit fraction of each step is
 //! summed up; the painter shows it with the dynamic fog colours.
 
+use crate::sync::Locked;
 use crate::calc::{CalcParams, Marcher};
 use crate::math::*;
 
@@ -253,7 +254,7 @@ pub fn build(
             sc.spawn(move || crate::gpu::as_card(card, || {
                 use std::sync::atomic::Ordering::SeqCst;
                 let left = || {
-                    let f = free.lock().unwrap();
+                    let f = free.locked();
                     f.0 < f.1
                 };
                 while !ready.load(SeqCst) && left() {
@@ -261,7 +262,7 @@ pub fn build(
                 }
                 let r = left().then(|| {
                     let claim = |want: usize| {
-                        let mut f = free.lock().unwrap();
+                        let mut f = free.locked();
                         f.0 = f.0.max(want.min(f.1));
                         f.0
                     };
@@ -280,7 +281,7 @@ pub fn build(
                     let mut out = Vec::new();
                     loop {
                         let (lo, hi) = {
-                            let mut f = free.lock().unwrap();
+                            let mut f = free.locked();
                             let hi = f.1;
                             f.1 = hi.saturating_sub(PIECE).max(f.0);
                             (f.1, hi)
@@ -311,7 +312,7 @@ pub fn build(
             card = t.join().unwrap();
         }
     });
-    let n_card = free.lock().unwrap().0;
+    let n_card = free.locked().0;
     match card {
         Some(Ok(v)) => data[..n_card].copy_from_slice(&v[..n_card]),
         Some(Err(e)) => {

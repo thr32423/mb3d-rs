@@ -1,5 +1,6 @@
 //! Command line front end: `mb3d [options] [scene.m3s]`
 
+use mb3d::sync::Locked;
 use mb3d::formulas::Formula;
 use mb3d::scene::Scene;
 use std::io::Write;
@@ -1575,10 +1576,10 @@ fn animate(argv: &[String]) -> Result<(), String> {
     let finished = std::sync::atomic::AtomicUsize::new(0);
     let progress = |f: usize, d: usize, t: usize| {
         if !quiet && tty && (d % 8 == 0 || d == t) {
-            let secs = started.lock().unwrap().entry(f).or_insert_with(Instant::now).elapsed().as_secs_f64();
+            let secs = started.locked().entry(f).or_insert_with(Instant::now).elapsed().as_secs_f64();
             let frac = d as f64 / t.max(1) as f64;
             let after = total.saturating_sub(finished.load(std::sync::atomic::Ordering::Relaxed) + at_once).div_ceil(at_once);
-            let left = item_left(&items_m.lock().unwrap(), frac, secs, after).map(|l| format!(" · {}", left_str(l))).unwrap_or_default();
+            let left = item_left(&items_m.locked(), frac, secs, after).map(|l| format!(" · {}", left_str(l))).unwrap_or_default();
             eprint!("\r  {} {:5.1}%{left}          ", label(f), 100.0 * frac);
             let _ = std::io::stderr().flush();
         }
@@ -1589,7 +1590,7 @@ fn animate(argv: &[String]) -> Result<(), String> {
         match r {
             Ok(mb3d::frames::FrameResult::Written { path, seconds, continued }) => {
                 done += 1;
-                let mut items = items_m.lock().unwrap();
+                let mut items = items_m.locked();
                 items.done(seconds);
                 if !quiet {
                     let left = items.per_item().filter(|_| after > 0).map(|p| format!("  · {}", left_str(p * after.div_ceil(at_once) as f64))).unwrap_or_default();

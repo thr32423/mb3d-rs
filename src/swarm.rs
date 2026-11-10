@@ -2504,6 +2504,7 @@ mod tests {
     }
 
     use super::*;
+    use crate::sync::Locked;
 
     fn temp(name: &str) -> PathBuf {
         let d = std::env::temp_dir().join(format!("mb3d_swarm_{name}_{}", std::process::id()));
@@ -2879,11 +2880,11 @@ mod tests {
             let (tw, th, _) = crate::m3p::gbuffer_from_m3i(&std::fs::read(m3i).map_err(|e| e.to_string())?).ok_or("no buffer")?;
             let img = crate::image::load(png)?;
             assert_eq!((img.width, img.height), (tw, th));
-            got.lock().unwrap().push((k, tw, th));
+            got.locked().push((k, tw, th));
             Ok(())
         };
         run_tiles_files(&swarm, &s, 2, 2, Some(&[3, 1, 9]), &RunOptions { name: "owner".into(), quiet: true, ..Default::default() }, &|_| {}, None, &collect).unwrap();
-        assert_eq!(*got.lock().unwrap(), vec![(3, 12, 9), (1, 12, 9)]);
+        assert_eq!(*got.locked(), vec![(3, 12, 9), (1, 12, 9)]);
         // nothing else was rendered, the job is gone (not kept)
         assert!(jobs(&swarm).is_empty());
         assert!(run_tiles_files(&swarm, &s, 2, 2, Some(&[7]), &RunOptions { name: "owner".into(), quiet: true, ..Default::default() }, &|_| {}, None, &collect).is_err());
@@ -2896,7 +2897,7 @@ mod tests {
         let swarm = d.join("swarm");
         let s = tiny_scene();
         let seen = Mutex::new(Vec::new());
-        let live = |m: McImage| seen.lock().unwrap().push(m.passes);
+        let live = |m: McImage| seen.locked().push(m.passes);
         let img = run_montecarlo_live(&swarm, &s, 3, 1000.0, 1, 0.0, &RunOptions { name: "owner".into(), quiet: true, ..Default::default() }, &|_| {}, Some(&live)).unwrap();
         assert_eq!(img.passes, 3);
         let seen = seen.into_inner().unwrap();

@@ -4,6 +4,7 @@
 //! camera, the mouse look mode, the adjustment panel (julia, formula, 4D
 //! rotation and other values) and sending the view back to the main window.
 
+use crate::sync::Locked;
 use crate::vcl::lang::{tr, trf};
 use super::engine::{Engine, Job};
 use super::util::{fts, fts_single, parse_float, pti, ptf};
@@ -313,7 +314,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         }
     }
     let (ver, rgb, w, h, err) = {
-        let o = app.navi.eng.0.out.lock().unwrap();
+        let o = app.navi.eng.0.out.locked();
         (o.ver, o.rgb.clone(), o.w, o.h, o.error.clone())
     };
     if ver == app.navi.ver {

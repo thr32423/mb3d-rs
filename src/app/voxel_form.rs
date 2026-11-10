@@ -1,5 +1,6 @@
 //! The voxel export window (VoxelExport.pas): PNG slices of the object.
 
+use crate::sync::Locked;
 use crate::vcl::lang::{tr, trf};
 use super::eta::ItemsLeft;
 use super::util::{fts, fts_single, left_str, parse_float, pti, smooth_shown, Shown};
@@ -278,7 +279,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
                         }
                     }
                 }
-                let mut sh = shared.lock().unwrap();
+                let mut sh = shared.locked();
                 sh.preview = Some(bmp.clone());
                 sh.preview_changed = true;
                 drop(sh);
@@ -288,7 +289,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
             }
             Ok(())
         })();
-        let mut sh = shared.lock().unwrap();
+        let mut sh = shared.locked();
         if let Err(e) = r {
             sh.error = e;
         }
@@ -326,7 +327,7 @@ fn start_slices(app: &mut Mb3d, ui: &mut Ui) {
             // (a stopped export continues with the slices it has not written)
             let slice = |nr: u32, n: u32, on: Option<&[bool]>| {
                 if let Some(on) = on {
-                    shared.lock().unwrap().slice = Some((nr, n, on.to_vec()));
+                    shared.locked().slice = Some((nr, n, on.to_vec()));
                     if let Some(w) = &waker {
                         w.wake();
                     }
@@ -338,7 +339,7 @@ fn start_slices(app: &mut Mb3d, ui: &mut Ui) {
                 Err(e) => Err(e),
             }
         })();
-        let mut sh = shared.lock().unwrap();
+        let mut sh = shared.locked();
         if let Err(e) = r {
             sh.error = e;
         }
@@ -355,7 +356,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         return;
     }
     let (slice, preview, done, err) = {
-        let mut sh = app.voxel.shared.lock().unwrap();
+        let mut sh = app.voxel.shared.locked();
         let pv = if sh.preview_changed {
             sh.preview_changed = false;
             sh.preview.clone()

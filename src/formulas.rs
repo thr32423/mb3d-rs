@@ -8,6 +8,7 @@
 //! `j[3]` being the 4D constant `J4`, and `rout` is the squared vector length
 //! after the previous counted iteration (`TIteration3D.Rout`).
 
+use crate::sync::Locked;
 use crate::custom::CustomFormula;
 use std::fmt;
 use std::path::{Path, PathBuf};
@@ -108,7 +109,7 @@ fn installed_formula_dir() -> Option<PathBuf> {
 pub fn note_scene_file(path: &Path) {
     let path = std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
     let Some(dir) = path.parent() else { return };
-    let mut found = scene_formula_dirs().lock().unwrap();
+    let mut found = scene_formula_dirs().locked();
     for c in [Some(dir.join("M3Formulas")), dir.parent().map(|p| p.join("M3Formulas"))].into_iter().flatten() {
         if c.is_dir() && !found.contains(&c) {
             found.push(c);
@@ -118,8 +119,8 @@ pub fn note_scene_file(path: &Path) {
 
 /// The formula search directories.
 pub fn formula_dir_list() -> Vec<PathBuf> {
-    let mut v = formula_dirs().lock().unwrap().clone();
-    v.extend(scene_formula_dirs().lock().unwrap().iter().cloned());
+    let mut v = formula_dirs().locked().clone();
+    v.extend(scene_formula_dirs().locked().iter().cloned());
     if let Some(d) = installed_formula_dir() {
         if d.is_dir() && !v.contains(&d) {
             v.push(d);
@@ -173,7 +174,7 @@ pub fn list_custom_with_de() -> Vec<(String, i32)> {
 
 /// Adds a directory that is searched for `.m3f` files (searched first).
 pub fn add_formula_dir(dir: PathBuf) {
-    formula_dirs().lock().unwrap().insert(0, dir);
+    formula_dirs().locked().insert(0, dir);
 }
 
 /// Loads `<name>.m3f` from the formula directories (cached).
@@ -184,7 +185,7 @@ fn custom_cache() -> &'static Mutex<Vec<Arc<crate::m3f::M3f>>> {
 
 /// Drops a formula from the cache (after it was edited and saved).
 pub fn forget_custom(name: &str) {
-    custom_cache().lock().unwrap().retain(|f| !f.name.eq_ignore_ascii_case(name.trim()));
+    custom_cache().locked().retain(|f| !f.name.eq_ignore_ascii_case(name.trim()));
 }
 
 /// The file of a custom formula, if found in the formula directories.
@@ -194,7 +195,7 @@ pub fn custom_path(name: &str) -> Option<PathBuf> {
 
 pub fn load_custom(name: &str) -> Result<Arc<crate::m3f::M3f>, String> {
     let cache = custom_cache();
-    if let Some(f) = cache.lock().unwrap().iter().find(|f| f.name.eq_ignore_ascii_case(name.trim())) {
+    if let Some(f) = cache.locked().iter().find(|f| f.name.eq_ignore_ascii_case(name.trim())) {
         return Ok(f.clone());
     }
     let dirs = formula_dir_list();
@@ -205,7 +206,7 @@ pub fn load_custom(name: &str) -> Result<Arc<crate::m3f::M3f>, String> {
         )
     })?;
     let f = Arc::new(crate::m3f::M3f::load(&path)?);
-    cache.lock().unwrap().push(f.clone());
+    cache.locked().push(f.clone());
     Ok(f)
 }
 

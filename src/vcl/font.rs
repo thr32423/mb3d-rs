@@ -6,6 +6,7 @@
 //! time. A line with right-to-left letters (Arabic, Urdu, Hebrew) is put in
 //! display order by the Unicode bidirectional algorithm (unicode-bidi).
 
+use crate::sync::RwLocked;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
@@ -150,7 +151,7 @@ pub fn load_font(data: Vec<u8>) -> Option<Arc<FontFile>> {
 
 /// Sets the fallback fonts, in the order they are searched.
 pub fn set_fallbacks(fonts: Vec<Arc<FontFile>>) {
-    let mut w = FALLBACKS.write().unwrap();
+    let mut w = FALLBACKS.write_locked();
     w.0 += 1;
     w.1 = fonts;
 }
@@ -201,7 +202,7 @@ fn glyph_of(face: Face, px: f32, key: GlyphKey) -> std::rc::Rc<Glyph> {
     let ckey = (face, (px * 16.0).round() as u32, key);
     FONTS.with(|f| {
         let mut f = f.borrow_mut();
-        let fallbacks = FALLBACKS.read().unwrap();
+        let fallbacks = FALLBACKS.read_locked();
         f.follow(fallbacks.0);
         if let Some(g) = f.glyphs.get(&ckey) {
             return g.clone();
@@ -285,7 +286,7 @@ fn shape(run: &str, rtl: bool) -> Option<(usize, Shaped, f32)> {
     let first = run.chars().find(|&c| c != '\u{200C}' && c != '\u{200D}')?;
     FONTS.with(|f| {
         let mut f = f.borrow_mut();
-        let fallbacks = FALLBACKS.read().unwrap();
+        let fallbacks = FALLBACKS.read_locked();
         f.follow(fallbacks.0);
         // (the first font with all the run's letters, else the first with
         // its first: Urdu's font may lack letters of Arabic)
@@ -485,7 +486,7 @@ pub fn text_width(face: Face, px: f32, text: &str) -> f32 {
     let key = (face, (px * 16.0).round() as u32);
     let known = FONTS.with(|f| {
         let mut f = f.borrow_mut();
-        f.follow(FALLBACKS.read().unwrap().0);
+        f.follow(FALLBACKS.read_locked().0);
         f.widths.get(&key).and_then(|m| m.get(text)).copied()
     });
     if let Some(w) = known {

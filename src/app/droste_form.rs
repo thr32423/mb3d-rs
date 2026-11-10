@@ -5,6 +5,7 @@
 //! drag on it, the radii by the mouse wheel; *Paint now* paints the effect
 //! at full size (a repaint of the finishing).
 
+use crate::sync::Locked;
 use super::util::{fts_single, ptf};
 use super::{Mb3d, Ui};
 use crate::droste::Droste;
@@ -136,7 +137,7 @@ fn reduce(rgb: &[u8], w: usize, h: usize) -> Option<(Vec<f32>, usize, usize)> {
 /// changed; true when there is one.
 fn take_source(app: &mut Mb3d) -> bool {
     let (ver, pic) = {
-        let o = app.eng.0.out.lock().unwrap();
+        let o = app.eng.0.out.locked();
         (o.ver, o.plain.clone().or_else(|| o.rgb.clone()).map(|p| (p, o.w, o.h)))
     };
     if ver != app.droste.ver || app.droste.source.is_none() {
@@ -203,7 +204,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     if !app.droste.open || !ui.has_form(F) {
         return;
     }
-    let ver = app.eng.0.out.lock().unwrap().ver;
+    let ver = app.eng.0.out.locked().ver;
     if ver != app.droste.ver {
         refresh(app, ui);
     }

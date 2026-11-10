@@ -8,6 +8,7 @@
 //! scale occlusion are both found at bounded cost.  The angles are summed on
 //! the last level and stored as `AmbShadow` (0..16383) in the G-buffer.
 
+use crate::sync::Locked;
 use crate::gbuffer::SiLight;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -228,7 +229,7 @@ pub fn ssao24(gbuf: &mut [SiLight], w: usize, h: usize, zc_mul: f64, zcorr: f64,
                     handles.push(sc.spawn(move || {
                         let mut out: Vec<(usize, u16)> = Vec::new();
                         loop {
-                        let Some((k, part)) = jobs.lock().unwrap().next() else { break };
+                        let Some((k, part)) = jobs.locked().next() else { break };
                         let ys = y0 + k * BAND;
                         let n = part.len() / w;
                         for yy in 0..n {

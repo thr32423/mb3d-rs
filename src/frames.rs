@@ -4,6 +4,7 @@
 //! are calculated, so several processes (or machines on a shared folder)
 //! can work on the same animation or list, and the image encoders.
 
+use crate::sync::Locked;
 use crate::anim::{Animation, OutputFormat};
 use crate::gbuffer::SiLight;
 use crate::scene::Scene;
@@ -522,7 +523,7 @@ pub fn render_frames(
                 let on_mine = |f: &mut dyn FnMut()| f();
                 if let Some(&f) = list.get(next.fetch_add(1, SeqCst)) {
                     let fl = std::sync::Arc::new(Flight { frame: f, card: k, started: Instant::now(), finished: AtomicBool::new(false), ok: AtomicBool::new(false), copied: AtomicBool::new(false), copy_won: AtomicBool::new(false) });
-                    flights.lock().unwrap().push(fl.clone());
+                    flights.locked().push(fl.clone());
                     let mut r = None;
                     on_mine(&mut || r = Some(render_frame_to_file(a, f, run, &|d, t| progress(f, d, t), &|| halt() || fl.copy_won.load(SeqCst))));
                     let r = r.unwrap();
@@ -539,7 +540,7 @@ pub fn render_frames(
                     continue;
                 }
                 // no frames left: the frame another card has been on longest
-                let fl = flights.lock().unwrap().iter().filter(|x| x.card != k && !x.finished.load(SeqCst) && !x.copied.load(SeqCst)).min_by_key(|x| x.started).cloned();
+                let fl = flights.locked().iter().filter(|x| x.card != k && !x.finished.load(SeqCst) && !x.copied.load(SeqCst)).min_by_key(|x| x.started).cloned();
                 let Some(fl) = fl else { break };
                 if fl.copied.swap(true, SeqCst) {
                     continue;

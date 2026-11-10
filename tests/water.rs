@@ -67,6 +67,7 @@ fn absorption_fades_what_lies_under_water() {
 /// With transparent water the reflection pass and Monte Carlo run on the
 /// CPU even when the card is on: the pictures are the CPU's (the card's
 /// shader marches no rays under the water).
+#[cfg(feature = "gpu")]
 #[test]
 fn the_card_leaves_transparent_water_to_the_cpu() {
     let s = half_submerged(0.8);

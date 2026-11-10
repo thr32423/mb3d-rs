@@ -9,6 +9,11 @@ on:
   pull_request:
     paths-ignore: ["**.md", "docs/**", "LICENSE"]
 
+# the jobs only read the repository (the Windows build hands the token to
+# curl, where every build script of a dependency can read it too)
+permissions:
+  contents: read
+
 # a newer push to the same branch replaces a run still going
 concurrency:
   group: ci-${{ github.ref }}
@@ -23,9 +28,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.9.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       # Windows: mach-dxcompiler-rs (the DirectX shader compiler) asks the
       # GitHub API with curl, without a token, whether its download is an
       # immutable release; on the shared runners that hits the anonymous
@@ -50,10 +55,12 @@ jobs:
         run: cargo build --release --no-default-features --bin mb3d
       - name: Test
         run: cargo test --release
-      # the GPU prototype must compile everywhere (the runners have no
-      # graphics card: the comparison test skips itself)
-      - name: Build and test with the GPU feature
-        run: cargo test --release --features gpu --lib gpu
+      # the program without its optional parts (no window, no graphics
+      # card, no compiled formulas, no noise filter) builds and passes its
+      # tests too (the step above has the graphics card part; the runners
+      # have no card: its comparison tests skip themselves)
+      - name: Test without the optional parts
+        run: cargo test --release --no-default-features
 
   mb3d-data:
     # renders and compiles against the formulas, maps and parameter files of
@@ -61,15 +68,15 @@ jobs:
     name: test with the MB3D repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           path: mb3d-rs
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: thargor6/mb3d
           path: mb3d
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.9.2
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: mb3d-rs
       - name: Test

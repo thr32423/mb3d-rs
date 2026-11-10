@@ -62,6 +62,7 @@ fn with_dir(f: impl FnOnce()) {
     let d = std::env::temp_dir().join(format!("mb3d-resume-test-{}", std::process::id()));
     std::env::set_var("MB3D_RESUME_DIR", &d);
     std::env::set_var("MB3D_RESUME_KEEP_SECS", "0");
+    #[cfg(feature = "gpu")]
     mb3d::gpu::set_enabled(false);
     f();
     let _ = std::fs::remove_dir_all(&d);

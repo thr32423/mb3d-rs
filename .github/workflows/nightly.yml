@@ -41,15 +41,15 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           path: mb3d-rs
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: thargor6/mb3d
           path: mb3d
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.9.2
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: mb3d-rs
       # (the renderer alone: no window, no graphics card)
@@ -71,13 +71,13 @@ jobs:
           ref=""
           [ -d ref ] && ref="--ref ref"
           ${{ matrix.python }} mb3d-rs/tools/nightly.py --bin "mb3d-rs/target/release/mb3d${{ matrix.exe }}" --mb3d mb3d --out out $ref
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:
           name: results-${{ matrix.system }}
           path: out/results.json
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:
           name: pictures-${{ matrix.system }}
@@ -85,7 +85,7 @@ jobs:
           retention-days: 30
           if-no-files-found: ignore
       # the parameter files of the random variations, to render them again
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:
           name: variations-${{ matrix.system }}
@@ -101,8 +101,8 @@ jobs:
       contents: read
       issues: write
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v8
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           pattern: results-*
           path: results

@@ -13,11 +13,11 @@ on:
         required: false
         default: ""
 
+# the builds only read; the release job writes (the Windows build hands
+# its token to curl, where every build script of a dependency can read it,
+# so that token must not be able to change the repository or its releases)
 permissions:
-  contents: write
-  # build provenance attestations of the archives (gh attestation verify)
-  id-token: write
-  attestations: write
+  contents: read
 
 env:
   # the tag being released (pushed, or given by hand)
@@ -45,22 +45,31 @@ jobs:
           - { os: macos-latest, target: x86_64-apple-darwin, ext: "", asset: macos-x64,
               oidn: oidn-2.5.1.x86_64.macos.tar.gz, oidn_sha: a4341639005a33ce0d944bd7c771ce34de1465be7eb3189b7c3b5b0064429832 }
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ inputs.tag || github.ref }}
+      # a release tag names the version the program says it is
+      - name: Tag and Cargo.toml agree
+        if: startsWith(github.ref, 'refs/tags/') || inputs.tag != ''
+        shell: bash
+        run: |
+          v=$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml | head -1)
+          if [ "v$v" != "$TAG" ]; then
+            echo "::error::the tag is $TAG but Cargo.toml says version $v"; exit 1
+          fi
       # the packaging scripts of this workflow's commit (by hand, the tag's
       # own may be older)
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           path: ci
           sparse-checkout: tools
       # the original Mandelbulb3D folder (formulas, maps, parameters, sources)
       # is shipped next to the program
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: thargor6/mb3d
           path: mb3d-original
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           targets: ${{ matrix.target }}
       # Windows: mach-dxcompiler-rs (the DirectX shader compiler) asks the
@@ -255,28 +264,20 @@ jobs:
             dnf remove -y -q mb3d-rs
             test ! -e /usr/bin/mb3d'
       # one file per artifact (archive: false uploads a single file)
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: runner.os == 'Linux'
         with:
           path: ${{ env.DEB }}
           archive: false
           if-no-files-found: error
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: runner.os == 'Linux'
         with:
           path: ${{ env.RPM }}
           archive: false
           if-no-files-found: error
-      # a signed record that this archive was built here from this commit
-      - uses: actions/attest-build-provenance@v4
-        if: startsWith(github.ref, 'refs/tags/') || inputs.tag != ''
-        with:
-          subject-path: |
-            ${{ env.ARCHIVE }}
-            ${{ env.DEB }}
-            ${{ env.RPM }}
       # uploaded as it is (not zipped again): the artifact is the archive itself
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           path: ${{ env.ARCHIVE }}
           archive: false
@@ -287,12 +288,23 @@ jobs:
     runs-on: ubuntu-latest
     # publish what was built even if one platform failed
     if: ${{ !cancelled() && (startsWith(github.ref, 'refs/tags/') || inputs.tag != '') }}
+    permissions:
+      contents: write
+      # build provenance attestations of the archives (gh attestation verify)
+      id-token: write
+      attestations: write
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           path: dist
           merge-multiple: true
           skip-decompress: true
+      # a signed record that these files were built by this workflow from
+      # this commit (made here, where the token may write, for the files of
+      # this run only: before an existing release's files join them)
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: dist/mb3d-rs*
       # by hand: the release's own files stay, only the missing ones are added
       - name: Files of the existing release
         if: inputs.tag != ''

@@ -51,5 +51,7 @@ step() {
 step "Build" cargo build --release
 step "Build the renderer alone (no desktop application)" cargo build --release --no-default-features --bin mb3d
 step "Test" cargo test --release
-step "Build and test with the GPU feature" cargo test --release --features gpu --lib gpu
+# (a separate target folder: the features differ, and the main one keeps
+# its build)
+step "Test without the optional parts" env CARGO_TARGET_DIR=target/no-default-features cargo test --release --no-default-features
 echo "== all checks passed"

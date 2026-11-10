@@ -56,23 +56,59 @@ name = "Mandelbulb3D"
 path = "src/bin/Mandelbulb3D.rs"
 required-features = ["gui"]
 
+# the examples that need a part of the program left out by
+# --no-default-features (without these lines `cargo test
+# --no-default-features` stops at them)
 [[example]]
-name = "wintest"
+name = "apptest"
+required-features = ["gui", "gpu"]
+
+[[example]]
+name = "clifcheck"
+required-features = ["jit"]
+
+[[example]]
+name = "communityshots"
 required-features = ["gui"]
 
+[[example]]
+name = "dfmtree"
+required-features = ["gui"]
 
-[profile.release]
-opt-level = 3
-lto = true
-codegen-units = 1
-debug = false
+[[example]]
+name = "docshots"
+required-features = ["gui", "gpu"]
+
+[[example]]
+name = "drosteshots"
+required-features = ["gui"]
+
+[[example]]
+name = "formdump"
+required-features = ["gui"]
+
+[[example]]
+name = "gbcompare"
+required-features = ["gpu"]
 
 [[example]]
 name = "gpubench"
 required-features = ["gpu"]
 
 [[example]]
-name = "profile"
+name = "gpuformulas"
+required-features = ["gpu"]
+
+[[example]]
+name = "gpurender"
+required-features = ["gpu"]
+
+[[example]]
+name = "mccheck"
+required-features = ["gpu"]
+
+[[example]]
+name = "modecheck"
 required-features = ["gpu"]
 
 [[example]]
@@ -80,10 +116,15 @@ name = "paintbench"
 required-features = ["gpu"]
 
 [[example]]
-name = "formbench"
+name = "pascalcheck"
+required-features = ["jit"]
 
 [[example]]
-name = "gpuformulas"
+name = "pascalfused"
+required-features = ["jit"]
+
+[[example]]
+name = "pascalgpu"
 required-features = ["gpu"]
 
 [[example]]
@@ -91,5 +132,59 @@ name = "postcheck"
 required-features = ["gpu"]
 
 [[example]]
+name = "prewarmcheck"
+required-features = ["gui", "gpu"]
+
+[[example]]
+name = "probecheck"
+required-features = ["gpu"]
+
+[[example]]
+name = "profile"
+required-features = ["gpu"]
+
+[[example]]
+name = "resumecheck"
+required-features = ["gui", "gpu"]
+
+[[example]]
+name = "resumecheck2"
+required-features = ["gui", "gpu"]
+
+[[example]]
+name = "savetest"
+required-features = ["gui"]
+
+[[example]]
+name = "sceneflags"
+required-features = ["gpu"]
+
+[[example]]
+name = "snapform"
+required-features = ["gui", "gpu"]
+
+[[example]]
+name = "ssaobench"
+required-features = ["gpu"]
+
+[[example]]
+name = "themecheck"
+required-features = ["gui"]
+
+[[example]]
+name = "themeshots"
+required-features = ["gui", "gpu"]
+
+[[example]]
 name = "wgslcompile"
 required-features = ["gpu"]
+
+[[example]]
+name = "wintest"
+required-features = ["gui"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+debug = false

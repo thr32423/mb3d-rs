@@ -33,6 +33,7 @@ Mandelbulber settings file (.fract: the camera and the formulas both
 programs share; what was not carried over is listed).
 Without a scene file the preset for --formula is rendered (run without any
 arguments, mb3d renders the \"Integer Power\" preset to mb3d.png).
+An option's value follows it (--width 800) or is joined with = (--width=800).
 
 OPTIONS:
     -f, --formula <NAME>     Built-in formula preset (default: \"Integer Power\")
@@ -152,6 +153,68 @@ fn args_read() {
 fn usage_err(msg: &str) -> String {
     EXIT.store(2, Ordering::Relaxed);
     msg.to_string()
+}
+
+/// The arguments with `--name=value` written as `--name value`, as
+/// most programs take them (the options here read their value from the
+/// next argument).
+fn split_equals(args: impl Iterator<Item = String>) -> Vec<String> {
+    let mut out = Vec::new();
+    for a in args {
+        match a.strip_prefix("--").and_then(|r| r.split_once('=')) {
+            Some((n, v)) if !n.is_empty() && n.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') => {
+                out.push(format!("--{n}"));
+                out.push(v.to_string());
+            }
+            _ => out.push(a),
+        }
+    }
+    out
+}
+
+/// An option the command does not know: one line with it, the nearest
+/// option of the command's help when one is near (a typing slip), and the
+/// command that lists them all (the whole help after the error scrolled
+/// the error away).
+fn unknown_option(o: &str, usage: &str, help: &str) -> String {
+    match nearest_option(o, usage) {
+        Some(n) => usage_err(&format!("unknown option {o} (did you mean {n}?); {help} lists the options")),
+        None => usage_err(&format!("unknown option {o}; {help} lists the options")),
+    }
+}
+
+/// The long option of `usage` nearest to `o`: at most two letters
+/// different, or `o` the beginning of exactly one of them.
+fn nearest_option(o: &str, usage: &str) -> Option<String> {
+    let mut opts: Vec<&str> = Vec::new();
+    for (i, _) in usage.match_indices("--") {
+        let rest = &usage[i + 2..];
+        let n = rest.find(|c: char| !(c.is_ascii_alphanumeric() || c == '-')).unwrap_or(rest.len());
+        if n > 0 && !opts.contains(&&usage[i..i + 2 + n]) {
+            opts.push(&usage[i..i + 2 + n]);
+        }
+    }
+    let o = o.split('=').next().unwrap_or(o);
+    let dist = |a: &str, b: &str| -> usize {
+        let (a, b): (Vec<char>, Vec<char>) = (a.chars().collect(), b.chars().collect());
+        let mut row: Vec<usize> = (0..=b.len()).collect();
+        for i in 1..=a.len() {
+            let mut prev = row[0];
+            row[0] = i;
+            for j in 1..=b.len() {
+                let cur = row[j];
+                row[j] = (prev + (a[i - 1] != b[j - 1]) as usize).min(row[j] + 1).min(row[j - 1] + 1);
+                prev = cur;
+            }
+        }
+        row[b.len()]
+    };
+    let best = opts.iter().map(|p| (dist(o, p), *p)).filter(|(d, _)| *d <= 2).min_by_key(|(d, _)| *d);
+    if let Some((_, p)) = best {
+        return Some(p.to_string());
+    }
+    let starting: Vec<&&str> = opts.iter().filter(|p| o.len() >= 4 && p.starts_with(o)).collect();
+    (starting.len() == 1).then(|| starting[0].to_string())
 }
 
 /// A scene or parameter file could not be read (exit status 3).
@@ -302,7 +365,7 @@ fn resumed_note(ck: Option<&mb3d::checkpoint::Store>, what: &str, quiet: bool) {
 fn run() -> Result<(), String> {
     #[cfg(feature = "gpu")]
     mb3d::gpu::set_enabled(mb3d::gpu::default_on());
-    let all: Vec<String> = std::env::args().skip(1).collect();
+    let all: Vec<String> = split_equals(std::env::args().skip(1));
     // no arguments at all: render the default preset (with a hint to the help)
     if all.is_empty() {
         mb3d::elog!("no scene file: rendering the \"Integer Power\" preset to mb3d.png (mb3d --help shows the options)");
@@ -322,7 +385,7 @@ fn run() -> Result<(), String> {
         Some("benchmark") | Some("bench") => return bench_cmd(&all[1..]),
         _ => {}
     }
-    let mut args = std::env::args().skip(1);
+    let mut args = all.clone().into_iter();
     let mut formula: Option<String> = None;
     let mut scene_file: Option<String> = None;
     let mut output = "mb3d.png".to_string();
@@ -406,7 +469,7 @@ fn run() -> Result<(), String> {
             "--swarm" => swarm = Some(val(&a)?),
             "-q" | "--quiet" => quiet = true,
             s if resume_option(s) => {}
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, USAGE, "mb3d --help")),
             s => scene_file = Some(s.to_string()),
         }
     }
@@ -909,7 +972,7 @@ fn mcp_cmd(argv: &[String]) -> Result<(), String> {
             "--max-minutes" => opt.max_secs = val()?.parse::<u64>().map_err(|_| "bad --max-minutes value".to_string())? * 60,
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
-            s => return Err(format!("unknown option {s}\n\n{MCP_USAGE}")),
+            s => return Err(unknown_option(s, MCP_USAGE, "mb3d mcp --help")),
         }
     }
     args_read();
@@ -935,7 +998,7 @@ fn resume_cmd(args: &[String]) -> Result<(), String> {
                 mb3d::elog!("wrote {file}: {}", e.summary());
                 return Ok(());
             }
-            s => return Err(format!("unknown option {s}\n\n{RESUME_USAGE}")),
+            s => return Err(unknown_option(s, RESUME_USAGE, "mb3d resume --help")),
         }
     }
     let list = mb3d::checkpoint::list();
@@ -1291,7 +1354,7 @@ fn animate(argv: &[String]) -> Result<(), String> {
             "--formulas" => mb3d::formulas::add_formula_dir(args.next().ok_or("--formulas needs a value")?.into()),
             "--maps" => mb3d::maps::add_map_dir(args.next().ok_or("--maps needs a value")?.into()),
             s if resume_option(s) => {}
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{ANIMATE_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, ANIMATE_USAGE, "mb3d animate --help")),
             s => files.push(s.to_string()),
         }
     }
@@ -1826,7 +1889,7 @@ fn batch(argv: &[String]) -> Result<(), String> {
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
             s if resume_option(s) => {}
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{BATCH_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, BATCH_USAGE, "mb3d batch --help")),
             s => inputs.push(s.to_string()),
         }
     }
@@ -2065,7 +2128,7 @@ fn voxel_cmd(argv: &[String]) -> Result<(), String> {
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
             s if resume_option(s) => {}
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{VOXEL_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, VOXEL_USAGE, "mb3d voxel --help")),
             s => file = Some(s.to_string()),
         }
     }
@@ -2230,7 +2293,7 @@ fn mesh_cmd(argv: &[String]) -> Result<(), String> {
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
             s if resume_option(s) => {}
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{MESH_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, MESH_USAGE, "mb3d mesh --help")),
             s => file = Some(s.to_string()),
         }
     }
@@ -2351,7 +2414,7 @@ fn splat_cmd(argv: &[String]) -> Result<(), String> {
             "-q" | "--quiet" => quiet = true,
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{SPLAT_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, SPLAT_USAGE, "mb3d splat --help")),
             s => file = Some(s.to_string()),
         }
     }
@@ -2462,7 +2525,7 @@ fn mutagen_cmd(argv: &[String]) -> Result<(), String> {
             "-q" | "--quiet" => quiet = true,
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{MUTAGEN_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, MUTAGEN_USAGE, "mb3d mutagen --help")),
             s => file = Some(s.to_string()),
         }
     }
@@ -2608,7 +2671,7 @@ fn mc_cmd(argv: &[String]) -> Result<(), String> {
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
             s if resume_option(s) => {}
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{MC_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, MC_USAGE, "mb3d montecarlo --help")),
             s => file = Some(s.to_string()),
         }
     }
@@ -2878,7 +2941,7 @@ fn swarm_cmd(argv: &[String]) -> Result<(), String> {
             "-q" | "--quiet" => quiet = true,
             "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
             "--maps" => mb3d::maps::add_map_dir(val()?.into()),
-            s if s.starts_with('-') => return Err(format!("unknown option {s}\n\n{SWARM_USAGE}")),
+            s if s.starts_with('-') => return Err(unknown_option(s, SWARM_USAGE, "mb3d swarm --help")),
             s => words.push(s.to_string()),
         }
     }
@@ -2897,6 +2960,21 @@ fn swarm_cmd(argv: &[String]) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn options_with_equals_and_unknown_ones() {
+        let a = |v: &[&str]| split_equals(v.iter().map(|s| s.to_string()));
+        assert_eq!(a(&["--width=800", "-H", "600", "--set=iterations = 33", "scene.m3p", "-o", "a=b.png"]), ["--width", "800", "-H", "600", "--set", "iterations = 33", "scene.m3p", "-o", "a=b.png"]);
+        // not an option name: kept as it is
+        assert_eq!(a(&["--=x", "--a b=c"]), ["--=x", "--a b=c"]);
+        assert_eq!(nearest_option("--widht", USAGE).as_deref(), Some("--width"));
+        assert_eq!(nearest_option("--iterations=5", USAGE).as_deref(), Some("--iterations"));
+        assert_eq!(nearest_option("--transp", USAGE).as_deref(), Some("--transparent"));
+        assert_eq!(nearest_option("--zzzzzzzz", USAGE), None);
+        let e = unknown_option("--widht", USAGE, "mb3d --help");
+        assert_eq!(e, "unknown option --widht (did you mean --width?); mb3d --help lists the options");
+        assert!(!e.contains('\n'));
+    }
 
     #[test]
     fn time_left_of_the_items() {

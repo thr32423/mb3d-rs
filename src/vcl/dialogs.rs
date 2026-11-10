@@ -492,7 +492,10 @@ impl Ui {
         }
         d.push_str("end\n");
         let i = self.dialog_form("FileDlg", &d);
-        let mut dir = o.initial_dir.clone().filter(|p| p.is_dir()).unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
+        // (a folder chooser for a setting opens at that setting: not
+        // remembered)
+        let remembered = if o.folder { None } else { self.dialog_dirs.get(tag).filter(|p| p.is_dir()).cloned() };
+        let mut dir = remembered.or_else(|| o.initial_dir.clone().filter(|p| p.is_dir())).unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
         let mut name = o.file_name.clone();
         let p = Path::new(&o.file_name);
         if p.is_absolute() || p.parent().is_some_and(|q| !q.as_os_str().is_empty()) {
@@ -617,6 +620,7 @@ impl Ui {
                 .collect();
             if picked.len() > 1 {
                 let tag = d.tag.clone();
+                self.dialog_dirs.insert(tag.clone(), d.dir.clone());
                 self.forms[i].modal_result = MR_OK;
                 self.events.push_back(Event { form: String::new(), sender: tag, handler: String::new(), ev: Ev::DialogResult(DialogResult::Files(picked)) });
                 self.dialogs.remove(&i);
@@ -688,6 +692,11 @@ impl Ui {
         let Some(DialogState::File(d)) = self.dialogs.get(&i) else { return };
         let tag = d.tag.clone();
         let multi = d.multi;
+        if !d.folder {
+            if let Some(dir) = p.parent().filter(|q| q.is_dir()) {
+                self.dialog_dirs.insert(tag.clone(), dir.to_path_buf());
+            }
+        }
         self.file_dialog_save = d.save;
         self.filter_index = self.forms[i].c("TypeCombo").item_index.max(0) as usize + 1;
         self.forms[i].modal_result = MR_OK;
@@ -956,6 +965,48 @@ mod tests {
         }
         assert_eq!(v.len(), RECENT_COLORS);
         assert_eq!(v[0], 29);
+    }
+
+    /// A file dialog opens in the folder it was last left in, before the
+    /// folder asked for; a folder chooser opens where it is asked to.
+    #[test]
+    fn a_file_dialog_opens_where_it_was_left() {
+        let base = std::env::temp_dir().join(format!("mb3d_dialog_dirs_{}", std::process::id()));
+        let (asked, left) = (base.join("asked"), base.join("left"));
+        std::fs::create_dir_all(&asked).unwrap();
+        std::fs::create_dir_all(&left).unwrap();
+        // the open file dialog (the one asked for last)
+        let open = |ui: &Ui| -> usize {
+            *ui.dialogs.iter().filter(|(_, s)| matches!(s, DialogState::File(_))).map(|(i, _)| i).max().expect("no file dialog")
+        };
+        let dir_of = |ui: &Ui| match ui.dialogs.get(&open(ui)) {
+            Some(DialogState::File(d)) => d.dir.clone(),
+            _ => unreachable!(),
+        };
+        let mut ui = Ui::default();
+        let o = FileOptions { initial_dir: Some(asked.clone()), ..Default::default() };
+        ui.open_dialog("t:open", &o);
+        assert_eq!(dir_of(&ui), asked);
+        let i = open(&ui);
+        ui.file_finish(i, left.join("a.m3p"));
+        assert_eq!(ui.dialog_dirs.get("t:open"), Some(&left));
+        let cancel = |ui: &mut Ui| {
+            let i = open(ui);
+            ui.forms[i].modal_result = MR_CANCEL;
+            ui.dialog_closed(i);
+        };
+        ui.open_dialog("t:open", &o);
+        assert_eq!(dir_of(&ui), left);
+        cancel(&mut ui);
+        // another dialog keeps its own
+        ui.open_dialog("t:other", &o);
+        assert_eq!(dir_of(&ui), asked);
+        cancel(&mut ui);
+        // a folder chooser is not taken elsewhere
+        ui.dialog_dirs.insert("t:folder".into(), left.clone());
+        ui.folder_dialog("t:folder", "", Some(asked.clone()));
+        assert_eq!(dir_of(&ui), asked);
+        let _ = std::fs::remove_dir_all(&base);
     }
 
     /// The hex field and the sliders follow each other; OK puts the colour

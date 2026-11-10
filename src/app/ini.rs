@@ -126,6 +126,11 @@ impl Ini {
         }
     }
 
+    /// Every extra line whose name begins with `prefix` taken away.
+    pub fn remove_extras(&mut self, prefix: &str) {
+        self.extra.retain(|l| !l.split_whitespace().next().is_some_and(|k| k.starts_with(prefix)));
+    }
+
     pub fn dir(&self, i: usize) -> PathBuf {
         self.dirs[i].clone()
     }
@@ -185,6 +190,72 @@ mod tests {
         assert_eq!(super::Ini::load_from(&p, &dir).dir(super::DIR_LIGHTS), dir.join("M3Lights"));
         std::fs::write(dir.join("mine.m3l"), [0u8; 4]).unwrap();
         assert_eq!(super::Ini::load_from(&p, &dir).dir(super::DIR_LIGHTS), dir);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+}
+
+/// The extra lines of the folders the file dialogs were last left in:
+/// `LastDir.<dialog tag>  <folder>` (not in MB3D).
+pub const LAST_DIR: &str = "LastDir.";
+
+/// The remembered folders of the file dialogs, by the dialog's tag.
+pub fn last_dirs(ini: &Ini) -> std::collections::HashMap<String, PathBuf> {
+    ini.extra
+        .iter()
+        .filter_map(|l| {
+            let (k, v) = l.trim().split_once(char::is_whitespace)?;
+            let tag = k.strip_prefix(LAST_DIR)?;
+            let v = v.trim();
+            (!tag.is_empty() && !v.is_empty()).then(|| (tag.to_string(), PathBuf::from(v)))
+        })
+        .collect()
+}
+
+/// The extra lines of the windows' places: `Pos.<form>  <left> <top>`
+/// (not in MB3D).
+pub const POS: &str = "Pos.";
+
+/// The windows whose place is kept in a `Pos.` line: all but the main
+/// window and those that MB3D's own lines keep (FormulaPos, LightPos,
+/// PostpPos: they stick to the main window), and the Animation window,
+/// which sticks under it.
+pub fn remembers_position(form: &str) -> bool {
+    !matches!(form, "Mand3DForm" | "FormulaGUIForm" | "LightAdjustForm" | "PostProForm" | "AnimationForm")
+}
+
+/// `left top` of a `Pos.` line (none for anything else).
+pub fn position(v: &str) -> Option<(i32, i32)> {
+    let mut it = v.split_whitespace().map(|n| n.parse::<i32>().ok());
+    match (it.next().flatten(), it.next().flatten(), it.next()) {
+        (Some(l), Some(t), None) if l.abs() < 100_000 && t.abs() < 100_000 => Some((l, t)),
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod remembered_tests {
+    use super::*;
+
+    #[test]
+    fn positions_and_folders_read_back() {
+        assert_eq!(position("120 -40"), Some((120, -40)));
+        for bad in ["", "120", "a 4", "1 2 3", "999999 0"] {
+            assert_eq!(position(bad), None, "{bad}");
+        }
+        assert!(remembers_position("HotkeysFrm") && remembers_position("FNavigator"));
+        assert!(!remembers_position("Mand3DForm") && !remembers_position("LightAdjustForm"));
+        let dir = std::env::temp_dir().join(format!("mb3d_ini_extras_{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let mut ini = Ini::load_from(&dir.join("Mandelbulb3D.ini"), &dir);
+        ini.set_extra("LastDir.main:openm3p", "/some folder/with spaces");
+        ini.set_extra("LastDir.mc:open", "/x");
+        ini.set_extra("Pos.HotkeysFrm", "10 20");
+        let d = last_dirs(&ini);
+        assert_eq!(d.get("main:openm3p"), Some(&PathBuf::from("/some folder/with spaces")));
+        assert_eq!(d.len(), 2);
+        ini.remove_extras(LAST_DIR);
+        assert!(last_dirs(&ini).is_empty());
+        assert_eq!(ini.get_extra("Pos.HotkeysFrm"), Some("10 20"));
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

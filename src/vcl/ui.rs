@@ -98,6 +98,10 @@ pub struct Ui {
     /// The colours last chosen in the colour dialog, the newest first (at
     /// most [`super::dialogs::RECENT_COLORS`]); the program keeps them.
     pub recent_colors: Vec<u32>,
+    /// The folder each file dialog (by its tag) was last left in; it opens
+    /// there next time, before the folder the program asks for (not in
+    /// MB3D). The program keeps them ([`Ui::DIALOG_DIR_KEY`]).
+    pub dialog_dirs: HashMap<String, std::path::PathBuf>,
     /// The colour dialog whose eyedropper waits for a click (its form).
     pub(crate) eyedropper: Option<usize>,
 }
@@ -133,6 +137,7 @@ impl Ui {
             ui_scale: 1.0,
             screen: None,
             recent_colors: Vec::new(),
+            dialog_dirs: HashMap::new(),
             eyedropper: None,
         }
     }

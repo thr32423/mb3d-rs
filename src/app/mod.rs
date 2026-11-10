@@ -65,6 +65,9 @@ pub const MAIN: &str = "Mand3DForm";
 pub struct Mb3d {
     /// the current parameters (`MHeader`)
     pub scene: Scene,
+    /// the windows of the program (not the dialogs made later): the
+    /// first ones of `Ui::forms`
+    pub program_forms: usize,
     /// the parameter name shown in the main window's caption
     pub title: String,
     pub eng: engine::Engine,
@@ -214,6 +217,14 @@ impl App for Mb3d {
             let list: Vec<String> = ui.recent_colors.iter().map(|c| crate::vcl::dialogs::hex_color(*c)).collect();
             self.ini.set_extra("RecentColors", &list.join(","));
         }
+        if let Ev::DialogResult(DialogResult::File(Some(_)) | DialogResult::Files(_)) = &e.ev {
+            if let Some(d) = ui.dialog_dirs.get(&e.sender) {
+                let d = d.display().to_string();
+                if self.ini.get_extra(&format!("{}{}", ini::LAST_DIR, e.sender)) != Some(d.as_str()) {
+                    self.ini.set_extra(&format!("{}{}", ini::LAST_DIR, e.sender), &d);
+                }
+            }
+        }
         if let Ev::DialogResult(r) = &e.ev {
             // files dropped on the batch window go into its list
             // (BatchForm.pas WMDROPFILES), also while it calculates
@@ -227,6 +238,10 @@ impl App for Mb3d {
             }
         }
         if let Ev::Move = e.ev {
+            if ui.form_index(&e.form).is_some_and(|i| i < self.program_forms) && ini::remembers_position(&e.form) {
+                let f = ui.f(&e.form);
+                self.ini.set_extra(&format!("{}{}", ini::POS, e.form), &format!("{} {}", f.left, f.top));
+            }
             // (the windows sticking to the main window follow it; the
             // Animation window sticks when moved under it)
             match e.form.as_str() {
@@ -423,6 +438,8 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         .filter_map(crate::vcl::dialogs::parse_hex_color)
         .take(crate::vcl::dialogs::RECENT_COLORS)
         .collect();
+    // the folders the file dialogs were last left in (LastDir.<dialog>)
+    ui.dialog_dirs = ini::last_dirs(&ini);
     ui.set_ui_scale(scale_pct.clamp(50, 400) as f64 / 100.0);
     for f in FORMS {
         if let Err(e) = ui.add_form(forms::get(f)) {
@@ -430,8 +447,20 @@ pub fn build(args: &[String]) -> Result<Option<(Ui, Mb3d)>, String> {
         }
     }
     ui.main_form = ui.form_index(MAIN).ok_or("no main form")?;
+    // the windows open where the user left them (Pos.<window>, not in MB3D)
+    for f in ui.forms.iter_mut() {
+        if !ini::remembers_position(&f.name) {
+            continue;
+        }
+        if let Some((l, t)) = ini.get_extra(&format!("{}{}", ini::POS, f.name)).and_then(ini::position) {
+            (f.left, f.top) = (l, t);
+            f.position = "poDesigned".into();
+        }
+    }
+    let program_forms = ui.forms.len();
     let swarm = swarm_form::State::from_ini(&ini);
     let mut app = Mb3d {
+        program_forms,
         scene: Scene::preset("Integer Power")?,
         title: String::new(),
         eng: engine::Engine::new(),

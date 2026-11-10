@@ -3641,7 +3641,9 @@ pub fn save_m3i_with(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path, with_i
 }
 
 /// The folder the file dialog `key` of this window opens in: where it was
-/// last in this session, else the folder of the Ini-dirs window.
+/// last in this session, else the folder of the Ini-dirs window (the
+/// dialog itself opens where it was left before that, also from an earlier
+/// session: `Ui::dialog_dirs`).
 fn dlg_dir(app: &Mb3d, key: &str, ini_dir: usize) -> PathBuf {
     app.main.last_dirs.get(key).cloned().filter(|d| d.is_dir()).unwrap_or_else(|| app.ini.dir(ini_dir))
 }

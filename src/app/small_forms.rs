@@ -83,9 +83,17 @@ pub fn inidirs_event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         }
         "Button1Click" => {
             let old_formulas = app.ini.dirs[super::ini::DIR_FORMULAS].clone();
+            let old_dirs = app.ini.dirs.clone();
             let old_lights = app.ini.dirs[super::ini::DIR_LIGHTS].clone();
             for i in 0..13 {
                 app.ini.dirs[i] = ui.text(ID, &format!("Edit{}", i + 1)).trim().into();
+            }
+            // the file dialogs open in the folders set here again (not in
+            // the folders they were left in)
+            if (0..13).any(|i| app.ini.dirs[i] != old_dirs[i]) {
+                app.ini.remove_extras(super::ini::LAST_DIR);
+                ui.dialog_dirs.clear();
+                app.main.last_dirs.clear();
             }
             let _ = app.ini.save();
             crate::formulas::add_formula_dir(app.ini.dir(super::ini::DIR_FORMULAS));

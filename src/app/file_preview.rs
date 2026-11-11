@@ -134,7 +134,9 @@ fn start(app: &mut Mb3d, ui: &Ui, path: PathBuf) {
     let slot = app.preview.result.clone();
     let waker = ui.waker();
     let cancel = Arc::new(AtomicBool::new(false));
-    let view = app.preview.shown.as_ref().filter(|(p, _)| *p == path).map(|(_, t)| t.clone());
+    // (a window that closed since showing the file does not wait for it:
+    // the History queue's picture of the file must not stop for it)
+    let view = app.preview.shown.as_ref().filter(|(p, t)| *p == path && ui.showing(&t.0)).map(|(_, t)| t.clone());
     app.preview.job = Some(Job { path: path.clone(), cancel: cancel.clone(), view });
     std::thread::spawn(move || {
         let stop = || cancel.load(Ordering::Relaxed);
@@ -264,6 +266,9 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         // wanted again
         if stopped && r.is_err() {
             crate::log::info("preview", &format!("stopped the preview of {} (not wanted any more)", p.display()));
+            // the History window paints again and asks for what it still
+            // shows (it may want the stopped file's picture as well)
+            app.preview.version += 1;
         } else {
             keep(app, ui, p, r, text);
         }

@@ -1346,6 +1346,13 @@ fn quantized(op: &Op, q: &mut [bool; 8]) {
             Op::FYl2x { x, y } => format!("f[{0}] *= f[{1}].log2();", y & 7, x & 7),
             Op::FScale { a, s } => format!("f[{0}] *= f[{1}].trunc().exp2();", a & 7, s & 7),
             Op::FCom { a, b } => format!("fsw = fcompare_cc(f[{}], f[{}]);", a & 7, b & 7),
+            // fcomi: the comparison straight into the flags (unordered: ZF PF CF)
+            Op::FCmov { cc, dst, src } => format!("if fl.cond({cc}) {{ f[{}] = f[{}]; }}", dst & 7, src & 7),
+            Op::FComi { a, b } => format!(
+                "{{ let (x, y) = (f[{}], f[{}]); fl.of = false; fl.sf = false; fl.af = false; if x.is_nan() || y.is_nan() {{ fl.zf = true; fl.pf = true; fl.cf = true; }} else {{ fl.zf = x == y; fl.pf = false; fl.cf = x < y; }} }}",
+                a & 7,
+                b & 7
+            ),
             Op::FComM { a, kind, mem } => format!("fsw = fcompare_cc(f[{}], {});", a & 7, fload_expr(c, loc(mem)?, *kind)?),
             Op::FTst(a) => format!("fsw = fcompare_cc(f[{}], 0.0);", a & 7),
             Op::Fnstsw { mem: None, depth } => {
@@ -1444,6 +1451,18 @@ fn quantized(op: &Op, q: &mut [bool; 8]) {
             Ins::Mov { dst, src: s, size } => {
                 let v = src(c, s, *size, &mut rd)?;
                 format!("{{ let v = {v}; {} }}", wr(c, dst, *size, "v")?)
+            }
+            // a byte or word widened into a register (`Machine::exec`):
+            // e.g. option bits read from a local (JosKn-KleinIFS)
+            Ins::Movzx { reg, src: s, size } => format!("{{ rg[{reg}] = {}; }}", rd(c, s, *size)?),
+            Ins::Cmovcc { cc, reg, src: s } => format!("{{ let v = {}; if fl.cond({cc}) {{ rg[{reg}] = v; }} }}", rd(c, s, 4)?),
+            Ins::Setcc { cc, dst } => format!("{{ let v = fl.cond({cc}) as u32; {} }}", wr(c, dst, 1, "v")?),
+            // the x87 control word (its rounding mode: `Machine::round_int`)
+            Ins::FnstcwMem(mm) => c.wr(loc(mm)?, 2, "m.fcw as u64"),
+            Ins::FldcwMem(mm) => format!("m.fcw = {} as u16;", c.rd(loc(mm)?, 2)),
+            Ins::Movsx { reg, src: s, size } => {
+                let t = if *size == 1 { "u8 as i8" } else { "u16 as i16" };
+                format!("{{ rg[{reg}] = ({}) as {t} as i32 as u32; }}", rd(c, s, *size)?)
             }
             // rcl / rcr by one (the x87 flag tricks of some formulas)
             Ins::Shift { op: Shift::Rcl, dst: Rm::Reg(r), cnt: Some(1), size: 4 } => {

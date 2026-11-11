@@ -602,6 +602,10 @@ struct Typed<'a> {
     written_vars: bool,
     /// the copy of the variable buffer in the constants (WgslFormula::dyn_var)
     dyn_var: Option<u32>,
+    /// the formula loads an x87 control word (fldcw): its rounding mode is
+    /// followed in a local `fcw` (Machine::round_int); without, the default
+    /// round to nearest even as before
+    cw: bool,
 }
 
 impl Typed<'_> {
@@ -708,11 +712,19 @@ impl Typed<'_> {
         Some(match kind {
             FKind::F64 => self.wr_f(r, v)?,
             FKind::F32 => self.wr_u(r, 4, &format!("bitcast<u32>(f32({v}))"))?,
+            FKind::I32 if self.cw => self.wr_u(r, 4, &format!("fist32({})", round_cw(v)))?,
+            FKind::I16 if self.cw => self.wr_u(r, 2, &format!("fist16({})", round_cw(v)))?,
             FKind::I32 => self.wr_u(r, 4, &format!("fist32({v})"))?,
             FKind::I16 => self.wr_u(r, 2, &format!("fist16({v})"))?,
             _ => return None,
         })
     }
+}
+
+/// `x` rounded by the rounding mode of the local control word `fcw`
+/// (`Machine::round_int`: nearest even, down, up, toward zero).
+fn round_cw(x: &str) -> String {
+    format!("select(select(select(round({x}), floor({x}), ((fcw >> 10u) & 3u) == 1u), ceil({x}), ((fcw >> 10u) & 3u) == 2u), trunc({x}), ((fcw >> 10u) & 3u) == 3u)")
 }
 
 fn fop(op: &FOp, a: &str, b: &str) -> String {
@@ -803,7 +815,8 @@ impl Prog {
         } else {
             None
         };
-        let tz = Typed { ty: &ty, cidx: &cidx, written_vars, dyn_var };
+        let cw = self.ops.iter().any(|o| matches!(o, Op::Gen(i, _, _) if matches!(**i, Ins::FldcwMem(_))));
+        let tz = Typed { ty: &ty, cidx: &cidx, written_vars, dyn_var, cw };
         let n = self.ops.len();
         let mut start = vec![false; n + 1];
         start[0] = true;
@@ -859,6 +872,10 @@ impl Prog {
         let mut o = String::new();
         let _ = writeln!(o, "fn {name}(cb: u32) {{");
         let _ = writeln!(o, "    var f: array<R, 8>;");
+        if cw {
+            // the x87 control word (Machine::fcw at its reset value)
+            let _ = writeln!(o, "    var fcw = 0x037Fu;");
+        }
         for ((p, c), t) in &ty {
             let local = *p == 's' || (*p == 'v' && written_vars);
             if !local {
@@ -1051,6 +1068,7 @@ impl Prog {
             Op::FSqrt(i) => format!("f[{0}] = sqrt(f[{0}]);", i & 7),
             Op::FSin(i) => format!("f[{0}] = r_sin(f[{0}]); fsw = fsw & ~0x0400u;", i & 7),
             Op::FCos(i) => format!("f[{0}] = r_cos(f[{0}]); fsw = fsw & ~0x0400u;", i & 7),
+            Op::FRndint(i) if t.cw => format!("f[{0}] = {1};", i & 7, round_cw(&format!("f[{}]", i & 7))),
             Op::FRndint(i) => format!("f[{0}] = round(f[{0}]);", i & 7),
             Op::FPrem { a, b, ieee } => format!(
                 "{{ let x = f[{0}]; let y = f[{1}]; let q = {2}; f[{0}] = x - q * y; let qi = u32(min(abs(q), 4294967000.0)); \
@@ -1066,6 +1084,12 @@ impl Prog {
             Op::FYl2x { x, y } => format!("f[{0}] = f[{0}] * r_log2(f[{1}]);", y & 7, x & 7),
             Op::FScale { a, s } => format!("f[{0}] = f[{0}] * r_exp2(trunc(f[{1}]));", a & 7, s & 7),
             Op::FCom { a, b } => format!("fsw = fcompare_cc(f[{}], f[{}]);", a & 7, b & 7),
+            Op::FCmov { cc, dst, src } => format!("if (cond({cc}u)) {{ f[{}] = f[{}]; }}", dst & 7, src & 7),
+            Op::FComi { a, b } => format!(
+                "{{ let x = f[{}]; let y = f[{}]; xof = false; xsf = false; xaf = false; if (x_isnan(x) || x_isnan(y)) {{ xzf = true; xpf = true; xcf = true; }} else {{ xzf = x == y; xpf = false; xcf = x < y; }} }}",
+                a & 7,
+                b & 7
+            ),
             Op::FComM { a, kind, mem } => format!("fsw = fcompare_cc(f[{}], {});", a & 7, t.fload(loc(mem)?, *kind)?),
             Op::FTst(a) => format!("fsw = fcompare_cc(f[{}], 0.0);", a & 7),
             Op::Fnstsw { mem: None, depth } => {
@@ -1293,6 +1317,14 @@ impl Prog {
                 let v = src(s, *size)?;
                 format!("{{ let v = {v}; {} }}", wr(dst, *size, "v")?)
             }
+            Ins::Movzx { reg, src: s, size } => format!("{{ rg[{reg}] = {}; }}", rd(s, *size)?),
+            Ins::Cmovcc { cc, reg, src: s } => format!("{{ let v = {}; if (cond({cc}u)) {{ rg[{reg}] = v; }} }}", rd(s, 4)?),
+            Ins::Setcc { cc, dst } => format!("{{ let v = select(0u, 1u, cond({cc}u)); {} }}", wr(dst, 1, "v")?),
+            // the x87 control word saved and loaded (the rounding mode of
+            // Delphi's Trunc / Floor)
+            Ins::FnstcwMem(mm) => t.wr_u(loc(mm)?, 2, if t.cw { "fcw" } else { "0x037Fu" })?,
+            Ins::FldcwMem(mm) => format!("fcw = {};", t.rd_u(loc(mm)?, 2)?),
+            Ins::Movsx { reg, src: s, size } => format!("{{ rg[{reg}] = bitcast<u32>(sign_ext({}, {size}u)); }}", rd(s, *size)?),
             Ins::Shift { op: Shift::Rcl, dst: Rm::Reg(r), cnt: Some(1), size: 4 } => {
                 format!("{{ let x = rg[{r}]; let out = ((x >> 31u) & 1u) == 1u; rg[{r}] = (x << 1u) | select(0u, 1u, xcf); xcf = out; }}")
             }

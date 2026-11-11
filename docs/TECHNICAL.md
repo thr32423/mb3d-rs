@@ -202,7 +202,9 @@ Carlo renders use the probe too (in double precision, as before) when
 the scene's march is compiled. `MB3D_GPU_NOPROBE=1` turns the probe off
 and `MB3D_PROBE_DEBUG=1` prints its result. The command line program waits for a shader still
 compiling before it ends (`gpu::wait_compiles`), as long as it takes
-(`MB3D_COMPILE_WAIT_SECS` limits the wait): a compile the CPU threads had
+(`MB3D_COMPILE_WAIT_SECS` limits the wait; the desktop program does the
+same after its windows are gone, 300 s at most, as an exit while a thread
+is inside the driver can crash there): a compile the CPU threads had
 overtaken used to die with the process and never reach the driver's
 cache, so a short scene's next run was just as cold; a limit of 120 s on
 the wait then cut off the scenes whose compile takes about that long
@@ -1978,7 +1980,7 @@ Every `MB3D_*` variable the programs read. "Any value": set means on.
 |---|---|---|---|
 | `MB3D_360_CAMERA_TAG` | `0`; unset: tag written | `0` leaves the EXIF camera tag (RICOH THETA S) out of 360 panoramas. Only the command line program reads it; the desktop app uses the ini key `Pano360CameraTag`. | src/main.rs:118 |
 | `MB3D_AUTOSAVE_SECS` | seconds; default `300` | How often a render's checkpoint files are flushed to the disk. examples/resumecheck2.rs sets it to `1`. | src/checkpoint.rs:66 |
-| `MB3D_COMPILE_WAIT_SECS` | seconds; unset: no limit | How long the command line program waits at its end for a shader still compiling in the background (so the driver caches it); `0` ends without waiting. | src/main.rs:126 |
+| `MB3D_COMPILE_WAIT_SECS` | seconds; unset: no limit on the command line, 300 in the desktop program | How long a program waits at its end for a shader still compiling in the background (so the driver caches it, and the process does not exit inside the driver); the desktop program waits after its windows are gone. `0` ends without this wait (the desktop program still gives running card work a few seconds). | src/main.rs:126, src/bin/Mandelbulb3D.rs |
 | `MB3D_FORMULAS` | folder list (path separator) | Folders searched for `.m3f` formula files before the usual places; same as `--formulas`. | src/formulas.rs:75 |
 | `MB3D_FREE_MEMORY_MB` | MB; unset: the system's free memory | Pretends this much free memory, to try the big-picture checks and the reflection bands on a smaller computer. | src/render.rs:2782 |
 | `MB3D_GPU` | `0`; unset or other: on | `0` keeps every calculation on the CPU (same as `--cpu` on the command line). | src/gpu.rs:372 |

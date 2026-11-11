@@ -205,7 +205,9 @@ pub struct Engine(pub Arc<Inner>);
 
 /// The program ends: the calculation stops first and is waited for (at
 /// most a few seconds).  A calculation still waiting for the graphics card
-/// when the process exits crashes in the driver.
+/// when the process exits crashes in the driver. (Bounded because a window
+/// may still be open here; the program waits on after its windows are gone,
+/// see bin/Mandelbulb3D.rs.)
 impl Drop for Engine {
     fn drop(&mut self) {
         #[cfg(feature = "gpu")]

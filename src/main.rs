@@ -123,7 +123,7 @@ fn main() -> ExitCode {
     // before the program ends, however long it takes (see
     // gpu::wait_compiles); MB3D_COMPILE_WAIT_SECS limits the wait
     #[cfg(feature = "gpu")]
-    mb3d::gpu::wait_compiles(std::env::var("MB3D_COMPILE_WAIT_SECS").ok().and_then(|v| v.trim().parse().ok()).map(std::time::Duration::from_secs));
+    mb3d::gpu::wait_compiles(mb3d::gpu::compile_wait_limit());
     match r {
         Ok(()) => {
             mb3d::log::end("the run ended");

@@ -1203,6 +1203,12 @@ fn compiling_any() -> bool {
     PREPARING.lock().map(|l| !l.is_empty()).unwrap_or(false)
 }
 
+/// The limit of `MB3D_COMPILE_WAIT_SECS` on the wait for the card when a
+/// program ends, None when it is not set.
+pub fn compile_wait_limit() -> Option<std::time::Duration> {
+    std::env::var("MB3D_COMPILE_WAIT_SECS").ok().and_then(|v| v.trim().parse().ok()).map(std::time::Duration::from_secs)
+}
+
 /// Waits until no shader is being compiled any more (at most `max`, None:
 /// as long as it takes).  The command line program calls it before it
 /// ends: a compile its CPU threads overtook would die with the process and

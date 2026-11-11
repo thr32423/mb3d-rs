@@ -319,6 +319,11 @@ impl<A: App> Runner<A> {
     /// Creates / closes windows for the forms' visibility and applies the
     /// size changes made by the program.
     fn sync(&mut self, el: &ActiveEventLoop) {
+        // (after the windows went below: none may be created again)
+        if self.ui.quit && self.wins.is_empty() {
+            el.exit();
+            return;
+        }
         if self.ctx.is_none() {
             self.ctx = softbuffer::Context::new(el.owned_display_handle()).ok();
         }
@@ -401,6 +406,10 @@ impl<A: App> Runner<A> {
             self.update_cursor(id);
         }
         if self.ui.quit {
+            // every window goes now: the program may wait for the graphics
+            // card after this, and must not leave windows standing
+            self.by_form.clear();
+            self.wins.clear();
             el.exit();
         }
     }

@@ -193,6 +193,7 @@ esto puede comprobar más por su cuenta:
   el `data.bin` de una versión anterior como `.m3i`), y ábralo aquí o en
   Mandelbulb3D, sin conversión. (Los renders Monte Carlo llevan su propio
   registro; el `.m3c` de una pasada se escribe con `--m3c`.)
+* **Posición y rotación en archivos propios**: *Guardar* y *Cargar* en los paneles Posición y Rotación de la ventana principal guardan la posición (`.m3xyz`) o la rotación (`.m3r`) de la vista en un pequeño archivo de texto, para llevarla a otra escena; el resto de esa escena no cambia. Una idea de Geoffrey N. Barnes.
 * **Atajos de teclado para las ventanas**: una combinación de teclas trae al
   frente, desde cualquier ventana, la ventana principal, el Navegador o las
   ventanas Animación, Fórmulas, Iluminación, Posprocesado o Monte Carlo

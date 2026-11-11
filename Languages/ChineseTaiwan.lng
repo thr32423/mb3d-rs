@@ -1893,6 +1893,10 @@ Iridescence=虹彩：
 ;Iridescence:
 Iridescence0To1TheColours=虹彩（0 到 1）：隨視角變化的薄膜顏色，以及它的偏移（0 到 1）
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} 不是位置檔案。
+;{} is not a position file.
+IsNotARotationFile={} 不是旋轉檔案。
+;{} is not a rotation file.
 IsNotAValidFloatingPoint=「{}」不是有效的浮點數值
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue=「{}」不是有效的整數值
@@ -2103,6 +2107,10 @@ LoadTheParametersOfTheSelected=載入所選渲染的參數並繼續其計算
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=僅載入所選渲染的參數
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=從檔案載入視圖的旋轉。場景的其餘部分保持不變。
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=從檔案載入 X、Y、Z 中心、Z 起點、Z 終點和縮放。場景的其餘部分保持不變。
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=載入與儲存的初始目錄
 ;Loading and saving initial directories
 Log=記錄
@@ -2149,6 +2157,10 @@ M3DMonteCarloFileM3c=M3D 蒙地卡羅檔案 (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=M3D 參數 (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=M3D 位置 (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=M3D 旋轉 (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=M3D 體素專案 (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=M3F 公式檔載入：
@@ -3321,10 +3333,14 @@ SaveTheImageAsJPEGFile=將影像儲存為 JPEG 檔案，依目前檢視比例縮
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=每次更新且已經過 5 分鐘時儲存 M3C 檔案
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=將視圖的旋轉儲存到檔案，以便在其他場景中使用。
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=儲存此體素專案
 ;Save this voxel project
 SaveType=儲存類型：
 ;Save type:
+SaveXYAndZMid=將 X、Y、Z 中心、Z 起點、Z 終點和縮放儲存到檔案，以便在其他場景中使用。
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=儲存 Z-buffer (png)
 ;Save Z buffer (png)
 SaveZBufferToo=同時儲存 Z-buffer

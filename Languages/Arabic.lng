@@ -1893,6 +1893,10 @@ Iridescence=التقزح:
 ;Iridescence:
 Iridescence0To1TheColours=التقزح (من 0 إلى 1): ألوان غشاء رقيق تتغير مع زاوية النظر، وإزاحتها (من 0 إلى 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} ليس ملف موضع.
+;{} is not a position file.
+IsNotARotationFile={} ليس ملف دوران.
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' ليست قيمة عشرية صالحة
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' ليست قيمة صحيحة صالحة
@@ -2103,6 +2107,10 @@ LoadTheParametersOfTheSelected=تحميل معاملات التصيير المح
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=تحميل معاملات التصيير المحدد فقط
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=يحمّل دوران العرض من ملف. يبقى باقي المشهد كما هو.
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=يحمّل منتصف X وY وZ وبداية Z ونهاية Z والتكبير من ملف. يبقى باقي المشهد كما هو.
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=مجلدات التحميل والحفظ الأولية
 ;Loading and saving initial directories
 Log=سجل الأحداث
@@ -2149,6 +2157,10 @@ M3DMonteCarloFileM3c=ملف monte carlo لـ M3D (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=معاملات M3D (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=موضع M3D (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=دوران M3D (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=مشروع فوكسل M3D (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=تحميل ملفات صيغ M3F:
@@ -3321,10 +3333,14 @@ SaveTheImageAsJPEGFile=حفظ الصورة بصيغة JPEG، بمقياس الم
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=حفظ ملف M3C عند كل تحديث بعد مرور 5 دقائق
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=يحفظ دوران العرض في ملف لاستخدامه في مشهد آخر.
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=حفظ مشروع الفوكسل هذا
 ;Save this voxel project
 SaveType=نوع الحفظ:
 ;Save type:
+SaveXYAndZMid=يحفظ منتصف X وY وZ وبداية Z ونهاية Z والتكبير في ملف لاستخدامها في مشهد آخر.
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=حفظ مخزن Z (png)
 ;Save Z buffer (png)
 SaveZBufferToo=حفظ مخزن Z أيضًا

@@ -187,6 +187,7 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   sini atau di Mandelbulb3D, tanpa perlu konversi. (Render Monte Carlo
   menyimpan catatannya sendiri, `.m3c` dari sebuah pass ditulis dengan
   `--m3c`.)
+* **Posisi dan rotasi dalam berkas tersendiri**: *Simpan* dan *Muat* di panel Posisi dan Rotasi jendela utama menyimpan posisi (`.m3xyz`) atau rotasi (`.m3r`) tampilan dalam berkas teks kecil, untuk dibawa ke adegan lain; bagian lain adegan itu tidak berubah. Ide dari Geoffrey N. Barnes.
 * **Tombol pintas untuk jendela**: sebuah kombinasi tombol membawa jendela
   utama, Navigator, Animasi, Formula, Pencahayaan, Pascaproses, atau jendela
   Monte Carlo ke depan dari jendela mana pun (Ctrl+1 hingga Ctrl+7), dan

@@ -1892,6 +1892,10 @@ Iridescence=Iridesensi:
 ;Iridescence:
 Iridescence0To1TheColours=Iridesensi (0 sampai 1): warna lapisan tipis yang berubah dengan sudut pandang, dan pergeserannya (0 sampai 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} bukan berkas posisi.
+;{} is not a position file.
+IsNotARotationFile={} bukan berkas rotasi.
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' bukan nilai floating point yang valid
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' bukan nilai integer yang valid
@@ -2102,6 +2106,10 @@ LoadTheParametersOfTheSelected=Muat parameter render yang dipilih dan lanjutkan 
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=Muat parameter render yang dipilih saja
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=Muat rotasi tampilan dari berkas. Bagian lain adegan tidak berubah.
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=Muat X, Y dan Z tengah, Z awal, Z akhir, dan zoom dari berkas. Bagian lain adegan tidak berubah.
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=Direktori awal untuk memuat dan menyimpan
 ;Loading and saving initial directories
 Log=Log
@@ -2148,6 +2156,10 @@ M3DMonteCarloFileM3c=File monte carlo M3D (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=Parameter M3D (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=Posisi M3D (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=Rotasi M3D (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=Proyek voxel M3D (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=Muat file formula M3F:
@@ -3320,10 +3332,14 @@ SaveTheImageAsJPEGFile=Simpan gambar sebagai file JPEG, diskalakan seperti tampi
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=Simpan file M3C setiap pembaruan setelah 5 menit berlalu
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=Simpan rotasi tampilan ke berkas, untuk dipakai di adegan lain.
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=Simpan proyek voxel ini
 ;Save this voxel project
 SaveType=Jenis simpan:
 ;Save type:
+SaveXYAndZMid=Simpan X, Y dan Z tengah, Z awal, Z akhir, dan zoom ke berkas, untuk dipakai di adegan lain.
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Simpan Z buffer (png)
 ;Save Z buffer (png)
 SaveZBufferToo=Simpan juga Z buffer

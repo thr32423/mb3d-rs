@@ -195,6 +195,7 @@ Voici de quoi vérifier plus loin par vous-même :
   ici ou dans Mandelbulb3D, sans conversion. (Les rendus Monte-Carlo gardent
   leurs propres enregistrements ; le `.m3c` d'une passe s'écrit avec
   `--m3c`.)
+* **Position et rotation dans leurs propres fichiers** : *Enregistrer* et *Charger* dans les panneaux Position et Rotation de la fenêtre principale conservent la position (`.m3xyz`) ou la rotation (`.m3r`) de la vue dans un petit fichier texte, pour la reprendre dans une autre scène ; le reste de cette scène ne change pas. Une idée de Geoffrey N. Barnes.
 * **Raccourcis clavier pour les fenêtres** : une combinaison de touches
   amène au premier plan la fenêtre principale, le Navigateur, la fenêtre
   d'animation, Formules, Éclairage, Post-traitement ou Monte-Carlo depuis

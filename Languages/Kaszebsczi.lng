@@ -1892,6 +1892,10 @@ Iridescence=Òpalizacjô:
 ;Iridescence:
 Iridescence0To1TheColours=Òpalizacjô (òd 0 do 1): farwë cenczi warstwë, chtërné zmieniwają sã z kątã zdrzeniô, ë jich przesënienié (òd 0 do 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} nie je lopkã pòzycji.
+;{} is not a position file.
+IsNotARotationFile={} nie je lopkã òbrôcaniô.
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' nie je bezzmiłkòwą wôrtnotą zmiennoprzecynkòwą
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' nie je bezzmiłkòwą wôrtnotą całkòwitą
@@ -2102,6 +2106,10 @@ LoadTheParametersOfTheSelected=Wczëtiwô parametrë wëbrónégò rendera ë k�
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=Wczëtiwô le parametrë wëbrónégò rendera
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=Wczëtôj òbrôcanié wëzdrzatkù z lopka. Reszta scenë òstôwô bez zmianów.
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=Wczëtôj X, Y ë Z westrzódka, Z zôczątka, Z kùńca ë zoom z lopka. Reszta scenë òstôwô bez zmianów.
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=Wczëtiwanié i zapisëwanié pòczątkòwëch katalogów
 ;Loading and saving initial directories
 Log=Dzénnik
@@ -2148,6 +2156,10 @@ M3DMonteCarloFileM3c=Lopk Monte Carlo M3D (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=Parametrë M3D (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=Pòzycjô M3D (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=Òbrôcanié M3D (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=Projekt wòkselów M3D (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=Wczëtiwanié lopków fòrmùłów M3F:
@@ -3320,10 +3332,14 @@ SaveTheImageAsJPEGFile=Zapisywô òbrôzk jakò lopk JPEG, skalowóny jak bieżn
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=Zapisywô lopk M3C przë kòżdim òdswiéżenim, czej minãło 5 minut
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=Zapiszë òbrôcanié wëzdrzatkù w lopkù, żebë ùżëc gò w jinszi scenie.
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=Zapiszë nen projekt wòkselów
 ;Save this voxel project
 SaveType=Ôrt zapisu:
 ;Save type:
+SaveXYAndZMid=Zapiszë X, Y ë Z westrzódka, Z zôczątka, Z kùńca ë zoom w lopkù, żebë ùżëc jich w jinszi scenie.
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Zapiszë Z-bufor (png)
 ;Save Z buffer (png)
 SaveZBufferToo=Zapiszë téż Z-buffer

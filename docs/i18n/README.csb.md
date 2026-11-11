@@ -186,6 +186,7 @@ sprawdzëc sóm:
   `data.bin` z rëchlészi wersje jakno `.m3i`), ë òtemkni gò tuwò abò w
   Mandelbulb3D, bez kònwersji. (Renderë Monte Carlo trzimają swòje
   gwôsné zôpisczi, `.m3c` przebiegù je zapisywóny z `--m3c`.)
+* **Pòzycjô ë òbrôcanié we swòjich lopkach**: *Zapiszë* ë *Wczëtôj* w panelach Pòzycjô ë Òbrôcanié przédnégò òkna trzëmają pòzycjã (`.m3xyz`) abò òbrôcanié (`.m3r`) wëzdrzatkù w môłim tekstowim lopkù, żebë przeniesc je do jinszi scenë; reszta ti scenë òstôwô bez zmianów. Ùdba: Geoffrey N. Barnes.
 * **Skrótë klawiszowé dlô òknów**: kòmbinacjô klawiszów wëcygô na wiéch
   przédné òkno, Nawigatór, òkno Animacje, Fòrmùłë, Òswiecenié,
   Pòstprodukcja abò Monte Carlo z kòżdégò òkna (Ctrl+1 do Ctrl+7), a

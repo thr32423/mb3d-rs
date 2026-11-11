@@ -1893,6 +1893,10 @@ Iridescence=قوس قزح چمک:
 ;Iridescence:
 Iridescence0To1TheColours=قوس قزح چمک (0 سے 1): پتلی جھلی کے رنگ جو دیکھنے کے زاویے سے بدلتے ہیں، اور ان کی تبدیلی (0 سے 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} مقام کی فائل نہیں ہے۔
+;{} is not a position file.
+IsNotARotationFile={} گردش کی فائل نہیں ہے۔
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' درست اعشاری قدر نہیں ہے
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' درست عدد صحیح قدر نہیں ہے
@@ -2103,6 +2107,10 @@ LoadTheParametersOfTheSelected=منتخب رینڈر کے پیرامیٹرز ل�
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=صرف منتخب رینڈر کے پیرامیٹرز لوڈ کریں
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=نظارے کی گردش فائل سے لوڈ کریں۔ منظر کا باقی حصہ نہیں بدلتا۔
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=X، Y اور Z کا وسط، Z آغاز، Z اختتام اور زوم فائل سے لوڈ کریں۔ منظر کا باقی حصہ نہیں بدلتا۔
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=ابتدائی ڈائریکٹریز لوڈ اور محفوظ کرنا
 ;Loading and saving initial directories
 Log=لاگ
@@ -2149,6 +2157,10 @@ M3DMonteCarloFileM3c=M3D monte carlo فائل (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=M3D پیرامیٹر (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=M3D مقام (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=M3D گردش (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=M3D ووکسل پروجیکٹ (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=M3F فارمولا فائلیں لوڈ:
@@ -3321,10 +3333,14 @@ SaveTheImageAsJPEGFile=تصویر JPEG فائل کے طور پر محفوظ کر
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=ہر اپ ڈیٹ پر اور 5 منٹ گزرنے پر M3C فائل محفوظ کریں
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=نظارے کی گردش فائل میں محفوظ کریں تاکہ اسے کسی دوسرے منظر میں استعمال کیا جا سکے۔
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=یہ ووکسل پروجیکٹ محفوظ کریں
 ;Save this voxel project
 SaveType=محفوظ کرنے کی قسم:
 ;Save type:
+SaveXYAndZMid=X، Y اور Z کا وسط، Z آغاز، Z اختتام اور زوم فائل میں محفوظ کریں تاکہ انہیں کسی دوسرے منظر میں استعمال کیا جا سکے۔
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Z buffer محفوظ کریں (png)
 ;Save Z buffer (png)
 SaveZBufferToo=Z buffer بھی محفوظ کریں

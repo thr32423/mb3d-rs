@@ -1893,6 +1893,10 @@ Iridescence=虹色:
 ;Iridescence:
 Iridescence0To1TheColours=虹色 (0 から 1): 見る角度で変わる薄膜の色と、そのずれ (0 から 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} は位置ファイルではありません。
+;{} is not a position file.
+IsNotARotationFile={} は回転ファイルではありません。
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' は有効な浮動小数点数ではありません
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' は有効な整数ではありません
@@ -2103,6 +2107,10 @@ LoadTheParametersOfTheSelected=選択したレンダリングのパラメータ�
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=選択したレンダリングのパラメータだけを読み込みます
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=視点の回転をファイルから読み込みます。シーンのほかの部分は変わりません。
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=X・Y・Z の中心、Z 開始、Z 終了、ズームをファイルから読み込みます。シーンのほかの部分は変わりません。
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=読み込み/保存の初期フォルダ
 ;Loading and saving initial directories
 Log=ログ
@@ -2149,6 +2157,10 @@ M3DMonteCarloFileM3c=M3D モンテカルロファイル (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=M3D パラメータ (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=M3D 位置 (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=M3D 回転 (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=M3D ボクセルプロジェクト (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=M3F 数式ファイルの読み込み:
@@ -3321,10 +3333,14 @@ SaveTheImageAsJPEGFile=現在の表示と同じスケールで、画像を JPEG 
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=更新ごと、かつ5分経過した時点でM3Cファイルを保存します
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=視点の回転をファイルに保存し、別のシーンで使えるようにします。
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=このボクセルプロジェクトを保存します
 ;Save this voxel project
 SaveType=保存形式:
 ;Save type:
+SaveXYAndZMid=X・Y・Z の中心、Z 開始、Z 終了、ズームをファイルに保存し、別のシーンで使えるようにします。
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Zバッファを保存(png)
 ;Save Z buffer (png)
 SaveZBufferToo=Zバッファも保存

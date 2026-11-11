@@ -190,6 +190,7 @@ permettono di verificare ulteriormente da solo:
   versione precedente), e aprilo qui o in Mandelbulb3D, senza conversioni.
   (I render Monte Carlo tengono i propri dati; il `.m3c` di un passaggio si
   scrive con `--m3c`.)
+* **Posizione e rotazione in file propri**: *Salva* e *Carica* nei pannelli Posizione e Rotazione della finestra principale conservano la posizione (`.m3xyz`) o la rotazione (`.m3r`) della vista in un piccolo file di testo, per portarla in un'altra scena; il resto di quella scena non cambia. Un'idea di Geoffrey N. Barnes.
 * **Scorciatoie per le finestre**: una combinazione di tasti porta in primo
   piano, da qualsiasi finestra, la finestra principale, il Navigatore,
   l'Animazione, Formule, Illuminazione, Postproduzione o la finestra Monte

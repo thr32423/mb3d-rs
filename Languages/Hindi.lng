@@ -1893,6 +1893,10 @@ Iridescence=इंद्रधनुषी चमक:
 ;Iridescence:
 Iridescence0To1TheColours=इंद्रधनुषी चमक (0 से 1): पतली परत के रंग जो देखने के कोण के साथ बदलते हैं, और उनका खिसकाव (0 से 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} स्थिति फ़ाइल नहीं है।
+;{} is not a position file.
+IsNotARotationFile={} घुमाव फ़ाइल नहीं है।
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' मान्य दशमलव मान नहीं है
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' मान्य पूर्णांक मान नहीं है
@@ -2103,6 +2107,10 @@ LoadTheParametersOfTheSelected=चुने गए रेंडर के पै
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=केवल चुने गए रेंडर के पैरामीटर लोड करें
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=दृश्य का घुमाव फ़ाइल से लोड करें। दृश्य का बाकी हिस्सा नहीं बदलता।
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=X, Y और Z मध्य, Z प्रारंभ, Z अंत और ज़ूम को फ़ाइल से लोड करें। दृश्य का बाकी हिस्सा नहीं बदलता।
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=प्रारंभिक फ़ोल्डर लोड करना और सहेजना
 ;Loading and saving initial directories
 Log=लॉग
@@ -2149,6 +2157,10 @@ M3DMonteCarloFileM3c=M3D Monte Carlo फ़ाइल (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=M3D पैरामीटर (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=M3D स्थिति (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=M3D घुमाव (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=M3D वॉक्सेल प्रोजेक्ट (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=M3F फ़ॉर्मूला फ़ाइलें लोड:
@@ -3321,10 +3333,14 @@ SaveTheImageAsJPEGFile=छवि को वर्तमान दृश्य �
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=हर अपडेट पर और 5 मिनट बीतने पर M3C फ़ाइल सहेजें
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=दृश्य का घुमाव फ़ाइल में सहेजें, ताकि उसे किसी दूसरे दृश्य में उपयोग किया जा सके।
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=यह वॉक्सेल प्रोजेक्ट सहेजें
 ;Save this voxel project
 SaveType=सहेजने का प्रकार:
 ;Save type:
+SaveXYAndZMid=X, Y और Z मध्य, Z प्रारंभ, Z अंत और ज़ूम को फ़ाइल में सहेजें, ताकि उन्हें किसी दूसरे दृश्य में उपयोग किया जा सके।
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Z बफ़र सहेजें (png)
 ;Save Z buffer (png)
 SaveZBufferToo=Z बफ़र भी सहेजें

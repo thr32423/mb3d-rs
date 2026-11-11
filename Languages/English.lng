@@ -1892,6 +1892,10 @@ Iridescence=Iridescence:
 ;PostProForm.IridLbl.Caption
 Iridescence0To1TheColours=Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
 ;PostProForm.IridEdit.Hint, PostProForm.IridShiftEdit.Hint
+IsNotAPositionFile={} is not a position file.
+;the program
+IsNotARotationFile={} is not a rotation file.
+;the program
 IsNotAValidFloatingPoint='{}' is not a valid floating point value
 ;the program
 IsNotAValidIntegerValue='{}' is not a valid integer value
@@ -2081,7 +2085,7 @@ List=List
 LliMultiplier=Lli multiplier:
 ;Mand3DForm.Label2.Caption
 Load=Load
-;HistoryFrm.Button1.Caption, HistoryFrm.Load1.Caption, JITFormulaEditorForm.LoadFormulaBtn.Caption; the program
+;HistoryFrm.Button1.Caption, HistoryFrm.Load1.Caption, JITFormulaEditorForm.LoadFormulaBtn.Caption and 2 more; the program
 LoadANewFormulaFile=Load a new formula file
 ;FormulaGUIForm.SpeedButton11.Hint
 LoadBtrace2=Load btrace2...
@@ -2102,6 +2106,10 @@ LoadTheParametersOfTheSelected=Load the parameters of the selected render and co
 ;UnfinishedFrm.Button1.Hint
 LoadTheParametersOfTheSelected2=Load the parameters of the selected render only
 ;UnfinishedFrm.Button2.Hint
+LoadTheViewSRotationFrom=Load the view's rotation from a file. The rest of the scene stays as it is.
+;Mand3DForm.LoadRotationBtn.Hint
+LoadXYAndZMid=Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
+;Mand3DForm.LoadPositionBtn.Hint
 LoadingAndSavingInitialDirectories=Loading and saving initial directories
 ;IniDirForm.Caption
 Log=Log
@@ -2147,6 +2155,10 @@ M3DLightParameterM3l=M3D Light parameter (*.m3l)
 M3DMonteCarloFileM3c=M3D monte carlo file (*.m3c)
 ;the program
 M3DParameterM3p=M3D Parameter (*.m3p)
+;the program
+M3DPositionM3xyz=M3D position (*.m3xyz)
+;the program
+M3DRotationM3r=M3D rotation (*.m3r)
 ;the program
 M3DVoxelProjectM3v=M3D voxel project (*.m3v)
 ;the program
@@ -3257,7 +3269,7 @@ Saturation=Saturation
 Saturation0=Saturation:   0\s\s
 ;MCForm.Label31.Caption
 Save=Save
-;JITFormulaEditorForm.SaveBtn.Caption, Mand3DForm.TabSheet10.Caption
+;JITFormulaEditorForm.SaveBtn.Caption, Mand3DForm.SavePositionBtn.Caption, Mand3DForm.SaveRotationBtn.Caption and 1 more
 Save2=&Save
 ;the program
 SaveAM3cFile=Save a m3c file
@@ -3320,10 +3332,14 @@ SaveTheImageAsJPEGFile=Save the image as JPEG file, scaled like the current view
 ;Mand3DForm.SBsaveJPEG.Hint
 SaveTheM3CFileEveryUpdate=Save the M3C file every update and 5 minutes passed
 ;MCForm.CheckBox5.Hint
+SaveTheViewSRotationIn=Save the view's rotation in a file, to use it in another scene.
+;Mand3DForm.SaveRotationBtn.Hint
 SaveThisVoxelProject=Save this voxel project
 ;FVoxelExport.SpeedButton9.Hint
 SaveType=Save type:
 ;BulbTracer2Frm.Label10.Caption
+SaveXYAndZMid=Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
+;Mand3DForm.SavePositionBtn.Hint
 SaveZBufferPng=Save Z buffer (png)
 ;TilingForm.CheckBox2.Caption
 SaveZBufferToo=Save Z buffer too

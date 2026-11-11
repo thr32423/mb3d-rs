@@ -1892,6 +1892,10 @@ Iridescence=Iridescência:
 ;Iridescence:
 Iridescence0To1TheColours=Iridescência (0 a 1): as cores de uma película fina, que mudam com o ângulo de visão, e o seu deslocamento (0 a 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} não é um ficheiro de posição.
+;{} is not a position file.
+IsNotARotationFile={} não é um ficheiro de rotação.
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' não é um valor de ponto flutuante válido
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' não é um valor inteiro válido
@@ -2102,6 +2106,10 @@ LoadTheParametersOfTheSelected=Carregar os parâmetros do render selecionado e c
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=Carregar só os parâmetros do render selecionado
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=Carrega a rotação da vista de um ficheiro. O resto da cena não muda.
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=Carrega X, Y e Z centrais, Z inicial, Z final e zoom de um ficheiro. O resto da cena não muda.
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=Pastas iniciais para carregar e salvar
 ;Loading and saving initial directories
 Log=Log
@@ -2148,6 +2156,10 @@ M3DMonteCarloFileM3c=Arquivo Monte Carlo M3D (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=Parâmetros M3D (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=Posição M3D (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=Rotação M3D (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=Projeto de voxels M3D (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=Carregar arquivos de fórmula M3F:
@@ -3320,10 +3332,14 @@ SaveTheImageAsJPEGFile=Salvar a imagem como arquivo JPEG, em escala como a vista
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=Salvar o arquivo M3C a cada atualização, passados 5 minutos
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=Guarda a rotação da vista num ficheiro, para a usar noutra cena.
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=Salvar este projeto de voxels
 ;Save this voxel project
 SaveType=Tipo de saída:
 ;Save type:
+SaveXYAndZMid=Guarda X, Y e Z centrais, Z inicial, Z final e zoom num ficheiro, para os usar noutra cena.
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Salvar Z buffer (png)
 ;Save Z buffer (png)
 SaveZBufferToo=Salvar também o Z buffer

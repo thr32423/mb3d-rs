@@ -179,6 +179,10 @@ you check further on your own:
   `data.bin` of an earlier version as a `.m3i`), and open it here or in
   Mandelbulb3D, no conversion needed. (Monte Carlo renders keep their
   own records, the `.m3c` of a pass is written with `--m3c`.)
+* **Position and rotation in files of their own**: *Save* and *Load* in the
+  main window's Position and Rotation panels keep the view's position
+  (`.m3xyz`) or rotation (`.m3r`) in a small text file, to bring it to
+  another scene; the rest of that scene stays as it is. An idea of Geoffrey N. Barnes.
 * **Hotkeys for the windows**: a key combination brings the main window,
   the Navigator, the Animation, Formulas, Lighting, Post processing or
   Monte Carlo window to the front from any window (Ctrl+1 to Ctrl+7), and

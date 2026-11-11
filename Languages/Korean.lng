@@ -1893,6 +1893,10 @@ Iridescence=무지갯빛:
 ;Iridescence:
 Iridescence0To1TheColours=무지갯빛 (0에서 1): 보는 각도에 따라 바뀌는 얇은 막의 색과 그 이동 (0에서 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={}은(는) 위치 파일이 아닙니다.
+;{} is not a position file.
+IsNotARotationFile={}은(는) 회전 파일이 아닙니다.
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}'은(는) 올바른 부동소수점 값이 아닙니다
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}'은(는) 올바른 정수 값이 아닙니다
@@ -2103,6 +2107,10 @@ LoadTheParametersOfTheSelected=선택한 렌더링의 파라미터를 불러와 
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=선택한 렌더링의 파라미터만 불러옵니다
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=보기의 회전을 파일에서 불러옵니다. 장면의 나머지는 그대로입니다.
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=X, Y, Z 중심, Z 시작, Z 끝과 확대를 파일에서 불러옵니다. 장면의 나머지는 그대로입니다.
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=불러오기 및 저장 기본 폴더
 ;Loading and saving initial directories
 Log=로그
@@ -2149,6 +2157,10 @@ M3DMonteCarloFileM3c=M3D 몬테카를로 파일 (*.m3c)
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=M3D 매개변수 (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=M3D 위치 (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=M3D 회전 (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=M3D 복셀 프로젝트 (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=M3F 포뮬러 파일 불러오기:
@@ -3321,10 +3333,14 @@ SaveTheImageAsJPEGFile=이미지를 현재 보기 배율로 JPEG 파일에 저�
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=업데이트마다, 5분이 지났으면 M3C 파일을 저장합니다
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=보기의 회전을 파일에 저장하여 다른 장면에서 사용합니다.
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=이 복셀 프로젝트를 저장합니다
 ;Save this voxel project
 SaveType=저장 형식:
 ;Save type:
+SaveXYAndZMid=X, Y, Z 중심, Z 시작, Z 끝과 확대를 파일에 저장하여 다른 장면에서 사용합니다.
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Z 버퍼 저장(png)
 ;Save Z buffer (png)
 SaveZBufferToo=Z-buffer도 저장

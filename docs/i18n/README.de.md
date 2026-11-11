@@ -188,6 +188,7 @@ können Sie selbst weiter prüfen:
   `data.bin` einer früheren Version als `.m3i`), und öffnen Sie sie hier oder
   in Mandelbulb3D, ohne Umwandlung. (Monte-Carlo-Renderings führen eigene
   Aufzeichnungen; die `.m3c` eines Durchgangs wird mit `--m3c` geschrieben.)
+* **Position und Rotation in eigenen Dateien**: *Speichern* und *Laden* in den Feldern Position und Rotation des Hauptfensters halten die Position (`.m3xyz`) oder Rotation (`.m3r`) der Ansicht in einer kleinen Textdatei fest, um sie in eine andere Szene zu übernehmen; der Rest dieser Szene bleibt, wie er ist. Eine Idee von Geoffrey N. Barnes.
 * **Hotkeys für die Fenster**: eine Tastenkombination holt aus jedem Fenster
   das Hauptfenster, den Navigator, die Animation, Formeln, Beleuchtung,
   Nachbearbeitung oder das Monte-Carlo-Fenster nach vorne (Strg+1 bis

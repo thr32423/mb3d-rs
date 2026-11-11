@@ -188,6 +188,7 @@ pontos permitem que você confira mais por conta própria:
   `data.bin` de uma versão anterior como `.m3i`), e abra-o aqui ou no
   Mandelbulb3D, sem conversão. (Os renders Monte Carlo guardam seus
   próprios registros; o `.m3c` de uma passada é gravado com `--m3c`.)
+* **Posição e rotação em ficheiros próprios**: *Guardar* e *Carregar* nos painéis Posição e Rotação da janela principal mantêm a posição (`.m3xyz`) ou a rotação (`.m3r`) da vista num pequeno ficheiro de texto, para a levar para outra cena; o resto dessa cena não muda. Uma ideia de Geoffrey N. Barnes.
 * **Atalhos para as janelas**: uma combinação de teclas traz para a frente,
   a partir de qualquer janela, a janela principal, o Navegador, a janela
   Animação, Fórmulas, Iluminação, Pós-processamento ou Monte Carlo (Ctrl+1 a

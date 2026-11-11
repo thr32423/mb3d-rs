@@ -2419,12 +2419,15 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             };
             ui.save_dialog("main:autom3i", &o);
         }
+        "SavePositionClick" | "SaveRotationClick" | "LoadPositionClick" | "LoadRotationClick" => camera_file_dialog(app, ui, h),
         "PositionBtnClick" => {
             let v = !ui.visible(F, "PositionPnl");
+            place_under_heading(ui, "PositionPnl", "PositionBtn");
             ui.set_visible(F, "PositionPnl", v);
         }
         "RotationBtnClick" => {
             let v = !ui.visible(F, "RotationPnl");
+            place_under_heading(ui, "RotationPnl", "RotationBtn");
             ui.set_visible(F, "RotationPnl", v);
         }
         "SpeedButton30Click" => {
@@ -3661,6 +3664,100 @@ fn dlg_used(app: &mut Mb3d, key: &str, p: &std::path::Path) {
     }
 }
 
+/// `PositionBtnClick`/`RotationBtnClick` (Mand.pas:720, 3391): a panel about
+/// to open goes under its heading, not where it was when it closed. One
+/// pixel higher than MB3D's: its alignment puts the control being shown first
+/// when two have the same Top, ours keeps the form's order.
+fn place_under_heading(ui: &mut Ui, panel: &str, heading: &str) {
+    let h = ui.c(F, heading);
+    let top = h.top + h.height - 1;
+    ui.cm(F, panel).top = top;
+}
+
+/// The file dialog of the Save and Load buttons of the Position and Rotation
+/// panels (not in MB3D; the idea is Geoffrey N. Barnes's).
+fn camera_file_dialog(app: &mut Mb3d, ui: &mut Ui, handler: &str) {
+    let position = handler.ends_with("PositionClick");
+    let (label, ext) = if position { ("@MB:M3DPositionM3xyz", "m3xyz") } else { ("@MB:M3DRotationM3r", "m3r") };
+    let o = crate::vcl::dialogs::FileOptions {
+        filter: format!("{}|*.{ext}", tr(label)),
+        default_ext: ext.into(),
+        initial_dir: Some(dlg_dir(app, ext, super::ini::DIR_M3P)),
+        file_name: stem(&app.title),
+        ..Default::default()
+    };
+    let tag = if position { "xyz" } else { "rot" };
+    if handler.starts_with("Save") {
+        ui.save_dialog(&format!("main:save{tag}"), &o);
+    } else {
+        ui.open_dialog(&format!("main:load{tag}"), &o);
+    }
+}
+
+/// Saves the panel's values, or brings a file's values into the scene and
+/// leaves the rest of it alone. A load is one step of the undo button.
+fn camera_file_chosen(app: &mut Mb3d, ui: &mut Ui, what: &str, p: &std::path::Path) {
+    use crate::camera_file as cf;
+    let position = what.ends_with("xyz");
+    let ext = if position { "m3xyz" } else { "m3r" };
+    dlg_used(app, ext, p);
+    // what the windows show now, also values typed since the last calculation
+    app.make_scene(ui);
+    if what.starts_with("save") {
+        let sc = &app.scene;
+        let text = if position {
+            cf::position_text(&cf::Position { mid: sc.mid, z_start: sc.z_start, z_end: sc.z_end, zoom: sc.zoom })
+        } else {
+            cf::rotation_text(&sc.vgrads)
+        };
+        let p = p.with_extension(ext);
+        match crate::m3p::write_file(&p, text.as_bytes()) {
+            Ok(()) => app.message(ui, &trf("@MB:Saved2", &[&p.display()])),
+            Err(e) => app.message(ui, &format!("{}: {e}", p.display())),
+        }
+        return;
+    }
+    let text = match cf::read_text(p) {
+        Ok(t) => t.unwrap_or_default(),
+        Err(e) => {
+            app.message(ui, &format!("{}: {e}", p.display()));
+            return;
+        }
+    };
+    let wrong = if position { "@MB:IsNotAPositionFile" } else { "@MB:IsNotARotationFile" };
+    let before = app.scene.clone();
+    if position {
+        let Some(v) = cf::parse_position(&text) else {
+            app.message(ui, &trf(wrong, &[&p.display()]));
+            return;
+        };
+        let sc = &mut app.scene;
+        (sc.mid, sc.z_start, sc.z_end, sc.zoom) = (v.mid, v.z_start, v.z_end, v.zoom);
+        set(ui, "Edit9", &fts(v.mid[0]));
+        set(ui, "Edit10", &fts(v.mid[1]));
+        set(ui, "Edit17", &fts(v.mid[2]));
+        set(ui, "Edit1", &fts(v.z_start));
+        set(ui, "Edit3", &fts(v.z_end));
+        set(ui, "Edit5", &fts(v.zoom));
+    } else {
+        let Some(m) = cf::parse_rotation(&text) else {
+            app.message(ui, &trf(wrong, &[&p.display()]));
+            return;
+        };
+        app.scene.vgrads = m;
+        set_euler_edits(app, ui);
+    }
+    // both states: the undo button steps back to the one before the load
+    let after = std::mem::replace(&mut app.scene, before);
+    store_undo(app);
+    app.scene = after;
+    store_undo(app);
+    if !app.main.calculating {
+        ui.set_enabled(F, "SpeedButton9", app.main.undo.len() > 1);
+    }
+    paras_changed(app, ui);
+}
+
 /// `SetSaveDialogNames` (FileHandling.pas:457): the window's title, and
 /// the name the save dialogs offer, is the file's name without extension.
 pub fn set_save_names(app: &mut Mb3d, ui: &mut Ui, p: &std::path::Path) {
@@ -3787,6 +3884,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             app.main.ground_water_color = super::util::rgb_of(*c);
             ground_swatch(app, ui);
         }
+        ("savexyz" | "saverot" | "loadxyz" | "loadrot", DialogResult::File(Some(p))) => camera_file_chosen(app, ui, what, p),
         ("savem3p", DialogResult::File(Some(p))) => {
             dlg_used(app, what, p);
             app.make_scene(ui);

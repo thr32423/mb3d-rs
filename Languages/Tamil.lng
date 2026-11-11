@@ -1893,6 +1893,10 @@ Iridescence=பல்வண்ண மினுமினுப்பு:
 ;Iridescence:
 Iridescence0To1TheColours=பல்வண்ண மினுமினுப்பு (0 முதல் 1): மெல்லிய படலத்தின் நிறங்கள், பார்வைக் கோணத்துடன் மாறுபவை, மற்றும் அவற்றின் நகர்வு (0 முதல் 1)
 ;Iridescence (0 to 1): the colours of a thin film, changing with the angle of view, and their shift (0 to 1)
+IsNotAPositionFile={} ஒரு நிலைக் கோப்பு அல்ல.
+;{} is not a position file.
+IsNotARotationFile={} ஒரு சுழற்சிக் கோப்பு அல்ல.
+;{} is not a rotation file.
 IsNotAValidFloatingPoint='{}' சரியான மிதவைப் புள்ளி மதிப்பு அல்ல
 ;'{}' is not a valid floating point value
 IsNotAValidIntegerValue='{}' சரியான முழு எண் மதிப்பு அல்ல
@@ -2103,6 +2107,10 @@ LoadTheParametersOfTheSelected=தேர்ந்த ரெண்டரின்
 ;Load the parameters of the selected render and continue its calculation
 LoadTheParametersOfTheSelected2=தேர்ந்த ரெண்டரின் அளவுருக்களை மட்டும் ஏற்று
 ;Load the parameters of the selected render only
+LoadTheViewSRotationFrom=பார்வையின் சுழற்சியைக் கோப்பிலிருந்து ஏற்று. காட்சியின் மற்ற பகுதிகள் மாறாது.
+;Load the view's rotation from a file. The rest of the scene stays as it is.
+LoadXYAndZMid=X, Y, Z நடு, Z தொடக்கம், Z முடிவு, பெரிதாக்கம் ஆகியவற்றைக் கோப்பிலிருந்து ஏற்று. காட்சியின் மற்ற பகுதிகள் மாறாது.
+;Load X, Y and Z mid, Z start, Z end and zoom from a file. The rest of the scene stays as it is.
 LoadingAndSavingInitialDirectories=ஏற்றுதல் மற்றும் சேமித்தலின் தொடக்கக் கோப்பகங்கள்
 ;Loading and saving initial directories
 Log=பதிவு
@@ -2149,6 +2157,10 @@ M3DMonteCarloFileM3c=M3D மான்டே கார்லோ கோப்ப�
 ;M3D monte carlo file (*.m3c)
 M3DParameterM3p=M3D அளவுரு (*.m3p)
 ;M3D Parameter (*.m3p)
+M3DPositionM3xyz=M3D நிலை (*.m3xyz)
+;M3D position (*.m3xyz)
+M3DRotationM3r=M3D சுழற்சி (*.m3r)
+;M3D rotation (*.m3r)
 M3DVoxelProjectM3v=M3D voxel திட்டம் (*.m3v)
 ;M3D voxel project (*.m3v)
 M3FFormulaFilesLoad=M3F சூத்திரக் கோப்புகள் ஏற்றம்:
@@ -3321,10 +3333,14 @@ SaveTheImageAsJPEGFile=படத்தை JPEG கோப்பாக, தற்�
 ;Save the image as JPEG file, scaled like the current view.
 SaveTheM3CFileEveryUpdate=ஒவ்வொரு புதுப்பிப்பிலும் 5 நிமிடங்கள் கடந்த பின்னும் M3C கோப்பைச் சேமி
 ;Save the M3C file every update and 5 minutes passed
+SaveTheViewSRotationIn=பார்வையின் சுழற்சியை வேறொரு காட்சியில் பயன்படுத்த கோப்பில் சேமி.
+;Save the view's rotation in a file, to use it in another scene.
 SaveThisVoxelProject=இந்த voxel திட்டத்தைச் சேமி
 ;Save this voxel project
 SaveType=சேமிப்பு வகை:
 ;Save type:
+SaveXYAndZMid=X, Y, Z நடு, Z தொடக்கம், Z முடிவு, பெரிதாக்கம் ஆகியவற்றை வேறொரு காட்சியில் பயன்படுத்த கோப்பில் சேமி.
+;Save X, Y and Z mid, Z start, Z end and zoom in a file, to use them in another scene.
 SaveZBufferPng=Z buffer ஐச் சேமி (png)
 ;Save Z buffer (png)
 SaveZBufferToo=Z buffer ஐயும் சேமி

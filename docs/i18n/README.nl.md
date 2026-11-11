@@ -181,6 +181,7 @@ kunt u zelf verder controleren:
   `data.bin` van een eerdere versie als `.m3i`), en open het hier of in
   Mandelbulb3D, zonder conversie. (Monte Carlo-renders houden hun
   eigen gegevens bij; de `.m3c` van een pass wordt geschreven met `--m3c`.)
+* **Positie en rotatie in eigen bestanden**: *Opslaan* en *Laden* in de panelen Positie en Rotatie van het hoofdvenster bewaren de positie (`.m3xyz`) of rotatie (`.m3r`) van het beeld in een klein tekstbestand, om die naar een andere scène te brengen; de rest van die scène blijft zoals die is. Een idee van Geoffrey N. Barnes.
 * **Sneltoetsen voor de vensters**: een toetscombinatie haalt het hoofdvenster,
   de Navigator, de Animatiemaker, Formules, Belichting, Nabewerking of het
   Monte Carlo-venster vanuit elk venster naar voren (Ctrl+1 tot Ctrl+7), en

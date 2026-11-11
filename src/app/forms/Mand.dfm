@@ -72,7 +72,7 @@ object Mand3DForm: TMand3DForm
       Left = 1
       Top = 22
       Width = 151
-      Height = 150
+      Height = 172
       Align = alTop
       BevelOuter = bvNone
       UseDockManager = False
@@ -265,12 +265,36 @@ object Mand3DForm: TMand3DForm
         TabOrder = 5
         Text = '1.0'
       end
+      object SavePositionBtn: TButton
+        Left = 3
+        Top = 151
+        Width = 71
+        Height = 20
+        Hint = '@MB:SaveXYAndZMid'
+        Caption = '@MB:Save'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 6
+        OnClick = SavePositionClick
+      end
+      object LoadPositionBtn: TButton
+        Left = 76
+        Top = 151
+        Width = 71
+        Height = 20
+        Hint = '@MB:LoadXYAndZMid'
+        Caption = '@MB:Load'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 7
+        OnClick = LoadPositionClick
+      end
     end
     object RotationPnl: TPanel
       Left = 1
       Top = 193
       Width = 151
-      Height = 158
+      Height = 187
       Align = alTop
       BevelOuter = bvNone
       UseDockManager = False
@@ -397,6 +421,30 @@ object Mand3DForm: TMand3DForm
         TabOrder = 4
         Text = '0.0'
         OnChange = SpinEdit2Change
+      end
+      object SaveRotationBtn: TButton
+        Left = 3
+        Top = 165
+        Width = 71
+        Height = 20
+        Hint = '@MB:SaveTheViewSRotationIn'
+        Caption = '@MB:Save'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 5
+        OnClick = SaveRotationClick
+      end
+      object LoadRotationBtn: TButton
+        Left = 76
+        Top = 165
+        Width = 71
+        Height = 20
+        Hint = '@MB:LoadTheViewSRotationFrom'
+        Caption = '@MB:Load'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 6
+        OnClick = LoadRotationClick
       end
     end
     object Memo1: TMemo

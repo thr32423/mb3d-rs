@@ -184,6 +184,7 @@ możesz sprawdzić sam:
   wcześniejszej wersji jako `.m3i`) i otwórz go tutaj lub w Mandelbulb3D,
   bez żadnej konwersji. (Rendery Monte Carlo mają własne zapisy, `.m3c`
   przebiegu jest zapisywany z `--m3c`.)
+* **Pozycja i obrót we własnych plikach**: *Zapisz* i *Wczytaj* w panelach Pozycja i Obrót głównego okna zachowują pozycję (`.m3xyz`) lub obrót (`.m3r`) widoku w małym pliku tekstowym, aby przenieść je do innej sceny; reszta tej sceny pozostaje bez zmian. Pomysł: Geoffrey N. Barnes.
 * **Skróty klawiszowe do okien**: kombinacja klawiszy przywołuje na
   wierzch okno główne, Nawigator, okno Animacji, Formuł, Oświetlenia,
   Postprocessingu lub Monte Carlo z dowolnego okna (Ctrl+1 do Ctrl+7), a

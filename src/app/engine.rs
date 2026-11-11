@@ -57,6 +57,11 @@ pub enum Job {
     /// Calculate 3D with the swarm: the picture in tiles rendered by the
     /// computers that watch the shared folder `dir`, put together here
     Swarm { scene: Scene, dir: std::path::PathBuf, cols: u32, rows: u32, name: String },
+    /// The kept G-buffer painted with everything ([`Engine::set_gbuffer`]
+    /// shows it at once without the reflections, clouds and depth of
+    /// field: they take minutes with a slow formula, issue 32); stopped,
+    /// the quick picture stays
+    Finish,
 }
 
 /// A step of the post calculations on the G-buffer that "Calculate now"
@@ -470,15 +475,20 @@ impl Engine {
         o.cancelled = true;
     }
 
-    /// Sets the kept G-buffer from an .m3i file and paints it.
-    pub fn set_gbuffer(&self, sc: &Scene, gbuf: Vec<SiLight>) -> Result<(), String> {
+    /// Sets the kept G-buffer (from an .m3i file, or doubled in size) and
+    /// paints it at once without the passes that march again (reflections,
+    /// clouds) or need the whole picture (depth of field): the window must
+    /// not wait for them.  True when the scene has some of them: the
+    /// caller starts [`Job::Finish`] unless it shows a finished picture.
+    pub fn set_gbuffer(&self, sc: &Scene, gbuf: Vec<SiLight>) -> Result<bool, String> {
         let p = CalcParams::new(sc)?;
         let (w, h) = (sc.width as usize, sc.height as usize);
         if gbuf.len() != w * h {
             return Err(tr("@MB:TheImageBufferHasTheWrong"));
         }
         let raw = Arc::new(gbuf);
-        let (rgb, plain) = crate::render::paint_plain(sc, &p, &raw);
+        let (rgb, plain) = crate::render::paint_preview_plain(sc, &p, &raw);
+        let unfinished = p.slice_2d == 0 && (sc.mc.reflections || sc.clouds.is_some() || sc.dof.is_some());
         *self.0.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(sc), w, h }));
         let mut o = self.0.out.locked();
         o.rgb = Some(Arc::new(rgb));
@@ -486,7 +496,7 @@ impl Engine {
         o.w = w;
         o.h = h;
         o.ver += 1;
-        Ok(())
+        Ok(unfinished)
     }
 }
 
@@ -601,6 +611,7 @@ fn worker(e: Arc<Inner>) {
             Job::Recalc { scene, rect, div, nearer, hs, deao, keep_as } => recalc(&e, &scene, rect, div, nearer, (hs, deao, keep_as), &cancel),
             Job::ReflectSel { scene, rect } => reflect_sel(&e, &scene, rect, &cancel),
             Job::Swarm { scene, dir, cols, rows, name } => swarm_tiles(&e, &scene, &dir, cols, rows, name, gen, &cancel),
+            Job::Finish => finish(&e, &cancel),
         }))
         .unwrap_or_else(|p| {
             let m = p.downcast_ref::<String>().cloned().or_else(|| p.downcast_ref::<&str>().map(|s| s.to_string())).unwrap_or_default();
@@ -965,6 +976,20 @@ fn repaint(e: &Inner, sc: &Scene, opts: (bool, Option<PostStep>, u8), cancel: &(
     // (painted only: the kept result is still the one of its old settings)
     let post_sig = if reuse { g.as_ref().map(|cur| cur.post_sig.clone()).unwrap_or(psig) } else { psig };
     *g = Some(Arc::new(Base { scene: target, params: b.params.clone(), raw, post, post_sig, w: b.w, h: b.h }));
+    Ok(())
+}
+
+/// [`Job::Finish`]: the kept G-buffer painted with the reflections, clouds
+/// and depth of field, with their stages and progress; the kept result
+/// stays as it is.
+fn finish(e: &Inner, cancel: &(dyn Fn() -> bool + Sync)) -> Result<(), String> {
+    let Some(b) = e.base.locked().clone() else { return Ok(()) };
+    let (progress, stage) = (stage_progress(e), stage_namer(e));
+    let (rgb, _, plain) = crate::render::paint_reporting_plain(&b.scene, &b.params, &b.post, &progress, &stage, cancel);
+    if cancel() {
+        return Err("cancelled".into());
+    }
+    e.publish_plain(rgb, plain, b.w, b.h, "", None);
     Ok(())
 }
 

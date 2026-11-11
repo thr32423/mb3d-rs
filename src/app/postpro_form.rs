@@ -689,7 +689,10 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             let light = app.scene.lighting.clone();
             sc.lighting = light;
             match app.eng.set_gbuffer(&sc, g) {
-                Ok(()) => {
+                Ok(unfinished) => {
+                    if unfinished {
+                        app.eng.start(super::engine::Job::Finish);
+                    }
                     app.scene.width = sc.width;
                     app.scene.height = sc.height;
                     app.scene.de_stop = sc.de_stop;

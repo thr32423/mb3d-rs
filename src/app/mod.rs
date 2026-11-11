@@ -188,16 +188,22 @@ impl Mb3d {
         if is_m3i {
             if let Some((w, h, g)) = crate::m3p::gbuffer_from_m3i(&data) {
                 if w == self.scene.width as usize && h == self.scene.height as usize {
-                    self.eng.set_gbuffer(&self.scene, g)?;
+                    let unfinished = self.eng.set_gbuffer(&self.scene, g)?;
                     // the finished picture kept with it ("Save image in
                     // m3i") is shown as it was, not painted again
                     // (FileHandling.pas:2309); a lighting change repaints
-                    if let Some((iw, ih, rgb)) = crate::m3p::image_from_m3i(&data) {
-                        if (iw, ih) == (w, h) {
+                    let kept = crate::m3p::image_from_m3i(&data).filter(|(iw, ih, _)| (*iw, *ih) == (w, h));
+                    match kept {
+                        Some((_, _, rgb)) => {
                             let mut o = self.eng.0.out.locked();
                             o.rgb = Some(std::sync::Arc::new(rgb));
                             o.ver += 1;
                         }
+                        // without it the reflections, clouds and depth of
+                        // field follow in the background (the window does
+                        // not freeze for them, issue 32)
+                        None if unfinished => self.eng.start(engine::Job::Finish),
+                        None => {}
                     }
                 }
             }

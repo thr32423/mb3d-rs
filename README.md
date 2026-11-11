@@ -7,7 +7,7 @@
 <!-- languages:end -->
 
 <!-- latest:start -->
-**Latest release: [v0.3.8](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.8)** (11 Nov 2026, 05:39 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
+**Latest release: [v0.3.9](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.9)** (11 Nov 2026, 13:38 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
 <!-- latest:end -->
 
 mb3d-rs is [Mandelbulb3D](https://github.com/thargor6/mb3d) (MB3D), the
@@ -1493,6 +1493,17 @@ Each commit links to its full description and code on GitHub; the downloads
 of a release are on its page. Times are in UTC.
 
 <!-- updates:start -->
+### [v0.3.9](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.9) · 11 Nov 2026, 13:38 UTC
+
+| Commit | What it does |
+|---|---|
+| [`1cbc21c`](https://github.com/thr32423/mb3d-rs/commit/1cbc21c1cd70cc6b58cf771eaac7ba8e2b84052f) | Version number and release notes of this release |
+| [`5f3a829`](https://github.com/thr32423/mb3d-rs/commit/5f3a829c9cdfc40eda909d1267a4e64fe101ff92) | Opening an .m3i no longer freezes the program: the G-buffer is painted at once without the reflections, clouds and depth of field (they took over a minute on the window's thread with a slow formula, issue 32, and an .m3i with its finished picture threw that painting away); without a kept picture they follow as a background job (Job::Finish) with progress and Stop, also after doubling the image size in the post processing window |
+| [`3a786a0`](https://github.com/thr32423/mb3d-rs/commit/3a786a07e879600d30b05636c700dc4cb7d96324) | File previews: a History thumbnail is no longer stopped for a dialog that closed (the stopped dialog preview of the same file made it stop again at every start, its tile stayed empty), and a stopped preview makes the History window ask again for what it shows (found in a review by Claude Fable 5.2) |
+| [`b12057b`](https://github.com/thr32423/mb3d-rs/commit/b12057b24a193c007aa3ba0bc8c5ff710704515d) | JosKn-KleinIFS and JosKn-ModIFS on the graphics card: the translation of a formula's machine code to the card's shader knows movzx / movsx, cmovcc, setcc, fcomi, fcmov and the x87 control word (fnstcw / fldcw, the rounding mode of Delphi's Trunc and Floor, followed only in a formula that loads one, so the other formulas' shaders stay the same to the byte). Six formulas are new on the card (also SinePowSum, SurfBox, diamondIFS, eiffieCarIFS), each the same as the interpreter on 256 random inputs (gpuformulas); the code of the other 513 is unchanged, no example file uses the six. Gestation_02.m3i (issue 32) renders in 24 s instead of 81 s, the shaders cached |
+| [`e508a61`](https://github.com/thr32423/mb3d-rs/commit/e508a61982c78e6cc5461896db23e0a4e73f2fe1) | File previews leave out the reflections and stop when nobody waits for them: the open dialog's preview of an old .m3i with reflections and a slow formula (JosKn-KleinIFS, issue 32) never appeared and took the processor from the program for minutes; it now shows after about 2 s, and a preview stops when its dialog closes or another file is clicked (the History window's queue keeps its pictures); mutagen::preview_cancellable |
+| [`a03f223`](https://github.com/thr32423/mb3d-rs/commit/a03f223493b4a85934e91415a1f4ff84210247c5) | README: Updates for v0.3.8 |
+
 ### [v0.3.8](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.8) · 11 Nov 2026, 05:39 UTC
 
 | Commit | What it does |
@@ -1521,15 +1532,7 @@ of a release are on its page. Times are in UTC.
 | [`f3af5e6`](https://github.com/thr32423/mb3d-rs/commit/f3af5e6ce958611f5a1866c3d4da849a37b7fa6c) | The Mandelbulber hybrid test no longer needs the Menger3 formula file installed: it is in the MB3D bundle, not in the repository, so the test failed on every CI machine since v0.3.5 while it passed here; where the formula is missing the test now expects the note that names it and the slot left out |
 | [`bc9b14e`](https://github.com/thr32423/mb3d-rs/commit/bc9b14ecbde5ec3da1c9e7114c8c5090298c8860) | README: Updates for v0.3.6 |
 
-### [v0.3.6](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.6) · 9 Nov 2026, 06:14 UTC
-
-| Commit | What it does |
-|---|---|
-| [`0c6171c`](https://github.com/thr32423/mb3d-rs/commit/0c6171cab8682b9adf3615c0ac18939ea453f70e) | Version number and release notes of this release |
-| [`16b0475`](https://github.com/thr32423/mb3d-rs/commit/16b0475effdfe2f21eeedfbac0be1ad0291d2caa) | The Droste effect (not in MB3D): the picture repeated in itself as in Escher's Print Gallery, a last pass over the whole picture after the finishing (src/droste.rs). The ring between two radii around a centre is kept and repeated towards the centre and outwards in log-polar coordinates; Escher's factor alpha = 1 + twist * ln(outer / inner) / (2 pi i) (de Smit and Lenstra, 2003) joins the copies along a spiral (twist 1), 0 gives concentric copies; the phase zooms through one shrink step and phase 1 is phase 0, so an animation of the phase from 0 to 1 is an endless zoom from one calculated picture; neighbouring copies crossfade over a part of a step, the copies that shrink below the pixels fade into the ring's mean colour, four reads per pixel, a source point outside the picture takes the copy one step inward. Scene keys droste = cx, cy, inner, outer (parts of the picture's size) or off, droste_twist, droste_phase, droste_blend in the mb3d-rs block, blended between keyframes (phase not wrapped, so a keyframe at 1 zooms); whole pictures only (not tiles, parts, panoramas, the splat views); Monte Carlo pictures after the noise filter. The Droste window (DrosteFrm, Post processing > Finishing > Droste effect...): the calculated picture at a reduced size with the effect live, the centre set by a click or a drag on it, the radii by the mouse wheel (Shift: the inner), the centre and both radii drawn over it, twist, crossfade, phase with a slider, Paint now repaints the finishing at full size; the engine keeps the picture before the effect (Output::plain, render::paint_with_plain) so the preview never applies it twice. 20 labels in all 18 languages, README with a picture (docs/img/droste.jpg, Dodeca Torus mix) in all 17 READMEs, TECHNICAL.md, the MCP scene guide, examples/drosteshots.rs makes the screenshots headless. Tests: the ring stays without twist and blend, phase 1 is phase 0, thread independence, clamping and keys round trip, a panorama has none, the effect leaves the G-buffer and a part of the picture alone and off is byte-identical, the keyframe blend. The filter's controls follow Josh Sommers's MathMap script and Tom Beddard's Pixel Bender filter. |
-| [`9f3774a`](https://github.com/thr32423/mb3d-rs/commit/9f3774ac3a454bac4582640ef72c1cb0d796f2c1) | README: Updates for v0.3.5 |
-
-All 119 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
+All 120 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
 <!-- updates:end -->
 
 ## For developers

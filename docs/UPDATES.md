@@ -5,6 +5,17 @@ Every release of mb3d-rs, newest first, with the time it was published
 description and code; the downloads of a release are on its page. Back to
 the [README](../README.md).
 
+## [v0.3.9](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.9) · 11 Nov 2026, 13:38 UTC
+
+| Commit | What it does |
+|---|---|
+| [`1cbc21c`](https://github.com/thr32423/mb3d-rs/commit/1cbc21c1cd70cc6b58cf771eaac7ba8e2b84052f) | Version number and release notes of this release |
+| [`5f3a829`](https://github.com/thr32423/mb3d-rs/commit/5f3a829c9cdfc40eda909d1267a4e64fe101ff92) | Opening an .m3i no longer freezes the program: the G-buffer is painted at once without the reflections, clouds and depth of field (they took over a minute on the window's thread with a slow formula, issue 32, and an .m3i with its finished picture threw that painting away); without a kept picture they follow as a background job (Job::Finish) with progress and Stop, also after doubling the image size in the post processing window |
+| [`3a786a0`](https://github.com/thr32423/mb3d-rs/commit/3a786a07e879600d30b05636c700dc4cb7d96324) | File previews: a History thumbnail is no longer stopped for a dialog that closed (the stopped dialog preview of the same file made it stop again at every start, its tile stayed empty), and a stopped preview makes the History window ask again for what it shows (found in a review by Claude Fable 5.2) |
+| [`b12057b`](https://github.com/thr32423/mb3d-rs/commit/b12057b24a193c007aa3ba0bc8c5ff710704515d) | JosKn-KleinIFS and JosKn-ModIFS on the graphics card: the translation of a formula's machine code to the card's shader knows movzx / movsx, cmovcc, setcc, fcomi, fcmov and the x87 control word (fnstcw / fldcw, the rounding mode of Delphi's Trunc and Floor, followed only in a formula that loads one, so the other formulas' shaders stay the same to the byte). Six formulas are new on the card (also SinePowSum, SurfBox, diamondIFS, eiffieCarIFS), each the same as the interpreter on 256 random inputs (gpuformulas); the code of the other 513 is unchanged, no example file uses the six. Gestation_02.m3i (issue 32) renders in 24 s instead of 81 s, the shaders cached |
+| [`e508a61`](https://github.com/thr32423/mb3d-rs/commit/e508a61982c78e6cc5461896db23e0a4e73f2fe1) | File previews leave out the reflections and stop when nobody waits for them: the open dialog's preview of an old .m3i with reflections and a slow formula (JosKn-KleinIFS, issue 32) never appeared and took the processor from the program for minutes; it now shows after about 2 s, and a preview stops when its dialog closes or another file is clicked (the History window's queue keeps its pictures); mutagen::preview_cancellable |
+| [`a03f223`](https://github.com/thr32423/mb3d-rs/commit/a03f223493b4a85934e91415a1f4ff84210247c5) | README: Updates for v0.3.8 |
+
 ## [v0.3.8](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.8) · 11 Nov 2026, 05:39 UTC
 
 | Commit | What it does |

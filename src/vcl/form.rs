@@ -807,6 +807,17 @@ impl Form {
         c.scroll_y = c.scroll_y.clamp(0, (ey - ch).max(0));
     }
 
+    /// The controls docked to side `al`, hidden ones too, from that edge
+    /// inwards: by position, and at equal positions as in the last layout.
+    fn docked_in_order(&mut self, kids: &[Id], al: Align, pos: impl Fn(&Control) -> i32) -> Vec<Id> {
+        let mut v: Vec<Id> = kids.iter().copied().filter(|&k| self.ctl[k].align == al && !self.ctl[k].kind.non_visual()).collect();
+        v.sort_by_key(|&k| (pos(&self.ctl[k]), self.ctl[k].align_rank));
+        for (i, &k) in v.iter().enumerate() {
+            self.ctl[k].align_rank = i as u32;
+        }
+        v
+    }
+
     fn align_controls(&mut self, id: Id, kids: &[Id]) {
         let mut r = self.align_rect(id);
         let (pw, ph) = {
@@ -816,35 +827,45 @@ impl Form {
         let vis: Vec<Id> = kids.iter().copied().filter(|&k| self.ctl[k].visible && !self.ctl[k].kind.non_visual()).collect();
         let aligns: Vec<(Id, Align)> = vis.iter().map(|&k| (k, self.ctl[k].align)).collect();
         let by = |al: Align| -> Vec<Id> { aligns.iter().filter(|(_, a)| *a == al).map(|(k, _)| *k).collect() };
-        let mut tops = by(Align::Top);
-        tops.sort_by_key(|&k| self.ctl[k].top);
-        for k in tops {
+        // A hidden control stays in the row at no size, so it comes back at its
+        // place wherever its neighbours have moved meanwhile.
+        for k in self.docked_in_order(kids, Align::Top, |c| c.top) {
             let h = self.ctl[k].height;
-            self.ctl[k].set_bounds(r.x, r.y, r.w, h);
-            r.y += h;
-            r.h -= h;
+            if self.ctl[k].visible {
+                self.ctl[k].set_bounds(r.x, r.y, r.w, h);
+                r.y += h;
+                r.h -= h;
+            } else {
+                self.ctl[k].top = r.y;
+            }
         }
-        let mut bottoms = by(Align::Bottom);
-        bottoms.sort_by_key(|&k| -(self.ctl[k].top + self.ctl[k].height));
-        for k in bottoms {
+        for k in self.docked_in_order(kids, Align::Bottom, |c| -(c.top + c.height)) {
             let h = self.ctl[k].height;
-            self.ctl[k].set_bounds(r.x, r.bottom() - h, r.w, h);
-            r.h -= h;
+            if self.ctl[k].visible {
+                self.ctl[k].set_bounds(r.x, r.bottom() - h, r.w, h);
+                r.h -= h;
+            } else {
+                self.ctl[k].top = r.bottom() - h;
+            }
         }
-        let mut lefts = by(Align::Left);
-        lefts.sort_by_key(|&k| self.ctl[k].left);
-        for k in lefts {
+        for k in self.docked_in_order(kids, Align::Left, |c| c.left) {
             let w = self.ctl[k].width;
-            self.ctl[k].set_bounds(r.x, r.y, w, r.h);
-            r.x += w;
-            r.w -= w;
+            if self.ctl[k].visible {
+                self.ctl[k].set_bounds(r.x, r.y, w, r.h);
+                r.x += w;
+                r.w -= w;
+            } else {
+                self.ctl[k].left = r.x;
+            }
         }
-        let mut rights = by(Align::Right);
-        rights.sort_by_key(|&k| -(self.ctl[k].left + self.ctl[k].width));
-        for k in rights {
+        for k in self.docked_in_order(kids, Align::Right, |c| -(c.left + c.width)) {
             let w = self.ctl[k].width;
-            self.ctl[k].set_bounds(r.right() - w, r.y, w, r.h);
-            r.w -= w;
+            if self.ctl[k].visible {
+                self.ctl[k].set_bounds(r.right() - w, r.y, w, r.h);
+                r.w -= w;
+            } else {
+                self.ctl[k].left = r.right() - w;
+            }
         }
         for k in by(Align::Client) {
             self.ctl[k].set_bounds(r.x, r.y, r.w.max(0), r.h.max(0));
@@ -1157,6 +1178,67 @@ pub(crate) fn display_rect(f: &Form, id: Id) -> Rect {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A hidden docked panel comes back at its place, whatever was opened or
+    /// closed around it meanwhile, on every side (the Rotation heading above
+    /// the Position panel, the Formula window's DE combination block below
+    /// the bottom block).
+    #[test]
+    fn hidden_docked_controls_come_back_at_their_place() {
+        let dock = |side: &str, pos: &str, size: &str| {
+            let item = |n: &str, p: i32, s: i32, hidden: bool| {
+                format!("  object {n}: TPanel\n    {pos} = {p}\n    {size} = {s}\n    Align = {side}\n{}  end\n", if hidden { "    Visible = False\n" } else { "" })
+            };
+            // from the edge inwards, in the form file's mixed order of the real windows
+            let far = side == "alBottom" || side == "alRight";
+            let at = |p: i32, s: i32| if far { 400 - p - s } else { p };
+            format!(
+                "object F: TForm\n  ClientWidth = 400\n  ClientHeight = 400\n{}{}{}{}{}end\n",
+                item("H1", at(0, 20), 20, false),
+                item("H2", at(70, 20), 20, false),
+                item("P1", at(20, 50), 50, true),
+                item("P2", at(90, 50), 50, true),
+                item("Z", at(140, 30), 30, false)
+            )
+        };
+        let order = ["H1", "P1", "H2", "P2", "Z"];
+        for (side, pos, size) in [("alTop", "Top", "Height"), ("alBottom", "Top", "Height"), ("alLeft", "Left", "Width"), ("alRight", "Left", "Width")] {
+            let far = side == "alBottom" || side == "alRight";
+            // every sequence of four toggles, each from a fresh window
+            for seq in 0..16u32 {
+                let mut f = Form::from_dfm(&dock(side, pos, size), &Theme::new(super::super::theme::Style::default())).unwrap();
+                f.layout();
+                for bit in 0..4 {
+                    let p = f.id(if seq >> bit & 1 == 0 { "P1" } else { "P2" }).unwrap();
+                    f.ctl[p].visible = !f.ctl[p].visible;
+                    f.layout();
+                    let mut edge = 0;
+                    for n in order {
+                        let k = f.id(n).unwrap();
+                        if !f.ctl[k].visible {
+                            continue;
+                        }
+                        let c = &f.ctl[k];
+                        let (p, s) = if size == "Height" { (c.top, c.height) } else { (c.left, c.width) };
+                        assert_eq!(if far { 400 - p - s } else { p }, edge, "{side} {n} in sequence {seq:04b} after toggle {bit}");
+                        edge += s;
+                    }
+                }
+            }
+        }
+    }
+
+    /// Code that moves a docked control still changes the order.
+    #[test]
+    fn a_docked_control_moved_by_code_changes_place() {
+        let text = "object F: TForm\n  ClientWidth = 100\n  ClientHeight = 100\n  object A: TPanel\n    Top = 0\n    Height = 10\n    Align = alTop\n  end\n  object B: TPanel\n    Top = 10\n    Height = 10\n    Align = alTop\n  end\nend\n";
+        let mut f = Form::from_dfm(text, &Theme::new(super::super::theme::Style::default())).unwrap();
+        f.layout();
+        let (a, b) = (f.id("A").unwrap(), f.id("B").unwrap());
+        f.ctl[a].top = 15;
+        f.layout();
+        assert_eq!((f.ctl[b].top, f.ctl[a].top), (0, 10));
+    }
 
     /// A scroll box scrolled to the end of a big picture shows a smaller
     /// one from its top left, not shifted out of view (issue #20: a

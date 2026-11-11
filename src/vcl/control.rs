@@ -181,6 +181,8 @@ pub struct Control {
     pub width: i32,
     pub height: i32,
     pub align: Align,
+    /// its place among the controls docked to the same side, for equal positions
+    pub(crate) align_rank: u32,
     pub anchors: u8,
     /// distance to the parent's right / bottom edge at design time
     pub(crate) anchor_r: i32,
@@ -380,6 +382,7 @@ impl Control {
             width: 0,
             height: 0,
             align: Align::None,
+            align_rank: 0,
             anchors: AK_LEFT | AK_TOP,
             anchor_r: 0,
             anchor_b: 0,

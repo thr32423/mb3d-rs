@@ -2422,12 +2422,10 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "SavePositionClick" | "SaveRotationClick" | "LoadPositionClick" | "LoadRotationClick" => camera_file_dialog(app, ui, h),
         "PositionBtnClick" => {
             let v = !ui.visible(F, "PositionPnl");
-            place_under_heading(ui, "PositionPnl", "PositionBtn");
             ui.set_visible(F, "PositionPnl", v);
         }
         "RotationBtnClick" => {
             let v = !ui.visible(F, "RotationPnl");
-            place_under_heading(ui, "RotationPnl", "RotationBtn");
             ui.set_visible(F, "RotationPnl", v);
         }
         "SpeedButton30Click" => {
@@ -3662,16 +3660,6 @@ fn dlg_used(app: &mut Mb3d, key: &str, p: &std::path::Path) {
     if let Some(d) = p.parent().filter(|d| !d.as_os_str().is_empty()) {
         app.main.last_dirs.insert(key.to_string(), d.to_path_buf());
     }
-}
-
-/// `PositionBtnClick`/`RotationBtnClick` (Mand.pas:720, 3391): a panel about
-/// to open goes under its heading, not where it was when it closed. One
-/// pixel higher than MB3D's: its alignment puts the control being shown first
-/// when two have the same Top, ours keeps the form's order.
-fn place_under_heading(ui: &mut Ui, panel: &str, heading: &str) {
-    let h = ui.c(F, heading);
-    let top = h.top + h.height - 1;
-    ui.cm(F, panel).top = top;
 }
 
 /// The file dialog of the Save and Load buttons of the Position and Rotation

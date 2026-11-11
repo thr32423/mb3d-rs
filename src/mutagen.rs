@@ -452,6 +452,12 @@ pub fn mutate(cfg: &MutationConfig, s: &Scene, rng: &mut Rng) -> Scene {
 /// (aspect kept, DE stop scaled), without volumetric light; `blank`
 /// removes background picture, depth and fog colours (probing images).
 pub fn preview(s: &Scene, w: usize, h: usize, blank: bool, threads: usize) -> Result<(Vec<u8>, usize, usize), String> {
+    preview_cancellable(s, w, h, blank, threads, &|| false)
+}
+
+/// [`preview`] that stops (`Err("cancelled")`) as soon as `cancel`
+/// returns true: a file preview nobody waits for any more.
+pub fn preview_cancellable(s: &Scene, w: usize, h: usize, blank: bool, threads: usize, cancel: &(dyn Fn() -> bool + Sync)) -> Result<(Vec<u8>, usize, usize), String> {
     let mut p = s.clone();
     p.tiling = None;
     p.calc_rect = None;
@@ -483,11 +489,10 @@ pub fn preview(s: &Scene, w: usize, h: usize, blank: bool, threads: usize) -> Re
     // compiling a shader for each takes seconds for a tiny image
     #[cfg(feature = "gpu")]
     let was = crate::gpu::cpu_in_thread(true);
-    let r = crate::render::render(&p, &|_, _| {});
+    let r = crate::render::calculate_cancellable(&p, &|_, _| {}, cancel).and_then(|(cp, g)| crate::render::paint_cancellable(&p, &cp, &g, cancel));
     #[cfg(feature = "gpu")]
     crate::gpu::cpu_in_thread(was);
-    let r = r?;
-    Ok((r.rgb, pw as usize, ph as usize))
+    Ok((r?, pw as usize, ph as usize))
 }
 
 /// `CalcFilteredCoverage`: share of pixels with a strong horizontal edge

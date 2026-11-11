@@ -7,6 +7,9 @@
 //! window's image) with the file's size and formulas.  The History
 //! window's rows and tiles ask for many pictures at once ([`thumb`]):
 //! they queue up and are calculated one at a time, the most wanted first.
+//! A preview leaves out the reflections (a scene of a slow formula took
+//! minutes for them, issue 32), and the one asked for by a dialog or the
+//! History window's image stops when that shows something else or closes.
 //! The last [`KEEP`] pictures are kept (read again when the file
 //! changed).
 
@@ -16,6 +19,7 @@ use crate::vcl::lang::{tr, trf};
 use crate::vcl::{bitmap::Bitmap, Ui};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
 
@@ -25,8 +29,11 @@ const DLG: &str = "FileDlg";
 pub const W: usize = 240;
 pub const H: usize = 180;
 
+/// A preview's picture (RGB, width, height) or why there is none.
+type Picture = Result<(Vec<u8>, usize, usize), String>;
+
 /// A finished preview: the picture (or why there is none) and its text.
-type Done = (PathBuf, Result<(Vec<u8>, usize, usize), String>, String);
+type Done = (PathBuf, Picture, String);
 
 /// The form, image and label a preview goes to.
 type Target = (String, String, String);
@@ -44,6 +51,14 @@ struct Cached {
     used: u64,
 }
 
+/// The preview being calculated: its file, its stop, and the view that
+/// asked for it (None: only the History window's queue).
+struct Job {
+    path: PathBuf,
+    cancel: Arc<AtomicBool>,
+    view: Option<Target>,
+}
+
 #[derive(Default)]
 pub struct State {
     cache: HashMap<PathBuf, Cached>,
@@ -55,6 +70,8 @@ pub struct State {
     /// the files wanted and not calculated yet, the first next
     queue: Vec<PathBuf>,
     busy: bool,
+    /// the preview being calculated
+    job: Option<Job>,
     result: Arc<Mutex<Option<Done>>>,
     /// counts the finished previews: a view of many pictures paints again
     /// when it changed
@@ -89,7 +106,7 @@ fn describe(sc: &crate::scene::Scene) -> String {
 
 /// Calculates the preview of `path` (in the calling thread): parameters
 /// rendered small, an image read and scaled down.
-fn calculate(path: &Path) -> (Result<(Vec<u8>, usize, usize), String>, String) {
+fn calculate(path: &Path, cancel: &(dyn Fn() -> bool + Sync)) -> (Picture, String) {
     if is_image(path) {
         return match crate::image::load(path) {
             Ok(img) => {
@@ -101,22 +118,28 @@ fn calculate(path: &Path) -> (Result<(Vec<u8>, usize, usize), String>, String) {
         };
     }
     // (any kind of parameters: MB3D's, text scenes, Mandelbulber's)
-    let sc = match crate::animfile::load_scene(path) {
+    let mut sc = match crate::animfile::load_scene(path) {
         Ok((sc, _)) => sc,
         Err(e) => return (Err(e), String::new()),
     };
     let text = describe(&sc);
+    // no reflections: with a slow formula they take minutes even this small
+    sc.mc.reflections = false;
     let threads = std::thread::available_parallelism().map_or(4, |n| n.get()).saturating_sub(1).max(1);
-    (crate::mutagen::preview(&sc, W, H, false, threads), text)
+    (crate::mutagen::preview_cancellable(&sc, W, H, false, threads, cancel), text)
 }
 
 fn start(app: &mut Mb3d, ui: &Ui, path: PathBuf) {
     app.preview.busy = true;
     let slot = app.preview.result.clone();
     let waker = ui.waker();
+    let cancel = Arc::new(AtomicBool::new(false));
+    let view = app.preview.shown.as_ref().filter(|(p, _)| *p == path).map(|(_, t)| t.clone());
+    app.preview.job = Some(Job { path: path.clone(), cancel: cancel.clone(), view });
     std::thread::spawn(move || {
+        let stop = || cancel.load(Ordering::Relaxed);
         // (a panic must not leave `busy` set: no more previews then)
-        let (r, text) = std::panic::catch_unwind(|| calculate(&path)).unwrap_or_else(|_| (Err(tr("@MB:TheCalculationFailedLower")), String::new()));
+        let (r, text) = std::panic::catch_unwind(|| calculate(&path, &stop)).unwrap_or_else(|_| (Err(tr("@MB:TheCalculationFailedLower")), String::new()));
         *slot.locked() = Some((path, r, text));
         if let Some(w) = &waker {
             w.wake();
@@ -223,25 +246,27 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             show(ui, &t, None, &tr("@MB:NoPreviewForThisFile"));
         }
     }
+    // the view's preview nobody waits for any more: its window closed or
+    // shows another file, and the History window does not want it either
+    if let Some(j) = &app.preview.job {
+        if let Some(t) = &j.view {
+            let shown = ui.showing(&t.0) && app.preview.shown.as_ref().is_some_and(|(p, _)| *p == j.path);
+            if !shown && !app.preview.queue.contains(&j.path) {
+                j.cancel.store(true, Ordering::Relaxed);
+            }
+        }
+    }
     let done = app.preview.result.locked().take();
     if let Some((p, r, text)) = done {
         app.preview.busy = false;
-        let entry = match r {
-            Ok((rgb, w, h)) => (Some(Bitmap::from_rgb(w, h, &rgb)), text),
-            Err(e) => (None, trf("@MB:NoPreview", &[&e])),
-        };
-        if let Some((shown, t)) = &app.preview.shown {
-            if *shown == p {
-                show(ui, &t.clone(), entry.0.clone(), &entry.1);
-                super::formula_book_form::picture_caption(app, ui);
-            }
+        let stopped = app.preview.job.take().is_some_and(|j| j.cancel.load(Ordering::Relaxed));
+        // a stopped preview is not kept: it is calculated again when it is
+        // wanted again
+        if stopped && r.is_err() {
+            crate::log::info("preview", &format!("stopped the preview of {} (not wanted any more)", p.display()));
+        } else {
+            keep(app, ui, p, r, text);
         }
-        let m = modified(&p);
-        app.preview.tick += 1;
-        let used = app.preview.tick;
-        app.preview.cache.insert(p, Cached { picture: entry.0, text: entry.1, modified: m, used });
-        trim(app);
-        app.preview.version += 1;
     }
     if !app.preview.busy {
         while !app.preview.queue.is_empty() {
@@ -252,4 +277,24 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             }
         }
     }
+}
+
+/// A finished preview: shown when its view still shows the file, and kept.
+fn keep(app: &mut Mb3d, ui: &mut Ui, p: PathBuf, r: Picture, text: String) {
+    let entry = match r {
+        Ok((rgb, w, h)) => (Some(Bitmap::from_rgb(w, h, &rgb)), text),
+        Err(e) => (None, trf("@MB:NoPreview", &[&e])),
+    };
+    if let Some((shown, t)) = &app.preview.shown {
+        if *shown == p {
+            show(ui, &t.clone(), entry.0.clone(), &entry.1);
+            super::formula_book_form::picture_caption(app, ui);
+        }
+    }
+    let m = modified(&p);
+    app.preview.tick += 1;
+    let used = app.preview.tick;
+    app.preview.cache.insert(p, Cached { picture: entry.0, text: entry.1, modified: m, used });
+    trim(app);
+    app.preview.version += 1;
 }

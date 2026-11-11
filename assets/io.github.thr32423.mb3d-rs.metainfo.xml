@@ -88,6 +88,12 @@
   </recommends>
 
   <releases>
+    <release version="0.3.8" date="2026-11-11">
+      <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.8</url>
+      <description>
+        <p>Position and rotation can be saved and loaded in files of their own, to bring a view to another scene. Panels that open and close come back at their place. On closing, every window goes at once and a shader still compiling is finished in the background, so the next start of that scene does not compile it again.</p>
+      </description>
+    </release>
     <release version="0.3.7" date="2026-11-10">
       <url>https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.7</url>
       <description>

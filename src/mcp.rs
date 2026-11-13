@@ -435,7 +435,7 @@ fn call(opt: &Options, name: &str, a: &Value) -> Result<Vec<Value>, String> {
 
 /// The scene's view as the angles of the `rotation` key, when they give
 /// back the same view (checked).
-fn view_angles(sc: &Scene) -> Option<[f64; 3]> {
+pub(crate) fn view_angles(sc: &Scene) -> Option<[f64; 3]> {
     // (the inverse of math::vgrads_from_angles: its rows are
     // [c3 c2, -s3 c2, -s2], [.., .., -c2 s1], [.., .., c2 c1])
     let m = crate::math::normalise_matrix_to(1.0, &sc.vgrads);

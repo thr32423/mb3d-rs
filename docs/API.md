@@ -40,7 +40,7 @@ output carries messages for people; the standard output only answers.
 | op | members | answer |
 |---|---|---|
 | `hello` | | `name`, `version`, `protocol` (1), `gpu` (built with graphics card support) |
-| `open` | one of `file` (a path), `text` (scene text or MB3D text parameters), `data` (a file's bytes as Base64) with `name` (its file name), `preset` (a formula's name) | `scene` (its number), `width`, `height`, `formulas`, `notes` (what the loader could not carry over) |
+| `open` | one of `file` (a path), `text` (scene text or MB3D text parameters), `data` (a file's bytes as Base64) with `name` (its file name), `preset` (a formula's name) | `scene` (its number), `width`, `height`, `formulas`, `rotation` (the view as the three angles of the `rotation` key, or null), `notes` (what the loader could not carry over) |
 | `text` | `scene` | `text`: the scene as `key = value` lines |
 | `set` | `scene`, `changes` (`key = value` lines of global keys) | like `open`; a wrong line changes nothing |
 | `resize` | `scene`, `width` and/or `height` | like `open`; the look of the picture is kept |

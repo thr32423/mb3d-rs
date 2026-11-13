@@ -121,6 +121,12 @@ impl Fractal {
         self.scene.height = h as i32;
     }
 
+    /// The view as the angles of the `rotation` key, in degrees (None for
+    /// a view they cannot give back).
+    pub fn rotation(&self) -> Option<[f64; 3]> {
+        crate::mcp::view_angles(&self.scene)
+    }
+
     /// The formulas in use: name and iterations.
     pub fn formulas(&self) -> Vec<(String, i32)> {
         self.scene.formulas.iter().filter(|f| f.iterations > 0).map(|f| (f.formula.name(), f.iterations)).collect()
@@ -214,6 +220,9 @@ mod tests {
         assert_eq!(f.size(), (64, 48));
         f.set("iterations = 8").unwrap();
         assert!(f.text().contains("iterations = 8"));
+        f.set("rotation = -40, 30, 10").unwrap();
+        let r = f.rotation().unwrap();
+        assert!((r[0] + 40.0).abs() < 1e-6 && (r[1] - 30.0).abs() < 1e-6 && (r[2] - 10.0).abs() < 1e-6, "{r:?}");
         assert!(f.set("no_such_key = 1").is_err());
         assert!(f.text().contains("iterations = 8"), "a wrong line leaves the scene as it was");
         let again = Fractal::from_text(&f.text()).unwrap();

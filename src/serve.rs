@@ -64,11 +64,13 @@ impl Server {
     fn about(id: u64, f: &Fractal) -> Vec<(String, Value)> {
         let (w, h) = f.size();
         let formulas = f.formulas().into_iter().map(|(n, i)| obj([("name", s(n)), ("iterations", num(i as f64))])).collect();
+        let rotation = f.rotation().map_or(Value::Null, |r| Value::Arr(r.iter().map(|a| num((a * 1e6).round() / 1e6)).collect()));
         vec![
             ("scene".into(), num(id as f64)),
             ("width".into(), num(w as f64)),
             ("height".into(), num(h as f64)),
             ("formulas".into(), Value::Arr(formulas)),
+            ("rotation".into(), rotation),
             ("notes".into(), Value::Arr(f.notes().iter().map(s).collect())),
         ]
     }

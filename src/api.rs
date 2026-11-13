@@ -34,6 +34,15 @@ pub fn use_gpu(on: bool) {
     let _ = on;
 }
 
+/// To call before the program ends when the graphics card was used: waits
+/// until no formula is being compiled for the card any more (a process
+/// that ends inside the driver crashes there, and the compile would be lost
+/// for the next run).  `MB3D_COMPILE_WAIT_SECS` limits the wait.
+pub fn finish() {
+    #[cfg(feature = "gpu")]
+    crate::gpu::wait_compiles(crate::gpu::compile_wait_limit());
+}
+
 /// A further folder with formula files (.m3f).
 pub fn add_formula_folder(dir: &Path) {
     crate::formulas::add_formula_dir(dir.to_path_buf());

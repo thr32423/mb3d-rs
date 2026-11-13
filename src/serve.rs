@@ -161,6 +161,9 @@ impl Server {
     }
 
     fn render(&self, a: &Value, emit: &(dyn Fn(Value) + Sync), cancelled: &(dyn Fn() -> bool + Sync)) -> Result<Vec<(String, Value)>, String> {
+        if cancelled() {
+            return Err("cancelled".into());
+        }
         let mut f = self.scene(a)?.1.clone();
         let (w, h) = sized(f.size(), arg_size(a, "width")?, arg_size(a, "height")?);
         if (w, h) != f.size() {
@@ -255,8 +258,9 @@ fn send(v: &Value) {
 pub fn serve() -> Result<(), String> {
     crate::log::info("serve", "serve mode started");
     // the lines are read on a thread of their own, so that `cancel` is
-    // seen while a picture is calculated: it stops every request sent
-    // before it (the one running and those waiting)
+    // seen while a picture is calculated: it stops every `render` sent
+    // before it (the one running and those waiting); other requests are
+    // carried out, so a change of a scene is never lost
     let cancel_upto = Arc::new(AtomicU64::new(0));
     let (tx, rx) = mpsc::channel::<(u64, Result<Value, String>)>();
     let reader_cancel = cancel_upto.clone();
@@ -285,7 +289,6 @@ pub fn serve() -> Result<(), String> {
     for (seq, req) in rx {
         let cancelled = || cancel_upto.load(Ordering::SeqCst) >= seq;
         let reply = match req {
-            Ok(req) if cancelled() => obj([("id", req.get("id").cloned().unwrap_or(Value::Null)), ("ok", Value::Bool(false)), ("error", s("cancelled"))]),
             Ok(req) => server.handle(&req, &|v| send(&v), &cancelled),
             Err(e) => obj([("id", Value::Null), ("ok", Value::Bool(false)), ("error", s(format!("not JSON: {e}")))]),
         };

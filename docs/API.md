@@ -51,7 +51,7 @@ output carries messages for people; the standard output only answers.
 | `formulas` | `name` (optional) | without: `names`; with: `settings` (the formula's keys and default values) |
 | `guide` | | `text`: which scene keys do what |
 | `gpu` | `on` | calculate on the graphics card or the processor |
-| `cancel` | | stops every request sent before it: they answer `"error":"cancelled"` |
+| `cancel` | | stops every `render` sent before it (running or waiting): they answer `"error":"cancelled"`; other requests are still carried out |
 
 The picture of `render`:
 
@@ -85,7 +85,7 @@ The process ends when its standard input is closed.
 gives a `Picture` (`rgb`, `depth`, `png()`, `depth_png()`), reporting
 progress and asking a `cancel` function through `RenderOptions`.
 `api::use_gpu(true)` switches the graphics card on (a library starts with
-it off). `cargo doc --open` shows the rest. The other modules of the crate
+it off); a program that did calls `api::finish()` before it ends. `cargo doc --open` shows the rest. The other modules of the crate
 are the program's internals and change without notice.
 
 ## Other languages

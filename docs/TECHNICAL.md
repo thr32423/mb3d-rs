@@ -1825,7 +1825,7 @@ the modules behind it change; `mb3d serve` offers it to programs in other
 languages as JSON lines on the standard input and output, the process
 staying with its scenes, the card and the compiled formulas. A thread
 reads the lines, so `cancel` is seen during a calculation and stops every
-request sent before it. Experimental: `hello` tells the protocol number.
+render sent before it. Experimental: `hello` tells the protocol number.
 
 **AI assistants** (`src/mcp.rs`, `mb3d mcp`; JSON in `src/json.rs`, our
 own, as the command line program has no dependencies). The Model Context

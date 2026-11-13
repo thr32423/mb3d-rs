@@ -5,6 +5,18 @@ Every release of mb3d-rs, newest first, with the time it was published
 description and code; the downloads of a release are on its page. Back to
 the [README](../README.md).
 
+## [v0.3.10](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.10) · 13 Nov 2026, 09:21 UTC
+
+| Commit | What it does |
+|---|---|
+| [`6276962`](https://github.com/thr32423/mb3d-rs/commit/6276962156a75051c17357c885e37f2be74fb33e) | Version number and release notes of this release |
+| [`50a41ad`](https://github.com/thr32423/mb3d-rs/commit/50a41addce14112cd94521520489a830c4ce3725) | README (17 languages): the engine for other programs (mb3d serve) |
+| [`e86ddb8`](https://github.com/thr32423/mb3d-rs/commit/e86ddb84cddd0c5e57659366bedd74ed4f6094e3) | api, serve: a formula's own values (formula_list, set_formula; the formula request, settings in the answers) |
+| [`433c05b`](https://github.com/thr32423/mb3d-rs/commit/433c05bf7379a37aae450c3c1f69c19f71e8cef4) | serve: cancel stops renders only (a change of a scene is never lost); api::finish waits for the card's compiles before a program ends |
+| [`8416951`](https://github.com/thr32423/mb3d-rs/commit/8416951f07c3668e6ad13f8afe33bfe1a20be9fa) | api: the view's angles (Fractal::rotation, rotation in serve's answers) |
+| [`bbf919f`](https://github.com/thr32423/mb3d-rs/commit/bbf919f69b73536d333981007671d65fa4195c32) | The engine for other programs (experimental): mb3d::api, a small surface over the renderer (open, set, resize, render with depth, progress, cancel), and mb3d serve, the same as JSON lines on standard input and output (docs/API.md) |
+| [`adfa327`](https://github.com/thr32423/mb3d-rs/commit/adfa327c31cb48da1830faad495212da56bf3ea6) | README: Updates for v0.3.9 |
+
 ## [v0.3.9](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.9) · 11 Nov 2026, 13:38 UTC
 
 | Commit | What it does |

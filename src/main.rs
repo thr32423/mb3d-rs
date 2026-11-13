@@ -22,6 +22,7 @@ USAGE:
     mb3d montecarlo FILE [-o image.png] [OPTIONS]                  path traced image
     mb3d swarm worker DIR | list DIR                               share rendering through a shared folder
     mb3d resume [--clear [KEY]] [--m3i KEY FILE]                   unfinished renders kept for continuing
+    mb3d serve                                                     the engine for other programs (JSON lines)
     mb3d vr360 FILE.mp4|FILE.jpg [-o OUT] [--stereo mono|tb|lr]    mark a 360 video or photo for VR players
     mb3d benchmark [--cpu]                                         the fixed benchmark scene, a result to post
     (mb3d animate --help, mb3d batch --help, ...)
@@ -381,6 +382,7 @@ fn run() -> Result<(), String> {
         Some("swarm") => return swarm_cmd(&all[1..]),
         Some("resume") => return resume_cmd(&all[1..]),
         Some("mcp") => return mcp_cmd(&all[1..]),
+        Some("serve") => return serve_cmd(&all[1..]),
         Some("vr360") | Some("vr") => return vr360_cmd(&all[1..]),
         Some("benchmark") | Some("bench") => return bench_cmd(&all[1..]),
         _ => {}
@@ -977,6 +979,44 @@ fn mcp_cmd(argv: &[String]) -> Result<(), String> {
     }
     args_read();
     mb3d::mcp::serve(opt)
+}
+
+const SERVE_USAGE: &str = "\
+mb3d serve - the engine for programs in other languages (experimental)
+
+USAGE:
+    mb3d serve [OPTIONS]
+
+A program starts `mb3d serve` and talks to it through its standard input and
+output: a request per line as JSON, an answer per line (docs/API.md). The
+process keeps the scenes, the graphics card and the compiled formulas between
+requests. Nothing listens on the network.
+
+OPTIONS:
+        --cpu                Calculate on the processor only
+        --formulas <DIR>     A further folder with formula files (.m3f)
+        --maps <DIR>         A further folder with map pictures
+    -h, --help               This help";
+
+/// `mb3d serve`: the engine for other programs (see serve.rs).
+fn serve_cmd(argv: &[String]) -> Result<(), String> {
+    let mut it = argv.iter();
+    while let Some(a) = it.next() {
+        let mut val = || it.next().cloned().ok_or_else(|| format!("{a} needs a value"));
+        match a.as_str() {
+            "-h" | "--help" => {
+                println!("{SERVE_USAGE}");
+                return Ok(());
+            }
+            "--cpu" => use_gpu(false),
+            "--gpu" => use_gpu(true),
+            "--formulas" => mb3d::formulas::add_formula_dir(val()?.into()),
+            "--maps" => mb3d::maps::add_map_dir(val()?.into()),
+            s => return Err(unknown_option(s, SERVE_USAGE, "mb3d serve --help")),
+        }
+    }
+    args_read();
+    mb3d::serve::serve()
 }
 
 /// `mb3d resume`: the unfinished renders kept for continuing.

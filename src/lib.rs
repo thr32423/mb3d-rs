@@ -34,6 +34,7 @@
 #![deny(unsafe_code)]
 
 pub mod anim;
+pub mod api;
 pub mod autopilot;
 #[cfg(feature = "gui")]
 pub mod app;
@@ -72,6 +73,7 @@ pub mod log;
 pub mod mandelbulber;
 pub mod noise;
 pub mod mcp;
+pub mod serve;
 #[cfg(feature = "gpu")]
 pub mod gpu;
 pub mod image;

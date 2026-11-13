@@ -46,7 +46,7 @@ agreement: ask, then pass confirm_large: true.";
 
 /// What the keys of a scene do, for an assistant turning wishes into
 /// settings (the `scene_guide` tool).
-const GUIDE: &str = "\
+pub(crate) const GUIDE: &str = "\
 How to change a scene (mb3d scene text, as describe_scene shows it)
 
 Two ways with change_scene:

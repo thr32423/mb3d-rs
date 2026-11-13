@@ -1817,6 +1817,16 @@ lines, the newest followed) or an earlier day's file, filtered by level,
 kind and words, the selected line in full below; "Copy" copies the
 selected line or all listed ones.
 
+**Other programs** (`src/api.rs`, `src/serve.rs`, `mb3d serve`;
+[API.md](API.md)): `api` is a small surface over the renderer (a
+`Fractal` is opened, changed with the scene text's `key = value` lines
+and rendered to a `Picture` with its depth), meant to stay the same while
+the modules behind it change; `mb3d serve` offers it to programs in other
+languages as JSON lines on the standard input and output, the process
+staying with its scenes, the card and the compiled formulas. A thread
+reads the lines, so `cancel` is seen during a calculation and stops every
+request sent before it. Experimental: `hello` tells the protocol number.
+
 **AI assistants** (`src/mcp.rs`, `mb3d mcp`; JSON in `src/json.rs`, our
 own, as the command line program has no dependencies). The Model Context
 Protocol over the standard input and output (JSON-RPC 2.0, a message a

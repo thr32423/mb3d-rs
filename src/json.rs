@@ -347,6 +347,32 @@ pub fn base64(data: &[u8]) -> String {
     out
 }
 
+/// The bytes of a Base64 text (standard alphabet; padding and white space
+/// are optional).
+pub fn base64_decode(text: &str) -> Result<Vec<u8>, String> {
+    let mut out = Vec::with_capacity(text.len() / 4 * 3);
+    let (mut n, mut bits) = (0u32, 0u32);
+    for c in text.bytes() {
+        let v = match c {
+            b'A'..=b'Z' => c - b'A',
+            b'a'..=b'z' => c - b'a' + 26,
+            b'0'..=b'9' => c - b'0' + 52,
+            b'+' | b'-' => 62,
+            b'/' | b'_' => 63,
+            b'=' | b' ' | b'\n' | b'\r' | b'\t' => continue,
+            _ => return Err("not Base64".into()),
+        };
+        n = n << 6 | v as u32;
+        bits += 6;
+        if bits >= 8 {
+            bits -= 8;
+            out.push((n >> bits) as u8);
+            n &= (1 << bits) - 1;
+        }
+    }
+    Ok(out)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -376,5 +402,10 @@ mod tests {
         assert_eq!(base64(b"fo"), "Zm8=");
         assert_eq!(base64(b"foo"), "Zm9v");
         assert_eq!(base64(b"foobar"), "Zm9vYmFy");
+        for t in [&b""[..], b"f", b"fo", b"foo", b"foobar", &[0, 255, 128, 7]] {
+            assert_eq!(base64_decode(&base64(t)).unwrap(), t);
+        }
+        assert_eq!(base64_decode("Zm9v\nYmFy").unwrap(), b"foobar");
+        assert!(base64_decode("Zm9v!").is_err());
     }
 }

@@ -190,8 +190,9 @@ you check further on your own:
   and stop. mb3d keeps running between pictures, so the next one starts at
   once, and stays offline. [docs/API.md](docs/API.md) describes the
   requests and the same as a Rust library. Modules for Python and
-  JavaScript, a C library and plug-ins for Blender, GIMP, Krita, ComfyUI
-  and Jupyter are being prepared.
+  JavaScript and a C library are in [mb3d-bindings](https://github.com/thr32423/mb3d-bindings);
+  a [notebook](https://mybinder.org/v2/gh/thr32423/mb3d-bindings/main?urlpath=lab%2Ftree%2Fnotebook%2Fmb3d.ipynb)
+  lets you try them online, with nothing to install.
 
   <a href="docs/img/api_explorer.png"><img src="docs/img/api_explorer_small.png" width="300" alt="A page in the browser turning a fractal that mb3d calculates behind it"></a>
 

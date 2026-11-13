@@ -108,7 +108,7 @@ mb3d-rs 就是 [Mandelbulb3D](https://github.com/thargor6/mb3d)（MB3D）这款
   `data.bin` 写成 `.m3i`），然后在本程序或
   Mandelbulb3D 中打开它，无需转换。（蒙特卡洛渲染保留自己的记录，某一遍的 `.m3c` 用 `--m3c` 写出。）
 * **位置和旋转各有专用文件**：主窗口“位置”和“旋转”面板中的“保存”和“加载”可将视图的位置（`.m3xyz`）或旋转（`.m3r`）存入小文本文件，以便带到其他场景；该场景的其余部分保持不变。此想法来自 Geoffrey N. Barnes。
-* **其他程序可以使用引擎**（`mb3d serve`，实验性）：任何语言的程序都可以启动 mb3d，并以 JSON 行向它请求图像：打开参数文件或公式，更改设置和公式自身的数值，计算图像及其深度，带进度和停止。mb3d 在两幅图像之间保持运行，因此下一幅立即开始，并且保持离线。[docs/API.md](../API.md) 说明了这些请求以及同样功能的 Rust 库。用于 Python 和 JavaScript 的模块、C 库以及用于 Blender、GIMP、Krita、ComfyUI 和 Jupyter 的插件正在准备中。
+* **其他程序可以使用引擎**（`mb3d serve`，实验性）：任何语言的程序都可以启动 mb3d，并以 JSON 行向它请求图像：打开参数文件或公式，更改设置和公式自身的数值，计算图像及其深度，带进度和停止。mb3d 在两幅图像之间保持运行，因此下一幅立即开始，并且保持离线。[docs/API.md](../API.md) 说明了这些请求以及同样功能的 Rust 库。用于 Python 和 JavaScript 的模块以及 C 库都在 [mb3d-bindings](https://github.com/thr32423/mb3d-bindings)；可在[笔记本](https://mybinder.org/v2/gh/thr32423/mb3d-bindings/main?urlpath=lab%2Ftree%2Fnotebook%2Fmb3d.ipynb)中在线试用，无需安装任何东西。
 
   <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="浏览器中的页面转动分形，mb3d 在其后计算"></a>
 

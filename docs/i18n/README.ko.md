@@ -168,7 +168,7 @@ GitHub 저장소에서 유해한 소프트웨어의 징후를 검사하는 독�
   변환 없이 이 프로그램이나 Mandelbulb3D에서 열 수 있습니다. (몬테카를로 렌더링은
   자체 기록을 보관하며, 패스의 `.m3c`는 `--m3c`로 저장됩니다.)
 * **위치와 회전을 별도 파일로**: 메인 창의 위치 및 회전 패널에 있는 저장과 불러오기로 보기의 위치(`.m3xyz`)나 회전(`.m3r`)을 작은 텍스트 파일에 담아 다른 장면으로 가져올 수 있습니다. 그 장면의 나머지는 그대로입니다. Geoffrey N. Barnes의 아이디어입니다.
-* **다른 프로그램이 엔진을 사용할 수 있습니다** (`mb3d serve`, 실험적): 어떤 언어의 프로그램이든 mb3d를 실행하고 JSON 줄로 그림을 요청합니다. 매개변수 파일이나 공식 열기, 설정과 공식 고유의 값 변경, 깊이와 함께 그림 계산, 진행 상황과 중지. mb3d는 그림 사이에도 계속 실행되므로 다음 그림이 바로 시작되며, 오프라인으로 유지됩니다. 요청과 같은 기능의 Rust 라이브러리는 [docs/API.md](../API.md)에 설명되어 있습니다. Python과 JavaScript 모듈, C 라이브러리, Blender·GIMP·Krita·ComfyUI·Jupyter용 플러그인을 준비 중입니다.
+* **다른 프로그램이 엔진을 사용할 수 있습니다** (`mb3d serve`, 실험적): 어떤 언어의 프로그램이든 mb3d를 실행하고 JSON 줄로 그림을 요청합니다. 매개변수 파일이나 공식 열기, 설정과 공식 고유의 값 변경, 깊이와 함께 그림 계산, 진행 상황과 중지. mb3d는 그림 사이에도 계속 실행되므로 다음 그림이 바로 시작되며, 오프라인으로 유지됩니다. 요청과 같은 기능의 Rust 라이브러리는 [docs/API.md](../API.md)에 설명되어 있습니다. Python과 JavaScript 모듈, C 라이브러리는 [mb3d-bindings](https://github.com/thr32423/mb3d-bindings)에 있습니다. [노트북](https://mybinder.org/v2/gh/thr32423/mb3d-bindings/main?urlpath=lab%2Ftree%2Fnotebook%2Fmb3d.ipynb)에서 아무것도 설치하지 않고 온라인으로 써 볼 수 있습니다.
 
   <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="브라우저의 페이지가 프랙털을 돌리고 그 뒤에서 mb3d가 계산한다"></a>
 

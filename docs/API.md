@@ -94,7 +94,9 @@ are the program's internals and change without notice.
 ## Other languages
 
 Wrappers around `mb3d serve` (Python, JavaScript) and a C library with
-examples are kept in their own repository.
+examples are in [mb3d-bindings](https://github.com/thr32423/mb3d-bindings), with a
+[notebook](https://mybinder.org/v2/gh/thr32423/mb3d-bindings/main?urlpath=lab%2Ftree%2Fnotebook%2Fmb3d.ipynb)
+to try them online.
 
 ## Licence
 

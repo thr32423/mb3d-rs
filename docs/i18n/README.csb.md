@@ -187,6 +187,10 @@ sprawdzëc sóm:
   Mandelbulb3D, bez kònwersji. (Renderë Monte Carlo trzimają swòje
   gwôsné zôpisczi, `.m3c` przebiegù je zapisywóny z `--m3c`.)
 * **Pòzycjô ë òbrôcanié we swòjich lopkach**: *Zapiszë* ë *Wczëtôj* w panelach Pòzycjô ë Òbrôcanié przédnégò òkna trzëmają pòzycjã (`.m3xyz`) abò òbrôcanié (`.m3r`) wëzdrzatkù w môłim tekstowim lopkù, żebë przeniesc je do jinszi scenë; reszta ti scenë òstôwô bez zmianów. Ùdba: Geoffrey N. Barnes.
+* **Jinszé programë mògą brëkòwac mòtór** (`mb3d serve`, eksperimentalné): program w dowòlnym jãzëkù zrëszô mb3d ë prosy gò ò òbrôzë réżkama JSON: òtemkniãcé lopka parametrów abò fòrmùłë, zmiana ùstôwów ë swòjich wôrtnotów fòrmùłë, òbrechòwanié òbrôzu razã z głãbią, z pòkrokã ë zatrzëmanim. mb3d dzejô dali midzë òbrôzama, tak że pòstãpny zaczinô sã òd razu, ë òstôwô offline. [docs/API.md](../API.md) òpisëje żądania ë to samò jakno bibloteka Rust. Mòdułë dlô Pythona ë JavaScriptu, bibloteka C ë wtëkôcze do Blendera, GIMP-a, Kritë, ComfyUI ë Jupytera są w przërëchtowanim.
+
+  <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="Starna w przezérnikù òbrôcô fraktal, jaczi w spódkù òbrechòwùje mb3d"></a>
+
 * **Skrótë klawiszowé dlô òknów**: kòmbinacjô klawiszów wëcygô na wiéch
   przédné òkno, Nawigatór, òkno Animacje, Fòrmùłë, Òswiecenié,
   Pòstprodukcja abò Monte Carlo z kòżdégò òkna (Ctrl+1 do Ctrl+7), a

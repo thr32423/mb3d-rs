@@ -194,6 +194,10 @@ esto puede comprobar más por su cuenta:
   Mandelbulb3D, sin conversión. (Los renders Monte Carlo llevan su propio
   registro; el `.m3c` de una pasada se escribe con `--m3c`.)
 * **Posición y rotación en archivos propios**: *Guardar* y *Cargar* en los paneles Posición y Rotación de la ventana principal guardan la posición (`.m3xyz`) o la rotación (`.m3r`) de la vista en un pequeño archivo de texto, para llevarla a otra escena; el resto de esa escena no cambia. Una idea de Geoffrey N. Barnes.
+* **Otros programas pueden usar el motor** (`mb3d serve`, experimental): un programa en cualquier lenguaje inicia mb3d y le pide imágenes como líneas de JSON: abrir un archivo de parámetros o una fórmula, cambiar sus ajustes y los valores propios de una fórmula, calcular la imagen con su profundidad, con progreso y parada. mb3d sigue en marcha entre imágenes, así que la siguiente empieza al instante, y permanece sin conexión. [docs/API.md](../API.md) describe las peticiones y lo mismo como biblioteca de Rust. Se están preparando módulos para Python y JavaScript, una biblioteca en C y complementos para Blender, GIMP, Krita, ComfyUI y Jupyter.
+
+  <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="Una página en el navegador gira un fractal que mb3d calcula por detrás"></a>
+
 * **Atajos de teclado para las ventanas**: una combinación de teclas trae al
   frente, desde cualquier ventana, la ventana principal, el Navegador o las
   ventanas Animación, Fórmulas, Iluminación, Posprocesado o Monte Carlo

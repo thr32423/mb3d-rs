@@ -196,6 +196,10 @@ Voici de quoi vérifier plus loin par vous-même :
   leurs propres enregistrements ; le `.m3c` d'une passe s'écrit avec
   `--m3c`.)
 * **Position et rotation dans leurs propres fichiers** : *Enregistrer* et *Charger* dans les panneaux Position et Rotation de la fenêtre principale conservent la position (`.m3xyz`) ou la rotation (`.m3r`) de la vue dans un petit fichier texte, pour la reprendre dans une autre scène ; le reste de cette scène ne change pas. Une idée de Geoffrey N. Barnes.
+* **D'autres programmes peuvent utiliser le moteur** (`mb3d serve`, expérimental) : un programme dans n'importe quel langage lance mb3d et lui demande des images sous forme de lignes JSON : ouvrir un fichier de paramètres ou une formule, modifier ses réglages et les valeurs propres d'une formule, calculer l'image avec sa profondeur, avec progression et arrêt. mb3d reste en marche entre les images, la suivante démarre donc aussitôt, et reste hors ligne. [docs/API.md](../API.md) décrit les requêtes et la même chose en bibliothèque Rust. Des modules pour Python et JavaScript, une bibliothèque C et des greffons pour Blender, GIMP, Krita, ComfyUI et Jupyter sont en préparation.
+
+  <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="Une page dans le navigateur fait tourner une fractale que mb3d calcule derrière elle"></a>
+
 * **Raccourcis clavier pour les fenêtres** : une combinaison de touches
   amène au premier plan la fenêtre principale, le Navigateur, la fenêtre
   d'animation, Formules, Éclairage, Post-traitement ou Monte-Carlo depuis

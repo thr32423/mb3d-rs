@@ -188,6 +188,10 @@ jaminan. Hal-hal berikut memungkinkan Anda memeriksa lebih jauh sendiri:
   menyimpan catatannya sendiri, `.m3c` dari sebuah pass ditulis dengan
   `--m3c`.)
 * **Posisi dan rotasi dalam berkas tersendiri**: *Simpan* dan *Muat* di panel Posisi dan Rotasi jendela utama menyimpan posisi (`.m3xyz`) atau rotasi (`.m3r`) tampilan dalam berkas teks kecil, untuk dibawa ke adegan lain; bagian lain adegan itu tidak berubah. Ide dari Geoffrey N. Barnes.
+* **Program lain dapat memakai mesinnya** (`mb3d serve`, eksperimental): program dalam bahasa apa pun menjalankan mb3d dan meminta gambar sebagai baris JSON: membuka berkas parameter atau formula, mengubah pengaturannya dan nilai milik formula, menghitung gambar beserta kedalamannya, dengan kemajuan dan penghentian. mb3d tetap berjalan di antara gambar, sehingga gambar berikutnya langsung dimulai, dan tetap luring. [docs/API.md](../API.md) menjelaskan permintaannya dan hal yang sama sebagai pustaka Rust. Modul untuk Python dan JavaScript, pustaka C, serta plug-in untuk Blender, GIMP, Krita, ComfyUI, dan Jupyter sedang disiapkan.
+
+  <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="Halaman di peramban memutar fraktal yang dihitung mb3d di belakangnya"></a>
+
 * **Tombol pintas untuk jendela**: sebuah kombinasi tombol membawa jendela
   utama, Navigator, Animasi, Formula, Pencahayaan, Pascaproses, atau jendela
   Monte Carlo ke depan dari jendela mana pun (Ctrl+1 hingga Ctrl+7), dan

@@ -183,6 +183,18 @@ you check further on your own:
   main window's Position and Rotation panels keep the view's position
   (`.m3xyz`) or rotation (`.m3r`) in a small text file, to bring it to
   another scene; the rest of that scene stays as it is. An idea of Geoffrey N. Barnes.
+* **Other programs can use the engine** (`mb3d serve`, experimental): a
+  program in any language starts mb3d and asks it for pictures as lines of
+  JSON: open a parameter file or a formula, change its settings and a
+  formula's own values, render the picture with its depth, with progress
+  and stop. mb3d keeps running between pictures, so the next one starts at
+  once, and stays offline. [docs/API.md](docs/API.md) describes the
+  requests and the same as a Rust library. Modules for Python and
+  JavaScript, a C library and plug-ins for Blender, GIMP, Krita, ComfyUI
+  and Jupyter are being prepared.
+
+  <a href="docs/img/api_explorer.png"><img src="docs/img/api_explorer_small.png" width="300" alt="A page in the browser turning a fractal that mb3d calculates behind it"></a>
+
 * **Hotkeys for the windows**: a key combination brings the main window,
   the Navigator, the Animation, Formulas, Lighting, Post processing or
   Monte Carlo window to the front from any window (Ctrl+1 to Ctrl+7), and

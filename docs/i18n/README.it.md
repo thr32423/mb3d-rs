@@ -191,6 +191,10 @@ permettono di verificare ulteriormente da solo:
   (I render Monte Carlo tengono i propri dati; il `.m3c` di un passaggio si
   scrive con `--m3c`.)
 * **Posizione e rotazione in file propri**: *Salva* e *Carica* nei pannelli Posizione e Rotazione della finestra principale conservano la posizione (`.m3xyz`) o la rotazione (`.m3r`) della vista in un piccolo file di testo, per portarla in un'altra scena; il resto di quella scena non cambia. Un'idea di Geoffrey N. Barnes.
+* **Altri programmi possono usare il motore** (`mb3d serve`, sperimentale): un programma in qualsiasi linguaggio avvia mb3d e gli chiede immagini come righe JSON: aprire un file di parametri o una formula, cambiarne le impostazioni e i valori propri di una formula, calcolare l'immagine con la sua profondità, con avanzamento e arresto. mb3d resta in esecuzione tra un'immagine e l'altra, così la successiva parte subito, e rimane offline. [docs/API.md](../API.md) descrive le richieste e lo stesso come libreria Rust. Sono in preparazione moduli per Python e JavaScript, una libreria C e plug-in per Blender, GIMP, Krita, ComfyUI e Jupyter.
+
+  <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="Una pagina nel browser ruota un frattale che mb3d calcola dietro di essa"></a>
+
 * **Scorciatoie per le finestre**: una combinazione di tasti porta in primo
   piano, da qualsiasi finestra, la finestra principale, il Navigatore,
   l'Animazione, Formule, Illuminazione, Postproduzione o la finestra Monte

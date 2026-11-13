@@ -185,6 +185,10 @@ możesz sprawdzić sam:
   bez żadnej konwersji. (Rendery Monte Carlo mają własne zapisy, `.m3c`
   przebiegu jest zapisywany z `--m3c`.)
 * **Pozycja i obrót we własnych plikach**: *Zapisz* i *Wczytaj* w panelach Pozycja i Obrót głównego okna zachowują pozycję (`.m3xyz`) lub obrót (`.m3r`) widoku w małym pliku tekstowym, aby przenieść je do innej sceny; reszta tej sceny pozostaje bez zmian. Pomysł: Geoffrey N. Barnes.
+* **Inne programy mogą korzystać z silnika** (`mb3d serve`, eksperymentalne): program w dowolnym języku uruchamia mb3d i prosi go o obrazy wierszami JSON: otwarcie pliku parametrów lub formuły, zmiana ustawień i własnych wartości formuły, obliczenie obrazu wraz z głębią, z postępem i zatrzymaniem. mb3d działa dalej między obrazami, więc następny zaczyna się od razu, i pozostaje offline. [docs/API.md](../API.md) opisuje żądania i to samo jako bibliotekę Rust. Moduły dla Pythona i JavaScriptu, biblioteka C oraz wtyczki do Blendera, GIMP-a, Krity, ComfyUI i Jupytera są w przygotowaniu.
+
+  <a href="../img/api_explorer.png"><img src="../img/api_explorer_small.png" width="300" alt="Strona w przeglądarce obraca fraktal, który w tle oblicza mb3d"></a>
+
 * **Skróty klawiszowe do okien**: kombinacja klawiszy przywołuje na
   wierzch okno główne, Nawigator, okno Animacji, Formuł, Oświetlenia,
   Postprocessingu lub Monte Carlo z dowolnego okna (Ctrl+1 do Ctrl+7), a

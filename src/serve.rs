@@ -63,7 +63,11 @@ impl Server {
 
     fn about(id: u64, f: &Fractal) -> Vec<(String, Value)> {
         let (w, h) = f.size();
-        let formulas = f.formulas().into_iter().map(|(n, i)| obj([("name", s(n)), ("iterations", num(i as f64))])).collect();
+        let formulas = f.formula_list().into_iter().map(|i| {
+            let settings = Value::Obj(i.settings.into_iter().map(|(k, v)| (k, num(v))).collect());
+            obj([("slot", num(i.slot as f64)), ("name", s(i.name)), ("iterations", num(i.iterations as f64)), ("settings", settings)])
+        });
+        let formulas = formulas.collect();
         let rotation = f.rotation().map_or(Value::Null, |r| Value::Arr(r.iter().map(|a| num((a * 1e6).round() / 1e6)).collect()));
         vec![
             ("scene".into(), num(id as f64)),
@@ -130,6 +134,20 @@ impl Server {
                 let changes = arg_str(a, "changes").ok_or("changes is missing (`key = value` lines)")?;
                 let f = self.scenes.get_mut(&id).ok_or("no such scene")?;
                 f.set(changes)?;
+                Ok(Server::about(id, f))
+            }
+            "formula" => {
+                let id = self.scene(a)?.0;
+                let slot = a.get("slot").and_then(Value::as_f64).ok_or("slot is missing (a formula's place, as `open` tells it)")? as usize;
+                let mut settings = Vec::new();
+                if let Some(Value::Obj(m)) = a.get("settings") {
+                    for (k, v) in m {
+                        settings.push((k.as_str(), v.as_f64().ok_or_else(|| format!("{k}: not a number"))?));
+                    }
+                }
+                let iterations = a.get("iterations").and_then(Value::as_f64).map(|n| n as i32);
+                let f = self.scenes.get_mut(&id).ok_or("no such scene")?;
+                f.set_formula(slot, &settings, iterations)?;
                 Ok(Server::about(id, f))
             }
             "resize" => {
@@ -322,6 +340,16 @@ mod tests {
         assert!(ok(&ask(&mut sv, r#"{"op":"set","scene":1,"changes":"iterations = 7"}"#)));
         let text = ask(&mut sv, r#"{"op":"text","scene":1}"#);
         assert!(text.get("text").and_then(Value::as_str).unwrap().contains("iterations = 7"));
+        let slot = match open.get("formulas") {
+            Some(Value::Arr(f)) => f[0].get("slot").and_then(Value::as_f64).unwrap(),
+            _ => panic!(),
+        };
+        let power = ask(&mut sv, &format!(r#"{{"op":"formula","scene":1,"slot":{slot},"settings":{{"Integer power":5}},"iterations":2}}"#));
+        assert!(ok(&power), "{}", power.to_json());
+        let Some(Value::Arr(fs)) = power.get("formulas") else { panic!() };
+        assert_eq!(fs[0].get("settings").and_then(|s| s.get("Integer power")).and_then(Value::as_f64), Some(5.0));
+        assert_eq!(fs[0].get("iterations").and_then(Value::as_f64), Some(2.0));
+        assert!(!ok(&ask(&mut sv, &format!(r#"{{"op":"formula","scene":1,"slot":{slot},"settings":{{"Nope":5}}}}"#))));
         let bad = ask(&mut sv, r#"{"op":"set","scene":1,"changes":"no_such_key = 1"}"#);
         assert!(!ok(&bad) && bad.get("error").is_some());
 

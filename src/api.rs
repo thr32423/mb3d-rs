@@ -141,6 +141,32 @@ impl Fractal {
         self.scene.formulas.iter().filter(|f| f.iterations > 0).map(|f| (f.formula.name(), f.iterations)).collect()
     }
 
+    /// The formulas in use with their place in the scene and their own
+    /// values.
+    pub fn formula_list(&self) -> Vec<FormulaInfo> {
+        let used = self.scene.formulas.iter().enumerate().filter(|(_, f)| f.iterations > 0);
+        used.map(|(slot, f)| FormulaInfo { slot, name: f.formula.name(), iterations: f.iterations, settings: f.formula.options() }).collect()
+    }
+
+    /// Changes a formula's own values (by name, as [`Fractal::formula_list`]
+    /// gives them) and, if given, its iterations.  `slot` is its place in
+    /// the scene.  The scene stays as it was when a name is wrong.
+    pub fn set_formula(&mut self, slot: usize, settings: &[(&str, f64)], iterations: Option<i32>) -> Result<(), String> {
+        let entry = self.scene.formulas.get(slot).ok_or_else(|| format!("the scene has no formula at place {slot}"))?;
+        let mut changed = entry.clone();
+        for (key, value) in settings {
+            changed.formula.set_option(key, *value)?;
+        }
+        if let Some(n) = iterations {
+            if n < 0 {
+                return Err(format!("iterations = {n}: not below 0"));
+            }
+            changed.iterations = n;
+        }
+        self.scene.formulas[slot] = changed;
+        Ok(())
+    }
+
     /// The scene as a Mandelbulb3D parameter file (.m3p).
     pub fn m3p(&self) -> Vec<u8> {
         crate::m3p::write(&self.scene)
@@ -177,6 +203,16 @@ impl Fractal {
         let device = "CPU".to_string();
         Ok(Picture { width, height, rgb, depth, seconds: t0.elapsed().as_secs_f64(), device })
     }
+}
+
+/// A formula of a scene.
+pub struct FormulaInfo {
+    /// Its place in the scene (for [`Fractal::set_formula`]).
+    pub slot: usize,
+    pub name: String,
+    pub iterations: i32,
+    /// Its own values by name.
+    pub settings: Vec<(String, f64)>,
 }
 
 /// Called from the worker threads with the stage ("" for the march, then
@@ -234,6 +270,15 @@ mod tests {
         assert!((r[0] + 40.0).abs() < 1e-6 && (r[1] - 30.0).abs() < 1e-6 && (r[2] - 10.0).abs() < 1e-6, "{r:?}");
         assert!(f.set("no_such_key = 1").is_err());
         assert!(f.text().contains("iterations = 8"), "a wrong line leaves the scene as it was");
+        let first = f.formula_list().remove(0);
+        assert_eq!(first.name, "Integer Power");
+        let (key, value) = first.settings[0].clone();
+        f.set_formula(first.slot, &[(&key, value - 1.0)], Some(2)).unwrap();
+        let now = f.formula_list().remove(0);
+        assert_eq!((now.settings[0].1, now.iterations), (value - 1.0, 2));
+        assert!(f.set_formula(first.slot, &[(&key, value), ("no such value", 1.0)], None).is_err());
+        assert_eq!(f.formula_list()[0].settings[0].1, value - 1.0, "a wrong name leaves the formula as it was");
+        assert!(f.set_formula(99, &[], None).is_err());
         let again = Fractal::from_text(&f.text()).unwrap();
         assert_eq!(again.text(), f.text());
         let from_m3p = Fractal::from_bytes("x.m3p", f.m3p()).unwrap();

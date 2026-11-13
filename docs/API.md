@@ -40,9 +40,10 @@ output carries messages for people; the standard output only answers.
 | op | members | answer |
 |---|---|---|
 | `hello` | | `name`, `version`, `protocol` (1), `gpu` (built with graphics card support) |
-| `open` | one of `file` (a path), `text` (scene text or MB3D text parameters), `data` (a file's bytes as Base64) with `name` (its file name), `preset` (a formula's name) | `scene` (its number), `width`, `height`, `formulas`, `rotation` (the view as the three angles of the `rotation` key, or null), `notes` (what the loader could not carry over) |
+| `open` | one of `file` (a path), `text` (scene text or MB3D text parameters), `data` (a file's bytes as Base64) with `name` (its file name), `preset` (a formula's name) | `scene` (its number), `width`, `height`, `formulas` (each with `slot`, `name`, `iterations` and `settings`, its own values), `rotation` (the view as the three angles of the `rotation` key, or null), `notes` (what the loader could not carry over) |
 | `text` | `scene` | `text`: the scene as `key = value` lines |
 | `set` | `scene`, `changes` (`key = value` lines of global keys) | like `open`; a wrong line changes nothing |
+| `formula` | `scene`, `slot` (the formula's place, from `formulas`), `settings` (its own values by name, e.g. `{"Scale": 2.2}`), `iterations` (optional) | like `open`; a wrong name changes nothing |
 | `resize` | `scene`, `width` and/or `height` | like `open`; the look of the picture is kept |
 | `copy` | `scene` | like `open`: a second scene with the same settings |
 | `save` | `scene`, `file` | writes a `.m3p` (a `.m3s` or `.txt` name: the scene text) |
@@ -67,8 +68,9 @@ second: `{"id":3,"event":"progress","stage":"","done":120,"total":480}`
 (`stage` is empty during the march, then names the stage: hard shadows,
 ambient occlusion, ...; `done` starts again with every stage).
 
-To change formulas or lights, take the scene's `text`, edit it and `open`
-it again as `text` (`set` changes global keys only; `guide` explains).
+`formula` changes a formula's own values. To add or replace formulas or to
+change lights, take the scene's `text`, edit it and `open` it again as
+`text` (`set` changes global keys only; `guide` explains).
 
 The process ends when its standard input is closed.
 
@@ -81,7 +83,8 @@ The process ends when its standard input is closed.
     std::fs::write("bulb.png", pic.png())?;
 
 `Fractal::open`, `from_bytes`, `from_text` and `preset` make a scene;
-`text`, `set`, `resize`, `formulas`, `m3p` read and change it; `render`
+`text`, `set`, `set_formula`, `resize`, `formula_list`, `m3p` read and
+change it; `render`
 gives a `Picture` (`rgb`, `depth`, `png()`, `depth_png()`), reporting
 progress and asking a `cancel` function through `RenderOptions`.
 `api::use_gpu(true)` switches the graphics card on (a library starts with

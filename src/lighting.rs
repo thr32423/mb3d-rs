@@ -1558,14 +1558,29 @@ impl LightVals {
                 return (d, s, 0.0);
             }
         }
+        let (il1, il2, t) = match self.palette_place(si, idif0) {
+            (a, None) => return (self.col_dif[a], self.col_spe[a], self.col_spe_a[a]),
+            (a, Some((b, t))) => (a, b, t),
+        };
+        (
+            lerp(self.col_dif[il2], self.col_dif[il1], t),
+            lerp(self.col_spe[il2], self.col_spe[il1], t),
+            self.col_spe_a[il1] + t * (self.col_spe_a[il2] - self.col_spe_a[il1]),
+        )
+    }
+
+    /// Where the surface `si` lies in the palette (`CalcColors`' search):
+    /// the colour it has, or with `Some` the next one and how far towards
+    /// it (0..1) the surface is.
+    pub(crate) fn palette_place(&self, si: &SiLight, idif0: f32) -> (usize, Option<(usize, f32)>) {
         let ir = if self.col_on_otrap { (si.otrap & 0x7FFF) as f32 } else { si.si_gradient as f32 };
         let mut ir = (((ir - self.s_c_start) * self.s_c_mul + idif0) * 16384.0).clamp(-1e9, 1e9).round() as i32;
         if self.col_cycling {
             ir &= 32767;
         } else if ir < 0 {
-            return (self.col_dif[0], self.col_spe[0], self.col_spe_a[0]);
+            return (0, None);
         } else if ir >= self.col_pos[9] {
-            return (self.col_dif[9], self.col_spe[9], self.col_spe_a[9]);
+            return (9, None);
         }
         let mut il2 = 5usize;
         if self.col_pos[il2] < ir {
@@ -1581,16 +1596,27 @@ impl LightVals {
             }
         }
         if self.no_col_ipol {
-            return (self.col_dif[il2 - 1], self.col_spe[il2 - 1], self.col_spe_a[il2 - 1]);
+            return (il2 - 1, None);
         }
         let il1 = il2 - 1;
         let il2 = if il2 > 9 { 0 } else { il2 };
-        let t = (ir - self.col_pos[il1]) as f32 * self.s_c_div[il1];
-        (
-            lerp(self.col_dif[il2], self.col_dif[il1], t),
-            lerp(self.col_spe[il2], self.col_spe[il1], t),
-            self.col_spe_a[il1] + t * (self.col_spe_a[il2] - self.col_spe_a[il1]),
-        )
+        (il1, Some((il2, (ir - self.col_pos[il1]) as f32 * self.s_c_div[il1])))
+    }
+
+    /// How strongly the surface `si` shines in its own colour (the surface
+    /// material's glow, and the emission of the palette colours it has):
+    /// 0 without a material, on the ground and for most surfaces.  The
+    /// inside colours have the glow only.
+    pub(crate) fn emission_at(&self, si: &SiLight, idif0: f32) -> f32 {
+        let Some(m) = self.material.as_ref().filter(|m| m.emits() && !si.is_ground()) else { return 0.0 };
+        if !m.emits_by_colour() || si.si_gradient > 32767 {
+            return m.glow;
+        }
+        m.glow
+            + match self.palette_place(si, idif0) {
+                (a, None) => m.emission[a],
+                (a, Some((b, t))) => m.emission[a] + t * (m.emission[b] - m.emission[a]),
+            }
     }
 
     /// `CalcColorsInside`: diffuse colour and specular amount (alpha)
@@ -1922,8 +1948,9 @@ impl LightVals {
                     idif[2] * st2 * self.s_ind_light_reflect + (st - st2),
                 ];
                 out = sv_add(total, sv_mul(l3, sv_mul(idif, refl)));
-                if let Some(m) = self.material.as_ref().filter(|m| m.glow > 0.0 && !si.is_ground()) {
-                    sv_add_w(&mut out, idif, m.glow * 255.0);
+                let shine = self.emission_at(si, idif0);
+                if shine > 0.0 {
+                    sv_add_w(&mut out, idif, shine * 255.0);
                 }
             } else {
                 // CalcTotalLight2
@@ -1932,8 +1959,9 @@ impl LightVals {
                 let st2 = luma(total) + 4.0;
                 out = sv_add(total, sv_scale(sv_mul(total, idif), st));
                 out = sv_scale(out, (st2 + (st2 + 128.0) * (st + 0.11) * 0.04) / (luma(out).max(0.0) + 3.0));
-                if let Some(m) = self.material.as_ref().filter(|m| m.glow > 0.0 && !si.is_ground()) {
-                    sv_add_w(&mut out, idif, m.glow * 255.0);
+                let shine = self.emission_at(si, idif0);
+                if shine > 0.0 {
+                    sv_add_w(&mut out, idif, shine * 255.0);
                 }
             }
             dtmp = ((zpos_word as f32 - 28000.0) * self.s_depth + 1.0).max(0.0);

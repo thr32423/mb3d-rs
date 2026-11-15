@@ -75,9 +75,27 @@ pub struct Material {
     pub irid_shift: f32,
     /// glow (0..): the surface shines in its own (diffuse) colour
     pub glow: f32,
+    /// emission (0..) of each of the palette's ten colours, on top of the
+    /// glow: where the surface has that colour it shines in it, between
+    /// two colours as the colours blend.  The parts that shine are light
+    /// sources: they light what is around them (Monte Carlo's bounces, and
+    /// the emission pass of the painting).  The idea of light from chosen
+    /// colours is Mandelbulb3D SE's (its emissive dIFS with an opacity per
+    /// colour, Glenn Olander); here any surface can shine, in its own colour.
+    pub emission: [f32; 10],
 }
 
 impl Material {
+    /// Some of the palette's colours shine (`emission`).
+    pub fn emits_by_colour(&self) -> bool {
+        self.emission.iter().any(|v| *v > 0.0)
+    }
+
+    /// The surface shines somewhere (the glow or a colour's emission).
+    pub fn emits(&self) -> bool {
+        self.glow > 0.0 || self.emits_by_colour()
+    }
+
     /// The diffuse colour `dif` with the thin film's sheen (half the
     /// iridescence) where the view meets the surface at `cos`.
     pub fn diffuse(&self, dif: [f32; 3], cos: f32) -> [f32; 3] {
@@ -1120,6 +1138,10 @@ impl Scene {
         }
         if let Some(m) = &self.material {
             let _ = writeln!(t, "material_fresnel = {}\nmaterial_iridescence = {}, {}\nmaterial_glow = {}", m.fresnel, m.iridescence, m.irid_shift, m.glow);
+            // (only when a colour shines: older versions stop at a key they do not know)
+            if m.emits_by_colour() {
+                let _ = writeln!(t, "material_emission = {}", m.emission.map(|v| v.to_string()).join(", "));
+            }
         }
         if let Some(c) = &self.clouds {
             let k = c.color;
@@ -1608,6 +1630,13 @@ impl Scene {
                         m.irid_shift = p.get(1).copied().unwrap_or(0.0) as f32;
                     }
                     "material_glow" => s.material.get_or_insert_with(Default::default).glow = num()?.max(0.0) as f32,
+                    "material_emission" => {
+                        let p: Vec<f64> = val.split(',').map(|v| v.trim().parse::<f64>()).collect::<Result<_, _>>().map_err(|_| err(format!("bad material_emission '{val}' (ten numbers, one per palette colour)")))?;
+                        if p.len() != 10 {
+                            return Err(err(format!("bad material_emission '{val}' (ten numbers, one per palette colour)")));
+                        }
+                        s.material.get_or_insert_with(Default::default).emission = std::array::from_fn(|i| p[i].max(0.0) as f32);
+                    }
                     "material" if matches!(val.to_ascii_lowercase().as_str(), "off" | "none" | "no") => s.material = None,
                     "cloud_density" => s.clouds.get_or_insert_with(Default::default).density = num()?.max(0.0) as f32,
                     "cloud_coverage" => s.clouds.get_or_insert_with(Default::default).coverage = num()?.clamp(0.0, 1.0) as f32,

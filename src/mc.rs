@@ -2027,9 +2027,10 @@ impl<'a, 'c> Tracer<'a, 'c> {
                 let (sp, df) = (m.specular(first3(o[0]), cosv), m.diffuse(first3(o[1]), cosv));
                 o[0] = [sp[0], sp[1], sp[2], o[0][3]];
                 o[1] = [df[0], df[1], df[2], o[1][3]];
-                if m.glow > 0.0 {
+                let shine = lv.emission_at(&cr, lv.s_col_zmul * (self.mzz * sw + p.zz_stmit_dif) as f32);
+                if shine > 0.0 {
                     // the surface's own light
-                    self.total_light = add3(self.total_light, mul3(sc3(df, m.glow), t_absorb));
+                    self.total_light = add3(self.total_light, mul3(sc3(df, shine), t_absorb));
                 }
             }
             obj = o;

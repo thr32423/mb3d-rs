@@ -1201,6 +1201,8 @@ Elapsed=경과
 ;Elapsed
 ElapsedTimeS=경과 시간: {}초
 ;Elapsed time: {} s
+EmissionLightLower=발광 조명
+;emission light
 Enable=사용
 ;Enable
 EnableGeneratingZBufferThisMode=Z 버퍼 생성을 켭니다. 이 모드는 추가 데이터가 필요하여 이전 버전과 호환되지 않으므로, 이 설정이 켜진 MC 파일은 저장/복원할 수 없습니다. Z 버퍼를 저장하려면 일반 이미지를 저장하기만 하면 Z 버퍼도 자동으로 함께 저장됩니다.
@@ -2259,6 +2261,14 @@ MapType=맵 종류:
 ;Map Type:
 MapsOfTheCalculatedPicture=계산된 그림의 맵:
 ;Maps of the calculated picture:
+MatEmission=발광색:
+;Emission:
+MatEmissionHint=팔레트의 각 색에 왼쪽부터 오른쪽으로 하나씩, 숫자 10개(0 이상): 표면이 그 색인 곳은 그 색으로 빛납니다.\n예: 20 0 0 0 0 0 0 0 0 0 은 첫 번째 색을 빛나게 합니다.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=광선 수:
+;Light rays:
+MatLightRaysHint=빛나는 부분이 주변에 비추는 빛을 위해 각 픽셀이 보내는 광선 수(0 = 없음, 보통 8~16, 최대 64).\n광선이 많을수록 노이즈가 줄고 시간이 늘어납니다.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
 Material=재질
 ;Material
 Max=Max

@@ -1200,6 +1200,8 @@ Elapsed=Trascorso
 ;Elapsed
 ElapsedTimeS=Tempo trascorso: {} s
 ;Elapsed time: {} s
+EmissionLightLower=luce di emissione
+;emission light
 Enable=Attiva
 ;Enable
 EnableGeneratingZBufferThisMode=Attiva la generazione dello z-buffer. Questa modalità richiede dati aggiuntivi che la rendono incompatibile con le versioni precedenti, quindi i file MC con questa impostazione non possono essere salvati/ripristinati. Per salvare lo z-buffer basta salvare l'immagine normale: lo z-buffer viene salvato automaticamente insieme ad essa.
@@ -2258,6 +2260,14 @@ MapType=Tipo di mappa:
 ;Map Type:
 MapsOfTheCalculatedPicture=Mappe dell'immagine calcolata:
 ;Maps of the calculated picture:
+MatEmission=Emissione:
+;Emission:
+MatEmissionHint=Dieci numeri, uno per ogni colore della tavolozza da sinistra a destra (0 o più): dove la superficie ha quel colore, risplende in esso.\nEsempio: 20 0 0 0 0 0 0 0 0 0 fa risplendere il primo colore.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=Raggi di luce:
+;Light rays:
+MatLightRaysHint=I raggi che ogni pixel invia per la luce che le parti luminose proiettano su ciò che le circonda (0 = nessuno, di solito da 8 a 16, al massimo 64).\nPiù raggi: meno rumore, più tempo.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
 Material=Materiale
 ;Material
 Max=Max

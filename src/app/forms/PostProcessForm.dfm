@@ -1820,7 +1820,7 @@ object PostProForm: TPostProForm
     Left = 0
     Top = 1374
     Width = 255
-    Height = 192
+    Height = 244
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 12
@@ -1914,16 +1914,52 @@ object PostProForm: TPostProForm
       TabOrder = 5
       OnClick = MaterialNowBtnClick
     end
-    object ReliefLbl: TLabel
+    object EmissionLbl: TLabel
       Left = 11
       Top = 115
+      Width = 75
+      Height = 13
+      Caption = '@MB:MatEmission'
+    end
+    object EmissionEdit: TEdit
+      Left = 90
+      Top = 112
+      Width = 148
+      Height = 21
+      Hint = '@MB:MatEmissionHint'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 6
+      Text = '0 0 0 0 0 0 0 0 0 0'
+    end
+    object LightRaysLbl: TLabel
+      Left = 11
+      Top = 141
+      Width = 75
+      Height = 13
+      Caption = '@MB:MatLightRays'
+    end
+    object LightRaysEdit: TEdit
+      Left = 90
+      Top = 138
+      Width = 44
+      Height = 21
+      Hint = '@MB:MatLightRaysHint'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 7
+      Text = '0'
+    end
+    object ReliefLbl: TLabel
+      Left = 11
+      Top = 167
       Width = 75
       Height = 13
       Caption = '@MB:Relief'
     end
     object DetailKindCB: TComboBox
       Left = 90
-      Top = 112
+      Top = 164
       Width = 94
       Height = 21
       Hint = '@MB:AFineReliefOnTheSurface'
@@ -1931,7 +1967,7 @@ object PostProForm: TPostProForm
       ItemIndex = 0
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 6
+      TabOrder = 8
       Items.Strings = (
         '@MB:Off'
         '@MB:Rough'
@@ -1940,53 +1976,53 @@ object PostProForm: TPostProForm
     end
     object DetailStrEdit: TEdit
       Left = 90
-      Top = 138
-      Width = 44
-      Height = 21
-      Hint = '@MB:StrengthSizeFractalUnitsAndFineness'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 7
-      Text = '0.8'
-    end
-    object DetailSizeEdit: TEdit
-      Left = 140
-      Top = 138
-      Width = 44
-      Height = 21
-      Hint = '@MB:StrengthSizeFractalUnitsAndFineness'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 8
-      Text = '0.02'
-    end
-    object DetailRoughEdit: TEdit
-      Left = 190
-      Top = 138
+      Top = 190
       Width = 44
       Height = 21
       Hint = '@MB:StrengthSizeFractalUnitsAndFineness'
       ParentShowHint = False
       ShowHint = True
       TabOrder = 9
+      Text = '0.8'
+    end
+    object DetailSizeEdit: TEdit
+      Left = 140
+      Top = 190
+      Width = 44
+      Height = 21
+      Hint = '@MB:StrengthSizeFractalUnitsAndFineness'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 10
+      Text = '0.02'
+    end
+    object DetailRoughEdit: TEdit
+      Left = 190
+      Top = 190
+      Width = 44
+      Height = 21
+      Hint = '@MB:StrengthSizeFractalUnitsAndFineness'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 11
       Text = '0.5'
     end
     object DetailColLbl: TLabel
       Left = 11
-      Top = 167
+      Top = 219
       Width = 75
       Height = 13
       Caption = '@MB:ColourVariation'
     end
     object DetailColEdit: TEdit
       Left = 90
-      Top = 164
+      Top = 216
       Width = 44
       Height = 21
       Hint = '@MB:HowMuchTheSurfaceSColour'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 10
+      TabOrder = 12
       Text = '0'
     end
   end

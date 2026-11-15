@@ -489,15 +489,25 @@ impl<'a, 'c> SrTracer<'a, 'c> {
         self.shade_with(si, inside, self.c.water.as_ref().map(|w| w.surface))
     }
 
+    /// [`SrTracer::shade`] of the pixel's own surface (where the rays
+    /// start): the light of the shining parts on it counts.
+    fn shade_own(&self, si: &SiLight) -> crate::lighting::Shaded {
+        self.shade_opts(si, None, self.c.water.as_ref().map(|w| w.surface), true)
+    }
+
     /// [`SrTracer::shade`] with the ground's colours `ground`.
     fn shade_with(&self, si: &SiLight, inside: Option<(S3, f32)>, ground: Option<(S3, S3)>) -> crate::lighting::Shaded {
+        self.shade_opts(si, inside, ground, false)
+    }
+
+    fn shade_opts(&self, si: &SiLight, inside: Option<(S3, f32)>, ground: Option<(S3, S3)>, own_pixel: bool) -> crate::lighting::Shaded {
         let o = ShadeOpts {
             scale_amb_diff_down: if self.scale_amb_diff_down { Some(self.c.sr_light_amount) } else { None },
             inside_trans: inside,
             light_z: Some(&self.light_z),
             svec: true,
             ground,
-            own_pixel: false,
+            own_pixel,
         };
         self.c.lv.shade(si, &self.plv, self.c.cam, &o)
     }
@@ -1781,7 +1791,7 @@ impl<'a, 'c> SrTracer<'a, 'c> {
         self.plv.zpos_dyn_fog = self.plv.z_pos;
         self.calc_trans_r = c.calc_trans && (!c.only_difs || self.m.last_difs);
         self.scale_amb_diff_down = self.calc_trans_r;
-        let sh = self.shade(si, None);
+        let sh = self.shade_own(si);
         self.t_amb = sh.light.map(|v| (v / 255.0).clamp(0.0, 8.0));
         let sv = sc3(sh.result, c.sr_light_amount);
         let mzz = self.m.mzz;
@@ -2283,7 +2293,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
                     let calc_trans_r = ctx.calc_trans && (!ctx.only_difs || p.decomb.as_ref().map_or(p.difs, |d| d.part2.difs));
                     t.scale_amb_diff_down = calc_trans_r;
                     t.sr_si = si;
-                    let sh = t.shade(&si, None);
+                    let sh = t.shade_own(&si);
                     if dbg_i == Some(i) {
                         crate::elog!("GPU surface: pos {pos:?} zz {zz:.4} si {si:?}\n  plv {:?}\n  light {:?} result {:?} spe {:?} {} dif {:?}", t.plv, sh.light, sh.result, sh.spe, sh.spe_a, sh.dif);
                     }

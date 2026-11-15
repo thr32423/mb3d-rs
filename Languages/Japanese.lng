@@ -1201,6 +1201,8 @@ Elapsed=経過
 ;Elapsed
 ElapsedTimeS=経過時間: {} 秒
 ;Elapsed time: {} s
+EmissionLightLower=発光の光
+;emission light
 Enable=有効
 ;Enable
 EnableGeneratingZBufferThisMode=Z-bufferの生成を有効にします。このモードは追加データを必要とするため旧バージョンと互換性がなく、この設定のMCファイルは保存/復元できません。Z-bufferを保存するには通常の画像を保存してください。Z-bufferも自動的に保存されます。
@@ -2259,6 +2261,14 @@ MapType=マップの種類:
 ;Map Type:
 MapsOfTheCalculatedPicture=計算済み画像のマップ:
 ;Maps of the calculated picture:
+MatEmission=発光色:
+;Emission:
+MatEmissionHint=パレットの各色に左から右へ 1 つずつ、10 個の数値（0 以上）：表面がその色の場所は、その色で光ります。\n例: 20 0 0 0 0 0 0 0 0 0 は最初の色を光らせます。
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=光線数:
+;Light rays:
+MatLightRaysHint=光る部分が周囲に投げかける光のために各ピクセルが飛ばす光線の数（0 = なし、通常は 8～16、最大 64）。\n光線が多いほどノイズが減り、時間がかかります。
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
 Material=マテリアル
 ;Material
 Max=Max

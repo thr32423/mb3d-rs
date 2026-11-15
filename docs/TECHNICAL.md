@@ -1209,6 +1209,62 @@ a `-pattern_type glob` input when the file index steps by more than 1.
 command* copies it to the clipboard. The program itself starts no other
 programs (until 0.2.42 it ran ffmpeg, which code scanners flag).
 
+## Emission: parts of the surface as light sources
+
+The surface material (`scene::Material`) lets the surface shine in its own
+colour: `glow` everywhere, `emission` by palette colour (ten strengths, one
+per colour; `LightVals::emission_at` reads them at the place the surface
+has in the palette, `palette_place`, which is `CalcColors`' search). The
+shading adds the surface's diffuse colour times that strength. Monte Carlo
+adds it at every hit of a path, so there the shining parts light their
+surroundings by the paths' bounces.
+
+For the painting, `src/emission.rs` casts that light in a pass of its own
+(the stage "emission light", when `material_light_rays` > 0):
+
+1. **Light samples.** Every shining pixel of the picture is a light sample:
+   its place (`Marcher::surface_point`), its normal, its colour times its
+   emission, and the area of surface the pixel shows (the pixel's width at
+   its depth, squared, over the cosine to the view). More than 65536: every
+   n-th, standing for n.
+2. **Aimed rays.** Each pixel sends `material_light_rays` rays, each to one
+   light sample: 8 candidates are drawn by power (brightness times area),
+   one is kept by what it would give the pixel with nothing in between (the
+   two cosines over the squared distance), and the ray's light is the kept
+   sample's over the chance it had (resampled importance sampling; the
+   choice of ReSTIR without its reuse in space and time). The light counts
+   when the ray reaches the sample.
+3. **Searching rays.** Shining parts the picture does not show (in gaps
+   seen from the side, behind other parts) have no light sample. As many
+   rays per pixel go out over the half space above the surface, more of
+   them towards the normal; a ray that meets a shining surface brings its
+   light when no light sample lies there (a grid of cells three pixel
+   widths wide over the samples), so no part counts twice.
+4. **The rays** run through the card's reflection march
+   (`gpu::reflect_batch`, the pipeline without shadows and occlusion) when
+   that shader is compiled, else on the CPU through the pixel march
+   (`Marcher::march_ray_from`); a scene new to the card compiles the shader
+   meanwhile.
+5. **Smoothing.** Four rounds of a 5x5 filter with growing holes (à trous)
+   over the pixels that show the same surface (the normal within about
+   45°, the place within 1.5 pixel widths of the pixel's plane per pixel of
+   distance).
+
+The result (`EmitLight`, a colour per pixel) is added in `LightVals::shade`
+as a light's diffuse part, on the pixel's own surface only
+(`ShadeOpts::own_pixel`; the reflection pass sets it for the surface its
+rays start from, not for what they hit, which only shines). It is kept
+while the picture's surfaces, the palette and the material stay the same
+(`signature`), so a repaint with other lights or fog does not calculate it
+again. Not on tiles (a tile does not see the other tiles' shining parts)
+and not in inside rendering. `MB3D_EMISSION_TIMING=1` prints the stages,
+`MB3D_EMISSION_RAW=1` leaves the smoothing out, `MB3D_EMISSION_CPU=1` keeps
+the rays off the card.
+
+The idea of light sources chosen by palette colour is Mandelbulb3D SE's
+(Glenn Olander; its emissive dIFS shapes with an opacity per colour, 64
+searching rays per pixel). None of its code is used.
+
 ## The Navigator and the main window's picture
 
 The Navigator (`src/app/navi_form.rs`) draws its own copy of the parameters

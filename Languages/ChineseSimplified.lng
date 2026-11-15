@@ -1201,6 +1201,8 @@ Elapsed=已用时间
 ;Elapsed
 ElapsedTimeS=已用时间：{} 秒
 ;Elapsed time: {} s
+EmissionLightLower=发光照明
+;emission light
 Enable=启用
 ;Enable
 EnableGeneratingZBufferThisMode=启用 Z 缓冲生成。此模式需要额外数据，与旧版本不兼容，因此带此设置的 MC 文件无法保存/恢复。要保存 Z 缓冲，只需保存普通图像，Z 缓冲会随之自动保存。
@@ -2259,6 +2261,14 @@ MapType=贴图类型：
 ;Map Type:
 MapsOfTheCalculatedPicture=已计算画面的贴图：
 ;Maps of the calculated picture:
+MatEmission=发光色：
+;Emission:
+MatEmissionHint=十个数字，从左到右对应调色板的每种颜色（0 及以上）：表面是该颜色的地方就以该颜色发光。\n示例：20 0 0 0 0 0 0 0 0 0 使第一种颜色发光。
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=光线数：
+;Light rays:
+MatLightRaysHint=每个像素为发光部分投向周围的光所发出的光线数（0 = 无，通常为 8 到 16，最多 64）。\n光线越多：噪点越少，时间越长。
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
 Material=材质
 ;Material
 Max=Max

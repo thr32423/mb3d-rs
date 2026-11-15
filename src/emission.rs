@@ -99,6 +99,7 @@ const MAX_SAMPLES: usize = 1 << 16;
 /// The candidates a ray is chosen from.
 const CANDIDATES: usize = 8;
 /// The rays of a batch on the card.
+#[cfg(feature = "gpu")]
 const BATCH: usize = 1 << 19;
 
 fn cross(a: &Vec3, b: &Vec3) -> Vec3 {
@@ -174,7 +175,27 @@ pub(crate) fn light(
             return Some(l.clone());
         }
     }
-    let rays = m.cast_rays as usize;
+    let out = Arc::new(calculate(m.cast_rays as usize, p, gbuf, lv, cam, threads, true, progress, cancel)?);
+    *LAST.lock().unwrap_or_else(|e| e.into_inner()) = Some((sig, out.clone()));
+    Some(out)
+}
+
+/// [`light`]'s calculation: `rays` aimed and as many searching rays per
+/// pixel, on the card (`card`, when it is ready for them) or the CPU.
+#[allow(clippy::too_many_arguments)]
+#[cfg_attr(not(feature = "gpu"), allow(unused_variables, unused_mut))]
+fn calculate(
+    rays: usize,
+    p: &CalcParams,
+    gbuf: &[SiLight],
+    lv: &LightVals,
+    cam: &PaintCamera,
+    threads: usize,
+    card: bool,
+    progress: &(dyn Fn(usize, usize) + Sync),
+    cancel: &(dyn Fn() -> bool + Sync),
+) -> Option<EmitLight> {
+    let [x0, y0, w, h] = p.rect;
     let (wu, hu) = (w as usize, h as usize);
     let threads = threads.max(1);
     let timing = std::env::var_os("MB3D_EMISSION_TIMING").is_some();
@@ -223,7 +244,7 @@ pub(crate) fn light(
         return None;
     }
     let lit: Vec<usize> = (0..wu * hu).filter(|&i| shine[i].is_some_and(|l| luma(l) > 0.0)).collect();
-    let none = || Some(Arc::new(EmitLight { rect: p.rect, light: vec![[0.0; 3]; wu * hu] }));
+    let none = || Some(EmitLight { rect: p.rect, light: vec![[0.0; 3]; wu * hu] });
     if lit.is_empty() {
         return none();
     }
@@ -398,7 +419,10 @@ pub(crate) fn light(
     let mut got = vec![[0f32; 3]; list.len()];
     let mut done = 0usize;
     #[cfg(feature = "gpu")]
-    if crate::gpu::enabled() && crate::gpu::unsupported(p).is_none() && std::env::var_os("MB3D_EMISSION_CPU").is_none() {
+    // (on the card when its shader for these rays is compiled: a scene new
+    // to the card compiles it meanwhile, for the next time; the CPU's
+    // threads take about as long as the card for this pass)
+    if card && crate::gpu::enabled() && crate::gpu::unsupported(p).is_none() && std::env::var_os("MB3D_EMISSION_CPU").is_none() && crate::gpu::reflect_compiled(p) {
         while done < list.len() {
             let part = &list[done..(done + BATCH).min(list.len())];
             let tasks: Vec<crate::gpu::ReflectTask> = part
@@ -529,9 +553,7 @@ pub(crate) fn light(
     if timing {
         crate::elog!("  emission: smoothed in {:.2} s, all {:.2} s", t3.elapsed().as_secs_f64(), t0.elapsed().as_secs_f64());
     }
-    let out = Arc::new(EmitLight { rect: p.rect, light });
-    *LAST.lock().unwrap_or_else(|e| e.into_inner()) = Some((sig, out.clone()));
-    Some(out)
+    Some(EmitLight { rect: p.rect, light })
 }
 
 /// The light smoothed over the pixels around that show the same surface
@@ -630,6 +652,42 @@ mod tests {
         assert!((0..h).all(|y| (8..w).all(|x| light[y * w + x][0] == 0.0)), "none crosses to the wall behind");
         let sum: f32 = light.iter().map(|l| l[0]).sum();
         assert!(sum > 32.0 && sum < 128.0, "about the same light in all: {sum}");
+    }
+
+    /// The default bulb without lights, its first palette colour shining:
+    /// the shining parts light the surfaces next to them, the same way
+    /// every time, and more rays change the light only a little.
+    #[test]
+    fn the_shining_parts_light_what_is_around_them() {
+        let text = "width = 120\nheight = 90\nlights = none\nmaterial_emission = 40, 0, 0, 0, 0, 0, 0, 0, 0, 0\nmaterial_light_rays = 8\n";
+        let sc = Scene::parse(text).unwrap();
+        let (p, gbuf) = crate::render::calculate(&sc, &|_, _| {}).unwrap();
+        let cam = crate::render::paint_camera(&sc, &p);
+        let lv = crate::render::light_vals(&sc, &sc.lighting, &cam);
+        let run = |rays: usize| calculate(rays, &p, &gbuf, &lv, &cam, 4, false, &|_, _| {}, &|| false).unwrap();
+        let a = run(8);
+        assert_eq!(a.rect, p.rect);
+        // the shining pixels and the others on the surface
+        let shines: Vec<bool> = gbuf
+            .iter()
+            .enumerate()
+            .map(|(i, si)| {
+                let plv = lv.plv_for_pixel(si, (i % 120) as i32, (i / 120) as i32, &cam);
+                si.zpos() < 32768 && lv.emission_at(si, lv.s_col_zmul * plv.z_pos) > 0.0
+            })
+            .collect();
+        let n_shine = shines.iter().filter(|s| **s).count();
+        assert!(n_shine > 50, "the first colour is on the bulb: {n_shine} pixels");
+        let lit = a.light.iter().zip(&shines).zip(&gbuf).filter(|((l, s), si)| !**s && si.zpos() < 32768 && luma(**l) > 0.01).count();
+        assert!(lit > n_shine / 2, "surfaces that do not shine get light: {lit}");
+        // the background gets none
+        assert!(a.light.iter().zip(&gbuf).all(|(l, si)| si.zpos() < 32768 || *l == [0.0; 3]));
+        // the same every time
+        assert_eq!(a.light, run(8).light);
+        // four times the rays: about the same light in all
+        let sum = |l: &EmitLight| l.light.iter().map(|v| luma(*v) as f64).sum::<f64>();
+        let (s8, s32) = (sum(&a), sum(&run(32)));
+        assert!((s8 / s32 - 1.0).abs() < 0.15, "8 rays {s8:.1}, 32 rays {s32:.1}");
     }
 
     #[test]

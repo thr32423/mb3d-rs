@@ -161,8 +161,13 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
         color: st.cloud_color,
         offset,
     });
-    // (the emission of the palette's colours has no controls here yet: kept)
-    let (emission, cast_rays) = sc.material.map_or(([0.0; 10], 0), |m| (m.emission, m.cast_rays));
+    // the emission of the palette's ten colours: the numbers in the edit
+    // (separated by spaces, commas or semicolons; missing ones are 0)
+    let mut emission = [0f32; 10];
+    for (e, v) in emission.iter_mut().zip(ui.text(F, "EmissionEdit").split(|c: char| c.is_whitespace() || c == ',' || c == ';').filter(|t| !t.is_empty())) {
+        *e = (super::util::ptf(v) as f32).max(0.0);
+    }
+    let cast_rays = (num("LightRaysEdit").round() as i64).clamp(0, 64) as u8;
     sc.material = ui.checked(F, "MaterialCbx").then(|| crate::scene::Material {
         fresnel: (num("FresnelEdit") as f32).clamp(0.0, 1.0),
         iridescence: (num("IridEdit") as f32).clamp(0.0, 1.0),
@@ -243,6 +248,8 @@ pub fn set_from_header(app: &mut Mb3d, ui: &mut Ui) {
     for (e, v) in [("FresnelEdit", m.fresnel), ("IridEdit", m.iridescence), ("IridShiftEdit", m.irid_shift), ("GlowEdit", m.glow)] {
         ui.set_text(F, e, &super::util::fts_single(v as f64));
     }
+    ui.set_text(F, "EmissionEdit", &m.emission.map(|v| super::util::fts_single(v as f64)).join(" "));
+    ui.set_text(F, "LightRaysEdit", &m.cast_rays.to_string());
     // the relief: without one a size that suits the view (a small part of
     // what the zoom shows)
     let suggest = {

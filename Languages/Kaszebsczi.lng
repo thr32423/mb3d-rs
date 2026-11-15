@@ -1200,6 +1200,8 @@ Elapsed=Minãło
 ;Elapsed
 ElapsedTimeS=Minãłi czas: {} s
 ;Elapsed time: {} s
+EmissionLightLower=swiatło emisji
+;emission light
 Enable=Włączë
 ;Enable
 EnableGeneratingZBufferThisMode=Włączô generowanié Z-bufora. Nen trib wëmôgô dodôwnëch pòdôwków, co gò robi niezgódnym z wczasniészima wersjama, tej lopczi MC z tim nastawã nie mògą bëc zapisóné/wczëtóné. Żebë zapisac Z-bufor, sygnie zapisac zwëczajny òbrôzk, Z-bufor je tej zapisywóny aùtomaticzno.
@@ -2258,6 +2260,14 @@ MapType=Ôrt mapë:
 ;Map Type:
 MapsOfTheCalculatedPicture=Mapë wërechòwónégò òbrazu:
 ;Maps of the calculated picture:
+MatEmission=Emisjô:
+;Emission:
+MatEmissionHint=Dzesãc lëczbów, pò jedny dlô kòżdi farwë paletë òd lewi do prawi (0 ë wicy): tam, dze wiéchrzëzna mô tã farwã, swiécy w ni.\nPrzëmiôr: 20 0 0 0 0 0 0 0 0 0 sprôwiô, że swiécy pierszô farwa.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=Parminie swiatła:
+;Light rays:
+MatLightRaysHint=Parminie, chtërne kòżdi piksel wësyłô dlô swiatła rzucónégò bez swiécącé dzéle na jich òkòlé (0 = felënk, zwëkle òd 8 do 16, nôwicy 64).\nWicy parminiów: mni szëmù, wicy czasu.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
 Material=Materiał
 ;Material
 Max=Max

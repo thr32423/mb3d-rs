@@ -1200,6 +1200,8 @@ Elapsed=Elapsed
 ;the program
 ElapsedTimeS=Elapsed time: {} s
 ;the program
+EmissionLightLower=emission light
+;the program
 Enable=Enable
 ;PostProForm.CheckBox21.Caption
 EnableGeneratingZBufferThisMode=Enable generating z-buffer. This mode requires additional data which makes it incompatible with previous versions, so MC-files with this setting can not be saved/restored. To save the z-buffer just save the normal image, the z-buffer is then automatically saved as well.
@@ -2258,6 +2260,14 @@ MapType=Map Type:
 ;HeightMapGenFrm.Label19.Caption
 MapsOfTheCalculatedPicture=Maps of the calculated picture:
 ;TextureFrm.MapsLabel.Caption
+MatEmission=Emission:
+;PostProForm.EmissionLbl.Caption
+MatEmissionHint=Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+;PostProForm.EmissionEdit.Hint
+MatLightRays=Light rays:
+;PostProForm.LightRaysLbl.Caption
+MatLightRaysHint=The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+;PostProForm.LightRaysEdit.Hint
 Material=Material
 ;MeshPreviewFrm.MaterialSheet.Caption, PostProForm.MaterialBtn.Caption; the program
 Max=Max

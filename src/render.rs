@@ -2695,8 +2695,13 @@ fn paint_core<S: crate::lighting::Sample>(
     let [x0, ry0, w, h] = p.rect;
     let l = effective_lighting(sc);
     let cam = paint_camera(sc, p);
-    let lv = light_vals(sc, &l, &cam);
+    let mut lv = light_vals(sc, &l, &cam);
     let threads = thread_count(sc).min(h as usize).max(1);
+    // the light the shining parts of the surface cast (the whole picture only)
+    if full && sc.material.is_some_and(|m| m.emits() && m.cast_rays > 0) {
+        stage("emission light");
+        lv.emit_light = crate::emission::light(sc, p, gbuf, &lv, &cam, thread_count(sc), progress, cancel);
+    }
     let mut rgb = vec![S::default(); (w * h * 3) as usize];
     let chunk_rows = ((h as usize) + threads - 1) / threads;
     std::thread::scope(|s| {

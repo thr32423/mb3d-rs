@@ -647,6 +647,9 @@ pub struct LightVals {
     /// the ground plane's diffuse and specular colours (`gbuffer::GROUND`
     /// pixels), set by [`LightVals::set_ground`]
     pub(crate) ground: Option<(SVec, SVec)>,
+    /// the light the shining parts of the surface cast on each pixel
+    /// (`emission::light`), None: not calculated
+    pub(crate) emit_light: Option<std::sync::Arc<crate::emission::EmitLight>>,
     /// the fractal's surface material (Fresnel, iridescence, glow)
     pub(crate) material: Option<crate::scene::Material>,
     /// the surface detail (relief and colour variation)
@@ -1185,6 +1188,7 @@ impl LightVals {
             vol_light: false,
             ground: None,
             material: None,
+            emit_light: None,
             detail: None,
             bg: if l.bg_image.is_empty() {
                 None
@@ -1603,6 +1607,18 @@ impl LightVals {
         (il1, Some((il2, (ir - self.col_pos[il1]) as f32 * self.s_c_div[il1])))
     }
 
+    /// What of the palette decides where a colour lies (the emission pass
+    /// keeps its light while this stays the same).
+    pub(crate) fn palette_signature(&self) -> u64 {
+        use std::hash::{Hash, Hasher};
+        let mut h = std::collections::hash_map::DefaultHasher::new();
+        (self.col_pos, self.col_on_otrap, self.col_cycling, self.no_col_ipol, self.sqr).hash(&mut h);
+        for v in [self.s_c_start, self.s_c_mul, self.s_col_zmul].into_iter().chain(self.col_dif.iter().flatten().copied()) {
+            v.to_bits().hash(&mut h);
+        }
+        h.finish()
+    }
+
     /// How strongly the surface `si` shines in its own colour (the surface
     /// material's glow, and the emission of the palette colours it has):
     /// 0 without a material, on the ground and for most surfaces.  The
@@ -1705,7 +1721,7 @@ impl LightVals {
     /// [`Self::pixel_color`] in 8 or 16 bit.
     pub fn pixel_color_s<S: Sample>(&self, si: &SiLight, x: i32, y: i32, cam: &PaintCamera) -> [S; 3] {
         let plv = self.plv_for_pixel(si, x, y, cam);
-        let sh = self.shade(si, &plv, cam, &ShadeOpts::default());
+        let sh = self.shade(si, &plv, cam, &ShadeOpts { own_pixel: true, ..ShadeOpts::default() });
         let out = sh.light;
         let sqr = self.sqr;
         // above white only in floating point
@@ -1952,6 +1968,10 @@ impl LightVals {
                 if shine > 0.0 {
                     sv_add_w(&mut out, idif, shine * 255.0);
                 }
+                // the light of the shining parts, as a light's diffuse part
+                if let Some(l) = self.emit_light.as_ref().filter(|_| o.own_pixel).and_then(|e| e.at(plv.px, plv.py)) {
+                    sv_add_w(&mut out, sv_mul(dif_s, l), 255.0);
+                }
             } else {
                 // CalcTotalLight2
                 let st = (1.0 - d_amb_sh).max(0.0);
@@ -1962,6 +1982,10 @@ impl LightVals {
                 let shine = self.emission_at(si, idif0);
                 if shine > 0.0 {
                     sv_add_w(&mut out, idif, shine * 255.0);
+                }
+                // the light of the shining parts, as a light's diffuse part
+                if let Some(l) = self.emit_light.as_ref().filter(|_| o.own_pixel).and_then(|e| e.at(plv.px, plv.py)) {
+                    sv_add_w(&mut out, sv_mul(dif_s, l), 255.0);
                 }
             }
             dtmp = ((zpos_word as f32 - 28000.0) * self.s_depth + 1.0).max(0.0);
@@ -2147,6 +2171,9 @@ pub(crate) struct ShadeOpts<'a> {
     /// the ground plane's diffuse and specular colours in place of
     /// [`LightVals::ground`]'s (transparent water, `reflect`)
     pub(crate) ground: Option<(SVec, SVec)>,
+    /// the pixel's own surface is shaded (not the hit of a reflected ray):
+    /// the light of the shining parts on it counts ([`LightVals::emit_light`])
+    pub(crate) own_pixel: bool,
 }
 
 /// Result of [`LightVals::shade`].

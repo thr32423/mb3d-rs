@@ -162,13 +162,14 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
         offset,
     });
     // (the emission of the palette's colours has no controls here yet: kept)
-    let emission = sc.material.map_or([0.0; 10], |m| m.emission);
+    let (emission, cast_rays) = sc.material.map_or(([0.0; 10], 0), |m| (m.emission, m.cast_rays));
     sc.material = ui.checked(F, "MaterialCbx").then(|| crate::scene::Material {
         fresnel: (num("FresnelEdit") as f32).clamp(0.0, 1.0),
         iridescence: (num("IridEdit") as f32).clamp(0.0, 1.0),
         irid_shift: num("IridShiftEdit") as f32,
         glow: (num("GlowEdit") as f32).max(0.0),
         emission,
+        cast_rays,
     });
     sc.finish = ui.checked(F, "FinishCbx").then(|| crate::finish::Finish {
         exposure: (num("FinExpEdit") as f32).clamp(-10.0, 10.0),

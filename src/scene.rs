@@ -83,6 +83,10 @@ pub struct Material {
     /// colours is Mandelbulb3D SE's (its emissive dIFS with an opacity per
     /// colour, Glenn Olander); here any surface can shine, in its own colour.
     pub emission: [f32; 10],
+    /// the rays each pixel sends to the shining parts in the painting, for
+    /// the light they cast on what is around them (`emission`; 0: none,
+    /// the parts only shine themselves)
+    pub cast_rays: u8,
 }
 
 impl Material {
@@ -1142,6 +1146,9 @@ impl Scene {
             if m.emits_by_colour() {
                 let _ = writeln!(t, "material_emission = {}", m.emission.map(|v| v.to_string()).join(", "));
             }
+            if m.cast_rays > 0 {
+                let _ = writeln!(t, "material_light_rays = {}", m.cast_rays);
+            }
         }
         if let Some(c) = &self.clouds {
             let k = c.color;
@@ -1630,6 +1637,7 @@ impl Scene {
                         m.irid_shift = p.get(1).copied().unwrap_or(0.0) as f32;
                     }
                     "material_glow" => s.material.get_or_insert_with(Default::default).glow = num()?.max(0.0) as f32,
+                    "material_light_rays" => s.material.get_or_insert_with(Default::default).cast_rays = int()?.clamp(0, 64) as u8,
                     "material_emission" => {
                         let p: Vec<f64> = val.split(',').map(|v| v.trim().parse::<f64>()).collect::<Result<_, _>>().map_err(|_| err(format!("bad material_emission '{val}' (ten numbers, one per palette colour)")))?;
                         if p.len() != 10 {

@@ -2511,6 +2511,23 @@ impl<'a> Marcher<'a> {
         }
     }
 
+    /// A ray marched as a pixel's is ([`Marcher::march_from`]), from
+    /// `origin` at the depth `zz` (steps; the DE stop grows with it, and
+    /// the ray ends in the open air where the depth passes the far end)
+    /// with `dir` a step long: the values of the surface it meets (the
+    /// background's when it meets none; the place is `it.c`) and the steps
+    /// it went.  For the emission pass's rays on the CPU.
+    pub(crate) fn march_ray_from(&mut self, origin: Vec3, dir: Vec3, zz: f64) -> (SiLight, f64) {
+        self.it.c = origin;
+        self.vfov = dir;
+        self.mzz = zz;
+        self.it.calc_sit = false;
+        self.update_de_stop();
+        let d = self.calc_de();
+        let si = self.march_from(SiLight::default(), d, false, 0.0);
+        (si, self.mzz - zz)
+    }
+
     /// The march of [`Marcher::march_pixel`] from the current position (the
     /// DE there `dtmp`) to the surface or the background, and the surface's
     /// values.

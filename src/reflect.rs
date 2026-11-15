@@ -497,6 +497,7 @@ impl<'a, 'c> SrTracer<'a, 'c> {
             light_z: Some(&self.light_z),
             svec: true,
             ground,
+            own_pixel: false,
         };
         self.c.lv.shade(si, &self.plv, self.c.cam, &o)
     }

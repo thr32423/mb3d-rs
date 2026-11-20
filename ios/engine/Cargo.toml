@@ -1,0 +1,26 @@
+[package]
+name = "mb3d-ipad-engine"
+version = "0.1.0"
+edition = "2021"
+description = "The mb3d-rs engine as a static library for the iPad app (the C functions of include/mb3d.h)"
+license = "LGPL-2.1-only"
+publish = false
+
+# src/lib.rs is mb3d-bindings' ffi/src/lib.rs (libmb3d), copied unchanged;
+# the iPad app links it statically (an App Store app has no loose dylibs).
+[lib]
+name = "mb3d"
+crate-type = ["staticlib"]
+
+# The engine without its desktop program; no JIT (iOS forbids code made at
+# run time) and no OIDN (no iOS build).
+[dependencies]
+engine = { package = "mb3d", path = "../..", default-features = false, features = ["gpu"] }
+
+# (its own build, not part of the engine's)
+[workspace]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

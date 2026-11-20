@@ -1,0 +1,78 @@
+name: iPad app
+
+# Builds the iPad app (ios/) on a Mac for the iPad Simulator, runs it with
+# an example opened and keeps screenshots and its log (artifact
+# ipad-screens): the app is developed without a Mac at hand.
+on:
+  push:
+    branches: [ipad-app]
+    paths: ["ios/**", "src/**", "Cargo.toml", ".github/workflows/ios.yml"]
+  workflow_dispatch:
+    inputs:
+      example:
+        description: "example file to open (name without .m3p)"
+        default: "ABoxScale2Start"
+
+permissions:
+  contents: read
+
+jobs:
+  simulator:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios, aarch64-apple-ios-sim
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ios/engine
+      - name: XcodeGen
+        run: brew install xcodegen
+      # the formula, map and example folders of the latest release, checked
+      # against its SHA256SUMS
+      - name: Data of the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)
+          release=https://github.com/$GITHUB_REPOSITORY/releases/download/$tag
+          curl -sSfL -o rel.tar.gz $release/mb3d-rs-linux-x64.tar.gz
+          curl -sSfL $release/SHA256SUMS | grep ' mb3d-rs-linux-x64.tar.gz$' | sed 's/mb3d-rs-linux-x64.tar.gz/rel.tar.gz/' > sum
+          shasum -a 256 -c sum
+          mkdir data && tar xzf rel.tar.gz -C data --strip-components=1 \
+            "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Formulas" "mb3d-rs-$tag-x86_64-unknown-linux-gnu/EM_JIT_M3Formulas" \
+            "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Maps" "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Parameter"
+      - name: Engine and project
+        run: ios/build.sh "$PWD/data"
+      - name: Build for the Simulator
+        run: |
+          cd ios
+          xcodebuild -project MB3D.xcodeproj -target MB3D -configuration Release -sdk iphonesimulator \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO SYMROOT="$PWD/build" build | tail -40
+          ls build/Release-iphonesimulator
+      - name: Run on a simulated iPad
+        run: |
+          mkdir -p screens
+          xcrun simctl list devices available > screens/devices.txt
+          udid=$(xcrun simctl list devices available | grep -m1 -E 'iPad Pro|iPad Air|iPad' | grep -oE '[0-9A-F-]{36}')
+          echo "iPad: $(grep -m1 "$udid" screens/devices.txt)"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl install "$udid" ios/build/Release-iphonesimulator/Mandelbulb3D.app
+          xcrun simctl launch "$udid" local.mb3d.ipad -open "${{ inputs.example || 'ABoxScale2Start' }}"
+          for t in 5 20 60 120; do
+            sleep $(( t - ${last:-0} )); last=$t
+            xcrun simctl io "$udid" screenshot "screens/after-${t}s.png"
+          done
+          xcrun simctl spawn "$udid" log show --last 10m --style compact --predicate 'process == "Mandelbulb3D"' > screens/app.log || true
+          tail -30 screens/app.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ipad-screens
+          path: screens

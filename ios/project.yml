@@ -1,0 +1,36 @@
+# The Xcode project of the iPad app, made by XcodeGen (`xcodegen` in this
+# folder); build.sh does all steps.
+name: MB3D
+options:
+  bundleIdPrefix: local.mb3d
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  MB3D:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      # the formula, map and example folders (made by build.sh, not kept in git)
+      - path: Data
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_NAME: Mandelbulb3D
+        PRODUCT_BUNDLE_IDENTIFIER: local.mb3d.ipad
+        TARGETED_DEVICE_FAMILY: "2"
+        SWIFT_VERSION: "5.0"
+        SWIFT_OBJC_BRIDGING_HEADER: App/Bridging-Header.h
+        HEADER_SEARCH_PATHS: $(PROJECT_DIR)/engine/include
+        "LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]": $(PROJECT_DIR)/engine/target/aarch64-apple-ios-sim/release
+        "LIBRARY_SEARCH_PATHS[sdk=iphoneos*]": $(PROJECT_DIR)/engine/target/aarch64-apple-ios/release
+        # the engine and what it needs (cargo --print native-static-libs)
+        OTHER_LDFLAGS: "-lmb3d -liconv -lobjc -framework Metal -framework QuartzCore -framework CoreGraphics -framework Foundation -framework CoreFoundation"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Mandelbulb3D
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        MARKETING_VERSION: "0.1"
+        CURRENT_PROJECT_VERSION: "1"

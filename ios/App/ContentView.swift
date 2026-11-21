@@ -45,6 +45,9 @@ struct ContentView: View {
         if let i = args.firstIndex(of: "-open"), i + 1 < args.count,
            let url = studio.examples.first(where: { $0.deletingPathExtension().lastPathComponent == args[i + 1] }) {
             studio.open(url)
+            if args.contains("-demo") {
+                Task { await studio.demo() }
+            }
         }
     }
 }
@@ -60,7 +63,10 @@ struct PictureView: View {
                     .resizable()
                     .interpolation(.high)
                     .aspectRatio(contentMode: .fit)
-            } else if studio.selected == nil {
+            }
+            if studio.selected != nil {
+                GestureLayer(studio: studio)
+            } else {
                 ContentUnavailableView("Choose an example", systemImage: "cube.transparent",
                                        description: Text("Pick a scene from the list."))
             }

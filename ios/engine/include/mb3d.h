@@ -124,6 +124,29 @@ char *mb3d_session_request(const mb3d_session *session, const char *request, mb3
 void mb3d_session_cancel(const mb3d_session *session);
 void mb3d_session_free(mb3d_session *session);
 
+/* The navigator: a camera flying through a scene, moved by steps measured
+ * with the distance to the surface (MB3D's Navigator without its window).
+ * One thread at a time. */
+typedef struct mb3d_navigator mb3d_navigator;
+
+/* A camera starting at the scene's view; free with mb3d_navigator_free. */
+mb3d_navigator *mb3d_navigator_new(const mb3d_scene *scene);
+void mb3d_navigator_free(mb3d_navigator *nav);
+/* Turns the camera where it stands, in degrees: a drag of (dx, dy) pixels
+ * turns by pitch = -dy * k, yaw = dx * k, k = field of view / height. */
+void mb3d_navigator_turn(mb3d_navigator *nav, double pitch, double yaw, double roll);
+/* Slides sideways by a drag of (dx, dy) picture heights. */
+void mb3d_navigator_slide(mb3d_navigator *nav, double dx, double dy);
+/* Flies forward (backward when negative) by that percentage of the
+ * distance to the surface (at most 90). */
+void mb3d_navigator_fly(mb3d_navigator *nav, double percent);
+/* The field of view in degrees. */
+double mb3d_navigator_fov(const mb3d_navigator *nav);
+/* A new scene of the view at width x height: quick != 0 the quick one for
+ * while the camera moves (simpler light), else the full one; free it with
+ * mb3d_scene_free. */
+mb3d_scene *mb3d_navigator_scene(const mb3d_navigator *nav, int quick, uint32_t width, uint32_t height);
+
 #ifdef __cplusplus
 }
 #endif

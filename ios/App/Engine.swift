@@ -35,7 +35,7 @@ enum Engine {
 final class FractalScene: @unchecked Sendable {
     let ptr: OpaquePointer
 
-    private init(_ ptr: OpaquePointer) {
+    init(_ ptr: OpaquePointer) {
         self.ptr = ptr
     }
 
@@ -143,5 +143,48 @@ final class RenderJob: @unchecked Sendable {
                   provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
         else { throw EngineError("the picture could not be made") }
         return (image, mb3d_picture_seconds(pic))
+    }
+}
+
+/// A camera flying through a scene (the engine's navigator): moves are
+/// measured with the distance to the surface. Used on the main thread; the
+/// scenes it gives are rendered elsewhere.
+final class Navigator {
+    let ptr: OpaquePointer
+
+    init(_ scene: FractalScene) throws {
+        guard let p = mb3d_navigator_new(scene.ptr) else { throw EngineError(Engine.lastError()) }
+        ptr = p
+    }
+
+    deinit {
+        mb3d_navigator_free(ptr)
+    }
+
+    /// Degrees: up/down, left/right, about the view axis.
+    func turn(pitch: Double, yaw: Double, roll: Double) {
+        mb3d_navigator_turn(ptr, pitch, yaw, roll)
+    }
+
+    /// A drag of (dx, dy) picture heights.
+    func slide(dx: Double, dy: Double) {
+        mb3d_navigator_slide(ptr, dx, dy)
+    }
+
+    /// Percent of the distance to the surface, negative backward.
+    func fly(percent: Double) {
+        mb3d_navigator_fly(ptr, percent)
+    }
+
+    var fov: Double {
+        mb3d_navigator_fov(ptr)
+    }
+
+    /// The view as a scene: quick (simpler light) or full.
+    func scene(quick: Bool, width: Int, height: Int) throws -> FractalScene {
+        guard let p = mb3d_navigator_scene(ptr, quick ? 1 : 0, UInt32(width), UInt32(height)) else {
+            throw EngineError(Engine.lastError())
+        }
+        return FractalScene(p)
     }
 }

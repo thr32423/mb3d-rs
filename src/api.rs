@@ -205,6 +205,55 @@ impl Fractal {
     }
 }
 
+/// A camera flying through a scene: the Navigator without its window
+/// ([`crate::navigate::Navigator`]), for gestures.
+#[derive(Clone)]
+pub struct Flight {
+    nav: crate::navigate::Navigator,
+    notes: Vec<String>,
+}
+
+impl Fractal {
+    /// A camera starting at this scene's view.
+    pub fn flight(&self) -> Flight {
+        Flight { nav: crate::navigate::Navigator::new(&self.scene), notes: self.notes.clone() }
+    }
+}
+
+impl Flight {
+    /// Turns the camera where it stands (degrees): up/down, left/right,
+    /// about the view axis.
+    pub fn turn(&mut self, pitch: f64, yaw: f64, roll: f64) {
+        self.nav.turn(pitch, yaw, roll);
+    }
+
+    /// Slides sideways by a drag of `(dx, dy)` picture heights.
+    pub fn slide(&mut self, dx: f64, dy: f64) {
+        self.nav.slide(dx, dy);
+    }
+
+    /// Flies forward (backward when negative) by that percentage of the
+    /// distance to the surface (at most 90).
+    pub fn fly(&mut self, percent: f64) {
+        self.nav.fly(percent);
+    }
+
+    /// The field of view in degrees (the picture's height).
+    pub fn fov(&self) -> f64 {
+        self.nav.fov()
+    }
+
+    /// The quick scene for the picture while the camera moves.
+    pub fn preview(&self, width: usize, height: usize) -> Fractal {
+        Fractal { scene: self.nav.preview(width as i32, height as i32), notes: self.notes.clone() }
+    }
+
+    /// The scene with this view as the starting scene calculates it.
+    pub fn view(&self, width: usize, height: usize) -> Fractal {
+        Fractal { scene: self.nav.view(width as i32, height as i32), notes: self.notes.clone() }
+    }
+}
+
 /// A formula of a scene.
 pub struct FormulaInfo {
     /// Its place in the scene (for [`Fractal::set_formula`]).

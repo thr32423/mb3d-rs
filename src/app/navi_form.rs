@@ -504,37 +504,11 @@ fn view_to_main(app: &mut Mb3d, ui: &mut Ui) {
     app.message(ui, &tr("@MB:NavigatorViewSentToTheMain"));
 }
 
-/// What "View to main" sends: the navigator's view `n` with its formulas
-/// and the values changed there into the main window's parameters `m`,
-/// which keep all else (size, detail, shadows, reflections, lighting).
+/// What "View to main" sends (the engine's [`crate::navigate::view_into`])
+/// with the whole-number formula values rounded.
 fn view_into(m: &mut Scene, n: &Scene, destop_changed: bool, dynfog_changed: bool) {
-    m.z_start = n.z_start;
-    m.z_end = n.z_end;
-    m.mid = n.mid;
-    m.zoom = n.zoom;
-    m.vgrads = n.vgrads;
-    m.fov_y = n.fov_y;
-    m.optic = n.optic;
-    m.stereo_mode = 0;
-    m.iterations = n.iterations;
-    m.julia = n.julia;
-    if n.julia {
-        m.julia_c = n.julia_c;
-    }
-    m.dfog_on_it = n.dfog_on_it;
-    m.rstop = n.rstop;
-    if let (Some(a), Some(b)) = (m.decomb.as_mut(), n.decomb.as_ref()) {
-        a.smooth = b.smooth;
-    }
-    if destop_changed {
-        m.de_stop = n.de_stop;
-    }
-    m.color_on_it = n.color_on_it;
-    if dynfog_changed {
-        m.lighting.dyn_fog = n.lighting.dyn_fog;
-    }
+    crate::navigate::view_into(m, n, destop_changed, dynfog_changed);
     m.formulas = round_fvals(&n.formulas);
-    m.rot_4d = n.rot_4d;
 }
 
 /// The picture the main window would calculate of the navigator's view

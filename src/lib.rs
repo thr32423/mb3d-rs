@@ -74,6 +74,7 @@ pub mod log;
 pub mod mandelbulber;
 pub mod noise;
 pub mod mcp;
+pub mod navigate;
 pub mod serve;
 #[cfg(feature = "gpu")]
 pub mod gpu;

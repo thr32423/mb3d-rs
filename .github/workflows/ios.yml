@@ -64,11 +64,20 @@ jobs:
           xcrun simctl boot "$udid"
           xcrun simctl bootstatus "$udid" -b
           xcrun simctl install "$udid" ios/build/Release-iphonesimulator/Mandelbulb3D.app
-          xcrun simctl launch "$udid" local.mb3d.ipad -open "${{ inputs.example || 'ABoxScale2Start' }}"
-          for t in 5 20 60 120; do
-            sleep $(( t - ${last:-0} )); last=$t
-            xcrun simctl io "$udid" screenshot "screens/after-${t}s.png"
+          # -demo moves the camera as gestures would (7 moves), -snapshots
+          # writes every full picture to the app's Documents folder
+          xcrun simctl launch "$udid" local.mb3d.ipad -open "${{ inputs.example || 'ABoxScale2Start' }}" -demo -snapshots
+          sleep 10
+          xcrun simctl io "$udid" screenshot screens/start.png
+          docs="$(xcrun simctl get_app_container "$udid" local.mb3d.ipad data)/Documents"
+          for i in $(seq 1 120); do
+            [ -f "$docs/picture-07.png" ] && break
+            sleep 5
           done
+          sleep 3
+          xcrun simctl io "$udid" screenshot screens/end.png
+          cp "$docs"/picture-*.png screens/ || echo "no pictures in $docs"
+          ls screens
           xcrun simctl spawn "$udid" log show --last 10m --style compact --predicate 'process == "Mandelbulb3D"' > screens/app.log || true
           tail -30 screens/app.log
       - uses: actions/upload-artifact@v4

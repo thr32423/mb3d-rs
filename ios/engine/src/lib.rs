@@ -7,7 +7,7 @@
 //! on the same thread.  A panic in the engine is caught and reported the
 //! same way.
 
-use engine::api::{self, Fractal, Picture, RenderOptions};
+use engine::api::{self, Flight, Fractal, Picture, RenderOptions};
 use std::cell::RefCell;
 use std::ffi::{c_char, c_int, c_void, CStr, CString};
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -424,4 +424,90 @@ pub unsafe extern "C" fn mb3d_session_free(session: *mut Session) {
     if !session.is_null() {
         drop(Box::from_raw(session));
     }
+}
+
+// ---------------------------------------------------------------------------
+// the navigator (iPad app): a camera flying through a scene
+
+fn flight_mut<'a>(p: *mut Flight) -> Option<&'a mut Flight> {
+    // SAFETY: a non-null navigator pointer comes from this library (boxed)
+    // and was not freed yet: the header's contract
+    unsafe { p.as_mut() }
+}
+
+/// A camera starting at the scene's view; free it with mb3d_navigator_free.
+///
+/// # Safety
+/// `scene` is null or a scene of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_new(scene: *const Fractal) -> *mut Flight {
+    boxed(guard(|| Ok(scene_ref(scene)?.flight())))
+}
+
+/// # Safety
+/// `nav` is null or a navigator of this library, not used afterwards.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_free(nav: *mut Flight) {
+    if !nav.is_null() {
+        drop(Box::from_raw(nav));
+    }
+}
+
+/// Turns the camera where it stands, in degrees.
+///
+/// # Safety
+/// `nav` is a navigator of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_turn(nav: *mut Flight, pitch: f64, yaw: f64, roll: f64) {
+    if let Some(f) = flight_mut(nav) {
+        let _ = guard(|| Ok(f.turn(pitch, yaw, roll)));
+    }
+}
+
+/// Slides sideways by a drag of (dx, dy) picture heights.
+///
+/// # Safety
+/// `nav` is a navigator of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_slide(nav: *mut Flight, dx: f64, dy: f64) {
+    if let Some(f) = flight_mut(nav) {
+        let _ = guard(|| Ok(f.slide(dx, dy)));
+    }
+}
+
+/// Flies forward (backward when negative) by that percentage of the
+/// distance to the surface.
+///
+/// # Safety
+/// `nav` is a navigator of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_fly(nav: *mut Flight, percent: f64) {
+    if let Some(f) = flight_mut(nav) {
+        let _ = guard(|| Ok(f.fly(percent)));
+    }
+}
+
+/// The field of view in degrees.
+///
+/// # Safety
+/// `nav` is a navigator of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_fov(nav: *const Flight) -> f64 {
+    // SAFETY: as flight_mut
+    unsafe { nav.as_ref() }.map_or(0.0, |f| f.fov())
+}
+
+/// A new scene of the view: quick != 0 the quick one while moving, else
+/// the full one; free it with mb3d_scene_free.
+///
+/// # Safety
+/// `nav` is a navigator of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_scene(nav: *const Flight, quick: c_int, width: u32, height: u32) -> *mut Fractal {
+    boxed(guard(|| {
+        // SAFETY: as flight_mut
+        let f = unsafe { nav.as_ref() }.ok_or_else(|| "the navigator is null".to_string())?;
+        let (w, h) = (width as usize, height as usize);
+        Ok(if quick != 0 { f.preview(w, h) } else { f.view(w, h) })
+    }))
 }

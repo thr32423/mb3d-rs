@@ -46,7 +46,7 @@ final class Breeder {
         members = []
         chosen = nil
         progress = 0
-        status = "Breeding"
+        status = String(localized: "Breeding")
         generation += 1
         let seed = UInt64.random(in: 1...UInt64.max)
         Task.detached(priority: .userInitiated) {
@@ -80,7 +80,7 @@ final class Breeder {
             return
         }
         progress = Double(i) / Double(members.count)
-        status = "Pictures"
+        status = String(localized: "Pictures")
         Task.detached(priority: .userInitiated) {
             let r = try? job.render(s)
             await MainActor.run { [weak self] in

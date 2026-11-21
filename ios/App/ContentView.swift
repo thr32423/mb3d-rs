@@ -8,6 +8,8 @@ struct ContentView: View {
     @State private var exporting = false
     @State private var exportDoc: M3PDocument?
     @State private var breeding = false
+    @State private var animating = false
+    @State private var sculpting = false
 
     var body: some View {
         NavigationSplitView {
@@ -83,8 +85,12 @@ struct ContentView: View {
                             Button("Open from Files…", systemImage: "folder") { importing = true }
                         }
                         .disabled(studio.selected == nil)
-                        Button("Variations", systemImage: "leaf") { breeding = true }
-                            .disabled(studio.selected == nil)
+                        Menu("Create", systemImage: "wand.and.stars") {
+                            Button("Variations", systemImage: "leaf") { breeding = true }
+                            Button("Animation", systemImage: "film") { animating = true }
+                            Button("3D model and AR", systemImage: "cube.transparent") { sculpting = true }
+                        }
+                        .disabled(studio.selected == nil)
                         Button("Settings", systemImage: "slider.horizontal.3") { showSettings.toggle() }
                     }
                 }
@@ -102,6 +108,12 @@ struct ContentView: View {
         }
         .sheet(isPresented: $breeding) {
             VariationsView(studio: studio)
+        }
+        .sheet(isPresented: $animating) {
+            AnimationView(studio: studio, director: studio.director)
+        }
+        .sheet(isPresented: $sculpting) {
+            SculptureView(studio: studio, sculptor: studio.sculptor)
         }
         .onOpenURL { studio.importFile($0) }
         .onAppear(perform: autoOpen)

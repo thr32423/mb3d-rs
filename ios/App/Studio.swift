@@ -216,7 +216,7 @@ final class Studio {
             try s.saveM3P(to: dest)
             myScenes = Library.scenes()
             self.selected = dest
-            status = "Saved as \(dest.lastPathComponent)"
+            status = String(localized: "Saved as \(dest.lastPathComponent)")
         } catch {
             self.error = "\(error)"
         }
@@ -497,7 +497,7 @@ final class Studio {
     /// A picture (JPEG or PNG data from Photos) as the background.
     func setBackground(imageData: Data) {
         guard let img = UIImage(data: imageData), let jpeg = img.jpegData(compressionQuality: 0.92) else {
-            error = "The picture could not be read."
+            error = String(localized: "The picture could not be read.")
             return
         }
         let name = "Photo \(Self.stamp()).jpg"
@@ -552,7 +552,7 @@ final class Studio {
             let done = try Library.copy(urls, into: Library.formulas)
             Engine.reloadFormulas()
             ownFormulas = Library.ownFormulas()
-            status = "\(done.count) formula\(done.count == 1 ? "" : "s") added"
+            status = done.count == 1 ? String(localized: "1 formula added") : String(localized: "\(done.count) formulas added")
         } catch {
             self.error = "\(error.localizedDescription)"
         }
@@ -615,7 +615,7 @@ final class Studio {
     /// field on, the focus goes to what is there.
     func tap(at point: CGPoint, in size: CGSize) {
         guard let scene, let dof = doc["dof"], dof != "off" else {
-            if scene != nil { status = "Switch on depth of field (Effects) to focus with a tap" }
+            if scene != nil { status = String(localized: "Switch on depth of field (Effects) to focus with a tap") }
             return
         }
         let (w, h) = scene.size
@@ -625,26 +625,26 @@ final class Studio {
         let y = Int(((point.y - (size.height - Double(h) * k) / 2) / k).rounded(.down))
         guard x >= 0, y >= 0, x < w, y < h else { return }
         guard let z = scene.focus(x: x, y: y) else {
-            status = "Nothing there to focus on"
+            status = String(localized: "Nothing there to focus on")
             return
         }
         doc["dof_focus"] = String(z)
         commit()
-        status = "Focus set"
+        status = String(localized: "Focus set")
     }
 
     /// The parameters as Mandelbulb3D text on the clipboard.
     func copyParameters() {
         guard let s = try? sceneToSave(), let t = s.mb3dText(title: title) else { return }
         UIPasteboard.general.string = t
-        status = "Parameters copied"
+        status = String(localized: "Parameters copied")
     }
 
     /// Parameters from the clipboard (MB3D text or a scene text) become a
     /// new scene among the user's.
     func pasteParameters() {
         guard let t = UIPasteboard.general.string, !t.isEmpty else {
-            error = "The clipboard holds no text."
+            error = String(localized: "The clipboard holds no text.")
             return
         }
         do {
@@ -654,7 +654,7 @@ final class Studio {
             myScenes = Library.scenes()
             open(dest)
         } catch {
-            self.error = "The clipboard holds no parameters: \(error)"
+            self.error = String(localized: "The clipboard holds no parameters: \(String(describing: error))")
         }
     }
 
@@ -662,7 +662,7 @@ final class Studio {
     func saveToPhotos() {
         guard let image else { return }
         UIImageWriteToSavedPhotosAlbum(UIImage(cgImage: image), nil, nil, nil)
-        status = "Saved to Photos"
+        status = String(localized: "Saved to Photos")
     }
 
     /// A colour of a light section, applied shortly after.
@@ -805,7 +805,7 @@ final class Studio {
         jobQuick = quick
         if !quick {
             progress = 0
-            status = "Starting"
+            status = String(localized: "Starting")
         } else {
             progress = nil
         }
@@ -850,6 +850,120 @@ final class Studio {
         job?.stop()
     }
 
+    /// The animation's keyframes and settings (kept while the app runs).
+    let director = Director()
+    /// The 3D model export's settings and result.
+    let sculptor = Sculptor()
+
+    /// Stereo pairs side by side for cross-eyed viewing (else parallel).
+    var crossEyed = true
+
+    /// The two eyes' pictures (the scene's `stereo` key), side by side.
+    func renderStereoPair() {
+        guard let scene, let l = try? FractalScene(text: scene.text), let r = try? FractalScene(text: scene.text) else { return }
+        do {
+            try l.set("stereo = left")
+            try r.set("stereo = right")
+        } catch {
+            self.error = "\(error)"
+            return
+        }
+        job?.stop()
+        let job = RenderJob { stage, part in
+            Task { @MainActor [weak self] in
+                guard let self, self.job != nil else { return }
+                self.status = stage
+                self.progress = part
+            }
+        }
+        self.job = job
+        jobQuick = false
+        progress = 0
+        status = String(localized: "Left eye")
+        let cross = crossEyed
+        Task.detached(priority: .userInitiated) {
+            let result: Result<CGImage, Error>
+            do {
+                let left = try job.render(l).image
+                await MainActor.run { [weak self] in self?.status = String(localized: "Right eye") }
+                let right = try job.render(r).image
+                // cross-eyed: the right eye's picture on the left
+                result = .success(try Studio.sideBySide(cross ? right : left, cross ? left : right))
+            } catch {
+                result = .failure(error)
+            }
+            await MainActor.run { [weak self] in
+                guard let self, self.job === job else { return }
+                self.job = nil
+                self.progress = nil
+                switch result {
+                case .success(let img):
+                    self.image = img
+                    self.status = cross ? "Stereo pair (cross-eyed)" : "Stereo pair (parallel)"
+                    Snapshots.save(img, name: "stereo")
+                    let url = FileManager.default.temporaryDirectory
+                        .appendingPathComponent("\(self.title) stereo").appendingPathExtension("png")
+                    self.pictureURL = PNG.write(img, to: url) ? url : nil
+                case .failure(let e):
+                    self.status = ""
+                    if !job.isStopped { self.error = "\(e)" }
+                }
+            }
+        }
+    }
+
+    nonisolated private static func sideBySide(_ a: CGImage, _ b: CGImage) throws -> CGImage {
+        let (w, h) = (a.width + b.width, max(a.height, b.height))
+        guard let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                                  bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)
+        else { throw EngineError(String(localized: "the pair could not be made")) }
+        ctx.draw(a, in: CGRect(x: 0, y: 0, width: a.width, height: a.height))
+        ctx.draw(b, in: CGRect(x: a.width, y: 0, width: b.width, height: b.height))
+        guard let img = ctx.makeImage() else { throw EngineError(String(localized: "the pair could not be made")) }
+        return img
+    }
+
+    /// The view as a 360° panorama: the panorama lens, a 2:1 picture.
+    func makePanorama() {
+        doc["optic"] = "2"
+        commit()
+        aspect = 2
+    }
+
+    /// The last picture as a 360° photo (JPEG with the tags Facebook and
+    /// Google Photos look for) for Share.
+    func panoramaPhoto() -> URL? {
+        guard let image, image.width == 2 * image.height else {
+            error = String(localized: "Make a 360° panorama first (Picture ▸ 360° panorama): its picture is twice as wide as high.")
+            return nil
+        }
+        let data = NSMutableData()
+        guard let dest = CGImageDestinationCreateWithData(data, "public.jpeg" as CFString, 1, nil) else { return nil }
+        CGImageDestinationAddImage(dest, image, [kCGImageDestinationLossyCompressionQuality: 0.92] as CFDictionary)
+        guard CGImageDestinationFinalize(dest) else { return nil }
+        var n = 0
+        let tagged: Data? = (data as Data).withUnsafeBytes { raw in
+            guard let p = raw.bindMemory(to: UInt8.self).baseAddress,
+                  let out = mb3d_jpeg_360(p, raw.count, UInt32(image.width), UInt32(image.height), &n)
+            else { return nil }
+            defer { mb3d_bytes_free(out, n) }
+            return Data(bytes: out, count: n)
+        }
+        guard let tagged else {
+            error = Engine.lastError()
+            return nil
+        }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(title)_360").appendingPathExtension("jpg")
+        do {
+            try tagged.write(to: url)
+            return url
+        } catch {
+            self.error = "\(error.localizedDescription)"
+            return nil
+        }
+    }
+
     /// A Monte Carlo render of the view: pass after pass (up to
     /// `maxPasses`), each picture shown, until Stop.
     func renderMonteCarlo(maxPasses: Int = 64) {
@@ -858,14 +972,14 @@ final class Studio {
         let job = RenderJob { stage, part in
             Task { @MainActor [weak self] in
                 guard let self, self.job != nil else { return }
-                self.status = "Monte Carlo, \(stage.lowercased())"
+                self.status = String(localized: "Monte Carlo, \(stage.lowercased())")
                 self.progress = part
             }
         }
         self.job = job
         jobQuick = false
         progress = 0
-        status = "Monte Carlo"
+        status = String(localized: "Monte Carlo")
         Task.detached(priority: .userInitiated) {
             var failure: Error?
             do {
@@ -878,7 +992,7 @@ final class Studio {
                     await MainActor.run { [weak self] in
                         guard let self, self.job === job else { return }
                         self.image = img
-                        self.status = "Monte Carlo, \(n) pass\(n == 1 ? "" : "es")"
+                        self.status = n == 1 ? String(localized: "Monte Carlo, 1 pass") : String(localized: "Monte Carlo, \(n) passes")
                     }
                 }
             } catch {
@@ -978,8 +1092,14 @@ final class Studio {
             try? await Task.sleep(for: .milliseconds(300))
             await waitIdle()
         }
+        // (depth of field and ground off again: the variations sharp)
+        doc["dof"] = "off"
+        doc["ground"] = "off"
+        commit()
+        try? await Task.sleep(for: .milliseconds(300))
+        await waitIdle()
         // phase 2: a generation of variations, the third taken (picture 15)
-        status = "variations"
+        status = String(localized: "variations")
         let breeder = Breeder()
         if let s = scene { breeder.breed(from: s) }
         try? await Task.sleep(for: .milliseconds(300))
@@ -991,8 +1111,54 @@ final class Studio {
         if breeder.members.count > 2 { takeVariation(breeder.members[2].scene) }
         try? await Task.sleep(for: .milliseconds(300))
         await waitIdle()
+        // phase 5: Droste, a stereo pair, a 360 photo, a turntable video,
+        // a 3D model (their files copied to Documents for the workflow)
+        let keep = { (u: URL?) in
+            guard let u else { return }
+            let dest = Library.folder.appendingPathComponent("demo-" + u.lastPathComponent)
+            try? FileManager.default.removeItem(at: dest)
+            try? FileManager.default.copyItem(at: u, to: dest)
+        }
+        status = String(localized: "Droste")
+        doc["droste"] = "0.5, 0.5, 0.15, 0.45"
+        doc["droste_twist"] = "1"
+        commit()
+        try? await Task.sleep(for: .milliseconds(300))
+        await waitIdle()
+        if let img = image { Snapshots.save(img, name: "droste") }
+        doc["droste"] = "off"
+        commit()
+        try? await Task.sleep(for: .milliseconds(300))
+        await waitIdle()
+        status = String(localized: "stereo")
+        renderStereoPair()
+        try? await Task.sleep(for: .milliseconds(300))
+        await waitIdle()
+        status = String(localized: "360")
+        makePanorama()
+        try? await Task.sleep(for: .milliseconds(300))
+        await waitIdle()
+        keep(panoramaPhoto())
+        status = String(localized: "turntable")
+        director.turntable = true
+        director.turntableSeconds = 2
+        director.fps = 12
+        director.side = 320
+        director.render(turntableOf: scene)
+        try? await Task.sleep(for: .milliseconds(300))
+        while director.busy { try? await Task.sleep(for: .milliseconds(300)) }
+        print("MB3D demo: video \(director.video?.lastPathComponent ?? "none"), \(director.status) \(director.error ?? "")")
+        keep(director.video)
+        status = String(localized: "3D model")
+        sculptor.resolution = 64
+        if let s = scene { sculptor.trace(s, name: "model") }
+        try? await Task.sleep(for: .milliseconds(300))
+        while sculptor.busy { try? await Task.sleep(for: .milliseconds(300)) }
+        print("MB3D demo: mesh \(sculptor.status) \(sculptor.error ?? ""), usdz \(sculptor.usdz != nil)")
+        keep(sculptor.usdz)
+        keep(sculptor.files.first)
         // phase 4: a Monte Carlo render of 3 passes (montecarlo.png)
-        status = "Monte Carlo"
+        status = String(localized: "Monte Carlo")
         renderMonteCarlo(maxPasses: 3)
         try? await Task.sleep(for: .milliseconds(300))
         await waitIdle()

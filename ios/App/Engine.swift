@@ -33,14 +33,14 @@ enum Engine {
     static func image(of pic: OpaquePointer) throws -> CGImage {
         let w = Int(mb3d_picture_width(pic))
         let h = Int(mb3d_picture_height(pic))
-        guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError("no picture") }
+        guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError(String(localized: "no picture")) }
         let data = Data(bytes: rgb, count: w * h * 3)
         guard let provider = CGDataProvider(data: data as CFData),
               let image = CGImage(
                   width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: w * 3,
                   space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
                   provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
-        else { throw EngineError("the picture could not be made") }
+        else { throw EngineError(String(localized: "the picture could not be made")) }
         return image
     }
 
@@ -206,14 +206,14 @@ final class RenderJob: @unchecked Sendable {
         defer { mb3d_picture_free(pic) }
         let w = Int(mb3d_picture_width(pic))
         let h = Int(mb3d_picture_height(pic))
-        guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError("no picture") }
+        guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError(String(localized: "no picture")) }
         let data = Data(bytes: rgb, count: w * h * 3)
         guard let provider = CGDataProvider(data: data as CFData),
               let image = CGImage(
                   width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: w * 3,
                   space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
                   provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
-        else { throw EngineError("the picture could not be made") }
+        else { throw EngineError(String(localized: "the picture could not be made")) }
         return (image, mb3d_picture_seconds(pic))
     }
 
@@ -267,6 +267,51 @@ final class MonteCarloRender: @unchecked Sendable {
         guard let pic = mb3d_montecarlo_picture(ptr) else { throw EngineError(Engine.lastError()) }
         defer { mb3d_picture_free(pic) }
         return try Engine.image(of: pic)
+    }
+}
+
+/// An animation: keyframes (scenes of one size) and the frames between
+/// them, interpolated as the desktop's Animation window does.
+final class Film: @unchecked Sendable {
+    let ptr: OpaquePointer
+
+    /// `smoothness`: 0 linear, 1 Bezier (MB3D), 2 Catmull-Rom (through every
+    /// keyframe).
+    init(looped: Bool, smoothness: Int) throws {
+        guard let p = mb3d_film_new(looped ? 1 : 0, Int32(smoothness)) else { throw EngineError(Engine.lastError()) }
+        ptr = p
+    }
+
+    /// A turntable: the camera around the object in `steps` keyframes of
+    /// `frames` frames each.
+    init(orbitOf scene: FractalScene, steps: Int, frames: Int) throws {
+        guard let p = mb3d_film_orbit(scene.ptr, UInt32(steps), UInt32(frames)) else {
+            throw EngineError(Engine.lastError())
+        }
+        ptr = p
+    }
+
+    deinit {
+        mb3d_film_free(ptr)
+    }
+
+    func add(_ scene: FractalScene, frames: Int) throws {
+        if mb3d_film_add(ptr, scene.ptr, UInt32(max(1, frames))) != 0 { throw EngineError(Engine.lastError()) }
+    }
+
+    var keyframeCount: Int { Int(mb3d_film_keyframes(ptr)) }
+
+    func keyframe(_ i: Int) throws -> FractalScene {
+        guard let p = mb3d_film_keyframe(ptr, UInt32(i)) else { throw EngineError(Engine.lastError()) }
+        return FractalScene(p)
+    }
+
+    var frameCount: Int { Int(mb3d_film_frames(ptr)) }
+
+    /// The scene of frame `i` (from 0).
+    func frame(_ i: Int) throws -> FractalScene {
+        guard let p = mb3d_film_frame(ptr, UInt32(i)) else { throw EngineError(Engine.lastError()) }
+        return FractalScene(p)
     }
 }
 

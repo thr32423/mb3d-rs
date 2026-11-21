@@ -303,6 +303,125 @@ impl MonteCarlo {
     }
 }
 
+/// An animation (the Animation window): keyframes of one size and the
+/// frames between them, interpolated as MB3D does (or through every
+/// keyframe, Catmull-Rom).
+#[derive(Clone)]
+pub struct Film {
+    anim: crate::anim::Animation,
+}
+
+impl Film {
+    /// No keyframes yet; `interpolation` 0 linear, 1 Bezier (MB3D's), 2
+    /// Catmull-Rom.
+    pub fn new(looped: bool, interpolation: i32) -> Film {
+        use crate::anim::Interpolation;
+        let anim = crate::anim::Animation {
+            looped,
+            interpolation: match interpolation {
+                0 => Interpolation::Linear,
+                1 => Interpolation::Bezier,
+                _ => Interpolation::CatmullRom,
+            },
+            ..Default::default()
+        };
+        Film { anim }
+    }
+
+    /// A turntable: `steps` keyframes with the camera around the middle of
+    /// the view, `frames` frames from each to the next, a whole turn.
+    pub fn orbit(f: &Fractal, steps: usize, frames: u32) -> Film {
+        let mut film = Film::new(true, 2);
+        film.anim.keyframes = crate::anim::orbit_keyframes(&f.scene, steps.max(2), frames.max(1));
+        film.anim.set_size_from(&f.scene);
+        film
+    }
+
+    /// A keyframe (a copy of `f`) with `frames` frames to the next.
+    pub fn add(&mut self, f: &Fractal, frames: u32) {
+        if self.anim.keyframes.is_empty() {
+            self.anim.set_size_from(&f.scene);
+        }
+        self.anim.keyframes.push(crate::anim::Keyframe::new(f.scene.clone(), frames.max(1)));
+    }
+
+    pub fn keyframes(&self) -> usize {
+        self.anim.keyframes.len()
+    }
+
+    pub fn keyframe(&self, i: usize) -> Result<Fractal, String> {
+        let k = self.anim.keyframes.get(i).ok_or_else(|| format!("there is no keyframe {}", i + 1))?;
+        Ok(Fractal { scene: k.scene.clone(), notes: Vec::new() })
+    }
+
+    /// The number of frames.
+    pub fn frames(&self) -> usize {
+        self.anim.frame_count()
+    }
+
+    /// The scene of frame `i` (from 0).
+    pub fn frame(&self, i: usize) -> Result<Fractal, String> {
+        Ok(Fractal { scene: self.anim.frame_scene(i)?, notes: Vec::new() })
+    }
+}
+
+/// The object as a triangle mesh (the BulbTracer), for 3D printing, other
+/// programs and AR.
+pub struct Mesh3D {
+    mesh: crate::mesh::Mesh,
+    normals: Vec<[f32; 3]>,
+}
+
+impl Fractal {
+    /// Traces the object in a `resolution`³ grid of the BulbTracer's
+    /// default cube, with the palette's colours when `colors`, `smooth`
+    /// smoothing passes; centred with its largest side `size` long when
+    /// `size` > 0.
+    pub fn mesh(&self, resolution: usize, colors: bool, smooth: u32, size: f64, opt: &RenderOptions) -> Result<Mesh3D, String> {
+        let mp = crate::mesh::MeshParams { resolution: resolution.clamp(8, 2048), colors, smooth, ..Default::default() };
+        let threads = std::thread::available_parallelism().map_or(4, |n| n.get());
+        let progress = |done: usize, total: usize| {
+            if let Some(p) = opt.progress {
+                p("Tracing", done, total);
+            }
+        };
+        let cancel = || opt.cancel.is_some_and(|c| c());
+        let mut mesh = crate::mesh::trace(&self.scene, &mp, threads, &progress, &cancel)?;
+        if cancel() {
+            return Err("cancelled".into());
+        }
+        if size > 0.0 {
+            mesh.center(size);
+        }
+        let normals = mesh.normals();
+        Ok(Mesh3D { mesh, normals })
+    }
+}
+
+impl Mesh3D {
+    pub fn vertices(&self) -> &[[f32; 3]] {
+        &self.mesh.vertices
+    }
+
+    pub fn faces(&self) -> &[[u32; 3]] {
+        &self.mesh.faces
+    }
+
+    pub fn normals(&self) -> &[[f32; 3]] {
+        &self.normals
+    }
+
+    /// Red, green, blue (0..1) and the palette position of each vertex.
+    pub fn colors(&self) -> Option<&[[f32; 4]]> {
+        self.mesh.colors.as_deref().filter(|c| c.len() == self.mesh.vertices.len())
+    }
+
+    /// Writes OBJ, PLY or STL (by the extension).
+    pub fn save(&self, path: &Path) -> Result<(), String> {
+        self.mesh.save(path)
+    }
+}
+
 /// A camera flying through a scene: the Navigator without its window
 /// ([`crate::navigate::Navigator`]), for gestures.
 #[derive(Clone)]
@@ -477,6 +596,18 @@ mod pick_tests {
         let p = mc.picture();
         assert_eq!((p.width, p.height, p.rgb.len()), (64, 48, 64 * 48 * 3));
         assert!(p.rgb.iter().any(|&v| v > 0), "the Monte Carlo picture shows something");
+        let mut film = Film::new(false, 2);
+        film.add(&f, 3);
+        let mut g = f.clone();
+        g.set("zoom = 0.5").unwrap();
+        film.add(&g, 3);
+        assert_eq!(film.frames(), 4);
+        assert!(film.frame(1).unwrap().text() != f.text() && film.frame(3).is_ok() && film.frame(4).is_err());
+        let orbit = Film::orbit(&f, 4, 2);
+        assert_eq!((orbit.keyframes(), orbit.frames()), (4, 8));
+        let m = f.mesh(24, true, 1, 0.3, &RenderOptions::default()).unwrap();
+        assert!(!m.faces().is_empty() && m.normals().len() == m.vertices().len() && m.colors().is_some());
+        assert!(m.vertices().iter().all(|v| v.iter().all(|x| x.abs() <= 0.16)), "centred in 0.3");
         let t = f.mb3d_text("t");
         assert!(t.starts_with("Mandelbulb3Dv18{"));
         assert!(Fractal::from_text(&t).is_ok(), "the text opens again");

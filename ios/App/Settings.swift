@@ -44,7 +44,7 @@ struct SettingsView: View {
         .disabled(studio.selected == nil)
     }
 
-    private func page(_ title: String, _ icon: String, _ content: some View) -> some View {
+    private func page(_ title: LocalizedStringKey, _ icon: String, _ content: some View) -> some View {
         NavigationLink {
             content.navigationTitle(title).navigationBarTitleDisplayMode(.inline)
         } label: {
@@ -57,6 +57,7 @@ struct SettingsView: View {
 
 struct PicturePage: View {
     @Bindable var studio: Studio
+    @State private var panoURL: URL?
 
     var body: some View {
         Form {
@@ -99,6 +100,28 @@ struct PicturePage: View {
             Section {
                 Button("Save to Photos", systemImage: "photo.badge.plus") { studio.saveToPhotos() }
                     .disabled(studio.image == nil)
+            }
+            Section {
+                Button("Render a stereo pair", systemImage: "eyeglasses") { studio.renderStereoPair() }
+                Toggle("Cross-eyed (else parallel)", isOn: $studio.crossEyed)
+            } header: {
+                Text("Stereo")
+            } footer: {
+                Text("The left and the right eye's pictures side by side.")
+            }
+            Section {
+                Button("Make a 360° panorama", systemImage: "pano") { studio.makePanorama() }
+                Button("Share as a 360° photo", systemImage: "globe") {
+                    if let url = studio.panoramaPhoto() { panoURL = url }
+                }
+                .disabled(studio.image.map { $0.width != 2 * $0.height } ?? true)
+            } header: {
+                Text("360°")
+            } footer: {
+                Text("A panorama all around the camera, tagged so Facebook and photo apps show it as a 360° photo.")
+            }
+            .sheet(item: $panoURL) { url in
+                ShareSheet(items: [url])
             }
         }
     }
@@ -178,7 +201,7 @@ struct JuliaPage: View {
             Section {
                 Toggle("Julia mode", isOn: studio.flag("julia"))
                 ForEach(0..<4) { i in
-                    NumberField(title: ["x", "y", "z", "w"][i], value: studio.component("julia_c", i, [0, 0, 0, 0]),
+                    NumberField(title: LocalizedStringKey(stringLiteral: ["x", "y", "z", "w"][i]), value: studio.component("julia_c", i, [0, 0, 0, 0]),
                                 done: studio.commit)
                 }
             } header: {
@@ -190,7 +213,7 @@ struct JuliaPage: View {
                 ForEach(["x", "y", "z"], id: \.self) { axis in
                     Toggle("Cut at \(axis)", isOn: studio.effect("cut_\(axis)", on: "0"))
                     if studio.effect("cut_\(axis)", on: "0").wrappedValue {
-                        NumberField(title: "\(axis) position", value: studio.number("cut_\(axis)", 0), done: studio.commit)
+                        NumberField(title: "Position on \(axis)", value: studio.number("cut_\(axis)", 0), done: studio.commit)
                     }
                 }
             } header: {
@@ -284,7 +307,7 @@ struct FogPage: View {
                     LabeledSlider(title: "Brightness", value: studio.number("background_brightness", 40, whole: true),
                                   range: 0...255, format: "%.0f", done: studio.commit)
                     ForEach(0..<3) { i in
-                        LabeledSlider(title: ["Turn about x", "Turn about y", "Turn about z"][i],
+                        LabeledSlider(title: (["Turn about x", "Turn about y", "Turn about z"] as [LocalizedStringKey])[i],
                                       value: studio.component("background_rotation", i, [0, 0, 0]),
                                       range: 0...255, format: "%.0f", done: studio.commit)
                     }
@@ -437,6 +460,29 @@ struct FinishingPage: View {
                 LabeledSlider(title: "Colour fringes", value: studio.number("chromatic", 0), range: 0...1,
                               format: "%.2f", done: studio.commit)
             }
+            Section {
+                Toggle("Droste effect", isOn: studio.effect("droste", on: "0.5, 0.5, 0.12, 0.45"))
+                if studio.effect("droste", on: "0.5, 0.5, 0.12, 0.45").wrappedValue {
+                    LabeledSlider(title: "Centre across", value: studio.component("droste", 0, [0.5, 0.5, 0.12, 0.45]), range: 0...1,
+                                  format: "%.2f", done: studio.commit)
+                    LabeledSlider(title: "Centre down", value: studio.component("droste", 1, [0.5, 0.5, 0.12, 0.45]), range: 0...1,
+                                  format: "%.2f", done: studio.commit)
+                    LabeledSlider(title: "Inner radius", value: studio.component("droste", 2, [0.5, 0.5, 0.12, 0.45]), range: 0.002...1,
+                                  logarithmic: true, format: "%.3f", done: studio.commit)
+                    LabeledSlider(title: "Outer radius", value: studio.component("droste", 3, [0.5, 0.5, 0.12, 0.45]), range: 0.01...4,
+                                  logarithmic: true, format: "%.3f", done: studio.commit)
+                    LabeledSlider(title: "Twist", value: studio.number("droste_twist", 0), range: -8...8,
+                                  format: "%.2f", done: studio.commit)
+                    LabeledSlider(title: "Phase", value: studio.number("droste_phase", 0), range: -4...4,
+                                  format: "%.2f", done: studio.commit)
+                    LabeledSlider(title: "Blend", value: studio.number("droste_blend", 0), range: 0...1,
+                                  format: "%.2f", done: studio.commit)
+                }
+            } header: {
+                Text("Droste")
+            } footer: {
+                Text("The picture inside itself, again and again: the ring between the radii repeats inwards.")
+            }
         }
     }
 }
@@ -515,7 +561,7 @@ struct FormulaSection: View {
             }
             .pickerStyle(.navigationLink)
             ForEach(section.entries.filter { $0.key != "name" }, id: \.key) { e in
-                NumberField(title: e.key == "iterations" ? "Iterations" : e.key,
+                NumberField(title: e.key == "iterations" ? "Iterations" : LocalizedStringKey(stringLiteral: e.key),
                             value: studio.sectionNumber(section.id, e.key),
                             done: studio.commit)
             }
@@ -570,7 +616,7 @@ struct LightSection: View {
 
 /// A number typed in (with the number keyboard), applied when entered.
 struct NumberField: View {
-    let title: String
+    let title: LocalizedStringKey
     @Binding var value: Double
     let done: () -> Void
 
@@ -588,7 +634,7 @@ struct NumberField: View {
 
 /// A slider that renders again when the finger lifts.
 struct LabeledSlider: View {
-    let title: String
+    let title: LocalizedStringKey
     @Binding var value: Double
     let range: ClosedRange<Double>
     var logarithmic = false
@@ -620,4 +666,19 @@ struct LabeledSlider: View {
             }
         )
     }
+}
+
+/// The system's share sheet for files made on request.
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
+}
+
+extension URL: @retroactive Identifiable {
+    public var id: String { absoluteString }
 }

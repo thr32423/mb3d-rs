@@ -43,20 +43,29 @@ generation starts from it. Needs C functions over `mutagen::generation`.
   background or light sphere.
 - Own formulas: .m3f files from the Files app into the formula folder
   (no JIT on iOS).
-- 18 languages: the labels of Languages/*.lng into the app's strings.
+- 18 languages (see Languages below).
 
 ## Phase 4
 
 - Monte Carlo render (no OIDN on iOS).
 - Stereo pairs; 360° panoramas (Facebook 360 photo tags).
-- Droste effect; tone curves.
+- Droste effect. (The desktop's Curves window is the animation's value
+  curves, not tone curves: it belongs to phase 5.)
 
 ## Phase 5
 
-- Animation: keyframes from the views, rendered into an MP4
-  (AVFoundation).
-- 3D export: BulbTracer mesh (and splats) as USDZ, seen in AR through
-  Quick Look.
+- Animation: keyframes from the views or a turntable, rendered into an
+  MP4 (AVFoundation). Later: the value curves (Curves window), motion
+  blur.
+- 3D export: BulbTracer mesh as USDZ, seen in AR through Quick Look; OBJ,
+  PLY, STL to share. (Gaussian splats stay desktop-only: no viewer on the
+  iPad.)
+
+## Languages
+
+The texts are SwiftUI keys (English); `l10n/extract.py App l10n/en.json`
+lists them, `l10n/<language>.json` hold the translations (17 languages, the
+desktop's), `l10n/make_strings.py` writes `App/<language>.lproj`.
 
 ## Not for the iPad
 

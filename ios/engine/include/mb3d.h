@@ -177,6 +177,44 @@ uint32_t mb3d_montecarlo_passes(const mb3d_montecarlo *mc);
 /* The picture so far; free with mb3d_picture_free. */
 mb3d_picture *mb3d_montecarlo_picture(const mb3d_montecarlo *mc);
 
+/* A JPEG of a w x h equirectangular picture with the tags of a 360 photo
+ * (Photo Sphere XMP, 360 camera EXIF); its length into *out_len; free with
+ * mb3d_bytes_free. */
+uint8_t *mb3d_jpeg_360(const uint8_t *jpeg, size_t len, uint32_t w, uint32_t h, size_t *out_len);
+void mb3d_bytes_free(uint8_t *p, size_t len);
+
+/* Animation: keyframes and the frames between them. */
+typedef struct mb3d_film mb3d_film;
+/* looped != 0 back to the first; interpolation 0 linear, 1 Bezier,
+ * 2 Catmull-Rom. */
+mb3d_film *mb3d_film_new(int looped, int interpolation);
+/* A turntable around the object: steps keyframes, frames each. */
+mb3d_film *mb3d_film_orbit(const mb3d_scene *scene, uint32_t steps, uint32_t frames);
+void mb3d_film_free(mb3d_film *film);
+int mb3d_film_add(mb3d_film *film, const mb3d_scene *scene, uint32_t frames);
+uint32_t mb3d_film_keyframes(const mb3d_film *film);
+mb3d_scene *mb3d_film_keyframe(const mb3d_film *film, uint32_t i);
+uint32_t mb3d_film_frames(const mb3d_film *film);
+/* The scene of frame i (from 0); free with mb3d_scene_free. */
+mb3d_scene *mb3d_film_frame(const mb3d_film *film, uint32_t i);
+
+/* 3D model: the BulbTracer's triangle mesh. */
+typedef struct mb3d_mesh mb3d_mesh;
+mb3d_mesh *mb3d_mesh_trace(const mb3d_scene *scene, uint32_t resolution, int colors, uint32_t smooth, double size,
+                           mb3d_progress progress, void *user);
+void mb3d_mesh_free(mb3d_mesh *mesh);
+size_t mb3d_mesh_vertex_count(const mb3d_mesh *mesh);
+size_t mb3d_mesh_face_count(const mb3d_mesh *mesh);
+/* 3 floats per vertex; valid while the mesh lives. */
+const float *mb3d_mesh_vertices(const mb3d_mesh *mesh);
+const float *mb3d_mesh_normals(const mb3d_mesh *mesh);
+/* 4 floats per vertex (red, green, blue, palette position) or NULL. */
+const float *mb3d_mesh_colors(const mb3d_mesh *mesh);
+/* 3 vertex numbers per triangle. */
+const uint32_t *mb3d_mesh_faces(const mb3d_mesh *mesh);
+/* OBJ, PLY or STL by the extension; 0 or -1. */
+int mb3d_mesh_save(const mb3d_mesh *mesh, const char *path);
+
 #ifdef __cplusplus
 }
 #endif

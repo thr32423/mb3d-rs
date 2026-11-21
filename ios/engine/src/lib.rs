@@ -7,7 +7,7 @@
 //! on the same thread.  A panic in the engine is caught and reported the
 //! same way.
 
-use engine::api::{self, Flight, Fractal, MonteCarlo, Picture, RenderOptions};
+use engine::api::{self, Film, Flight, Fractal, Mesh3D, MonteCarlo, Picture, RenderOptions};
 use std::cell::RefCell;
 use std::ffi::{c_char, c_int, c_void, CStr, CString};
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -684,4 +684,239 @@ pub unsafe extern "C" fn mb3d_montecarlo_passes(mc: *const MonteCarlo) -> u32 {
 pub unsafe extern "C" fn mb3d_montecarlo_picture(mc: *const MonteCarlo) -> *mut Picture {
     // SAFETY: the header's contract
     boxed(guard(|| unsafe { mc.as_ref() }.map(|m| m.picture()).ok_or_else(|| "the Monte Carlo render is null".to_string())))
+}
+
+// bytes (iPad app): the 360 photo
+
+fn owned_bytes(v: Vec<u8>, len: *mut usize) -> *mut u8 {
+    let b = v.into_boxed_slice();
+    // SAFETY: the header's contract (`len` points to a number)
+    if let Some(l) = unsafe { len.as_mut() } {
+        *l = b.len();
+    }
+    Box::into_raw(b).cast()
+}
+
+/// A JPEG of a `w` × `h` equirectangular picture with the tags of a 360
+/// photo (Photo Sphere XMP, the 360 camera's EXIF), as the Share window
+/// writes it; its length into `out_len`; free with mb3d_bytes_free.
+///
+/// # Safety
+/// `jpeg` points to `len` bytes; `out_len` to a number.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_jpeg_360(jpeg: *const u8, len: usize, w: u32, h: u32, out_len: *mut usize) -> *mut u8 {
+    guard(|| {
+        if jpeg.is_null() {
+            return Err("the JPEG is null".into());
+        }
+        // SAFETY: the header's contract
+        let data = unsafe { std::slice::from_raw_parts(jpeg, len) };
+        engine::vr::jpeg_with_pano(data, w as usize, h as usize)
+    })
+    .map_or(std::ptr::null_mut(), |v| owned_bytes(v, out_len))
+}
+
+/// Frees bytes this library returned (with their length).
+///
+/// # Safety
+/// `p` is null or bytes of this library of `len` bytes, not used afterwards.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_bytes_free(p: *mut u8, len: usize) {
+    if !p.is_null() {
+        // SAFETY: from owned_bytes with this length, freed once
+        drop(unsafe { Box::from_raw(std::ptr::slice_from_raw_parts_mut(p, len)) });
+    }
+}
+
+// animation (iPad app): keyframes and the frames between them
+
+fn film_ref<'a>(p: *const Film) -> Result<&'a Film, String> {
+    // SAFETY: a non-null film pointer comes from this library (boxed) and
+    // was not freed yet: the header's contract
+    unsafe { p.as_ref() }.ok_or_else(|| "the film is null".to_string())
+}
+
+/// An animation without keyframes: `looped` != 0 goes back to the first,
+/// `interpolation` 0 linear, 1 Bezier, 2 Catmull-Rom.
+#[no_mangle]
+pub extern "C" fn mb3d_film_new(looped: c_int, interpolation: c_int) -> *mut Film {
+    boxed(guard(|| Ok(Film::new(looped != 0, interpolation))))
+}
+
+/// A turntable around the scene's object: `steps` keyframes, `frames`
+/// frames from each to the next.
+///
+/// # Safety
+/// `scene` is a scene of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_orbit(scene: *const Fractal, steps: u32, frames: u32) -> *mut Film {
+    boxed(guard(|| Ok(Film::orbit(scene_ref(scene)?, steps as usize, frames))))
+}
+
+/// # Safety
+/// `film` is null or a film of this library, not used afterwards.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_free(film: *mut Film) {
+    if !film.is_null() {
+        // SAFETY: from this library (boxed), freed once
+        drop(unsafe { Box::from_raw(film) });
+    }
+}
+
+/// Adds a keyframe (a copy of `scene`) with `frames` frames to the next.
+///
+/// # Safety
+/// `film` is a film and `scene` a scene of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_add(film: *mut Film, scene: *const Fractal, frames: u32) -> c_int {
+    guard(|| {
+        // SAFETY: as film_ref, and only this thread uses it
+        let f = unsafe { film.as_mut() }.ok_or_else(|| "the film is null".to_string())?;
+        f.add(scene_ref(scene)?, frames);
+        Ok(())
+    })
+    .map_or(-1, |_| 0)
+}
+
+/// # Safety
+/// `film` is a film of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_keyframes(film: *const Film) -> u32 {
+    film_ref(film).map_or(0, |f| f.keyframes() as u32)
+}
+
+/// A copy of keyframe `i`; free it with mb3d_scene_free.
+///
+/// # Safety
+/// `film` is a film of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_keyframe(film: *const Film, i: u32) -> *mut Fractal {
+    boxed(guard(|| film_ref(film)?.keyframe(i as usize)))
+}
+
+/// # Safety
+/// `film` is a film of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_frames(film: *const Film) -> u32 {
+    film_ref(film).map_or(0, |f| f.frames() as u32)
+}
+
+/// The scene of frame `i` (from 0); free it with mb3d_scene_free.
+///
+/// # Safety
+/// `film` is a film of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_frame(film: *const Film, i: u32) -> *mut Fractal {
+    boxed(guard(|| film_ref(film)?.frame(i as usize)))
+}
+
+// 3D model (iPad app): the BulbTracer's mesh
+
+fn mesh_ref<'a>(p: *const Mesh3D) -> Option<&'a Mesh3D> {
+    // SAFETY: a non-null mesh pointer comes from mb3d_mesh_trace and was
+    // not freed yet: the header's contract
+    unsafe { p.as_ref() }
+}
+
+/// The object as a triangle mesh: a `resolution`³ grid, colours from the
+/// palette when `colors` != 0, `smooth` smoothing passes, the largest side
+/// `size` long and centred; progress as mb3d_render's.
+///
+/// # Safety
+/// `scene` is a scene of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_trace(
+    scene: *const Fractal,
+    resolution: u32,
+    colors: c_int,
+    smooth: u32,
+    size: f64,
+    progress: Mb3dProgress,
+    user: *mut c_void,
+) -> *mut Mesh3D {
+    boxed(guard(|| {
+        let f = scene_ref(scene)?;
+        let stop = AtomicBool::new(false);
+        let user = Mutex::new(User(user));
+        let report = |stage: &str, done: usize, total: usize| {
+            let (Some(call), Ok(u), Ok(stage)) = (progress, user.lock(), CString::new(stage)) else { return };
+            // SAFETY: the caller's function with the caller's pointer
+            if unsafe { call(u.0, stage.as_ptr(), done, total) } != 0 {
+                stop.store(true, Ordering::SeqCst);
+            }
+        };
+        let cancel = || stop.load(Ordering::SeqCst);
+        f.mesh(resolution as usize, colors != 0, smooth, size, &RenderOptions { progress: Some(&report), cancel: Some(&cancel) })
+    }))
+}
+
+/// # Safety
+/// `mesh` is null or a mesh of this library, not used afterwards.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_free(mesh: *mut Mesh3D) {
+    if !mesh.is_null() {
+        // SAFETY: from mb3d_mesh_trace (boxed), freed once
+        drop(unsafe { Box::from_raw(mesh) });
+    }
+}
+
+/// # Safety
+/// `mesh` is a mesh of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_vertex_count(mesh: *const Mesh3D) -> usize {
+    mesh_ref(mesh).map_or(0, |m| m.vertices().len())
+}
+
+/// # Safety
+/// `mesh` is a mesh of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_face_count(mesh: *const Mesh3D) -> usize {
+    mesh_ref(mesh).map_or(0, |m| m.faces().len())
+}
+
+/// x, y, z of each vertex; valid while the mesh lives.
+///
+/// # Safety
+/// `mesh` is a mesh of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_vertices(mesh: *const Mesh3D) -> *const f32 {
+    mesh_ref(mesh).map_or(std::ptr::null(), |m| m.vertices().as_ptr().cast())
+}
+
+/// The normal of each vertex (x, y, z); valid while the mesh lives.
+///
+/// # Safety
+/// `mesh` is a mesh of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_normals(mesh: *const Mesh3D) -> *const f32 {
+    mesh_ref(mesh).map_or(std::ptr::null(), |m| m.normals().as_ptr().cast())
+}
+
+/// Red, green, blue (0..1) and the palette position of each vertex, or
+/// null without colours; valid while the mesh lives.
+///
+/// # Safety
+/// `mesh` is a mesh of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_colors(mesh: *const Mesh3D) -> *const f32 {
+    mesh_ref(mesh).and_then(|m| m.colors()).map_or(std::ptr::null(), |c| c.as_ptr().cast())
+}
+
+/// Three vertex numbers (from 0) per triangle; valid while the mesh lives.
+///
+/// # Safety
+/// `mesh` is a mesh of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_faces(mesh: *const Mesh3D) -> *const u32 {
+    mesh_ref(mesh).map_or(std::ptr::null(), |m| m.faces().as_ptr().cast())
+}
+
+/// Writes the mesh as OBJ, PLY or STL (by the path's extension).
+///
+/// # Safety
+/// `mesh` is a mesh of this library; `path` a zero-terminated text.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_mesh_save(mesh: *const Mesh3D, path: *const c_char) -> c_int {
+    guard(|| mesh_ref(mesh).ok_or("the mesh is null")?.save(Path::new(text(path, "the path")?)))
+        .map_or(-1, |_| 0)
 }

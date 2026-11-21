@@ -10,7 +10,7 @@ struct SettingsView: View {
     @Bindable var studio: Studio
     /// the page shown (`-page NAME` opens one at the start: the build
     /// machine's screenshots of the interface)
-    @State private var path: [Page] = Tour.page.map { [$0] } ?? []
+    @State private var path: [Page] = []
 
     enum Page: String, Hashable, CaseIterable {
         case picture, fractal, formulas, julia, lighting, colours, fog, effects, finishing, ground
@@ -52,6 +52,12 @@ struct SettingsView: View {
             }
         }
         .disabled(studio.selected == nil)
+        .task {
+            // (pushed once the inspector is up: a path set before is not shown)
+            guard let p = Tour.page else { return }
+            try? await Task.sleep(for: .seconds(3))
+            path = [p]
+        }
     }
 
     private func link(_ p: Page, _ title: LocalizedStringKey, _ icon: String) -> some View {

@@ -318,7 +318,10 @@ final class Studio {
                 guard let v = self.doc[key]?.lowercased() else { return false }
                 return !["off", "none", "false", "no"].contains(v)
             },
-            set: { self.doc[key] = $0 ? onValue : "off"; self.commitSoon() }
+            set: {
+                if $0 { self.doc[key] = onValue } else { self.doc.switchOff(key) }
+                self.commitSoon()
+            }
         )
     }
 
@@ -1093,8 +1096,8 @@ final class Studio {
             await waitIdle()
         }
         // (depth of field and ground off again: the variations sharp)
-        doc["dof"] = "off"
-        doc["ground"] = "off"
+        doc.switchOff("dof")
+        doc.switchOff("ground")
         commit()
         try? await Task.sleep(for: .milliseconds(300))
         await waitIdle()
@@ -1126,7 +1129,7 @@ final class Studio {
         try? await Task.sleep(for: .milliseconds(300))
         await waitIdle()
         if let img = image { Snapshots.save(img, name: "droste") }
-        doc["droste"] = "off"
+        doc.switchOff("droste")
         commit()
         try? await Task.sleep(for: .milliseconds(300))
         await waitIdle()

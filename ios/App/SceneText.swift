@@ -86,6 +86,18 @@ struct SceneText {
         }
     }
 
+    /// Switches an effect off: `key = off`, and its settings go too (the
+    /// engine makes the effect again from any of them, e.g. a
+    /// `ground_reflect` after `ground = off` brings the ground back).
+    mutating func switchOff(_ key: String) {
+        let prefix = ["clouds": "cloud_", "detail": "detail_"][key] ?? key + "_"
+        head.removeAll { line in
+            let parts = line.split(separator: "=", maxSplits: 1)
+            return parts.count == 2 && parts[0].trimmingCharacters(in: .whitespaces).hasPrefix(prefix)
+        }
+        self[key] = "off"
+    }
+
     func number(_ key: String) -> Double? {
         self[key].flatMap { Double($0) }
     }

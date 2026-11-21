@@ -15,6 +15,29 @@ targets:
       - path: Data
         type: folder
         buildPhase: resources
+    # the file types and the Documents folder in the Files app (merged
+    # with the generated keys below)
+    info:
+      path: Info.plist
+      properties:
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: false
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: local.mb3d.m3p
+            UTTypeDescription: Mandelbulb3D parameters
+            UTTypeConformsTo: [public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [m3p]
+          - UTTypeIdentifier: local.mb3d.m3i
+            UTTypeDescription: Mandelbulb3D picture
+            UTTypeConformsTo: [public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [m3i]
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Mandelbulb3D parameters
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes: [local.mb3d.m3p, local.mb3d.m3i]
     settings:
       base:
         PRODUCT_NAME: Mandelbulb3D

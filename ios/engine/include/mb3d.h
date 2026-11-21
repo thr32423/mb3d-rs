@@ -147,6 +147,16 @@ double mb3d_navigator_fov(const mb3d_navigator *nav);
  * mb3d_scene_free. */
 mb3d_scene *mb3d_navigator_scene(const mb3d_navigator *nav, int quick, uint32_t width, uint32_t height);
 
+/* --- formulas and files (iPad app) --- */
+
+/* The names of all formulas, one per line; free with mb3d_string_free. */
+char *mb3d_formula_names(void);
+/* A formula's settings with their defaults as `key = value` lines of a
+ * [formula] section; free with mb3d_string_free. */
+char *mb3d_formula_settings(const char *name);
+/* Writes the scene as a Mandelbulb3D parameter file (.m3p); 0 or -1. */
+int mb3d_scene_save_m3p(const mb3d_scene *scene, const char *path);
+
 #ifdef __cplusplus
 }
 #endif

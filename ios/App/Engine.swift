@@ -29,6 +29,24 @@ enum Engine {
     static var version: String {
         String(cString: mb3d_engine_version())
     }
+
+    /// All formula names (built in, then the formula folders'), read once.
+    static let formulaNames: [String] = {
+        guard let t = mb3d_formula_names() else { return [] }
+        defer { mb3d_string_free(t) }
+        return String(cString: t).split(separator: "\n").map(String.init)
+    }()
+
+    /// A formula's settings with their default values, in their order.
+    static func formulaSettings(_ name: String) -> [(key: String, value: String)] {
+        guard let t = name.withCString({ mb3d_formula_settings($0) }) else { return [] }
+        defer { mb3d_string_free(t) }
+        return String(cString: t).split(separator: "\n").compactMap { line in
+            let parts = line.split(separator: "=", maxSplits: 1)
+            guard parts.count == 2 else { return nil }
+            return (parts[0].trimmingCharacters(in: .whitespaces), parts[1].trimmingCharacters(in: .whitespaces))
+        }
+    }
 }
 
 /// A scene of the engine. One thread at a time: a render works on a copy.
@@ -46,6 +64,17 @@ final class FractalScene: @unchecked Sendable {
     static func open(_ url: URL) throws -> FractalScene {
         guard let p = url.path.withCString({ mb3d_open($0) }) else { throw EngineError(Engine.lastError()) }
         return FractalScene(p)
+    }
+
+    /// A scene from its whole text (as `text` gives it).
+    convenience init(text: String) throws {
+        guard let p = text.withCString({ mb3d_open_text($0) }) else { throw EngineError(Engine.lastError()) }
+        self.init(p)
+    }
+
+    /// Writes the scene as a Mandelbulb3D parameter file (.m3p).
+    func saveM3P(to url: URL) throws {
+        if url.path.withCString({ mb3d_scene_save_m3p(ptr, $0) }) != 0 { throw EngineError(Engine.lastError()) }
     }
 
     func copy() throws -> FractalScene {

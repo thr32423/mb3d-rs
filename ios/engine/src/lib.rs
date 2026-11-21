@@ -511,3 +511,44 @@ pub unsafe extern "C" fn mb3d_navigator_scene(nav: *const Flight, quick: c_int, 
         Ok(if quick != 0 { f.preview(w, h) } else { f.view(w, h) })
     }))
 }
+
+// formulas and files (iPad app): the formula picker, saving a scene
+
+fn owned_text(s: String) -> *mut c_char {
+    CString::new(s.replace('\0', " ")).map_or(std::ptr::null_mut(), CString::into_raw)
+}
+
+/// The names of all formulas, one per line (the built-in ones, then those
+/// of the formula folders); free it with mb3d_string_free.
+#[no_mangle]
+pub extern "C" fn mb3d_formula_names() -> *mut c_char {
+    guard(|| Ok(api::formula_names().join("\n"))).map_or(std::ptr::null_mut(), owned_text)
+}
+
+/// A formula's settings with their default values, as `key = value` lines
+/// of a `[formula]` section; free it with mb3d_string_free.
+///
+/// # Safety
+/// `name` is a zero-terminated text.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_formula_settings(name: *const c_char) -> *mut c_char {
+    guard(|| {
+        let v = api::formula_settings(text(name, "the name")?)?;
+        Ok(v.iter().map(|(k, x)| format!("{k} = {x}\n")).collect::<String>())
+    })
+    .map_or(std::ptr::null_mut(), owned_text)
+}
+
+/// Writes the scene as a Mandelbulb3D parameter file (.m3p) at `path`.
+///
+/// # Safety
+/// `scene` is a scene of this library; `path` a zero-terminated text.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_scene_save_m3p(scene: *const Fractal, path: *const c_char) -> c_int {
+    guard(|| {
+        let s = scene_ref(scene)?;
+        let path = text(path, "the path")?;
+        std::fs::write(path, s.m3p()).map_err(|e| format!("{path}: {e}"))
+    })
+    .map_or(-1, |_| 0)
+}

@@ -1,41 +1,84 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @State private var studio = Studio()
     @State private var showSettings = true
+    @State private var importing = false
+    @State private var exporting = false
+    @State private var exportDoc: M3PDocument?
 
     var body: some View {
         NavigationSplitView {
-            List(studio.examples, id: \.self, selection: Binding(
+            List(selection: Binding(
                 get: { studio.selected },
-                set: { if let url = $0 { studio.open(url) } }
-            )) { url in
-                Text(url.deletingPathExtension().lastPathComponent)
-                    .lineLimit(1)
+                set: { if let url = $0, url != studio.selected { studio.open(url) } }
+            )) {
+                if !studio.myScenes.isEmpty {
+                    Section("My scenes") {
+                        ForEach(studio.myScenes, id: \.self) { url in
+                            Text(url.deletingPathExtension().lastPathComponent)
+                                .lineLimit(1)
+                                .swipeActions {
+                                    Button("Delete", systemImage: "trash", role: .destructive) { studio.delete(url) }
+                                }
+                        }
+                    }
+                }
+                Section("Examples") {
+                    ForEach(studio.examples, id: \.self) { url in
+                        Text(url.deletingPathExtension().lastPathComponent)
+                            .lineLimit(1)
+                    }
+                }
             }
-            .navigationTitle("Examples")
+            .navigationTitle("Mandelbulb3D")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Open", systemImage: "folder") { importing = true }
+                }
+            }
         } detail: {
             PictureView(studio: studio)
-                .navigationTitle(studio.selected?.deletingPathExtension().lastPathComponent ?? "Mandelbulb3D")
+                .navigationTitle(studio.title)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
+                    ToolbarItemGroup(placement: .primaryAction) {
                         if studio.rendering {
                             Button("Stop", systemImage: "stop.fill") { studio.stop() }
                         } else {
                             Button("Render", systemImage: "arrow.clockwise") { studio.render() }
                                 .disabled(studio.selected == nil)
                         }
-                    }
-                    ToolbarItem(placement: .primaryAction) {
+                        if let url = studio.pictureURL {
+                            ShareLink(item: url, preview: SharePreview(studio.title))
+                        }
+                        Menu("File", systemImage: "doc") {
+                            Button("Save", systemImage: "square.and.arrow.down") { studio.save() }
+                            Button("Export…", systemImage: "square.and.arrow.up.on.square") {
+                                exportDoc = studio.exportDocument()
+                                exporting = exportDoc != nil
+                            }
+                            Divider()
+                            Button("Open from Files…", systemImage: "folder") { importing = true }
+                        }
+                        .disabled(studio.selected == nil)
                         Button("Settings", systemImage: "slider.horizontal.3") { showSettings.toggle() }
                     }
                 }
                 .inspector(isPresented: $showSettings) {
                     SettingsView(studio: studio)
-                        .inspectorColumnWidth(min: 260, ideal: 300, max: 380)
+                        .inspectorColumnWidth(min: 280, ideal: 320, max: 400)
                 }
         }
+        .fileImporter(isPresented: $importing, allowedContentTypes: [.m3p, .m3i, .plainText]) { result in
+            if case .success(let url) = result { studio.importFile(url) }
+        }
+        .fileExporter(isPresented: $exporting, document: exportDoc, contentType: .m3p,
+                      defaultFilename: studio.title) { result in
+            if case .failure(let e) = result { studio.error = e.localizedDescription }
+        }
+        .onOpenURL { studio.importFile($0) }
         .onAppear(perform: autoOpen)
     }
 
@@ -97,66 +140,5 @@ struct PictureView: View {
         } message: {
             Text(studio.error ?? "")
         }
-    }
-}
-
-struct SettingsView: View {
-    @Bindable var studio: Studio
-
-    var body: some View {
-        Form {
-            Section("Camera") {
-                LabeledSlider(title: "Zoom", value: $studio.zoom, range: 0.01...20, logarithmic: true, format: "%.3f",
-                              done: studio.apply)
-                LabeledSlider(title: "Field of view", value: $studio.fov, range: 5...150, format: "%.0f°",
-                              done: studio.apply)
-            }
-            Section("Fractal") {
-                LabeledSlider(title: "Iterations", value: $studio.iterations, range: 1...250, format: "%.0f",
-                              done: studio.apply)
-                LabeledSlider(title: "Detail (DE stop)", value: $studio.detail, range: 0.05...8, logarithmic: true,
-                              format: "%.2f", done: studio.apply)
-            }
-            Section {
-                LabeledContent("Engine", value: Engine.version)
-            }
-        }
-        .disabled(studio.selected == nil)
-    }
-}
-
-/// A slider that renders again when the finger lifts.
-struct LabeledSlider: View {
-    let title: String
-    @Binding var value: Double
-    let range: ClosedRange<Double>
-    var logarithmic = false
-    let format: String
-    let done: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            LabeledContent(title, value: String(format: format, value))
-            Slider(value: position, in: 0...1) { editing in
-                if !editing { done() }
-            }
-        }
-    }
-
-    /// The slider's place 0...1 (on a log scale for wide ranges).
-    private var position: Binding<Double> {
-        Binding(
-            get: {
-                let v = min(max(value, range.lowerBound), range.upperBound)
-                return logarithmic
-                    ? log(v / range.lowerBound) / log(range.upperBound / range.lowerBound)
-                    : (v - range.lowerBound) / (range.upperBound - range.lowerBound)
-            },
-            set: { p in
-                value = logarithmic
-                    ? range.lowerBound * pow(range.upperBound / range.lowerBound, p)
-                    : range.lowerBound + p * (range.upperBound - range.lowerBound)
-            }
-        )
     }
 }

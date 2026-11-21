@@ -154,6 +154,7 @@ struct NumberField: View {
                 .keyboardType(.numbersAndPunctuation)
                 .multilineTextAlignment(.trailing)
                 .monospacedDigit()
+                .frame(maxWidth: 110)
                 .onSubmit(done)
         }
     }

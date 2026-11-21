@@ -130,6 +130,18 @@ final class Studio {
     /// The file's own size in pixels (Save keeps it).
     var pictureSize: (width: Int, height: Int) { fileSize }
 
+    /// The scene of the current view (for Variations to breed from).
+    var currentScene: FractalScene? { scene }
+
+    /// A variation becomes the scene, at the render size.
+    func takeVariation(_ v: FractalScene) {
+        guard let s = try? v.copy() else { return }
+        remember()
+        fitToRender(s)
+        take(s)
+        render()
+    }
+
     // MARK: undo
 
     /// Keeps the scene as it is now as a step back (before a change).
@@ -477,6 +489,87 @@ final class Studio {
         commit()
     }
 
+    // MARK: background picture and own formulas
+
+    /// The background picture's file name (in a map folder), "" without.
+    var backgroundName: String { doc["background_image"] ?? "" }
+
+    /// A picture (JPEG or PNG data from Photos) as the background.
+    func setBackground(imageData: Data) {
+        guard let img = UIImage(data: imageData), let jpeg = img.jpegData(compressionQuality: 0.92) else {
+            error = "The picture could not be read."
+            return
+        }
+        let name = "Photo \(Self.stamp()).jpg"
+        do {
+            try jpeg.write(to: Library.backgrounds.appendingPathComponent(name))
+            useBackground(name)
+        } catch {
+            self.error = "\(error.localizedDescription)"
+        }
+    }
+
+    /// A picture file (.jpg, .png, .hdr from the Files app) as the background.
+    func setBackground(file: URL) {
+        do {
+            guard let dest = try Library.copy([file], into: Library.backgrounds).first else { return }
+            useBackground(dest.lastPathComponent)
+        } catch {
+            self.error = "\(error.localizedDescription)"
+        }
+    }
+
+    private func useBackground(_ name: String) {
+        doc["background_image"] = name
+        if doc["background_direct"] == nil { doc["background_direct"] = "true" }
+        if doc["background_brightness"] == nil { doc["background_brightness"] = "40" }
+        commit()
+    }
+
+    func removeBackground() {
+        for k in ["background_image", "background_rotation", "background_direct", "background_brightness",
+                  "background_add_light", "background_smooth", "background_geographic", "background_fit_borders",
+                  "background_ambient"] {
+            doc[k] = nil
+        }
+        commit()
+    }
+
+    /// "As full background sphere" (`background_direct = false`).
+    func backgroundSphere() -> Binding<Bool> {
+        Binding(
+            get: { self.doc["background_direct"] == "false" },
+            set: { self.doc["background_direct"] = $0 ? "false" : "true"; self.commitSoon() }
+        )
+    }
+
+    /// The user's formula files.
+    var ownFormulas: [String] = Library.ownFormulas()
+
+    /// Formula files (.m3f) into the user's formula folder.
+    func importFormulas(_ urls: [URL]) {
+        do {
+            let done = try Library.copy(urls, into: Library.formulas)
+            Engine.reloadFormulas()
+            ownFormulas = Library.ownFormulas()
+            status = "\(done.count) formula\(done.count == 1 ? "" : "s") added"
+        } catch {
+            self.error = "\(error.localizedDescription)"
+        }
+    }
+
+    func removeFormula(_ name: String) {
+        try? FileManager.default.removeItem(at: Library.formulas.appendingPathComponent(name).appendingPathExtension("m3f"))
+        Engine.reloadFormulas()
+        ownFormulas = Library.ownFormulas()
+    }
+
+    private static func stamp() -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd HH.mm.ss"
+        return f.string(from: Date())
+    }
+
     // MARK: the palette
 
     struct Stop: Identifiable {
@@ -757,6 +850,55 @@ final class Studio {
         job?.stop()
     }
 
+    /// A Monte Carlo render of the view: pass after pass (up to
+    /// `maxPasses`), each picture shown, until Stop.
+    func renderMonteCarlo(maxPasses: Int = 64) {
+        guard let scene, let s = try? scene.copy() else { return }
+        job?.stop()
+        let job = RenderJob { stage, part in
+            Task { @MainActor [weak self] in
+                guard let self, self.job != nil else { return }
+                self.status = "Monte Carlo, \(stage.lowercased())"
+                self.progress = part
+            }
+        }
+        self.job = job
+        jobQuick = false
+        progress = 0
+        status = "Monte Carlo"
+        Task.detached(priority: .userInitiated) {
+            var failure: Error?
+            do {
+                let mc = try MonteCarloRender(s)
+                for _ in 0..<maxPasses {
+                    if job.isStopped { break }
+                    try mc.pass(job)
+                    let img = try mc.image()
+                    let n = mc.passes
+                    await MainActor.run { [weak self] in
+                        guard let self, self.job === job else { return }
+                        self.image = img
+                        self.status = "Monte Carlo, \(n) pass\(n == 1 ? "" : "es")"
+                    }
+                }
+            } catch {
+                failure = error
+            }
+            let error = failure
+            await MainActor.run { [weak self] in
+                guard let self, self.job === job else { return }
+                self.job = nil
+                self.progress = nil
+                if let error, !job.isStopped { self.error = "\(error)" }
+                if let img = self.image {
+                    Snapshots.save(img, name: "montecarlo")
+                    let url = FileManager.default.temporaryDirectory.appendingPathComponent(self.title).appendingPathExtension("png")
+                    self.pictureURL = PNG.write(img, to: url) ? url : nil
+                }
+            }
+        }
+    }
+
     // MARK: the build machine's run
 
     /// `-demo`: after the first picture, moves the camera as gestures
@@ -836,6 +978,24 @@ final class Studio {
             try? await Task.sleep(for: .milliseconds(300))
             await waitIdle()
         }
+        // phase 2: a generation of variations, the third taken (picture 15)
+        status = "variations"
+        let breeder = Breeder()
+        if let s = scene { breeder.breed(from: s) }
+        try? await Task.sleep(for: .milliseconds(300))
+        while breeder.busy { try? await Task.sleep(for: .milliseconds(300)) }
+        print("MB3D demo: \(breeder.members.count) variations, status '\(breeder.status)'")
+        for m in breeder.members {
+            if let img = m.image { Snapshots.save(img, name: "variation-\(m.label)") }
+        }
+        if breeder.members.count > 2 { takeVariation(breeder.members[2].scene) }
+        try? await Task.sleep(for: .milliseconds(300))
+        await waitIdle()
+        // phase 4: a Monte Carlo render of 3 passes (montecarlo.png)
+        status = "Monte Carlo"
+        renderMonteCarlo(maxPasses: 3)
+        try? await Task.sleep(for: .milliseconds(300))
+        await waitIdle()
         print("MB3D demo: done, status '\(status)', undo \(canUndo), scenes \(myScenes.map(\.lastPathComponent))")
     }
 
@@ -857,6 +1017,13 @@ enum Snapshots {
         guard on else { return }
         _ = PNG.write(image, to: Library.folder.appendingPathComponent(String(format: "picture-%02d.png", count)))
         count += 1
+    }
+
+    /// A picture under its own name (not counted).
+    @MainActor
+    static func save(_ image: CGImage, name: String) {
+        guard on else { return }
+        _ = PNG.write(image, to: Library.folder.appendingPathComponent(name).appendingPathExtension("png"))
     }
 }
 

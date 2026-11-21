@@ -11,6 +11,13 @@ enum Engine {
             _ = data.appendingPathComponent(folder).path.withCString { mb3d_add_formula_folder($0) }
         }
         _ = data.appendingPathComponent("M3Maps").path.withCString { mb3d_add_map_folder($0) }
+        // the user's own (folders in the app's Documents, seen in the Files
+        // app): formulas first, so they win over the app's of the same name
+        for dir in [Library.formulas, Library.backgrounds] {
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        _ = Library.backgrounds.path.withCString { mb3d_add_map_folder($0) }
+        _ = Library.formulas.path.withCString { mb3d_add_formula_folder($0) }
     }
 
     /// The example files that come with the app.
@@ -22,6 +29,21 @@ enum Engine {
             .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
     }
 
+    /// A picture of the engine as an image.
+    static func image(of pic: OpaquePointer) throws -> CGImage {
+        let w = Int(mb3d_picture_width(pic))
+        let h = Int(mb3d_picture_height(pic))
+        guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError("no picture") }
+        let data = Data(bytes: rgb, count: w * h * 3)
+        guard let provider = CGDataProvider(data: data as CFData),
+              let image = CGImage(
+                  width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: w * 3,
+                  space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
+                  provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+        else { throw EngineError("the picture could not be made") }
+        return image
+    }
+
     static func lastError() -> String {
         String(cString: mb3d_last_error())
     }
@@ -30,12 +52,19 @@ enum Engine {
         String(cString: mb3d_engine_version())
     }
 
-    /// All formula names (built in, then the formula folders'), read once.
-    static let formulaNames: [String] = {
+    /// All formula names (built in, then the formula folders').
+    @MainActor static private(set) var formulaNames: [String] = readFormulaNames()
+
+    /// After formula files came in: the names again.
+    @MainActor static func reloadFormulas() {
+        formulaNames = readFormulaNames()
+    }
+
+    private static func readFormulaNames() -> [String] {
         guard let t = mb3d_formula_names() else { return [] }
         defer { mb3d_string_free(t) }
         return String(cString: t).split(separator: "\n").map(String.init)
-    }()
+    }
 
     /// A formula's settings with their default values, in their order.
     static func formulaSettings(_ name: String) -> [(key: String, value: String)] {
@@ -186,6 +215,58 @@ final class RenderJob: @unchecked Sendable {
                   provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
         else { throw EngineError("the picture could not be made") }
         return (image, mb3d_picture_seconds(pic))
+    }
+
+    /// MutaGen's 15 variations of `scene` (the first is the scene), on
+    /// this thread.
+    func variations(_ scene: FractalScene, seed: UInt64) throws -> [FractalScene] {
+        let me = Unmanaged.passUnretained(self).toOpaque()
+        let callback: mb3d_progress = { user, stage, done, total in
+            guard let user else { return 0 }
+            let job = Unmanaged<RenderJob>.fromOpaque(user).takeUnretainedValue()
+            let name = stage.map { String(cString: $0) } ?? ""
+            job.progress(name, total > 0 ? Double(done) / Double(total) : 0)
+            return job.isStopped ? 1 : 0
+        }
+        var out = [OpaquePointer?](repeating: nil, count: 15)
+        if mb3d_variations(scene.ptr, seed, &out, callback, me) != 0 { throw EngineError(Engine.lastError()) }
+        return out.compactMap { $0.map(FractalScene.init) }
+    }
+}
+
+/// A Monte Carlo render (soft light by random rays), pass after pass.
+final class MonteCarloRender: @unchecked Sendable {
+    let ptr: OpaquePointer
+
+    init(_ scene: FractalScene) throws {
+        guard let p = mb3d_montecarlo_new(scene.ptr) else { throw EngineError(Engine.lastError()) }
+        ptr = p
+    }
+
+    deinit {
+        mb3d_montecarlo_free(ptr)
+    }
+
+    /// One more pass on this thread; `job` reports and stops it.
+    func pass(_ job: RenderJob) throws {
+        let me = Unmanaged.passUnretained(job).toOpaque()
+        let callback: mb3d_progress = { user, stage, done, total in
+            guard let user else { return 0 }
+            let job = Unmanaged<RenderJob>.fromOpaque(user).takeUnretainedValue()
+            let name = stage.map { String(cString: $0) } ?? ""
+            job.progress(name, total > 0 ? Double(done) / Double(total) : 0)
+            return job.isStopped ? 1 : 0
+        }
+        if mb3d_montecarlo_pass(ptr, callback, me) != 0 { throw EngineError(Engine.lastError()) }
+    }
+
+    var passes: Int { Int(mb3d_montecarlo_passes(ptr)) }
+
+    /// The picture so far.
+    func image() throws -> CGImage {
+        guard let pic = mb3d_montecarlo_picture(ptr) else { throw EngineError(Engine.lastError()) }
+        defer { mb3d_picture_free(pic) }
+        return try Engine.image(of: pic)
     }
 }
 

@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var importing = false
     @State private var exporting = false
     @State private var exportDoc: M3PDocument?
+    @State private var breeding = false
 
     var body: some View {
         NavigationSplitView {
@@ -56,8 +57,13 @@ struct ContentView: View {
                         if studio.rendering {
                             Button("Stop", systemImage: "stop.fill") { studio.stop() }
                         } else {
-                            Button("Render", systemImage: "arrow.clockwise") { studio.render() }
-                                .disabled(studio.selected == nil)
+                            Menu("Render", systemImage: "arrow.clockwise") {
+                                Button("Render", systemImage: "arrow.clockwise") { studio.render() }
+                                Button("Monte Carlo (soft light)", systemImage: "sun.haze") { studio.renderMonteCarlo() }
+                            } primaryAction: {
+                                studio.render()
+                            }
+                            .disabled(studio.selected == nil)
                         }
                         if let url = studio.pictureURL {
                             ShareLink(item: url, preview: SharePreview(studio.title))
@@ -77,6 +83,8 @@ struct ContentView: View {
                             Button("Open from Files…", systemImage: "folder") { importing = true }
                         }
                         .disabled(studio.selected == nil)
+                        Button("Variations", systemImage: "leaf") { breeding = true }
+                            .disabled(studio.selected == nil)
                         Button("Settings", systemImage: "slider.horizontal.3") { showSettings.toggle() }
                     }
                 }
@@ -91,6 +99,9 @@ struct ContentView: View {
         .fileExporter(isPresented: $exporting, document: exportDoc, contentType: .m3p,
                       defaultFilename: studio.title) { result in
             if case .failure(let e) = result { studio.error = e.localizedDescription }
+        }
+        .sheet(isPresented: $breeding) {
+            VariationsView(studio: studio)
         }
         .onOpenURL { studio.importFile($0) }
         .onAppear(perform: autoOpen)

@@ -178,6 +178,29 @@ impl Fractal {
         crate::m3p::raw_to_text(&crate::m3p::write(&self.scene), title)
     }
 
+    /// MutaGen's generation of 15 variations (the first is this scene,
+    /// the others its children and grandchildren: formulas, their values,
+    /// Julia, iterations changed), with the tree labels ("1", "1.1", ...).
+    /// `seed` makes it repeatable; progress reports each member done.
+    pub fn variations(&self, seed: u64, opt: &RenderOptions) -> Result<Vec<(String, Fractal)>, String> {
+        let cfg = crate::mutagen::MutationConfig::default();
+        let mut rng = crate::mutagen::Rng::new(seed);
+        let threads = std::thread::available_parallelism().map_or(4, |n| n.get());
+        let total = crate::mutagen::TREE.len();
+        let mut report = |i: usize, _: &crate::mutagen::Member| {
+            if let Some(p) = opt.progress {
+                p("Variations", i, total);
+            }
+        };
+        let cancel = || opt.cancel.is_some_and(|c| c());
+        let members = crate::mutagen::generation(&cfg, &self.scene, &mut rng, threads, &mut report, &cancel)?;
+        Ok(members
+            .into_iter()
+            .zip(crate::mutagen::TREE.iter())
+            .map(|(m, (label, _))| (label.to_string(), Fractal { scene: m.scene, notes: Vec::new() }))
+            .collect())
+    }
+
     /// What the picture shows at pixel (`x`, `y`): the surface point and
     /// its depth as `dof_focus` takes it (the Post-process window's "Get
     /// Z" on a clicked point); None on the background.
@@ -230,6 +253,53 @@ impl Fractal {
         #[cfg(not(feature = "gpu"))]
         let device = "CPU".to_string();
         Ok(Picture { width, height, rgb, depth, seconds: t0.elapsed().as_secs_f64(), device })
+    }
+}
+
+/// A Monte Carlo render (the M.C. window): soft light, reflections and
+/// depth of field by random rays; each pass makes the picture less noisy.
+pub struct MonteCarlo {
+    scene: Scene,
+    img: crate::mc::McImage,
+}
+
+impl Fractal {
+    /// A Monte Carlo render of the scene, no pass done yet.
+    pub fn monte_carlo(&self) -> MonteCarlo {
+        let img = crate::mc::McImage::new(self.scene.width.max(1) as usize, self.scene.height.max(1) as usize);
+        MonteCarlo { scene: self.scene.clone(), img }
+    }
+}
+
+impl MonteCarlo {
+    /// One more pass (the first shoots 4 rays a pixel, the next ones add
+    /// rays where the noise is high).
+    pub fn pass(&mut self, opt: &RenderOptions) -> Result<(), String> {
+        let threads = std::thread::available_parallelism().map_or(4, |n| n.get());
+        let pass = self.img.passes + 1;
+        let progress = |done: usize, total: usize| {
+            if let Some(p) = opt.progress {
+                p(&format!("Pass {pass}"), done, total);
+            }
+        };
+        let cancel = || opt.cancel.is_some_and(|c| c());
+        crate::mc::pass(&self.scene, &mut self.img, threads, &progress, &cancel)?;
+        if cancel() {
+            return Err("cancelled".into());
+        }
+        Ok(())
+    }
+
+    /// The passes done.
+    pub fn passes(&self) -> u32 {
+        self.img.passes
+    }
+
+    /// The picture so far, with the scene's finishing.
+    pub fn picture(&self) -> Picture {
+        let (width, height) = (self.img.width, self.img.height);
+        let rgb = crate::mc::paint_finished(&self.img, &self.scene);
+        Picture { width, height, rgb, depth: vec![0; width * height], seconds: self.img.seconds, device: "CPU".into() }
     }
 }
 
@@ -396,6 +466,17 @@ mod pick_tests {
         assert!(z > 0.0 && pos.iter().all(|v| v.is_finite()), "{pos:?} {z}");
         assert!(f.pick(0, 0).is_none(), "the corner is background");
         assert!(f.pick(64, 0).is_none());
+        let v = f.variations(7, &RenderOptions::default()).unwrap();
+        assert_eq!(v.len(), 15);
+        assert_eq!(v[0].0, "1");
+        assert!(v.iter().skip(1).any(|(_, g)| g.text() != f.text()), "the children differ");
+        let mut mc = f.monte_carlo();
+        mc.pass(&RenderOptions::default()).unwrap();
+        mc.pass(&RenderOptions::default()).unwrap();
+        assert_eq!(mc.passes(), 2);
+        let p = mc.picture();
+        assert_eq!((p.width, p.height, p.rgb.len()), (64, 48, 64 * 48 * 3));
+        assert!(p.rgb.iter().any(|&v| v > 0), "the Monte Carlo picture shows something");
         let t = f.mb3d_text("t");
         assert!(t.starts_with("Mandelbulb3Dv18{"));
         assert!(Fractal::from_text(&t).is_ok(), "the text opens again");

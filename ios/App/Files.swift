@@ -6,6 +6,10 @@ extension UTType {
     static let m3p = UTType(importedAs: "local.mb3d.m3p", conformingTo: .data)
     /// Mandelbulb3D's picture with its parameters.
     static let m3i = UTType(importedAs: "local.mb3d.m3i", conformingTo: .data)
+    /// A Mandelbulb3D formula.
+    static let m3f = UTType(importedAs: "local.mb3d.m3f", conformingTo: .data)
+    /// A Radiance HDR picture (light probes).
+    static let hdr = UTType(filenameExtension: "hdr") ?? .image
 }
 
 /// The app's own scenes: the Documents folder (shown in the Files app
@@ -15,6 +19,29 @@ enum Library {
 
     static var folder: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+
+    /// The user's own formulas (.m3f) and background pictures.
+    static var formulas: URL { folder.appendingPathComponent("Formulas", isDirectory: true) }
+    static var backgrounds: URL { folder.appendingPathComponent("Backgrounds", isDirectory: true) }
+
+    /// The .m3f files of the user's formula folder.
+    static func ownFormulas() -> [String] {
+        let files = (try? FileManager.default.contentsOfDirectory(at: formulas, includingPropertiesForKeys: nil)) ?? []
+        return files.filter { $0.pathExtension.lowercased() == "m3f" }.map { $0.deletingPathExtension().lastPathComponent }
+            .sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+    }
+
+    /// Files brought into `dir` (a file of the same name is replaced).
+    static func copy(_ urls: [URL], into dir: URL) throws -> [URL] {
+        try urls.map { url in
+            let scoped = url.startAccessingSecurityScopedResource()
+            defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+            let dest = dir.appendingPathComponent(url.lastPathComponent)
+            if FileManager.default.fileExists(atPath: dest.path) { try FileManager.default.removeItem(at: dest) }
+            try FileManager.default.copyItem(at: url, to: dest)
+            return dest
+        }
     }
 
     static func scenes() -> [URL] {

@@ -28,6 +28,11 @@ targets:
             UTTypeConformsTo: [public.data]
             UTTypeTagSpecification:
               public.filename-extension: [m3p]
+          - UTTypeIdentifier: local.mb3d.m3f
+            UTTypeDescription: Mandelbulb3D formula
+            UTTypeConformsTo: [public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [m3f]
           - UTTypeIdentifier: local.mb3d.m3i
             UTTypeDescription: Mandelbulb3D picture
             UTTypeConformsTo: [public.data]

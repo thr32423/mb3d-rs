@@ -1,4 +1,5 @@
 import CoreGraphics
+import PhotosUI
 import SwiftUI
 
 /// The inspector: the scene's settings on pages, as the desktop groups
@@ -132,6 +133,7 @@ struct FractalPage: View {
 
 struct FormulasPage: View {
     let studio: Studio
+    @State private var importing = false
 
     var body: some View {
         Form {
@@ -147,6 +149,22 @@ struct FormulasPage: View {
                 Toggle("Disable analytic DE", isOn: studio.flag("disable_analytic_de"))
             } footer: {
                 Text("Up to six formulas run one after the other (a hybrid); after the last, the iteration goes on from the one chosen.")
+            }
+            Section {
+                ForEach(studio.ownFormulas, id: \.self) { name in
+                    Text(name)
+                        .swipeActions {
+                            Button("Delete", systemImage: "trash", role: .destructive) { studio.removeFormula(name) }
+                        }
+                }
+                Button("Add formula files (.m3f)", systemImage: "plus.rectangle.on.folder") { importing = true }
+            } header: {
+                Text("Your formulas")
+            } footer: {
+                Text("They join the formula list; they are also in the app's Formulas folder in the Files app. Without the desktop's compiler they run slower.")
+            }
+            .fileImporter(isPresented: $importing, allowedContentTypes: [.m3f], allowsMultipleSelection: true) { r in
+                if case .success(let urls) = r { studio.importFormulas(urls) }
             }
         }
     }
@@ -246,9 +264,54 @@ struct ColoursPage: View {
 
 struct FogPage: View {
     let studio: Studio
+    @State private var photo: PhotosPickerItem?
+    @State private var choosingFile = false
 
     var body: some View {
         Form {
+            Section {
+                if studio.backgroundName.isEmpty {
+                    LabeledContent("Picture", value: "None")
+                } else {
+                    LabeledContent("Picture", value: studio.backgroundName)
+                }
+                PhotosPicker(selection: $photo, matching: .images) {
+                    Label("Choose from Photos", systemImage: "photo.on.rectangle")
+                }
+                Button("Choose a file (JPEG, PNG, HDR)", systemImage: "folder") { choosingFile = true }
+                if !studio.backgroundName.isEmpty {
+                    Toggle("As full background sphere", isOn: studio.backgroundSphere())
+                    LabeledSlider(title: "Brightness", value: studio.number("background_brightness", 40, whole: true),
+                                  range: 0...255, format: "%.0f", done: studio.commit)
+                    ForEach(0..<3) { i in
+                        LabeledSlider(title: ["Turn about x", "Turn about y", "Turn about z"][i],
+                                      value: studio.component("background_rotation", i, [0, 0, 0]),
+                                      range: 0...255, format: "%.0f", done: studio.commit)
+                    }
+                    Toggle("Scale rows to geographic projection", isOn: studio.flag("background_geographic"))
+                    Toggle("Fit left and right borders", isOn: studio.flag("background_fit_borders"))
+                    Toggle("Smooth the picture", isOn: studio.flag("background_smooth"))
+                    Toggle("Add to the background depth", isOn: studio.flag("background_add_light"))
+                    Toggle("Use it as the ambient colour", isOn: studio.flag("background_ambient"))
+                    Button("Remove the picture", systemImage: "trash", role: .destructive) { studio.removeBackground() }
+                }
+            } header: {
+                Text("Background picture")
+            } footer: {
+                Text("An HDR picture lights the scene in a Monte Carlo render. Pictures are kept in the app's Backgrounds folder.")
+            }
+            .onChange(of: photo) {
+                guard let item = photo else { return }
+                Task {
+                    if let data = try? await item.loadTransferable(type: Data.self) {
+                        studio.setBackground(imageData: data)
+                    }
+                    photo = nil
+                }
+            }
+            .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.jpeg, .png, .hdr, .bmp]) { r in
+                if case .success(let url) = r { studio.setBackground(file: url) }
+            }
             Section("Background") {
                 ColorPicker("Near", selection: studio.color("depth_color"), supportsOpacity: false)
                 ColorPicker("Far", selection: studio.color("depth_color2"), supportsOpacity: false)

@@ -162,6 +162,20 @@ char *mb3d_scene_mb3d_text(const mb3d_scene *scene, const char *title);
 /* The depth at pixel (x, y) as dof_focus takes it, into *focus: 0, or -1
  * on the background. */
 int mb3d_scene_pick(const mb3d_scene *scene, uint32_t x, uint32_t y, double *focus);
+/* MutaGen: 15 variations of the scene into out[15] (each freed with
+ * mb3d_scene_free; out[0] is the scene itself; the tree: 1, 1.1, 1.2, then
+ * their children); progress as mb3d_render's. 0, or -1. */
+int mb3d_variations(const mb3d_scene *scene, uint64_t seed, mb3d_scene **out, mb3d_progress progress, void *user);
+
+/* Monte Carlo: soft light by random rays, pass after pass less noisy. */
+typedef struct mb3d_montecarlo mb3d_montecarlo;
+mb3d_montecarlo *mb3d_montecarlo_new(const mb3d_scene *scene);
+void mb3d_montecarlo_free(mb3d_montecarlo *mc);
+/* One more pass; progress as mb3d_render's. 0, or -1 (stopped, failed). */
+int mb3d_montecarlo_pass(mb3d_montecarlo *mc, mb3d_progress progress, void *user);
+uint32_t mb3d_montecarlo_passes(const mb3d_montecarlo *mc);
+/* The picture so far; free with mb3d_picture_free. */
+mb3d_picture *mb3d_montecarlo_picture(const mb3d_montecarlo *mc);
 
 #ifdef __cplusplus
 }

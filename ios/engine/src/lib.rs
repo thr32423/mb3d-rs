@@ -7,7 +7,7 @@
 //! on the same thread.  A panic in the engine is caught and reported the
 //! same way.
 
-use engine::api::{self, Flight, Fractal, Picture, RenderOptions};
+use engine::api::{self, Flight, Fractal, MonteCarlo, Picture, RenderOptions};
 use std::cell::RefCell;
 use std::ffi::{c_char, c_int, c_void, CStr, CString};
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -578,4 +578,110 @@ pub unsafe extern "C" fn mb3d_scene_pick(scene: *const Fractal, x: u32, y: u32, 
             }
             0
         })
+}
+
+/// MutaGen: 15 variations of the scene into `out` (15 scene pointers, each
+/// freed with mb3d_scene_free; the first is the scene itself); progress as
+/// mb3d_render's (non-zero from it stops). 0, or -1 (nothing in `out`).
+///
+/// # Safety
+/// `scene` is a scene of this library; `out` points to 15 pointers.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_variations(
+    scene: *const Fractal,
+    seed: u64,
+    out: *mut *mut Fractal,
+    progress: Mb3dProgress,
+    user: *mut c_void,
+) -> c_int {
+    guard(|| {
+        let f = scene_ref(scene)?;
+        if out.is_null() {
+            return Err("out is null".into());
+        }
+        let stop = AtomicBool::new(false);
+        let user = Mutex::new(User(user));
+        let report = |stage: &str, done: usize, total: usize| {
+            let (Some(call), Ok(u), Ok(stage)) = (progress, user.lock(), CString::new(stage)) else { return };
+            // SAFETY: the caller's function with the caller's pointer
+            if unsafe { call(u.0, stage.as_ptr(), done, total) } != 0 {
+                stop.store(true, Ordering::SeqCst);
+            }
+        };
+        let cancel = || stop.load(Ordering::SeqCst);
+        let v = f.variations(seed, &RenderOptions { progress: Some(&report), cancel: Some(&cancel) })?;
+        for (i, (_, g)) in v.into_iter().take(15).enumerate() {
+            // SAFETY: `out` holds 15 pointers (the header's contract)
+            unsafe { *out.add(i) = Box::into_raw(Box::new(g)) };
+        }
+        Ok(())
+    })
+    .map_or(-1, |_| 0)
+}
+
+// Monte Carlo (iPad app): pass after pass, the picture between them
+
+/// A Monte Carlo render of the scene (no pass yet); free it with
+/// mb3d_montecarlo_free.
+///
+/// # Safety
+/// `scene` is a scene of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_montecarlo_new(scene: *const Fractal) -> *mut MonteCarlo {
+    boxed(guard(|| Ok(scene_ref(scene)?.monte_carlo())))
+}
+
+/// # Safety
+/// `mc` is null or a Monte Carlo render of this library, not used afterwards.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_montecarlo_free(mc: *mut MonteCarlo) {
+    if !mc.is_null() {
+        // SAFETY: from mb3d_montecarlo_new (boxed), freed once
+        drop(unsafe { Box::from_raw(mc) });
+    }
+}
+
+/// One more pass; progress as mb3d_render's (non-zero from it stops). 0, or
+/// -1 (stopped or failed).
+///
+/// # Safety
+/// `mc` is a Monte Carlo render of this library, used by one thread at a time.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_montecarlo_pass(mc: *mut MonteCarlo, progress: Mb3dProgress, user: *mut c_void) -> c_int {
+    guard(|| {
+        // SAFETY: the header's contract
+        let m = unsafe { mc.as_mut() }.ok_or_else(|| "the Monte Carlo render is null".to_string())?;
+        let stop = AtomicBool::new(false);
+        let user = Mutex::new(User(user));
+        let report = |stage: &str, done: usize, total: usize| {
+            let (Some(call), Ok(u), Ok(stage)) = (progress, user.lock(), CString::new(stage)) else { return };
+            // SAFETY: the caller's function with the caller's pointer
+            if unsafe { call(u.0, stage.as_ptr(), done, total) } != 0 {
+                stop.store(true, Ordering::SeqCst);
+            }
+        };
+        let cancel = || stop.load(Ordering::SeqCst);
+        m.pass(&RenderOptions { progress: Some(&report), cancel: Some(&cancel) })
+    })
+    .map_or(-1, |_| 0)
+}
+
+/// The passes done.
+///
+/// # Safety
+/// `mc` is a Monte Carlo render of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_montecarlo_passes(mc: *const MonteCarlo) -> u32 {
+    // SAFETY: the header's contract
+    unsafe { mc.as_ref() }.map_or(0, |m| m.passes())
+}
+
+/// The picture so far; free it with mb3d_picture_free.
+///
+/// # Safety
+/// `mc` is a Monte Carlo render of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_montecarlo_picture(mc: *const MonteCarlo) -> *mut Picture {
+    // SAFETY: the header's contract
+    boxed(guard(|| unsafe { mc.as_ref() }.map(|m| m.picture()).ok_or_else(|| "the Monte Carlo render is null".to_string())))
 }

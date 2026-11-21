@@ -8,25 +8,32 @@ import SwiftUI
 /// moment after the last change, a number when it is entered.
 struct SettingsView: View {
     @Bindable var studio: Studio
+    /// the page shown (`-page NAME` opens one at the start: the build
+    /// machine's screenshots of the interface)
+    @State private var path: [Page] = Tour.page.map { [$0] } ?? []
+
+    enum Page: String, Hashable, CaseIterable {
+        case picture, fractal, formulas, julia, lighting, colours, fog, effects, finishing, ground
+    }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 Section {
-                    page("Picture", "photo", PicturePage(studio: studio))
-                    page("Fractal", "cube", FractalPage(studio: studio))
-                    page("Formulas", "function", FormulasPage(studio: studio))
-                    page("Julia and cutting", "scissors", JuliaPage(studio: studio))
+                    link(.picture, "Picture", "photo")
+                    link(.fractal, "Fractal", "cube")
+                    link(.formulas, "Formulas", "function")
+                    link(.julia, "Julia and cutting", "scissors")
                 }
                 Section {
-                    page("Lighting", "lightbulb", LightingPage(studio: studio))
-                    page("Colours", "paintpalette", ColoursPage(studio: studio))
-                    page("Background and fog", "cloud.fog", FogPage(studio: studio))
+                    link(.lighting, "Lighting", "lightbulb")
+                    link(.colours, "Colours", "paintpalette")
+                    link(.fog, "Background and fog", "cloud.fog")
                 }
                 Section {
-                    page("Effects", "sparkles", EffectsPage(studio: studio))
-                    page("Finishing", "camera.filters", FinishingPage(studio: studio))
-                    page("Ground, water and clouds", "water.waves", GroundPage(studio: studio))
+                    link(.effects, "Effects", "sparkles")
+                    link(.finishing, "Finishing", "camera.filters")
+                    link(.ground, "Ground, water and clouds", "water.waves")
                 }
                 Section {
                     Button("Copy parameters", systemImage: "doc.on.doc") { studio.copyParameters() }
@@ -40,17 +47,62 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: Page.self) { p in
+                destination(p).navigationTitle(title(p)).navigationBarTitleDisplayMode(.inline)
+            }
         }
         .disabled(studio.selected == nil)
     }
 
-    private func page(_ title: LocalizedStringKey, _ icon: String, _ content: some View) -> some View {
-        NavigationLink {
-            content.navigationTitle(title).navigationBarTitleDisplayMode(.inline)
-        } label: {
+    private func link(_ p: Page, _ title: LocalizedStringKey, _ icon: String) -> some View {
+        NavigationLink(value: p) {
             Label(title, systemImage: icon)
         }
     }
+
+    private func title(_ p: Page) -> LocalizedStringKey {
+        switch p {
+        case .picture: "Picture"
+        case .fractal: "Fractal"
+        case .formulas: "Formulas"
+        case .julia: "Julia and cutting"
+        case .lighting: "Lighting"
+        case .colours: "Colours"
+        case .fog: "Background and fog"
+        case .effects: "Effects"
+        case .finishing: "Finishing"
+        case .ground: "Ground, water and clouds"
+        }
+    }
+
+    @ViewBuilder
+    private func destination(_ p: Page) -> some View {
+        switch p {
+        case .picture: PicturePage(studio: studio)
+        case .fractal: FractalPage(studio: studio)
+        case .formulas: FormulasPage(studio: studio)
+        case .julia: JuliaPage(studio: studio)
+        case .lighting: LightingPage(studio: studio)
+        case .colours: ColoursPage(studio: studio)
+        case .fog: FogPage(studio: studio)
+        case .effects: EffectsPage(studio: studio)
+        case .finishing: FinishingPage(studio: studio)
+        case .ground: GroundPage(studio: studio)
+        }
+    }
+}
+
+/// `-page NAME` / `-sheet NAME`: the app opens a settings page or a window
+/// at the start (the build machine's screenshots of the interface).
+enum Tour {
+    static func argument(_ flag: String) -> String? {
+        let a = ProcessInfo.processInfo.arguments
+        guard let i = a.firstIndex(of: flag), i + 1 < a.count else { return nil }
+        return a[i + 1]
+    }
+
+    static let page = argument("-page").flatMap(SettingsView.Page.init(rawValue:))
+    static let sheet = argument("-sheet")
 }
 
 // MARK: pages

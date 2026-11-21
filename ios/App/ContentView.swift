@@ -125,6 +125,12 @@ struct ContentView: View {
         if let i = args.firstIndex(of: "-open"), i + 1 < args.count,
            let url = studio.examples.first(where: { $0.deletingPathExtension().lastPathComponent == args[i + 1] }) {
             studio.open(url)
+            switch Tour.sheet {
+            case "variations": breeding = true
+            case "animation": animating = true
+            case "model": sculpting = true
+            default: break
+            }
             if args.contains("-demo") {
                 Task { await studio.demo() }
             }

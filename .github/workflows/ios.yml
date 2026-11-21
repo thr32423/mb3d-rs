@@ -83,6 +83,20 @@ jobs:
           cp "$docs"/*.m3p screens/ || echo "no saved scene in $docs"
           ls screens
           xcrun simctl spawn "$udid" log show --last 40m --style compact --predicate 'process == "Mandelbulb3D"' > screens/app.log || true
+          # the interface: every settings page and window
+          ex="${{ inputs.example || 'ABoxScale2Start' }}"
+          for page in picture fractal formulas julia lighting colours fog effects finishing ground; do
+            xcrun simctl terminate "$udid" local.mb3d.ipad || true
+            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -page "$page"
+            sleep 25
+            xcrun simctl io "$udid" screenshot "screens/ui-page-$page.png"
+          done
+          for sheet in variations animation model; do
+            xcrun simctl terminate "$udid" local.mb3d.ipad || true
+            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -sheet "$sheet"
+            sleep 60
+            xcrun simctl io "$udid" screenshot "screens/ui-sheet-$sheet.png"
+          done
           # the translations: German, and Arabic (right to left)
           for lang in de ar; do
             xcrun simctl terminate "$udid" local.mb3d.ipad || true

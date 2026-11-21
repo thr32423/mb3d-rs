@@ -6,8 +6,7 @@
 
 use super::util::{fts, ptf};
 use super::Mb3d;
-use crate::math::{build_rot_matrix, matrix_to_angles};
-use crate::scene::Scene;
+use crate::curves::{self, PARAMS};
 use crate::vcl::bitmap::Bitmap;
 use crate::vcl::form::MouseButton;
 use crate::vcl::lang::tr;
@@ -30,72 +29,6 @@ pub struct State {
     range: (f64, f64),
 }
 
-/// A value of a scene the curves can show: its label and how it is read
-/// and written (None: the scene does not have it).
-struct Param {
-    label: &'static str,
-    get: fn(&Scene) -> Option<f64>,
-    set: fn(&mut Scene, f64),
-}
-
-fn angle(s: &Scene, k: usize) -> Option<f64> {
-    matrix_to_angles(&s.vgrads).map(|a| a[k].to_degrees())
-}
-
-fn set_angle(s: &mut Scene, k: usize, v: f64) {
-    let mut a = matrix_to_angles(&s.vgrads).unwrap_or([0.0; 3]);
-    a[k] = v.to_radians();
-    s.vgrads = build_rot_matrix(a[0], a[1], a[2]);
-}
-
-const PARAMS: &[Param] = &[
-    Param { label: "@MB:Zoom2", get: |s| Some(s.zoom), set: |s, v| s.zoom = v.max(1e-30) },
-    Param { label: "@MB:PositionX", get: |s| Some(s.mid[0]), set: |s, v| s.mid[0] = v },
-    Param { label: "@MB:PositionY", get: |s| Some(s.mid[1]), set: |s, v| s.mid[1] = v },
-    Param { label: "@MB:PositionZ", get: |s| Some(s.mid[2]), set: |s, v| s.mid[2] = v },
-    Param { label: "@MB:RotationX", get: |s| angle(s, 0), set: |s, v| set_angle(s, 0, v) },
-    Param { label: "@MB:RotationY", get: |s| angle(s, 1), set: |s, v| set_angle(s, 1, v) },
-    Param { label: "@MB:RotationZ", get: |s| angle(s, 2), set: |s, v| set_angle(s, 2, v) },
-    Param { label: "@MB:FOVy", get: |s| Some(s.fov_y), set: |s, v| s.fov_y = v.clamp(0.1, 360.0) },
-    Param { label: "@MB:ZStart", get: |s| Some(s.z_start), set: |s, v| s.z_start = v },
-    Param {
-        label: "@MB:GroundPosition",
-        get: |s| s.ground.map(|g| g.pos),
-        set: |s, v| {
-            if let Some(g) = s.ground.as_mut() {
-                g.pos = v
-            }
-        },
-    },
-    Param {
-        label: "@MB:CloudDriftX",
-        get: |s| s.clouds.map(|c| c.offset[0]),
-        set: |s, v| {
-            if let Some(c) = s.clouds.as_mut() {
-                c.offset[0] = v
-            }
-        },
-    },
-    Param {
-        label: "@MB:CloudDriftY",
-        get: |s| s.clouds.map(|c| c.offset[1]),
-        set: |s, v| {
-            if let Some(c) = s.clouds.as_mut() {
-                c.offset[1] = v
-            }
-        },
-    },
-    Param {
-        label: "@MB:CloudDriftZ",
-        get: |s| s.clouds.map(|c| c.offset[2]),
-        set: |s, v| {
-            if let Some(c) = s.clouds.as_mut() {
-                c.offset[2] = v
-            }
-        },
-    },
-];
-
 /// Opens the window (the Animation window's Curves button).
 pub fn open(app: &mut Mb3d, ui: &mut Ui) {
     let items: Vec<String> = PARAMS.iter().map(|p| tr(p.label).trim_end_matches([':', ' ', '：']).to_string()).collect();
@@ -112,19 +45,7 @@ pub fn update(app: &mut Mb3d, ui: &mut Ui) {
     }
     let a = &app.anim.anim;
     let p = &PARAMS[app.curves.param.min(PARAMS.len() - 1)];
-    let n = a.frame_count();
-    let mut values = Vec::with_capacity(n);
-    for f in 0..n {
-        let v = a.frame_scene(f).ok().and_then(|s| (p.get)(&s));
-        values.push(v.unwrap_or(f64::NAN));
-    }
-    // the keyframes' frames
-    let mut keys = Vec::new();
-    let mut f = 0usize;
-    for k in &a.keyframes {
-        keys.push((f, (p.get)(&k.scene).unwrap_or(f64::NAN)));
-        f += k.frames as usize;
-    }
+    let (values, keys) = curves::curve(a, p);
     let all = values.iter().chain(keys.iter().map(|k| &k.1)).filter(|v| v.is_finite());
     let (mut lo, mut hi) = all.fold((f64::MAX, f64::MIN), |(a, b), &v| (a.min(v), b.max(v)));
     if lo > hi {
@@ -252,11 +173,7 @@ fn key_at(app: &Mb3d, ui: &Ui, x: i32, y: i32) -> Option<usize> {
 /// Sets the chosen value of keyframe `k` to `v`.
 fn set_key(app: &mut Mb3d, ui: &mut Ui, k: usize, v: f64) {
     let p = &PARAMS[app.curves.param.min(PARAMS.len() - 1)];
-    if let Some(kf) = app.anim.anim.keyframes.get_mut(k) {
-        if (p.get)(&kf.scene).is_some() {
-            (p.set)(&mut kf.scene, v);
-        }
-    }
+    curves::set_key(&mut app.anim.anim, p, k, v);
     update(app, ui);
 }
 
@@ -306,26 +223,5 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             }
         }
         _ => {}
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn every_value_reads_back_what_was_set() {
-        let mut s = Scene::preset("Integer Power").unwrap();
-        s.ground = Some(Default::default());
-        s.clouds = Some(Default::default());
-        for (i, p) in PARAMS.iter().enumerate() {
-            let v = 12.5 + i as f64;
-            (p.set)(&mut s, v);
-            let got = (p.get)(&s).unwrap();
-            assert!((got - v).abs() < 1e-6, "{}: {got} for {v}", p.label);
-        }
-        // a scene without a ground or clouds has none of their values
-        let plain = Scene::preset("Integer Power").unwrap();
-        assert!(PARAMS.iter().filter(|p| p.label.contains("Ground") || p.label.contains("Cloud")).all(|p| (p.get)(&plain).is_none()));
     }
 }

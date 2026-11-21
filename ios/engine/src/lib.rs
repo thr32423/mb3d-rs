@@ -810,6 +810,75 @@ pub unsafe extern "C" fn mb3d_film_frame(film: *const Film, i: u32) -> *mut Frac
     boxed(guard(|| film_ref(film)?.frame(i as usize)))
 }
 
+/// The scene `offset` (0..1) of the way from frame `i` to the next (the
+/// pictures of a motion blur); free it with mb3d_scene_free.
+///
+/// # Safety
+/// `film` is a film of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_frame_at(film: *const Film, i: u32, offset: f64) -> *mut Fractal {
+    boxed(guard(|| film_ref(film)?.frame_at(i as usize, offset)))
+}
+
+/// The short names of the values the curves show, one per line (an index
+/// into them is a curve's `param`); free with mb3d_string_free.
+#[no_mangle]
+pub extern "C" fn mb3d_curve_names() -> *mut c_char {
+    guard(|| Ok(Film::curve_names().join("\n"))).map_or(std::ptr::null_mut(), owned_text)
+}
+
+/// Curve `param`: its value at every frame into `values` (room for
+/// mb3d_film_frames; NaN where a frame has none), at every keyframe into
+/// `key_values` and the keyframe's frame into `key_frames` (room for
+/// mb3d_film_keyframes each). 0, or -1.
+///
+/// # Safety
+/// `film` is a film of this library; the arrays have the room above.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_curve(
+    film: *const Film,
+    param: u32,
+    values: *mut f64,
+    key_frames: *mut u32,
+    key_values: *mut f64,
+) -> c_int {
+    guard(|| {
+        let f = film_ref(film)?;
+        if values.is_null() || key_frames.is_null() || key_values.is_null() {
+            return Err("an array is null".into());
+        }
+        let (v, keys) = f.curve(param as usize).ok_or_else(|| format!("there is no curve {param}"))?;
+        for (i, x) in v.into_iter().take(f.frames()).enumerate() {
+            // SAFETY: `values` has room for every frame (the header's contract)
+            unsafe { *values.add(i) = x };
+        }
+        for (i, (frame, x)) in keys.into_iter().take(f.keyframes()).enumerate() {
+            // SAFETY: the key arrays have room for every keyframe
+            unsafe {
+                *key_frames.add(i) = frame as u32;
+                *key_values.add(i) = x;
+            }
+        }
+        Ok(())
+    })
+    .map_or(-1, |_| 0)
+}
+
+/// Sets value `param` of keyframe `key` (see mb3d_film_keyframe).
+///
+/// # Safety
+/// `film` is a film of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_film_set_curve_key(film: *mut Film, param: u32, key: u32, value: f64) -> c_int {
+    guard(|| {
+        // SAFETY: as film_ref, and only this thread uses it
+        let f = unsafe { film.as_mut() }.ok_or_else(|| "the film is null".to_string())?;
+        f.set_curve_key(param as usize, key as usize, value);
+        Ok(())
+    })
+    .map_or(-1, |_| 0)
+}
+
 // 3D model (iPad app): the BulbTracer's mesh
 
 fn mesh_ref<'a>(p: *const Mesh3D) -> Option<&'a Mesh3D> {

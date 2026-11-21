@@ -55,8 +55,9 @@ generation starts from it. Needs C functions over `mutagen::generation`.
 ## Phase 5
 
 - Animation: keyframes from the views or a turntable, rendered into an
-  MP4 (AVFoundation). Later: the value curves (Curves window), motion
-  blur.
+  MP4 (AVFoundation); the value curves (the Curves window: a chart per
+  value, keyframe points dragged), motion blur (4, 8 or 16 pictures within
+  the shutter time).
 - 3D export: BulbTracer mesh as USDZ, seen in AR through Quick Look; OBJ,
   PLY, STL to share. (Gaussian splats stay desktop-only: no viewer on the
   iPad.)

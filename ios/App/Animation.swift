@@ -11,7 +11,7 @@ import SwiftUI
 final class Director {
     struct Key: Identifiable {
         let id = UUID()
-        let text: String
+        var text: String
         let thumbnail: CGImage?
         var frames: Int
     }
@@ -26,6 +26,11 @@ final class Director {
     /// a turntable instead of the keyframes
     var turntable = false
     var turntableSeconds = 8.0
+    /// motion blur: each frame the average of this many pictures within
+    /// the shutter time (1: none)
+    var motionBlur = 1
+    /// the shutter time, a part of the time to the next frame
+    var shutter = 0.5
 
     var progress: Double?
     var status = ""
@@ -40,6 +45,15 @@ final class Director {
         let n = keys.count
         guard n > 1 else { return n }
         return keys.prefix(looped ? n : n - 1).reduce(0) { $0 + $1.frames } + (looped ? 0 : 1)
+    }
+
+    /// The keyframes as the engine's film (for the curves).
+    func film() throws -> Film {
+        let film = try Film(looped: looped, smoothness: smoothness)
+        for key in keys {
+            try film.add(FractalScene(text: key.text), frames: key.frames)
+        }
+        return film
     }
 
     func add(_ scene: FractalScene, thumbnail: CGImage?) {
@@ -60,6 +74,7 @@ final class Director {
         let keys = self.keys
         let (looped, smoothness, fps, side) = (self.looped, self.smoothness, self.fps, self.side)
         let turntable = self.turntable
+        let (blur, shutter) = (max(1, motionBlur), shutter)
         let orbitFrames = max(2, Int(turntableSeconds * Double(fps)))
         let base = try? (turntable ? scene : keys.first.flatMap { try? FractalScene(text: $0.text) })?.copy()
         guard let base else {
@@ -104,10 +119,14 @@ final class Director {
                 let writer = try VideoWriter(url: url, width: w, height: h, fps: fps)
                 for i in 0..<n {
                     if job.isStopped { throw EngineError(String(localized: "stopped")) }
-                    let s = try film.frame(i)
-                    let (fw, fh) = s.size
-                    if (fw, fh) != (w, h) { s.resize(width: w, height: h) }
-                    let image = try job.render(s).image
+                    // the frame, and with a motion blur the pictures to
+                    // the shutter's close averaged
+                    var scenes = [try film.frame(i)]
+                    for k in 1..<blur {
+                        scenes.append(try film.frame(i, offset: shutter * Double(k) / Double(blur)))
+                    }
+                    for s in scenes where s.size.width != w || s.size.height != h { s.resize(width: w, height: h) }
+                    let image = try blur > 1 ? job.renderAverage(scenes) : job.render(scenes[0]).image
                     try await writer.append(image, frame: i)
                     await MainActor.run { [weak self] in
                         self?.progress = Double(i + 1) / Double(n)
@@ -220,6 +239,8 @@ struct AnimationView: View {
     let studio: Studio
     @Bindable var director: Director
     @Environment(\.dismiss) private var dismiss
+    /// (the screenshot tour's `-sheet curves` opens them at once)
+    @State private var showCurves = Tour.sheet == "curves"
 
     var body: some View {
         NavigationStack {
@@ -261,6 +282,12 @@ struct AnimationView: View {
                         Text("Move the camera with your fingers, then add the view. Swipe to remove a keyframe.")
                     }
                     Section {
+                        NavigationLink {
+                            CurvesView(director: director)
+                        } label: {
+                            Label("Curves", systemImage: "chart.xyaxis.line")
+                        }
+                        .disabled(director.keys.count < 2)
                         Toggle("Loop (back to the first)", isOn: $director.looped)
                         Picker("Between keyframes", selection: $director.smoothness) {
                             Text("Straight").tag(0)
@@ -285,6 +312,22 @@ struct AnimationView: View {
                     LabeledContent("Frames", value: "\(director.frameCount)")
                 }
                 Section {
+                    Picker("Motion blur", selection: $director.motionBlur) {
+                        Text("Off").tag(1)
+                        Text("4 pictures").tag(4)
+                        Text("8 pictures").tag(8)
+                        Text("16 pictures").tag(16)
+                    }
+                    if director.motionBlur > 1 {
+                        LabeledSlider(title: "Shutter", value: $director.shutter, range: 0.1...1,
+                                      format: "%.2f", done: {})
+                    }
+                } footer: {
+                    Text(director.motionBlur > 1
+                         ? "Each frame is the average of \(director.motionBlur) pictures on the way to the next frame: \(director.motionBlur) times the render time."
+                         : "Moving parts sharp in every frame.")
+                }
+                Section {
                     if director.busy {
                         ProgressView(value: director.progress ?? 0)
                         Text(director.status).font(.caption).foregroundStyle(.secondary)
@@ -304,6 +347,9 @@ struct AnimationView: View {
                 }
             }
             .navigationTitle("Animation")
+            .navigationDestination(isPresented: $showCurves) {
+                CurvesView(director: director)
+            }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

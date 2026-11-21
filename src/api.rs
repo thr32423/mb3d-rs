@@ -363,6 +363,31 @@ impl Film {
     pub fn frame(&self, i: usize) -> Result<Fractal, String> {
         Ok(Fractal { scene: self.anim.frame_scene(i)?, notes: Vec::new() })
     }
+
+    /// The scene `offset` (0..1) of the way from frame `i` to the next: the
+    /// pictures a motion blur averages.
+    pub fn frame_at(&self, i: usize, offset: f64) -> Result<Fractal, String> {
+        Ok(Fractal { scene: self.anim.frame_scene_at(i, offset)?, notes: Vec::new() })
+    }
+
+    /// The short names of the values the curves show (`zoom`, `x`, ...).
+    pub fn curve_names() -> Vec<&'static str> {
+        crate::curves::PARAMS.iter().map(|p| p.key).collect()
+    }
+
+    /// Value `param` (an index into [`Film::curve_names`]) of every frame
+    /// (NaN where a frame has none) and of every keyframe with its frame.
+    pub fn curve(&self, param: usize) -> Option<(Vec<f64>, Vec<(usize, f64)>)> {
+        crate::curves::PARAMS.get(param).map(|p| crate::curves::curve(&self.anim, p))
+    }
+
+    /// Sets value `param` of keyframe `key` (read it back with
+    /// [`Film::keyframe`]).
+    pub fn set_curve_key(&mut self, param: usize, key: usize, value: f64) {
+        if let Some(p) = crate::curves::PARAMS.get(param) {
+            crate::curves::set_key(&mut self.anim, p, key, value);
+        }
+    }
 }
 
 /// The object as a triangle mesh (the BulbTracer), for 3D printing, other
@@ -603,6 +628,17 @@ mod pick_tests {
         film.add(&g, 3);
         assert_eq!(film.frames(), 4);
         assert!(film.frame(1).unwrap().text() != f.text() && film.frame(3).is_ok() && film.frame(4).is_err());
+        // the zoom's curve: the keyframes' values at frames 0 and 3, set
+        // through a keyframe
+        let zi = Film::curve_names().iter().position(|&n| n == "zoom").unwrap();
+        let (values, keys) = film.curve(zi).unwrap();
+        assert_eq!(values.len(), 4);
+        assert_eq!(keys.iter().map(|k| k.0).collect::<Vec<_>>(), [0, 3]);
+        assert!((keys[1].1 - 0.5).abs() < 1e-9);
+        film.set_curve_key(zi, 1, 2.0);
+        assert!(film.keyframe(1).unwrap().text().contains("zoom = 2"));
+        let mid = film.frame_at(1, 0.5).unwrap();
+        assert!(mid.text() != film.frame(1).unwrap().text() && mid.text() != film.frame(2).unwrap().text(), "half way between frames");
         let orbit = Film::orbit(&f, 4, 2);
         assert_eq!((orbit.keyframes(), orbit.frames()), (4, 8));
         let m = f.mesh(24, true, 1, 0.3, &RenderOptions::default()).unwrap();

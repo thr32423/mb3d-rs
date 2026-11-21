@@ -197,6 +197,15 @@ mb3d_scene *mb3d_film_keyframe(const mb3d_film *film, uint32_t i);
 uint32_t mb3d_film_frames(const mb3d_film *film);
 /* The scene of frame i (from 0); free with mb3d_scene_free. */
 mb3d_scene *mb3d_film_frame(const mb3d_film *film, uint32_t i);
+/* The scene offset (0..1) of the way to the next frame (motion blur). */
+mb3d_scene *mb3d_film_frame_at(const mb3d_film *film, uint32_t i, double offset);
+/* Curves: the values over the frames. Names one per line (free with
+ * mb3d_string_free); a curve's values at every frame (values: room for
+ * mb3d_film_frames, NaN where none) and at the keyframes (room for
+ * mb3d_film_keyframes each). */
+char *mb3d_curve_names(void);
+int mb3d_film_curve(const mb3d_film *film, uint32_t param, double *values, uint32_t *key_frames, double *key_values);
+int mb3d_film_set_curve_key(mb3d_film *film, uint32_t param, uint32_t key, double value);
 
 /* 3D model: the BulbTracer's triangle mesh. */
 typedef struct mb3d_mesh mb3d_mesh;

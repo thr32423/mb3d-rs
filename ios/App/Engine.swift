@@ -34,7 +34,11 @@ enum Engine {
         let w = Int(mb3d_picture_width(pic))
         let h = Int(mb3d_picture_height(pic))
         guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError(String(localized: "no picture")) }
-        let data = Data(bytes: rgb, count: w * h * 3)
+        return try image(rgb: Data(bytes: rgb, count: w * h * 3), width: w, height: h)
+    }
+
+    /// An image of `width` x `height` RGB bytes.
+    static func image(rgb data: Data, width w: Int, height h: Int) throws -> CGImage {
         guard let provider = CGDataProvider(data: data as CFData),
               let image = CGImage(
                   width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: w * 3,
@@ -204,17 +208,38 @@ final class RenderJob: @unchecked Sendable {
         }
         guard let pic = mb3d_render(scene.ptr, callback, me) else { throw EngineError(Engine.lastError()) }
         defer { mb3d_picture_free(pic) }
-        let w = Int(mb3d_picture_width(pic))
-        let h = Int(mb3d_picture_height(pic))
-        guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError(String(localized: "no picture")) }
-        let data = Data(bytes: rgb, count: w * h * 3)
-        guard let provider = CGDataProvider(data: data as CFData),
-              let image = CGImage(
-                  width: w, height: h, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: w * 3,
-                  space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
-                  provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
-        else { throw EngineError(String(localized: "the picture could not be made")) }
-        return (image, mb3d_picture_seconds(pic))
+        return (try Engine.image(of: pic), mb3d_picture_seconds(pic))
+    }
+
+    /// The scenes rendered and averaged (a motion blur's pictures; all of
+    /// one size).
+    func renderAverage(_ scenes: [FractalScene]) throws -> CGImage {
+        let me = Unmanaged.passUnretained(self).toOpaque()
+        let callback: mb3d_progress = { user, stage, done, total in
+            guard let user else { return 0 }
+            let job = Unmanaged<RenderJob>.fromOpaque(user).takeUnretainedValue()
+            let name = stage.map { String(cString: $0) } ?? ""
+            job.progress(name, total > 0 ? Double(done) / Double(total) : 0)
+            return job.isStopped ? 1 : 0
+        }
+        var sum: [UInt32] = []
+        var (w, h) = (0, 0)
+        for scene in scenes {
+            guard let pic = mb3d_render(scene.ptr, callback, me) else { throw EngineError(Engine.lastError()) }
+            defer { mb3d_picture_free(pic) }
+            let pw = Int(mb3d_picture_width(pic))
+            let ph = Int(mb3d_picture_height(pic))
+            guard let rgb = mb3d_picture_rgb(pic) else { throw EngineError(String(localized: "no picture")) }
+            if sum.isEmpty {
+                (w, h) = (pw, ph)
+                sum = [UInt32](repeating: 0, count: w * h * 3)
+            }
+            guard (pw, ph) == (w, h) else { throw EngineError("the pictures differ in size") }
+            for i in 0..<sum.count { sum[i] += UInt32(rgb[i]) }
+        }
+        let n = UInt32(max(scenes.count, 1))
+        let bytes = Data(sum.map { UInt8(min(255, ($0 + n / 2) / n)) })
+        return try Engine.image(rgb: bytes, width: w, height: h)
     }
 
     /// MutaGen's 15 variations of `scene` (the first is the scene), on
@@ -312,6 +337,37 @@ final class Film: @unchecked Sendable {
     func frame(_ i: Int) throws -> FractalScene {
         guard let p = mb3d_film_frame(ptr, UInt32(i)) else { throw EngineError(Engine.lastError()) }
         return FractalScene(p)
+    }
+
+    /// The scene `offset` (0..1) of the way to the next frame: the pictures
+    /// a motion blur averages.
+    func frame(_ i: Int, offset: Double) throws -> FractalScene {
+        guard let p = mb3d_film_frame_at(ptr, UInt32(i), offset) else { throw EngineError(Engine.lastError()) }
+        return FractalScene(p)
+    }
+
+    /// The short names of the values the curves show (zoom, x, ...).
+    static let curveNames: [String] = {
+        guard let t = mb3d_curve_names() else { return [] }
+        defer { mb3d_string_free(t) }
+        return String(cString: t).split(separator: "\n").map(String.init)
+    }()
+
+    /// Curve `param`: its value at every frame (NaN where a frame has none)
+    /// and the keyframes' frames and values.
+    func curve(_ param: Int) -> (values: [Double], keys: [(frame: Int, value: Double)])? {
+        let n = frameCount
+        let k = keyframeCount
+        var values = [Double](repeating: .nan, count: max(n, 1))
+        var frames = [UInt32](repeating: 0, count: max(k, 1))
+        var kv = [Double](repeating: .nan, count: max(k, 1))
+        guard mb3d_film_curve(ptr, UInt32(param), &values, &frames, &kv) == 0 else { return nil }
+        return (Array(values.prefix(n)), (0..<k).map { (Int(frames[$0]), kv[$0]) })
+    }
+
+    /// Sets value `param` of keyframe `key` (read it back with `keyframe`).
+    func setCurveKey(_ param: Int, key: Int, value: Double) {
+        _ = mb3d_film_set_curve_key(ptr, UInt32(param), UInt32(key), value)
     }
 }
 

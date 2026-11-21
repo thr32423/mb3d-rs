@@ -48,6 +48,7 @@ pub mod camera_file;
 pub mod checkpoint;
 pub mod clouds;
 pub mod cone;
+pub mod curves;
 pub mod custom;
 pub mod deao;
 pub mod denoise;

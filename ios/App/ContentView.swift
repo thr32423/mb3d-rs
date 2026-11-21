@@ -128,6 +128,19 @@ struct ContentView: View {
             switch Tour.sheet {
             case "variations": breeding = true
             case "animation": animating = true
+            case "curves":
+                // two keyframes (the view and a closer one), then the curves
+                Task {
+                    while studio.currentScene == nil { try? await Task.sleep(for: .milliseconds(200)) }
+                    try? await Task.sleep(for: .seconds(2))
+                    if let s = studio.currentScene {
+                        studio.director.add(s, thumbnail: studio.image)
+                        var t = SceneText(s.text)
+                        t["zoom"] = SceneText.format((t.number("zoom") ?? 1) * 3)
+                        if let closer = try? FractalScene(text: t.text) { studio.director.add(closer, thumbnail: studio.image) }
+                    }
+                    animating = true
+                }
             case "model": sculpting = true
             default: break
             }

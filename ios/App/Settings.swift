@@ -52,11 +52,13 @@ struct SettingsView: View {
             }
         }
         .disabled(studio.selected == nil)
-        .task {
-            // (pushed once the inspector is up: a path set before is not shown)
-            guard let p = Tour.page else { return }
-            try? await Task.sleep(for: .seconds(3))
-            path = [p]
+        .task(id: studio.selected) {
+            // (pushed once the inspector is up and a scene is open: a path
+            // set before is not shown, and the list is disabled without a
+            // scene; a fixed wait missed the fog page once)
+            guard let p = Tour.page, studio.selected != nil, path.isEmpty else { return }
+            try? await Task.sleep(for: .seconds(1.5))
+            if path.isEmpty { path = [p] }
         }
     }
 

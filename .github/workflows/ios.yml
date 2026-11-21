@@ -91,7 +91,7 @@ jobs:
             sleep 25
             xcrun simctl io "$udid" screenshot "screens/ui-page-$page.png"
           done
-          for sheet in variations animation model; do
+          for sheet in variations animation model curves; do
             xcrun simctl terminate "$udid" local.mb3d.ipad || true
             xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -sheet "$sheet"
             sleep 60

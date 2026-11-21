@@ -1152,6 +1152,37 @@ final class Studio {
         while director.busy { try? await Task.sleep(for: .milliseconds(300)) }
         print("MB3D demo: video \(director.video?.lastPathComponent ?? "none"), \(director.status) \(director.error ?? "")")
         keep(director.video)
+        // keyframes: the view and a closer one, the second's zoom changed
+        // on its curve, rendered with a motion blur of 4 pictures
+        status = String(localized: "motion blur")
+        if let s = scene {
+            director.turntable = false
+            director.keys = []
+            director.add(s, thumbnail: image)
+            var t = SceneText(s.text)
+            t["zoom"] = SceneText.format((t.number("zoom") ?? 1) * 2)
+            if let closer = try? FractalScene(text: t.text) { director.add(closer, thumbnail: image) }
+            director.keys[0].frames = 6
+            if let film = try? director.film(), let zi = Film.curveNames.firstIndex(of: "zoom"),
+               let before = film.curve(zi)?.keys.last?.value {
+                film.setCurveKey(zi, key: 1, value: before * 2)
+                if let k = try? film.keyframe(1) { director.keys[1].text = k.text }
+                let after = (try? director.film())?.curve(zi)?.keys.last?.value
+                print("MB3D demo: curve zoom of keyframe 2 \(before) -> \(after ?? .nan)")
+            }
+            director.motionBlur = 4
+            director.side = 240
+            director.render(turntableOf: nil)
+            try? await Task.sleep(for: .milliseconds(300))
+            while director.busy { try? await Task.sleep(for: .milliseconds(300)) }
+            print("MB3D demo: blurred video \(director.video?.lastPathComponent ?? "none"), \(director.status) \(director.error ?? "")")
+            if let v = director.video {
+                let dest = Library.folder.appendingPathComponent("demo-blur.mp4")
+                try? FileManager.default.removeItem(at: dest)
+                try? FileManager.default.copyItem(at: v, to: dest)
+            }
+            director.motionBlur = 1
+        }
         status = String(localized: "3D model")
         sculptor.resolution = 64
         if let s = scene { sculptor.trace(s, name: "model") }

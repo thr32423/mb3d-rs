@@ -3,6 +3,7 @@ import Foundation
 import ImageIO
 import Observation
 import SwiftUI
+import UIKit
 
 /// What the app shows: the open scene, its picture and the render running.
 ///
@@ -30,7 +31,7 @@ final class Studio {
 
     /// The size of the file as opened (Save keeps it; the app renders
     /// smaller).
-    @ObservationIgnored private var fileSize = (width: 0, height: 0)
+    private var fileSize = (width: 0, height: 0)
     /// The scene as it was opened (double tap goes back to its view).
     @ObservationIgnored private var opened: FractalScene?
     /// The scene of the current view, at the full render size.
@@ -44,8 +45,15 @@ final class Studio {
     /// A finger is on the picture.
     @ObservationIgnored private var moving = false
 
-    /// The longest side of a full render (the prototype keeps renders quick).
-    let renderSide = 1024
+    /// The longest side of a full render (Quality; `0` the file's size).
+    var renderSide = 1024 {
+        didSet { if renderSide != oldValue { resizeForRender() } }
+    }
+    /// Steps back and forward (scene texts): every change and move.
+    @ObservationIgnored private var history: [String] = []
+    @ObservationIgnored private var future: [String] = []
+    var canUndo = false
+    var canRedo = false
     /// The longest side of the pictures while the camera moves.
     let quickSide = 320
 
@@ -59,8 +67,9 @@ final class Studio {
             let (w, h) = s.size
             fileSize = (w, h)
             pictureURL = nil
-            let k = Double(renderSide) / Double(max(w, h, 1))
-            s.resize(width: max(1, Int(Double(w) * k)), height: max(1, Int(Double(h) * k)))
+            history = []
+            future = []
+            fitToRender(s)
             opened = try s.copy()
             take(s)
             image = nil
@@ -76,6 +85,84 @@ final class Studio {
         scene = s
         navigator = try? Navigator(s)
         doc = SceneText(s.text)
+        canUndo = !history.isEmpty
+        canRedo = !future.isEmpty
+    }
+
+    /// The render size for the file's size and the Quality.
+    private func renderSize() -> (Int, Int) {
+        let (w, h) = (max(fileSize.width, 1), max(fileSize.height, 1))
+        guard renderSide > 0 else { return (w, h) }
+        let k = Double(renderSide) / Double(max(w, h))
+        return (max(16, Int((Double(w) * k).rounded())), max(16, Int((Double(h) * k).rounded())))
+    }
+
+    private func fitToRender(_ s: FractalScene) {
+        let (w, h) = renderSize()
+        s.resize(width: w, height: h)
+    }
+
+    private func resizeForRender() {
+        guard let scene else { return }
+        remember()
+        fitToRender(scene)
+        if let opened { fitToRender(opened) }
+        take(scene)
+        render()
+    }
+
+    /// The picture's shape: width / height (the long side kept).
+    var aspect: Double {
+        get { Double(max(fileSize.width, 1)) / Double(max(fileSize.height, 1)) }
+        set {
+            guard let scene, newValue > 0 else { return }
+            let long = max(fileSize.width, fileSize.height, 16)
+            fileSize = newValue >= 1 ? (long, max(16, Int((Double(long) / newValue).rounded())))
+                                     : (max(16, Int((Double(long) * newValue).rounded())), long)
+            remember()
+            fitToRender(scene)
+            if let opened { fitToRender(opened) }
+            take(scene)
+            render()
+        }
+    }
+
+    /// The file's own size in pixels (Save keeps it).
+    var pictureSize: (width: Int, height: Int) { fileSize }
+
+    // MARK: undo
+
+    /// Keeps the scene as it is now as a step back (before a change).
+    private func remember() {
+        guard let scene else { return }
+        let t = scene.text
+        if history.last != t { history.append(t) }
+        if history.count > 60 { history.removeFirst() }
+        future = []
+        canUndo = true
+        canRedo = false
+    }
+
+    private func restore(_ text: String) {
+        do {
+            let s = try FractalScene(text: text)
+            take(s)
+            render()
+        } catch {
+            self.error = "\(error)"
+        }
+    }
+
+    func undo() {
+        guard let t = history.popLast(), let scene else { return }
+        future.append(scene.text)
+        restore(t)
+    }
+
+    func redo() {
+        guard let t = future.popLast(), let scene else { return }
+        history.append(scene.text)
+        restore(t)
     }
 
     var title: String {
@@ -161,6 +248,7 @@ final class Studio {
         guard scene != nil else { return }
         do {
             let s = try FractalScene(text: doc.text)
+            remember()
             take(s)
             render()
         } catch {
@@ -184,6 +272,107 @@ final class Studio {
         Binding(
             get: { self.doc.number(key) ?? fallback },
             set: { self.doc[key] = whole ? String(Int($0.rounded())) : String($0) }
+        )
+    }
+
+    /// The detail (DE stop) at the file's size: the render's is scaled
+    /// with its width.
+    func detail() -> Binding<Double> {
+        Binding(
+            get: { (self.doc.number("de_stop") ?? 1) / self.detailScale },
+            set: { self.doc["de_stop"] = String($0 * self.detailScale) }
+        )
+    }
+
+    private var detailScale: Double {
+        let (w, _) = renderSize()
+        return fileSize.width > 0 ? Double(w) / Double(fileSize.width) : 1
+    }
+
+    /// Component `i` of a value like `a, b, c` (`fallback` the whole when
+    /// missing).
+    func component(_ key: String, _ i: Int, _ fallback: [Double]) -> Binding<Double> {
+        Binding(
+            get: { self.doc.component(key, i) ?? fallback[i] },
+            set: { self.doc.setComponent(key, i, $0, fallback: fallback) }
+        )
+    }
+
+    /// An effect that is on unless its key is missing or `off`: on writes
+    /// `onValue`, applied shortly after.
+    func effect(_ key: String, on onValue: String) -> Binding<Bool> {
+        Binding(
+            get: {
+                guard let v = self.doc[key]?.lowercased() else { return false }
+                return !["off", "none", "false", "no"].contains(v)
+            },
+            set: { self.doc[key] = $0 ? onValue : "off"; self.commitSoon() }
+        )
+    }
+
+    /// The formula the hybrid repeats from (1-based; `repeat_from` 0-based).
+    func repeatFrom() -> Binding<Double> {
+        Binding(
+            get: { (self.doc.number("repeat_from") ?? 0) + 1 },
+            set: { self.doc["repeat_from"] = String(max(0, Int($0.rounded()) - 1)) }
+        )
+    }
+
+    /// The kind of surface detail (`detail = kind, strength, size, fineness`).
+    func detailKind() -> Binding<String> {
+        Binding(
+            get: {
+                let k = (self.doc["detail"] ?? "off").split(separator: ",").first.map {
+                    $0.trimmingCharacters(in: .whitespaces).lowercased()
+                } ?? "off"
+                return ["rough", "stone", "grain"].contains(k) ? k : "off"
+            },
+            set: { kind in
+                if kind == "off" {
+                    self.doc["detail"] = "off"
+                } else {
+                    var rest = (self.doc["detail"] ?? "").split(separator: ",").dropFirst()
+                        .map { $0.trimmingCharacters(in: .whitespaces) }
+                    if rest.count != 3 { rest = ["1", "0.05", "0.5"] }
+                    self.doc["detail"] = ([kind] + rest).joined(separator: ", ")
+                }
+                self.commitSoon()
+            }
+        )
+    }
+
+    /// The ground plane's axis (`ground = axis, position`).
+    func groundAxis() -> Binding<String> {
+        Binding(
+            get: {
+                (self.doc["ground"] ?? "y").split(separator: ",").first
+                    .map { $0.trimmingCharacters(in: .whitespaces).lowercased() } ?? "y"
+            },
+            set: { axis in
+                self.doc["ground"] = "\(axis), \(SceneText.format(self.groundPosition().wrappedValue))"
+                self.commitSoon()
+            }
+        )
+    }
+
+    func groundPosition() -> Binding<Double> {
+        Binding(
+            get: { self.doc.component("ground", 1) ?? 1.2 },
+            set: { self.doc["ground"] = "\(self.groundAxis().wrappedValue), \(SceneText.format($0))" }
+        )
+    }
+
+    /// The cloud layer's heights (`clouds = axis, from, to`).
+    func cloudHeight(_ i: Int) -> Binding<Double> {
+        Binding(
+            get: { self.doc.component("clouds", i + 1) ?? [-1.2, -2.2][i] },
+            set: { v in
+                let axis = (self.doc["clouds"] ?? "y").split(separator: ",").first
+                    .map { $0.trimmingCharacters(in: .whitespaces) } ?? "y"
+                var h = [self.doc.component("clouds", 1) ?? -1.2, self.doc.component("clouds", 2) ?? -2.2]
+                h[i] = v
+                self.doc["clouds"] = "\(axis), \(SceneText.format(h[0])), \(SceneText.format(h[1]))"
+            }
         )
     }
 
@@ -223,6 +412,166 @@ final class Studio {
         )
     }
 
+    /// A switch of a section (missing means `fallback`), applied shortly
+    /// after.
+    func sectionFlag(_ id: Int, _ key: String, _ fallback: Bool) -> Binding<Bool> {
+        Binding(
+            get: {
+                guard let v = self.doc.sections.first(where: { $0.id == id })?[key] else { return fallback }
+                return v == "true"
+            },
+            set: { on in
+                guard var sec = self.doc.sections.first(where: { $0.id == id }) else { return }
+                sec[key] = on ? "true" : "false"
+                self.doc.update(sec)
+                self.commitSoon()
+            }
+        )
+    }
+
+    /// A word of a section, applied shortly after.
+    func sectionChoice(_ id: Int, _ key: String, _ fallback: String) -> Binding<String> {
+        Binding(
+            get: { self.doc.sections.first { $0.id == id }?[key] ?? fallback },
+            set: { v in
+                guard var sec = self.doc.sections.first(where: { $0.id == id }) else { return }
+                sec[key] = v
+                self.doc.update(sec)
+                self.commitSoon()
+            }
+        )
+    }
+
+    /// Another formula after the last (up to six), an Integer Power to
+    /// start with.
+    func addFormula() {
+        guard doc.formulas.count < 6 else { return }
+        let name = "Integer Power"
+        doc.insert("formula", [.init(key: "name", value: name), .init(key: "iterations", value: "1")]
+            + Engine.formulaSettings(name).filter { $0.key != "iterations" }.map { .init(key: $0.key, value: $0.value) })
+        commit()
+    }
+
+    /// Another light (up to six) in the first free slot, white from the
+    /// upper left.
+    func addLight() {
+        let used = Set(doc.lights.compactMap { $0["slot"].flatMap { Int($0) } })
+        guard let slot = (1...6).first(where: { !used.contains($0) }) else { return }
+        doc["lights"] = nil
+        doc.insert("light", [
+            .init(key: "slot", value: String(slot)), .init(key: "color", value: "#FFFFFF"),
+            .init(key: "x_angle", value: "-30"), .init(key: "y_angle", value: "30"),
+            .init(key: "amplitude", value: "1"), .init(key: "spec_power", value: "8"),
+            .init(key: "diffuse_func", value: "0"), .init(key: "relative_to_object", value: "false"),
+        ])
+        commit()
+    }
+
+    /// Removes a formula (the last stays) or a light (without any, the
+    /// scene says `lights = none`).
+    func removeSection(_ id: Int) {
+        guard let sec = doc.sections.first(where: { $0.id == id }) else { return }
+        if sec.kind == "formula" && doc.formulas.count < 2 { return }
+        doc.remove(id)
+        if sec.kind == "light" && doc.lights.isEmpty { doc["lights"] = "none" }
+        commit()
+    }
+
+    // MARK: the palette
+
+    struct Stop: Identifiable {
+        let id: Int
+        var position: Int
+        var diffuse: String
+        var specular: String
+    }
+
+    /// The colour stops of `palette_full` (`position:#diffuse:#specular`).
+    var stops: [Stop] {
+        (doc["palette_full"] ?? "").split(separator: ",").enumerated().compactMap { i, part in
+            let f = part.trimmingCharacters(in: .whitespaces).split(separator: ":")
+            guard f.count == 3, let p = Int(f[0]) else { return nil }
+            return Stop(id: i, position: p, diffuse: String(f[1]), specular: String(f[2]))
+        }
+    }
+
+    private func setStops(_ s: [Stop]) {
+        doc["palette_full"] = s.map { "\($0.position):\($0.diffuse):\($0.specular)" }.joined(separator: ", ")
+    }
+
+    func stopColor(_ id: Int, specular: Bool) -> Binding<CGColor> {
+        Binding(
+            get: {
+                let s = self.stops.first { $0.id == id }
+                return Self.cgColor(specular ? s?.specular : s?.diffuse)
+            },
+            set: { c in
+                guard let h = Self.hex(c) else { return }
+                var all = self.stops
+                guard let i = all.firstIndex(where: { $0.id == id }) else { return }
+                if specular { all[i].specular = h } else { all[i].diffuse = h }
+                self.setStops(all)
+                self.commitSoon()
+            }
+        )
+    }
+
+    // MARK: the picture
+
+    /// A tap on the picture at `point` of a view `size` big: with depth of
+    /// field on, the focus goes to what is there.
+    func tap(at point: CGPoint, in size: CGSize) {
+        guard let scene, let dof = doc["dof"], dof != "off" else {
+            if scene != nil { status = "Switch on depth of field (Effects) to focus with a tap" }
+            return
+        }
+        let (w, h) = scene.size
+        let k = min(size.width / Double(w), size.height / Double(h))
+        guard k > 0 else { return }
+        let x = Int(((point.x - (size.width - Double(w) * k) / 2) / k).rounded(.down))
+        let y = Int(((point.y - (size.height - Double(h) * k) / 2) / k).rounded(.down))
+        guard x >= 0, y >= 0, x < w, y < h else { return }
+        guard let z = scene.focus(x: x, y: y) else {
+            status = "Nothing there to focus on"
+            return
+        }
+        doc["dof_focus"] = String(z)
+        commit()
+        status = "Focus set"
+    }
+
+    /// The parameters as Mandelbulb3D text on the clipboard.
+    func copyParameters() {
+        guard let s = try? sceneToSave(), let t = s.mb3dText(title: title) else { return }
+        UIPasteboard.general.string = t
+        status = "Parameters copied"
+    }
+
+    /// Parameters from the clipboard (MB3D text or a scene text) become a
+    /// new scene among the user's.
+    func pasteParameters() {
+        guard let t = UIPasteboard.general.string, !t.isEmpty else {
+            error = "The clipboard holds no text."
+            return
+        }
+        do {
+            let s = try FractalScene(text: t)
+            let dest = Library.freeName("Pasted", "m3p")
+            try s.saveM3P(to: dest)
+            myScenes = Library.scenes()
+            open(dest)
+        } catch {
+            self.error = "The clipboard holds no parameters: \(error)"
+        }
+    }
+
+    /// The last full picture into the Photos library.
+    func saveToPhotos() {
+        guard let image else { return }
+        UIImageWriteToSavedPhotosAlbum(UIImage(cgImage: image), nil, nil, nil)
+        status = "Saved to Photos"
+    }
+
     /// A colour of a light section, applied shortly after.
     func sectionColor(_ id: Int, _ key: String) -> Binding<CGColor> {
         Binding(
@@ -254,12 +603,12 @@ final class Studio {
         return all
     }
 
-    private static func cgColor(_ hex: String?) -> CGColor {
+    static func cgColor(_ hex: String?) -> CGColor {
         let (r, g, b) = hex.flatMap(HexColor.rgb) ?? (1, 1, 1)
         return CGColor(srgbRed: r, green: g, blue: b, alpha: 1)
     }
 
-    private static func hex(_ c: CGColor) -> String? {
+    static func hex(_ c: CGColor) -> String? {
         guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
               let k = c.converted(to: srgb, intent: .defaultIntent, options: nil)?.components, k.count >= 3
         else { return nil }
@@ -319,11 +668,13 @@ final class Studio {
     /// Back to the view of the file as it was opened.
     func resetView() {
         guard let opened, let s = try? opened.copy() else { return }
+        remember()
         take(s)
         render()
     }
 
     private func moved() {
+        if !moving { remember() }
         moving = true
         dirty = true
         if job == nil || !jobQuick {
@@ -454,6 +805,38 @@ final class Studio {
             await waitIdle()
         }
         save()
+        // phase 1: effects, a tap to focus, undo, another shape, the
+        // clipboard (pictures 10 to 14)
+        let more: [(String, (Studio) -> Void)] = [
+            ("effects", { s in
+                s.undo()  // back to the box (before the formula swap)
+            }),
+            ("ground and finishing", { s in
+                s.doc["ground"] = "y, 1.2"
+                s.doc["ground_reflect"] = "0.4"
+                s.doc["glow"] = "0.6, 0.02, 0.8"
+                s.doc["vignette"] = "0.4"
+                s.doc["dof"] = "sorted"
+                s.doc["dof_aperture"] = "0.2"
+                s.commit()
+            }),
+            ("focus", { s in
+                guard let (w, h) = s.scene?.size else { return }
+                s.tap(at: CGPoint(x: Double(w) * 0.3, y: Double(h) * 0.3), in: CGSize(width: w, height: h))
+            }),
+            ("16:9", { s in s.aspect = 16.0 / 9 }),
+            ("paste", { s in
+                s.copyParameters()
+                s.pasteParameters()
+            }),
+        ]
+        for (name, step) in more {
+            status = name
+            step(self)
+            try? await Task.sleep(for: .milliseconds(300))
+            await waitIdle()
+        }
+        print("MB3D demo: done, status '\(status)', undo \(canUndo), scenes \(myScenes.map(\.lastPathComponent))")
     }
 
     private func waitIdle() async {

@@ -172,6 +172,34 @@ impl Fractal {
         crate::m3p::write(&self.scene)
     }
 
+    /// The parameters as Mandelbulb3D text (`Mandelbulb3Dv18{...}`), as its
+    /// "To Clipboard" gives them for forums and other programs.
+    pub fn mb3d_text(&self, title: &str) -> String {
+        crate::m3p::raw_to_text(&crate::m3p::write(&self.scene), title)
+    }
+
+    /// What the picture shows at pixel (`x`, `y`): the surface point and
+    /// its depth as `dof_focus` takes it (the Post-process window's "Get
+    /// Z" on a clicked point); None on the background.
+    pub fn pick(&self, x: usize, y: usize) -> Option<([f64; 3], f64)> {
+        let sc = &self.scene;
+        if x >= sc.width.max(0) as usize || y >= sc.height.max(0) as usize {
+            return None;
+        }
+        let p = crate::calc::CalcParams::new(sc).ok()?;
+        let mut m = crate::calc::Marcher::new(&p, 0);
+        m.seed = crate::calc::pixel_seed(y as i64, x as i64);
+        let si = m.march_pixel(x as i32, y as i32);
+        let cam = crate::render::paint_camera(sc, &p);
+        let q = cam.object_pos(&si, x as i32, y as i32)?;
+        let pos = [q[0] + sc.mid[0], q[1] + sc.mid[1], q[2] + sc.mid[2]];
+        let vz = crate::math::normalize(sc.vgrads[2]);
+        let d = sc.z_start - sc.mid[2];
+        let cam_pos = [sc.mid[0] + vz[0] * d, sc.mid[1] + vz[1] * d, sc.mid[2] + vz[2] * d];
+        let z = (pos[0] - cam_pos[0]) * vz[0] + (pos[1] - cam_pos[1]) * vz[1] + (pos[2] - cam_pos[2]) * vz[2];
+        Some((pos, z / (sc.step_width() * sc.width as f64)))
+    }
+
     /// Calculates the picture, with the scene's shadows, ambient occlusion
     /// and other effects.  Stopped by `cancel` it returns `Err("cancelled")`.
     pub fn render(&self, opt: &RenderOptions) -> Result<Picture, String> {
@@ -353,5 +381,23 @@ mod tests {
         assert!(formula_names().iter().any(|n| n == "Integer Power"));
         assert!(!formula_settings("Integer Power").unwrap().is_empty());
         assert!(formula_settings("no such formula").is_err());
+    }
+}
+
+#[cfg(test)]
+mod pick_tests {
+    use super::*;
+
+    #[test]
+    fn pick_finds_the_surface_in_the_middle_and_not_the_corner() {
+        let mut f = Fractal::preset("Integer Power").unwrap();
+        f.resize(64, 48);
+        let (pos, z) = f.pick(32, 24).expect("the bulb is in the middle");
+        assert!(z > 0.0 && pos.iter().all(|v| v.is_finite()), "{pos:?} {z}");
+        assert!(f.pick(0, 0).is_none(), "the corner is background");
+        assert!(f.pick(64, 0).is_none());
+        let t = f.mb3d_text("t");
+        assert!(t.starts_with("Mandelbulb3Dv18{"));
+        assert!(Fractal::from_text(&t).is_ok(), "the text opens again");
     }
 }

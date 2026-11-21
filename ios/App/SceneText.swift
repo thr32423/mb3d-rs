@@ -93,6 +93,49 @@ struct SceneText {
     var formulas: [Section] { sections.filter { $0.kind == "formula" } }
     var lights: [Section] { sections.filter { $0.kind == "light" } }
 
+    private var nextID: Int { (sections.map(\.id).max() ?? -1) + 1 }
+
+    /// A new section of `kind` after the last one of that kind (or at the
+    /// end).
+    @discardableResult
+    mutating func insert(_ kind: String, _ entries: [Entry]) -> Int {
+        let id = nextID
+        let s = Section(id: id, kind: kind, entries: entries)
+        if let i = sections.lastIndex(where: { $0.kind == kind }) {
+            sections.insert(s, at: i + 1)
+        } else if kind == "formula", let i = sections.firstIndex(where: { $0.kind == "light" }) {
+            sections.insert(s, at: i)
+        } else {
+            sections.append(s)
+        }
+        return id
+    }
+
+    mutating func remove(_ id: Int) {
+        sections.removeAll { $0.id == id }
+    }
+
+    /// Component `i` of a value like `a, b, c`.
+    func component(_ key: String, _ i: Int) -> Double? {
+        let parts = (self[key] ?? "").split(separator: ",")
+        return i < parts.count ? Double(parts[i].trimmingCharacters(in: .whitespaces)) : nil
+    }
+
+    /// Sets component `i` of `key` (the others from the value or `fallback`).
+    mutating func setComponent(_ key: String, _ i: Int, _ v: Double, fallback: [Double]) {
+        var parts = fallback
+        for k in parts.indices {
+            if let x = component(key, k) { parts[k] = x }
+        }
+        if i < parts.count { parts[i] = v }
+        self[key] = parts.map { SceneText.format($0) }.joined(separator: ", ")
+    }
+
+    /// A number as the text takes it (no needless decimals).
+    static func format(_ v: Double) -> String {
+        v == v.rounded() && abs(v) < 1e15 ? String(Int(v)) : String(v)
+    }
+
     mutating func update(_ s: Section) {
         if let i = sections.firstIndex(where: { $0.id == s.id }) { sections[i] = s }
     }

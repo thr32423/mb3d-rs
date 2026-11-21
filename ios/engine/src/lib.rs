@@ -552,3 +552,30 @@ pub unsafe extern "C" fn mb3d_scene_save_m3p(scene: *const Fractal, path: *const
     })
     .map_or(-1, |_| 0)
 }
+
+/// The parameters as Mandelbulb3D text (`Mandelbulb3Dv18{...}`) for the
+/// clipboard; free it with mb3d_string_free.
+///
+/// # Safety
+/// `scene` is a scene of this library; `title` a zero-terminated text.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_scene_mb3d_text(scene: *const Fractal, title: *const c_char) -> *mut c_char {
+    guard(|| Ok(scene_ref(scene)?.mb3d_text(text(title, "the title")?))).map_or(std::ptr::null_mut(), owned_text)
+}
+
+/// The depth at pixel (x, y) of the scene's picture as `dof_focus` takes
+/// it, into `focus`: 0, or -1 on the background (or a failure).
+///
+/// # Safety
+/// `scene` is a scene of this library; `focus` points to a number.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_scene_pick(scene: *const Fractal, x: u32, y: u32, focus: *mut f64) -> c_int {
+    guard(|| scene_ref(scene)?.pick(x as usize, y as usize).ok_or_else(|| "the background".to_string()))
+        .map_or(-1, |(_, z)| {
+            // SAFETY: the header's contract
+            if let Some(f) = unsafe { focus.as_mut() } {
+                *f = z;
+            }
+            0
+        })
+}

@@ -156,6 +156,12 @@ char *mb3d_formula_names(void);
 char *mb3d_formula_settings(const char *name);
 /* Writes the scene as a Mandelbulb3D parameter file (.m3p); 0 or -1. */
 int mb3d_scene_save_m3p(const mb3d_scene *scene, const char *path);
+/* The parameters as Mandelbulb3D text (Mandelbulb3Dv18{...}) for the
+ * clipboard; free with mb3d_string_free. */
+char *mb3d_scene_mb3d_text(const mb3d_scene *scene, const char *title);
+/* The depth at pixel (x, y) as dof_focus takes it, into *focus: 0, or -1
+ * on the background. */
+int mb3d_scene_pick(const mb3d_scene *scene, uint32_t x, uint32_t y, double *focus);
 
 #ifdef __cplusplus
 }

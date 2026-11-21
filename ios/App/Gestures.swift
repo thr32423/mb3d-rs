@@ -4,7 +4,7 @@ import UIKit
 /// The picture's gestures, with UIKit's own recognizers (they work
 /// together as on any iPad app): one finger looks around, two fingers
 /// slide, a pinch flies forward and back, a twist rolls, a double tap goes
-/// back to the opened view.
+/// back to the opened view, a tap focuses (with depth of field on).
 struct GestureLayer: UIViewRepresentable {
     let studio: Studio
 
@@ -27,8 +27,10 @@ struct GestureLayer: UIViewRepresentable {
         let twist = UIRotationGestureRecognizer(target: c, action: #selector(Coordinator.twist(_:)))
         let reset = UITapGestureRecognizer(target: c, action: #selector(Coordinator.reset(_:)))
         reset.numberOfTapsRequired = 2
+        let focus = UITapGestureRecognizer(target: c, action: #selector(Coordinator.focus(_:)))
+        focus.require(toFail: reset)
 
-        for g in [look, slide, pinch, twist, reset] as [UIGestureRecognizer] {
+        for g in [look, slide, pinch, twist, reset, focus] as [UIGestureRecognizer] {
             g.delegate = c
             view.addGestureRecognizer(g)
         }
@@ -96,6 +98,12 @@ struct GestureLayer: UIViewRepresentable {
             let r = g.rotation
             g.rotation = 0
             studio.twist(radians: r)
+        }
+
+        @objc func focus(_ g: UITapGestureRecognizer) {
+            if g.state == .ended, let v = g.view {
+                studio.tap(at: g.location(in: v), in: v.bounds.size)
+            }
         }
 
         @objc func reset(_ g: UITapGestureRecognizer) {

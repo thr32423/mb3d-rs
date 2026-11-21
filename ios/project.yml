@@ -52,6 +52,7 @@ targets:
         OTHER_LDFLAGS: "-lmb3d -liconv -lobjc -framework Metal -framework QuartzCore -framework CoreGraphics -framework Foundation -framework CoreFoundation"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Mandelbulb3D
+        INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: "Saves your rendered pictures to Photos."
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"

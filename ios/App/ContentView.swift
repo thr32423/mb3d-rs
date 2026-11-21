@@ -34,7 +34,8 @@ struct ContentView: View {
             }
             .navigationTitle("Mandelbulb3D")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button("Paste parameters", systemImage: "doc.on.clipboard") { studio.pasteParameters() }
                     Button("Open", systemImage: "folder") { importing = true }
                 }
             }
@@ -43,6 +44,14 @@ struct ContentView: View {
                 .navigationTitle(studio.title)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
+                    ToolbarItemGroup(placement: .secondaryAction) {
+                        Button("Undo", systemImage: "arrow.uturn.backward") { studio.undo() }
+                            .disabled(!studio.canUndo)
+                            .keyboardShortcut("z", modifiers: .command)
+                        Button("Redo", systemImage: "arrow.uturn.forward") { studio.redo() }
+                            .disabled(!studio.canRedo)
+                            .keyboardShortcut("z", modifiers: [.command, .shift])
+                    }
                     ToolbarItemGroup(placement: .primaryAction) {
                         if studio.rendering {
                             Button("Stop", systemImage: "stop.fill") { studio.stop() }
@@ -59,6 +68,11 @@ struct ContentView: View {
                                 exportDoc = studio.exportDocument()
                                 exporting = exportDoc != nil
                             }
+                            Button("Save to Photos", systemImage: "photo.badge.plus") { studio.saveToPhotos() }
+                                .disabled(studio.image == nil)
+                            Divider()
+                            Button("Copy parameters", systemImage: "doc.on.doc") { studio.copyParameters() }
+                            Button("Paste parameters", systemImage: "doc.on.clipboard") { studio.pasteParameters() }
                             Divider()
                             Button("Open from Files…", systemImage: "folder") { importing = true }
                         }

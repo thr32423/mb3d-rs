@@ -77,6 +77,20 @@ final class FractalScene: @unchecked Sendable {
         if url.path.withCString({ mb3d_scene_save_m3p(ptr, $0) }) != 0 { throw EngineError(Engine.lastError()) }
     }
 
+    /// The parameters as Mandelbulb3D text (`Mandelbulb3Dv18{...}`).
+    func mb3dText(title: String) -> String? {
+        guard let t = title.withCString({ mb3d_scene_mb3d_text(ptr, $0) }) else { return nil }
+        defer { mb3d_string_free(t) }
+        return String(cString: t)
+    }
+
+    /// The depth at a pixel as `dof_focus` takes it; nil on the background.
+    func focus(x: Int, y: Int) -> Double? {
+        guard x >= 0, y >= 0 else { return nil }
+        var f = 0.0
+        return mb3d_scene_pick(ptr, UInt32(x), UInt32(y), &f) == 0 ? f : nil
+    }
+
     func copy() throws -> FractalScene {
         guard let p = mb3d_scene_copy(ptr) else { throw EngineError(Engine.lastError()) }
         return FractalScene(p)

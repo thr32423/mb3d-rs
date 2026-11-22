@@ -142,6 +142,9 @@ void mb3d_navigator_slide(mb3d_navigator *nav, double dx, double dy);
 void mb3d_navigator_fly(mb3d_navigator *nav, double percent);
 /* The field of view in degrees. */
 double mb3d_navigator_fov(const mb3d_navigator *nav);
+/* The scene's directions of the picture's right, down and depth (each of
+ * length 1) into out[9], row after row: a compass. */
+void mb3d_navigator_axes(const mb3d_navigator *nav, double *out);
 /* A new scene of the view at width x height: quick != 0 the quick one for
  * while the camera moves (simpler light), else the full one; free it with
  * mb3d_scene_free. */
@@ -166,6 +169,9 @@ int mb3d_scene_pick(const mb3d_scene *scene, uint32_t x, uint32_t y, double *foc
  * mb3d_scene_free; out[0] is the scene itself; the tree: 1, 1.1, 1.2, then
  * their children); progress as mb3d_render's. 0, or -1. */
 int mb3d_variations(const mb3d_scene *scene, uint64_t seed, mb3d_scene **out, mb3d_progress progress, void *user);
+/* The same with the changes `strength` times MutaGen's own (0.1 to 3). */
+int mb3d_variations_strength(const mb3d_scene *scene, uint64_t seed, double strength, mb3d_scene **out,
+                             mb3d_progress progress, void *user);
 
 /* Monte Carlo: soft light by random rays, pass after pass less noisy. */
 typedef struct mb3d_montecarlo mb3d_montecarlo;

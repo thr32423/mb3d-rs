@@ -183,7 +183,18 @@ impl Fractal {
     /// Julia, iterations changed), with the tree labels ("1", "1.1", ...).
     /// `seed` makes it repeatable; progress reports each member done.
     pub fn variations(&self, seed: u64, opt: &RenderOptions) -> Result<Vec<(String, Fractal)>, String> {
-        let cfg = crate::mutagen::MutationConfig::default();
+        self.variations_with(seed, 1.0, opt)
+    }
+
+    /// [`Fractal::variations`] with the changes `strength` times MutaGen's
+    /// own (0.1 to 3: the values, the Julia constant and the iterations
+    /// change that much less or more; which formulas change stays).
+    pub fn variations_with(&self, seed: u64, strength: f64, opt: &RenderOptions) -> Result<Vec<(String, Fractal)>, String> {
+        let k = if strength.is_finite() { strength.clamp(0.1, 3.0) } else { 1.0 };
+        let mut cfg = crate::mutagen::MutationConfig::default();
+        cfg.params_strength *= k;
+        cfg.julia_strength *= k;
+        cfg.iterations_strength *= k;
         let mut rng = crate::mutagen::Rng::new(seed);
         let threads = std::thread::available_parallelism().map_or(4, |n| n.get());
         let total = crate::mutagen::TREE.len();
@@ -485,6 +496,12 @@ impl Flight {
         self.nav.fov()
     }
 
+    /// The scene's directions of the picture's right, down and depth (each
+    /// of length 1), for a compass.
+    pub fn axes(&self) -> [[f64; 3]; 3] {
+        self.nav.axes()
+    }
+
     /// The quick scene for the picture while the camera moves.
     pub fn preview(&self, width: usize, height: usize) -> Fractal {
         Fractal { scene: self.nav.preview(width as i32, height as i32), notes: self.notes.clone() }
@@ -614,6 +631,17 @@ mod pick_tests {
         assert_eq!(v.len(), 15);
         assert_eq!(v[0].0, "1");
         assert!(v.iter().skip(1).any(|(_, g)| g.text() != f.text()), "the children differ");
+        let weak = f.variations_with(7, 0.1, &RenderOptions::default()).unwrap();
+        assert_eq!(weak.len(), 15);
+        assert!(weak.iter().zip(&v).any(|(a, b)| a.1.text() != b.1.text()), "the strength changes the children");
+        let mut cam = f.flight();
+        let a = cam.axes();
+        for row in a {
+            let n = (row[0] * row[0] + row[1] * row[1] + row[2] * row[2]).sqrt();
+            assert!((n - 1.0).abs() < 1e-9, "{a:?}");
+        }
+        cam.turn(0.0, 30.0, 0.0);
+        assert!(cam.axes() != a, "a turn moves the compass");
         let mut mc = f.monte_carlo();
         mc.pass(&RenderOptions::default()).unwrap();
         mc.pass(&RenderOptions::default()).unwrap();

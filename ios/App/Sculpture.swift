@@ -148,7 +148,8 @@ final class Mesh: @unchecked Sendable {
 struct SculptureView: View {
     let studio: Studio
     @Bindable var sculptor: Sculptor
-    @Environment(\.dismiss) private var dismiss
+    /// (in the panel beside the picture)
+    let close: () -> Void
     @State private var preview: URL?
 
     var body: some View {
@@ -204,7 +205,7 @@ struct SculptureView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Close", systemImage: "xmark", action: close)
                 }
             }
             .quickLookPreview($preview)

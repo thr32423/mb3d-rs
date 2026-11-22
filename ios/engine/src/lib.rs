@@ -497,6 +497,24 @@ pub unsafe extern "C" fn mb3d_navigator_fov(nav: *const Flight) -> f64 {
     unsafe { nav.as_ref() }.map_or(0.0, |f| f.fov())
 }
 
+/// The scene's directions of the picture's right, down and depth (each of
+/// length 1) into out[9], row after row: a compass.
+///
+/// # Safety
+/// `nav` is a navigator of this library; `out` points to 9 numbers.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_navigator_axes(nav: *const Flight, out: *mut f64) {
+    // SAFETY: as flight_mut
+    let Some(f) = (unsafe { nav.as_ref() }) else { return };
+    if out.is_null() {
+        return;
+    }
+    for (i, v) in f.axes().iter().flatten().enumerate() {
+        // SAFETY: `out` holds 9 numbers (the header's contract)
+        unsafe { *out.add(i) = *v };
+    }
+}
+
 /// A new scene of the view: quick != 0 the quick one while moving, else
 /// the full one; free it with mb3d_scene_free.
 ///
@@ -594,6 +612,24 @@ pub unsafe extern "C" fn mb3d_variations(
     progress: Mb3dProgress,
     user: *mut c_void,
 ) -> c_int {
+    // SAFETY: the same contract
+    unsafe { mb3d_variations_strength(scene, seed, 1.0, out, progress, user) }
+}
+
+/// mb3d_variations with the changes `strength` times MutaGen's own (0.1
+/// to 3).
+///
+/// # Safety
+/// `scene` is a scene of this library; `out` points to 15 pointers.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_variations_strength(
+    scene: *const Fractal,
+    seed: u64,
+    strength: f64,
+    out: *mut *mut Fractal,
+    progress: Mb3dProgress,
+    user: *mut c_void,
+) -> c_int {
     guard(|| {
         let f = scene_ref(scene)?;
         if out.is_null() {
@@ -609,7 +645,7 @@ pub unsafe extern "C" fn mb3d_variations(
             }
         };
         let cancel = || stop.load(Ordering::SeqCst);
-        let v = f.variations(seed, &RenderOptions { progress: Some(&report), cancel: Some(&cancel) })?;
+        let v = f.variations_with(seed, strength, &RenderOptions { progress: Some(&report), cancel: Some(&cancel) })?;
         for (i, (_, g)) in v.into_iter().take(15).enumerate() {
             // SAFETY: `out` holds 15 pointers (the header's contract)
             unsafe { *out.add(i) = Box::into_raw(Box::new(g)) };

@@ -44,6 +44,33 @@ final class Studio {
     @ObservationIgnored private var dirty = false
     /// A finger is on the picture.
     @ObservationIgnored private var moving = false
+    /// A setting is being changed (a slider held, a colour chosen): quick
+    /// pictures of the settings as edited follow it until `commit`.
+    @ObservationIgnored private var previewing = false
+    @ObservationIgnored private var peekNext: FractalScene?
+
+    /// The value a finger is changing right now: the panels fade and the
+    /// picture shows only its name and number.
+    struct Adjusting {
+        var title: LocalizedStringKey
+        var value: String
+        /// its place 0...1 on a slider (nil for a free number)
+        var fraction: Double?
+    }
+    var adjusting: Adjusting? {
+        didSet {
+            // (a control that never reports its end must not leave the
+            // panels faded: they come back after a few seconds of rest)
+            fading?.cancel()
+            guard adjusting != nil else { return }
+            fading = Task { [weak self] in
+                try? await Task.sleep(for: .seconds(4))
+                guard !Task.isCancelled else { return }
+                self?.adjusting = nil
+            }
+        }
+    }
+    @ObservationIgnored private var fading: Task<Void, Never>?
 
     /// The longest side of a full render (Quality; `0` the file's size).
     var renderSide = 1024 {
@@ -59,6 +86,174 @@ final class Studio {
 
     var rendering: Bool { job != nil }
 
+    // MARK: the interface
+
+    /// What the panel beside the picture shows.
+    enum Panel: Hashable {
+        case settings(SettingsPage)
+        case animation
+        case model
+    }
+
+    /// (`-page NAME` opens a settings group at the start: the build
+    /// machine's screenshots of the interface)
+    var panel: Panel? = Tour.page.map(Panel.settings)
+    var showScenes = false
+    var breeding = false
+    var showHelp = false
+    /// Nothing but the picture (the Pencil's double tap, Picture only).
+    var pictureOnly = false
+    /// The fingers look at the finished picture (zoom, move) and leave
+    /// the camera alone.
+    var inspecting = false
+    /// A finger rests on the picture: the first picture since the scene
+    /// was opened shows, to compare.
+    var comparing = false
+    /// Where the Pencil or the pointer hovers over the picture.
+    var hover: CGPoint?
+    /// The picture shown is a quick small one.
+    var showsPreview = false
+    /// Counts the full pictures finished and the focus set (for the taps
+    /// one feels).
+    var finishedCount = 0
+    var focusCount = 0
+    /// The first full picture since the scene was opened.
+    var before: CGImage?
+
+    /// The scene's directions of the picture's right, down and depth (the
+    /// compass on the picture), following the camera.
+    var axes: [Double] = [1, 0, 0, 0, 1, 0, 0, 0, 1]
+    /// When the render's stage running began, for the time left.
+    @ObservationIgnored private var stageBegan = Date()
+    @ObservationIgnored private var stageName = ""
+
+    /// About how long the stage running still takes (from its part done;
+    /// nil while that is too little to tell).
+    var timeLeft: Double? {
+        guard busy, let p = progress, p > 0.05, p < 1 else { return nil }
+        let spent = Date().timeIntervalSince(stageBegan)
+        guard spent > 1.5 else { return nil }
+        return spent * (1 - p) / p
+    }
+
+    /// A formula of the hybrid dragged onto the place of another.
+    func placeFormula(_ id: Int, at target: Int) -> Int {
+        let f = doc.formulas
+        guard let i = f.firstIndex(where: { $0.id == id }), let j = f.firstIndex(where: { $0.id == target }), i != j
+        else { return id }
+        var entries = f.map(\.entries)
+        let moved = entries.remove(at: i)
+        entries.insert(moved, at: j)
+        for (k, e) in entries.enumerated() {
+            var s = f[k]
+            s.entries = e
+            doc.update(s)
+        }
+        commit()
+        return f[j].id
+    }
+
+    /// The scene's text with another formula in a section (its default
+    /// values), for the formula list's small pictures.
+    func text(with name: String, in id: Int) -> String? {
+        var d = doc
+        guard var sec = d.sections.first(where: { $0.id == id }) else { return nil }
+        let its = sec["iterations"] ?? "1"
+        sec.entries = [.init(key: "name", value: name), .init(key: "iterations", value: its)]
+            + Engine.formulaSettings(name).filter { $0.key != "iterations" }.map { .init(key: $0.key, value: $0.value) }
+        d.update(sec)
+        return d.text
+    }
+
+    /// A view kept to come back to (until another scene is opened).
+    struct SavedView: Identifiable {
+        let id = UUID()
+        var number: Int
+        var text: String
+    }
+    var views: [SavedView] = []
+
+    func keepView() {
+        guard let scene else { return }
+        views.append(SavedView(number: (views.map(\.number).max() ?? 0) + 1, text: scene.text))
+    }
+
+    /// The scene of `text` (a kept view, a keyframe) becomes the view.
+    func go(to text: String) {
+        guard scene != nil, let s = try? FractalScene(text: text) else { return }
+        remember()
+        fitToRender(s)
+        take(s)
+        render()
+    }
+
+    /// The scenes opened last (newest first), of those still there.
+    var recents: [URL] {
+        let all = myScenes + examples
+        return recentNames.compactMap { n in all.first { $0.lastPathComponent == n } }
+    }
+    private var recentNames: [String] = UserDefaults.standard.stringArray(forKey: "recent") ?? []
+
+    private func noteRecent(_ url: URL) {
+        var r = recentNames.filter { $0 != url.lastPathComponent }
+        r.insert(url.lastPathComponent, at: 0)
+        recentNames = Array(r.prefix(6))
+        UserDefaults.standard.set(recentNames, forKey: "recent")
+    }
+
+    /// A settings group has something switched on (a dot on the rail).
+    func isActive(_ p: SettingsPage) -> Bool {
+        func on(_ key: String) -> Bool {
+            guard let v = doc[key]?.lowercased() else { return false }
+            return !["off", "none", "false", "no"].contains(v)
+        }
+        switch p {
+        case .julia: return doc["julia"] == "true" || on("cut_x") || on("cut_y") || on("cut_z")
+        case .fog: return !backgroundName.isEmpty || (doc.number("depth_fog") ?? 0) > 0 || (doc.number("dyn_fog") ?? 53) != 53
+        case .effects: return on("dof") || on("shadows") || on("ao") || doc["mc_reflections"] == "true"
+        case .finishing: return on("droste") || (doc.number("finish_exposure") ?? 0) != 0 || on("finish_tonemap")
+            || (doc.component("glow", 0) ?? 0) > 0 || (doc.number("vignette") ?? 0) > 0
+        case .ground: return on("ground") || on("clouds")
+        default: return false
+        }
+    }
+
+    /// A formula one place earlier (`by` -1) or later in the hybrid; gives
+    /// the section it is in now.
+    func moveFormula(_ id: Int, by: Int) -> Int {
+        let f = doc.formulas
+        guard let i = f.firstIndex(where: { $0.id == id }), f.indices.contains(i + by) else { return id }
+        var (a, b) = (f[i], f[i + by])
+        (a.entries, b.entries) = (b.entries, a.entries)
+        doc.update(a)
+        doc.update(b)
+        commit()
+        return b.id
+    }
+
+    /// A copy of one of the user's scenes beside it.
+    func duplicate(_ url: URL) {
+        let dest = Library.freeName(url.deletingPathExtension().lastPathComponent, url.pathExtension)
+        try? FileManager.default.copyItem(at: url, to: dest)
+        myScenes = Library.scenes()
+    }
+
+    func rename(_ url: URL, to name: String) {
+        let clean = name.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "/", with: "-")
+        guard !clean.isEmpty, clean != url.deletingPathExtension().lastPathComponent else { return }
+        let dest = Library.freeName(clean, url.pathExtension)
+        do {
+            try FileManager.default.moveItem(at: url, to: dest)
+            myScenes = Library.scenes()
+            if selected == url { selected = dest }
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+    /// A full picture is being rendered (not the quick ones that follow a
+    /// finger).
+    var busy: Bool { job != nil && !jobQuick }
+
     func open(_ url: URL) {
         selected = url
         error = nil
@@ -69,6 +264,10 @@ final class Studio {
             pictureURL = nil
             history = []
             future = []
+            before = nil
+            views = []
+            inspecting = false
+            noteRecent(url)
             fitToRender(s)
             opened = try s.copy()
             take(s)
@@ -84,6 +283,7 @@ final class Studio {
     private func take(_ s: FractalScene) {
         scene = s
         navigator = try? Navigator(s)
+        if let navigator { axes = navigator.axes }
         doc = SceneText(s.text)
         canUndo = !history.isEmpty
         canRedo = !future.isEmpty
@@ -257,6 +457,7 @@ final class Studio {
     func commit() {
         pending?.cancel()
         pending = nil
+        previewing = false
         guard scene != nil else { return }
         do {
             let s = try FractalScene(text: doc.text)
@@ -271,12 +472,56 @@ final class Studio {
 
     /// `commit` a moment after the last of quick changes (a colour wheel).
     func commitSoon() {
+        previewSettings()
         pending?.cancel()
         pending = Task { [weak self] in
             try? await Task.sleep(for: .milliseconds(500))
             guard !Task.isCancelled else { return }
             self?.commit()
         }
+    }
+
+    /// A quick small picture of the settings as edited so far (the scene
+    /// itself changes with `commit`): one at a time, the newest values.
+    func previewSettings() {
+        guard scene != nil, !moving else { return }
+        previewing = true
+        dirty = true
+        if job == nil || !jobQuick {
+            renderPreview()
+        }
+    }
+
+    /// A quick picture of another scene (a frame of the animation while
+    /// its strip is scrubbed), the newest asked for; `endPeek` brings the
+    /// view's own picture back.
+    func peek(_ s: FractalScene) {
+        guard scene != nil, !moving else { return }
+        let (w, h) = s.size
+        let k = min(1, Double(quickSide) / Double(max(w, h, 1)))
+        s.resize(width: max(16, Int(Double(w) * k)), height: max(16, Int(Double(h) * k)))
+        previewing = true
+        if job != nil && jobQuick {
+            peekNext = s
+        } else {
+            start(s, quick: true)
+        }
+    }
+
+    func endPeek() {
+        peekNext = nil
+        previewing = false
+        dirty = false
+        render()
+    }
+
+    private func renderPreview() {
+        guard let scene, let s = try? FractalScene(text: doc.text) else { return }
+        let (w, h) = scene.size
+        let k = min(1, Double(quickSide) / Double(max(w, h, 1)))
+        s.resize(width: max(16, Int(Double(w) * k)), height: max(16, Int(Double(h) * k)))
+        dirty = false
+        start(s, quick: true)
     }
 
     /// A global number (`whole`: written without decimals).
@@ -595,6 +840,19 @@ final class Studio {
         doc["palette_full"] = s.map { "\($0.position):\($0.diffuse):\($0.specular)" }.joined(separator: ", ")
     }
 
+    /// A stop dragged along the palette: kept between its neighbours.
+    func moveStop(_ id: Int, to position: Int, limit: Int) {
+        var all = stops
+        guard let i = all.firstIndex(where: { $0.id == id }) else { return }
+        let low = i > 0 ? all[i - 1].position : 0
+        let high = i + 1 < all.count ? all[i + 1].position : max(limit, low)
+        let p = min(max(position, low), max(high, low))
+        guard p != all[i].position else { return }
+        all[i].position = p
+        setStops(all)
+        previewSettings()
+    }
+
     func stopColor(_ id: Int, specular: Bool) -> Binding<CGColor> {
         Binding(
             get: {
@@ -634,6 +892,7 @@ final class Studio {
         doc["dof_focus"] = String(z)
         commit()
         status = String(localized: "Focus set")
+        focusCount += 1
     }
 
     /// The parameters as Mandelbulb3D text on the clipboard.
@@ -761,6 +1020,26 @@ final class Studio {
         }
     }
 
+    /// A double tap at `point` of a view `size` big: the camera turns to
+    /// what is there and flies half the way to it.
+    func flyTo(_ point: CGPoint, in size: CGSize) {
+        guard let navigator, let scene else { return }
+        let (w, h) = scene.size
+        let k = min(size.width / Double(w), size.height / Double(h))
+        guard k > 0 else { return }
+        remember()
+        // (as a drag that brings the point to the middle)
+        let d = navigator.fov / (Double(h) * k)
+        navigator.turn(pitch: (point.y - size.height / 2) * d, yaw: -(point.x - size.width / 2) * d, roll: 0)
+        navigator.fly(percent: 50)
+        axes = navigator.axes
+        if let s = try? navigator.scene(quick: false, width: w, height: h) {
+            self.scene = s
+            doc = SceneText(s.text)
+        }
+        render()
+    }
+
     /// Back to the view of the file as it was opened.
     func resetView() {
         guard let opened, let s = try? opened.copy() else { return }
@@ -772,6 +1051,8 @@ final class Studio {
     private func moved() {
         if !moving { remember() }
         moving = true
+        previewing = false
+        if let navigator { axes = navigator.axes }
         dirty = true
         if job == nil || !jobQuick {
             renderQuick()
@@ -800,6 +1081,10 @@ final class Studio {
         let job = RenderJob { stage, part in
             Task { @MainActor [weak self] in
                 guard let self, self.job != nil, !self.jobQuick else { return }
+                if stage != self.stageName {
+                    self.stageName = stage
+                    self.stageBegan = Date()
+                }
                 self.status = stage
                 self.progress = part
             }
@@ -807,6 +1092,8 @@ final class Studio {
         self.job = job
         jobQuick = quick
         if !quick {
+            stageName = ""
+            stageBegan = Date()
             progress = 0
             status = String(localized: "Starting")
         } else {
@@ -828,8 +1115,11 @@ final class Studio {
         switch result {
         case .success(let r):
             image = r.image
-            status = wasQuick ? "" : String(format: "%.2f s", r.seconds)
+            showsPreview = wasQuick
+            status = wasQuick ? "" : "\(r.image.width) × \(r.image.height) · " + String(format: "%.2f s", r.seconds)
             if !wasQuick {
+                if before == nil { before = r.image }
+                finishedCount += 1
                 Snapshots.save(r.image)
                 let url = FileManager.default.temporaryDirectory.appendingPathComponent(title).appendingPathExtension("png")
                 pictureURL = PNG.write(r.image, to: url) ? url : nil
@@ -841,9 +1131,12 @@ final class Studio {
         if wasQuick {
             // the newest view while moving, the full picture once the
             // fingers are up
-            if dirty {
-                renderQuick()
-            } else if !moving {
+            if let next = peekNext {
+                peekNext = nil
+                start(next, quick: true)
+            } else if dirty {
+                if previewing { renderPreview() } else { renderQuick() }
+            } else if !moving && !previewing {
                 render()
             }
         }

@@ -5,7 +5,7 @@ is linked as a static library (`engine/`, the C functions of
 `engine/include/mb3d.h`, the same as mb3d-bindings' libmb3d). It is built
 without JIT (iOS does not allow code made at run time) and without OIDN.
 
-- `App/`: the SwiftUI app (examples list, picture, settings inspector)
+- `App/`: the SwiftUI app (the picture over the whole screen, the settings' groups on a rail with a panel beside it, the scenes in a sheet)
 - `engine/`: the engine as `libmb3d.a` for the iPad and the Simulator
 - `project.yml`: the Xcode project, made by XcodeGen
 - `build.sh DATA`: builds the engine, copies the formula, map and example

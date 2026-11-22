@@ -3,7 +3,8 @@ import CoreGraphics
 import UIKit
 import SwiftUI
 
-/// The Animation window: keyframes taken from the views (or a turntable
+/// The animation (in the panel beside the picture, its keyframes also in
+/// a strip under the picture): keyframes taken from the views (or a turntable
 /// around the object), the frames between them interpolated, rendered into
 /// an MP4 video with the iPad's own encoder.
 @MainActor
@@ -238,7 +239,8 @@ final class VideoWriter: @unchecked Sendable {
 struct AnimationView: View {
     let studio: Studio
     @Bindable var director: Director
-    @Environment(\.dismiss) private var dismiss
+    /// (in the panel beside the picture)
+    let close: () -> Void
     /// (the screenshot tour's `-sheet curves` opens them at once)
     @State private var showCurves = Tour.sheet == "curves"
 
@@ -353,7 +355,7 @@ struct AnimationView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Close", systemImage: "xmark", action: close)
                 }
                 if !director.turntable {
                     ToolbarItem(placement: .primaryAction) { EditButton() }
@@ -368,5 +370,93 @@ struct AnimationView: View {
                 Text(director.error ?? "")
             }
         }
+    }
+}
+
+/// The keyframes under the picture while the animation's panel is open:
+/// a tap goes to a keyframe's view, the plus takes the view as the next
+/// keyframe (the camera stays free meanwhile), and the slider runs through
+/// the frames in quick small pictures.
+struct KeyframeStrip: View {
+    let studio: Studio
+    @Bindable var director: Director
+    @State private var film: Film?
+    @State private var frame = 0.0
+    @State private var showCurves = false
+
+    var body: some View {
+        VStack(spacing: 6) {
+            if director.keys.count > 1 {
+                HStack(spacing: 10) {
+                    Slider(value: $frame, in: 0...Double(max(director.frameCount - 1, 1)), step: 1) { editing in
+                        if editing {
+                            film = try? director.film()
+                        } else {
+                            film = nil
+                            studio.endPeek()
+                        }
+                    }
+                    Text(verbatim: "\(Int(frame) + 1) / \(director.frameCount)")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .frame(minWidth: 64, alignment: .trailing)
+                    Button("Curves", systemImage: "chart.xyaxis.line") { showCurves = true }
+                        .labelStyle(.iconOnly)
+                        .popover(isPresented: $showCurves) {
+                            NavigationStack {
+                                CurvesView(director: director)
+                                    .navigationTitle("Curves")
+                                    .navigationBarTitleDisplayMode(.inline)
+                            }
+                            .frame(minWidth: 440, minHeight: 560)
+                        }
+                }
+                .onChange(of: frame) {
+                    if let film, let s = try? film.frame(Int(frame)) { studio.peek(s) }
+                }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(Array(director.keys.enumerated()), id: \.element.id) { i, key in
+                        Button { studio.go(to: key.text) } label: {
+                            ZStack(alignment: .bottomLeading) {
+                                Color.black
+                                if let t = key.thumbnail {
+                                    Image(decorative: t, scale: 1).resizable().aspectRatio(contentMode: .fill)
+                                }
+                                Text(verbatim: "\(i + 1)")
+                                    .font(.caption2.monospacedDigit().weight(.semibold))
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(.regularMaterial, in: Capsule())
+                                    .padding(3)
+                            }
+                            .frame(width: 84, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                director.remove(at: IndexSet(integer: i))
+                            }
+                        }
+                        .accessibilityLabel("Keyframe \(i + 1)")
+                    }
+                    Button {
+                        if let s = studio.currentScene { director.add(s, thumbnail: studio.image) }
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.title3)
+                            .frame(width: 56, height: 56)
+                            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .foregroundStyle(Color.white)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Add the view as a keyframe")
+                }
+            }
+        }
+        .padding(8)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }

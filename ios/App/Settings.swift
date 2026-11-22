@@ -2,74 +2,16 @@ import CoreGraphics
 import PhotosUI
 import SwiftUI
 
-/// The inspector: the scene's settings on pages, as the desktop groups
-/// them (main window tabs, Formulas, Lighting, Post-process). A slider
-/// renders again when the finger lifts, a colour, a switch or a choice a
-/// moment after the last change, a number when it is entered.
-struct SettingsView: View {
-    @Bindable var studio: Studio
-    /// the page shown (`-page NAME` opens one at the start: the build
-    /// machine's screenshots of the interface)
-    @State private var path: [Page] = []
+/// The groups of settings, as the desktop groups them (main window tabs,
+/// Formulas, Lighting, Post-process): the icons of the rail beside the
+/// picture.
+enum SettingsPage: String, Hashable, CaseIterable, Identifiable {
+    case picture, fractal, formulas, julia, lighting, colours, fog, effects, finishing, ground
 
-    enum Page: String, Hashable, CaseIterable {
-        case picture, fractal, formulas, julia, lighting, colours, fog, effects, finishing, ground
-    }
+    var id: String { rawValue }
 
-    var body: some View {
-        NavigationStack(path: $path) {
-            List {
-                Section {
-                    link(.picture, "Picture", "photo")
-                    link(.fractal, "Fractal", "cube")
-                    link(.formulas, "Formulas", "function")
-                    link(.julia, "Julia and cutting", "scissors")
-                }
-                Section {
-                    link(.lighting, "Lighting", "lightbulb")
-                    link(.colours, "Colours", "paintpalette")
-                    link(.fog, "Background and fog", "cloud.fog")
-                }
-                Section {
-                    link(.effects, "Effects", "sparkles")
-                    link(.finishing, "Finishing", "camera.filters")
-                    link(.ground, "Ground, water and clouds", "water.waves")
-                }
-                Section {
-                    Button("Copy parameters", systemImage: "doc.on.doc") { studio.copyParameters() }
-                    Button("Paste parameters", systemImage: "doc.on.clipboard") { studio.pasteParameters() }
-                } footer: {
-                    Text("Mandelbulb3D text, as on the forums and in the desktop program.")
-                }
-                Section {
-                    LabeledContent("Engine", value: Engine.version)
-                }
-            }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(for: Page.self) { p in
-                destination(p).navigationTitle(title(p)).navigationBarTitleDisplayMode(.inline)
-            }
-        }
-        .disabled(studio.selected == nil)
-        .task(id: studio.selected) {
-            // (pushed once the inspector is up and a scene is open: a path
-            // set before is not shown, and the list is disabled without a
-            // scene; a fixed wait missed the fog page once)
-            guard let p = Tour.page, studio.selected != nil, path.isEmpty else { return }
-            try? await Task.sleep(for: .seconds(1.5))
-            if path.isEmpty { path = [p] }
-        }
-    }
-
-    private func link(_ p: Page, _ title: LocalizedStringKey, _ icon: String) -> some View {
-        NavigationLink(value: p) {
-            Label(title, systemImage: icon)
-        }
-    }
-
-    private func title(_ p: Page) -> LocalizedStringKey {
-        switch p {
+    var title: LocalizedStringKey {
+        switch self {
         case .picture: "Picture"
         case .fractal: "Fractal"
         case .formulas: "Formulas"
@@ -83,9 +25,50 @@ struct SettingsView: View {
         }
     }
 
+    var icon: String {
+        switch self {
+        case .picture: "photo"
+        case .fractal: "cube"
+        case .formulas: "function"
+        case .julia: "scissors"
+        case .lighting: "lightbulb"
+        case .colours: "paintpalette"
+        case .fog: "cloud.fog"
+        case .effects: "sparkles"
+        case .finishing: "camera.filters"
+        case .ground: "water.waves"
+        }
+    }
+}
+
+/// One group's settings in the panel that floats beside the picture. While
+/// a slider or a number is held, quick small pictures follow it and the
+/// full one comes when the finger lifts; a colour, a switch or a choice
+/// shows quickly at once and in full a moment after the last change.
+struct SettingsPanel: View {
+    let studio: Studio
+    let page: SettingsPage
+    let close: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            content
+                .navigationTitle(page.title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Close", systemImage: "xmark", action: close)
+                    }
+                }
+        }
+        .id(page)
+        .environment(studio)
+        .disabled(studio.selected == nil)
+    }
+
     @ViewBuilder
-    private func destination(_ p: Page) -> some View {
-        switch p {
+    private var content: some View {
+        switch page {
         case .picture: PicturePage(studio: studio)
         case .fractal: FractalPage(studio: studio)
         case .formulas: FormulasPage(studio: studio)
@@ -109,7 +92,7 @@ enum Tour {
         return a[i + 1]
     }
 
-    static let page = argument("-page").flatMap(SettingsView.Page.init(rawValue:))
+    static let page = argument("-page").flatMap(SettingsPage.init(rawValue:))
     static let sheet = argument("-sheet")
 }
 
@@ -156,10 +139,6 @@ struct PicturePage: View {
                     Text("Panorama").tag("2")
                     Text("Fisheye").tag("3")
                 }
-            }
-            Section {
-                Button("Save to Photos", systemImage: "photo.badge.plus") { studio.saveToPhotos() }
-                    .disabled(studio.image == nil)
             }
             Section {
                 Button("Render a stereo pair", systemImage: "eyeglasses") { studio.renderStereoPair() }
@@ -217,15 +196,19 @@ struct FractalPage: View {
 struct FormulasPage: View {
     let studio: Studio
     @State private var importing = false
+    /// the card whose values show (a section of the scene's text)
+    @State private var chosen: Int?
 
     var body: some View {
         Form {
-            ForEach(studio.doc.formulas) { f in
+            Section {
+                FormulaCards(studio: studio, chosen: $chosen)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+            }
+            if let f = studio.doc.formulas.first(where: { $0.id == chosen }) ?? studio.doc.formulas.first {
                 FormulaSection(studio: studio, section: f)
             }
             Section {
-                Button("Add a formula", systemImage: "plus") { studio.addFormula() }
-                    .disabled(studio.doc.formulas.count >= 6)
                 LabeledSlider(title: "Repeat from formula", value: studio.repeatFrom(),
                               range: 1...Double(max(studio.doc.formulas.count, 2)), format: "%.0f",
                               done: studio.commit)
@@ -259,13 +242,12 @@ struct JuliaPage: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Julia mode", isOn: studio.flag("julia"))
                 ForEach(0..<4) { i in
                     NumberField(title: LocalizedStringKey(stringLiteral: ["x", "y", "z", "w"][i]), value: studio.component("julia_c", i, [0, 0, 0, 0]),
                                 done: studio.commit)
                 }
             } header: {
-                Text("Julia")
+                Toggle("Julia", isOn: studio.flag("julia"))
             } footer: {
                 Text("A Julia set takes this constant in place of each point's own.")
             }
@@ -301,7 +283,8 @@ struct LightingPage: View {
                               range: 0...255, format: "%.0f", done: studio.commit)
                 LabeledSlider(title: "Gamma", value: studio.number("gamma", 32, whole: true), range: 0...100,
                               format: "%.0f", done: studio.commit)
-                NumberField(title: "Roughness", value: studio.number("roughness", 255, whole: true), done: studio.commit)
+                NumberField(title: "Roughness", value: studio.number("roughness", 255, whole: true), whole: true,
+                            done: studio.commit)
                 ColorPicker("Ambient from above", selection: studio.color("ambient_top"), supportsOpacity: false)
                 ColorPicker("Ambient from below", selection: studio.color("ambient_bottom"), supportsOpacity: false)
             }
@@ -322,16 +305,7 @@ struct ColoursPage: View {
     var body: some View {
         Form {
             Section("Palette") {
-                ForEach(studio.stops) { s in
-                    HStack {
-                        Text("Colour \(s.id + 1)")
-                        Spacer()
-                        ColorPicker("Diffuse", selection: studio.stopColor(s.id, specular: false), supportsOpacity: false)
-                            .labelsHidden()
-                        ColorPicker("Specular", selection: studio.stopColor(s.id, specular: true), supportsOpacity: false)
-                            .labelsHidden()
-                    }
-                }
+                PaletteStrip(studio: studio)
             }
             Section {
                 NumberField(title: "Colour start", value: studio.number("color_start", 0), done: studio.commit)
@@ -445,14 +419,13 @@ struct EffectsPage: View {
                 Toggle("Transparency", isOn: studio.flag("mc_transparency"))
             }
             Section {
-                Toggle("Depth of field", isOn: studio.effect("dof", on: "sorted"))
                 if studio.effect("dof", on: "sorted").wrappedValue {
                     NumberField(title: "Focus", value: studio.number("dof_focus", 1), done: studio.commit)
                     LabeledSlider(title: "Aperture", value: studio.number("dof_aperture", 0.1), range: 0.001...2,
                                   logarithmic: true, format: "%.3f", done: studio.commit)
                 }
             } header: {
-                Text("Depth of field")
+                Toggle("Depth of field", isOn: studio.effect("dof", on: "sorted"))
             } footer: {
                 Text("Tap the picture to focus on what is there.")
             }
@@ -521,7 +494,6 @@ struct FinishingPage: View {
                               format: "%.2f", done: studio.commit)
             }
             Section {
-                Toggle("Droste effect", isOn: studio.effect("droste", on: "0.5, 0.5, 0.12, 0.45"))
                 if studio.effect("droste", on: "0.5, 0.5, 0.12, 0.45").wrappedValue {
                     LabeledSlider(title: "Centre across", value: studio.component("droste", 0, [0.5, 0.5, 0.12, 0.45]), range: 0...1,
                                   format: "%.2f", done: studio.commit)
@@ -539,7 +511,7 @@ struct FinishingPage: View {
                                   format: "%.2f", done: studio.commit)
                 }
             } header: {
-                Text("Droste")
+                Toggle("Droste", isOn: studio.effect("droste", on: "0.5, 0.5, 0.12, 0.45"))
             } footer: {
                 Text("The picture inside itself, again and again: the ring between the radii repeats inwards.")
             }
@@ -554,7 +526,6 @@ struct GroundPage: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Ground plane", isOn: studio.effect("ground", on: "y, 1.2"))
                 if studio.effect("ground", on: "y, 1.2").wrappedValue {
                     Picker("Axis", selection: studio.groundAxis()) {
                         Text("x").tag("x")
@@ -578,12 +549,11 @@ struct GroundPage: View {
                                   range: 0...1, format: "%.2f", done: studio.commit)
                 }
             } header: {
-                Text("Ground and water")
+                Toggle("Ground and water", isOn: studio.effect("ground", on: "y, 1.2"))
             } footer: {
                 Text("Down the screen is +y in most views: try both signs. Water shows with reflections on.")
             }
             Section {
-                Toggle("Clouds", isOn: studio.effect("clouds", on: "y, -1.2, -2.2"))
                 if studio.effect("clouds", on: "y, -1.2, -2.2").wrappedValue {
                     NumberField(title: "Layer from", value: studio.cloudHeight(0), done: studio.commit)
                     NumberField(title: "Layer to", value: studio.cloudHeight(1), done: studio.commit)
@@ -595,7 +565,7 @@ struct GroundPage: View {
                     ColorPicker("Colour", selection: studio.color("cloud_color"), supportsOpacity: false)
                 }
             } header: {
-                Text("Clouds")
+                Toggle("Clouds", isOn: studio.effect("clouds", on: "y, -1.2, -2.2"))
             } footer: {
                 Text("Painted over the picture; −y is up in most views.")
             }
@@ -611,18 +581,29 @@ struct FormulaSection: View {
     let studio: Studio
     let section: SceneText.Section
 
+    /// the formula's own values (a double tap on a number goes back to it)
+    private var defaults: [String: Double] {
+        var d: [String: Double] = [:]
+        for s in Engine.formulaSettings(section["name"] ?? "") { d[s.key] = Double(s.value) }
+        return d
+    }
+
     var body: some View {
+        let defaults = self.defaults
         Section {
-            Picker("Formula", selection: Binding(
-                get: { section["name"] ?? "" },
-                set: { studio.changeFormula(section.id, to: $0) }
-            )) {
-                ForEach(studio.formulaNames(including: section["name"]), id: \.self) { Text($0).tag($0) }
+            NavigationLink {
+                FormulaPicker(names: studio.formulaNames(including: section["name"]), current: section["name"] ?? "",
+                              own: studio.ownFormulas, preview: { studio.text(with: $0, in: section.id) }) {
+                    studio.changeFormula(section.id, to: $0)
+                }
+            } label: {
+                LabeledContent("Formula", value: section["name"] ?? "")
             }
-            .pickerStyle(.navigationLink)
             ForEach(section.entries.filter { $0.key != "name" }, id: \.key) { e in
                 NumberField(title: e.key == "iterations" ? "Iterations" : LocalizedStringKey(stringLiteral: e.key),
                             value: studio.sectionNumber(section.id, e.key),
+                            whole: e.key == "iterations",
+                            reset: e.key == "iterations" ? nil : defaults[e.key],
                             done: studio.commit)
             }
             if studio.doc.formulas.count > 1 {
@@ -650,10 +631,9 @@ struct LightSection: View {
             LabeledSlider(title: "Strength", value: studio.sectionNumber(section.id, "amplitude"), range: 0...4,
                           format: "%.2f", done: studio.commit)
             if section["position"] == nil {
-                LabeledSlider(title: "From the side", value: studio.sectionNumber(section.id, "x_angle"),
-                              range: -180...180, format: "%.0f°", done: studio.commit)
-                LabeledSlider(title: "From above", value: studio.sectionNumber(section.id, "y_angle"),
-                              range: -180...180, format: "%.0f°", done: studio.commit)
+                LightBall(side: studio.sectionNumber(section.id, "x_angle"),
+                          above: studio.sectionNumber(section.id, "y_angle"),
+                          colour: studio.sectionColor(section.id, "color").wrappedValue, done: studio.commit)
             }
             Picker("Highlight", selection: studio.sectionChoice(section.id, "spec_power", "8")) {
                 ForEach(["2", "4", "8", "16", "32", "64", "128", "256"], id: \.self) { Text("Size \($0)").tag($0) }
@@ -674,25 +654,124 @@ struct LightSection: View {
     }
 }
 
-/// A number typed in (with the number keyboard), applied when entered.
+/// A number changed by dragging it: left and right over the value, finer
+/// the further the finger moves away up or down (a tenth past 50 points, a
+/// hundredth past 120). A tap types it in, a double tap goes back to
+/// `reset` (a formula value's default).
 struct NumberField: View {
     let title: LocalizedStringKey
     @Binding var value: Double
+    /// counts in whole steps (iterations)
+    var whole = false
+    var reset: Double?
     let done: () -> Void
+
+    @Environment(Studio.self) private var studio: Studio?
+    @GestureState private var dragging = false
+    /// the value under the finger before rounding, and the finger's last x
+    @State private var held: Double?
+    @State private var lastX: CGFloat = 0
+    @State private var unit = 0.0
+    @State private var typing = false
+    @State private var typed = 0.0
+    @FocusState private var focused: Bool
 
     var body: some View {
         LabeledContent(title) {
-            TextField(title, value: $value, format: .number.precision(.significantDigits(1...10)))
-                .keyboardType(.numbersAndPunctuation)
-                .multilineTextAlignment(.trailing)
-                .monospacedDigit()
-                .frame(maxWidth: 110)
-                .onSubmit(done)
+            if typing {
+                TextField(title, value: $typed, format: .number.precision(.significantDigits(1...10)))
+                    .keyboardType(.numbersAndPunctuation)
+                    .multilineTextAlignment(.trailing)
+                    .monospacedDigit()
+                    .frame(maxWidth: 110)
+                    .focused($focused)
+                    .onAppear { focused = true }
+                    .onSubmit {
+                        value = typed
+                        typing = false
+                        done()
+                    }
+                    .onChange(of: focused) { if !focused { typing = false } }
+            } else {
+                Text(shown)
+                    .monospacedDigit()
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .frame(minWidth: 72, alignment: .trailing)
+                    .background(Color.secondary.opacity(0.16), in: Capsule())
+                    .contentShape(Capsule())
+                    .hoverEffect()
+                    .gesture(drag)
+                    .onTapGesture(count: 2) {
+                        if let reset, reset != value {
+                            value = reset
+                            done()
+                        }
+                    }
+                    .onTapGesture {
+                        typed = value
+                        typing = true
+                    }
+                    .onChange(of: dragging) {
+                        // the finger lifted (or the drag was taken away)
+                        if !dragging, held != nil {
+                            held = nil
+                            studio?.adjusting = nil
+                            done()
+                        }
+                    }
+                    .accessibilityValue(shown)
+                    .accessibilityAdjustableAction { direction in
+                        let step = whole ? 1 : max(abs(value), 0.25) * 0.05
+                        switch direction {
+                        case .increment: value = tidy(value + step)
+                        case .decrement: value = tidy(value - step)
+                        @unknown default: break
+                        }
+                        done()
+                    }
+            }
         }
+    }
+
+    private var shown: String {
+        whole ? String(format: "%.0f", value) : value.formatted(.number.precision(.significantDigits(1...6)))
+    }
+
+    private var drag: some Gesture {
+        DragGesture(minimumDistance: 4)
+            .updating($dragging) { _, state, _ in state = true }
+            .onChanged { g in
+                if held == nil {
+                    held = value
+                    lastX = 0
+                    // a full drag across a panel about doubles a value
+                    unit = whole ? 0.125 : max(abs(value), 0.25) * 0.004
+                }
+                let away = abs(g.translation.height)
+                let fine = whole ? 1 : away < 50 ? 1 : away < 120 ? 0.1 : 0.01
+                let now = (held ?? value) + Double(g.translation.width - lastX) * unit * fine
+                lastX = g.translation.width
+                held = now
+                // (in steps of the size being moved by, so the digits stay few)
+                let q = whole ? 1 : pow(10, (log10(unit * fine)).rounded(.down))
+                let v = tidy((now / q).rounded() * q)
+                if v != value {
+                    value = v
+                    studio?.previewSettings()
+                }
+                studio?.adjusting = Studio.Adjusting(title: title, value: shown, fraction: nil)
+            }
+    }
+
+    /// Without the binary tail (2.0010000000000003).
+    private func tidy(_ v: Double) -> Double {
+        whole ? v.rounded() : Double(String(format: "%.10g", v)) ?? v
     }
 }
 
-/// A slider that renders again when the finger lifts.
+/// A slider: quick pictures follow it while it is held (its name and value
+/// alone over the picture), the full one comes when the finger lifts.
 struct LabeledSlider: View {
     let title: LocalizedStringKey
     @Binding var value: Double
@@ -701,11 +780,16 @@ struct LabeledSlider: View {
     let format: String
     let done: () -> Void
 
+    @Environment(Studio.self) private var studio: Studio?
+
     var body: some View {
         VStack(alignment: .leading) {
             LabeledContent(title, value: String(format: format, value))
             Slider(value: position, in: 0...1) { editing in
-                if !editing { done() }
+                if !editing {
+                    studio?.adjusting = nil
+                    done()
+                }
             }
         }
     }
@@ -723,6 +807,10 @@ struct LabeledSlider: View {
                 value = logarithmic
                     ? range.lowerBound * pow(range.upperBound / range.lowerBound, p)
                     : range.lowerBound + p * (range.upperBound - range.lowerBound)
+                if let studio {
+                    studio.adjusting = Studio.Adjusting(title: title, value: String(format: format, value), fraction: p)
+                    studio.previewSettings()
+                }
             }
         )
     }

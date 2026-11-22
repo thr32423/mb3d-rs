@@ -24,6 +24,8 @@ final class Breeder {
     var progress: Double?
     var status = ""
     var generation = 0
+    /// how much the children differ from their parent (1: as MutaGen)
+    var strength = 1.0
     @ObservationIgnored private var job: RenderJob?
 
     var busy: Bool { job != nil }
@@ -49,8 +51,9 @@ final class Breeder {
         status = String(localized: "Breeding")
         generation += 1
         let seed = UInt64.random(in: 1...UInt64.max)
+        let strength = strength
         Task.detached(priority: .userInitiated) {
-            let result = Result { try job.variations(p, seed: seed) }
+            let result = Result { try job.variations(p, seed: seed, strength: strength) }
             await MainActor.run { [weak self] in self?.bred(job, result) }
         }
     }
@@ -107,27 +110,40 @@ final class Breeder {
     }()
 }
 
+/// Variations over the whole screen: the scene (or the variation chosen)
+/// large, the generation's fourteen others as a grid. A tap chooses one,
+/// a double tap or Breed makes the next generation from it, Use takes it;
+/// a finger held on the large picture shows the scene to compare.
 struct VariationsView: View {
     let studio: Studio
     @State private var breeder = Breeder()
+    @State private var comparing = false
     @Environment(\.dismiss) private var dismiss
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 5)
+    private let columns = [GridItem(.adaptive(minimum: 112, maximum: 200), spacing: 10)]
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(breeder.members) { m in
-                        cell(m)
+            GeometryReader { geo in
+                let wide = geo.size.width > geo.size.height
+                let layout = wide ? AnyLayout(HStackLayout(alignment: .top, spacing: 16))
+                                  : AnyLayout(VStackLayout(spacing: 16))
+                layout {
+                    large
+                        .frame(maxWidth: wide ? geo.size.width * 0.44 : .infinity,
+                               maxHeight: wide ? .infinity : geo.size.height * 0.44)
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 10) {
+                            ForEach(breeder.members.dropFirst()) { m in
+                                cell(m)
+                            }
+                        }
+                        .padding(2)
                     }
                 }
                 .padding()
-                if breeder.members.isEmpty && !breeder.busy {
-                    ContentUnavailableView("No variations", systemImage: "leaf",
-                                           description: Text("Breed a generation from the scene."))
-                }
             }
+            .background(Color.black.ignoresSafeArea())
             .overlay(alignment: .bottom) {
                 if let p = breeder.progress {
                     VStack(spacing: 6) {
@@ -135,6 +151,7 @@ struct VariationsView: View {
                         Text(breeder.status).font(.caption).foregroundStyle(.secondary)
                     }
                     .padding()
+                    .frame(maxWidth: 360)
                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                     .padding()
                 }
@@ -152,8 +169,10 @@ struct VariationsView: View {
                     if breeder.busy {
                         Button("Stop", systemImage: "stop.fill") { breeder.stop() }
                     }
-                    Button("Breed", systemImage: "leaf.arrow.triangle.circlepath") {
+                    Button {
                         if let s = chosenScene ?? studio.currentScene { breeder.breed(from: s) }
+                    } label: {
+                        Label("Breed", systemImage: "leaf.arrow.triangle.circlepath").labelStyle(.titleAndIcon)
                     }
                     .disabled(breeder.busy)
                     Button("Use") {
@@ -163,6 +182,7 @@ struct VariationsView: View {
                             dismiss()
                         }
                     }
+                    .buttonStyle(.borderedProminent)
                     .disabled(chosenScene == nil)
                 }
             }
@@ -176,25 +196,50 @@ struct VariationsView: View {
         breeder.chosen.flatMap { i in breeder.members.first { $0.id == i }?.scene }
     }
 
-    private func cell(_ m: Breeder.Member) -> some View {
-        VStack(spacing: 4) {
+    /// The variation chosen, large (the scene itself while none is, or
+    /// while a finger is held on it).
+    private var large: some View {
+        let parent = breeder.members.first
+        let chosen = breeder.chosen.flatMap { i in breeder.members.first { $0.id == i } }
+        let shown = comparing ? parent : chosen ?? parent
+        return VStack(spacing: 8) {
             ZStack {
                 Color.black
-                if let img = m.image {
-                    Image(decorative: img, scale: 1).resizable().aspectRatio(contentMode: .fit)
+                if let img = shown?.image {
+                    Image(decorative: img, scale: 1).resizable().interpolation(.high).aspectRatio(contentMode: .fit)
                 } else {
-                    ProgressView()
+                    ProgressView().tint(.white)
                 }
             }
-            .aspectRatio(1, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(RoundedRectangle(cornerRadius: 8)
-                .stroke(breeder.chosen == m.id ? Color.accentColor : .clear, lineWidth: 3))
-            Text(m.id == 0 ? "\(m.label) (parent)" : m.label)
-                .font(.caption.monospacedDigit())
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .onLongPressGesture(minimumDuration: 0.15, perform: {}, onPressingChanged: { comparing = $0 })
+            Text(chosen == nil || comparing ? "The scene" : "Hold the picture to compare with the scene")
+                .font(.caption)
                 .foregroundStyle(.secondary)
+            // how far the next generation strays
+            LabeledSlider(title: "Strength",
+                          value: Binding(get: { breeder.strength }, set: { breeder.strength = $0 }),
+                          range: 0.2...2.5, format: "%.1f ×", done: {})
+                .frame(maxWidth: 420)
         }
+    }
+
+    private func cell(_ m: Breeder.Member) -> some View {
+        ZStack {
+            Color.black
+            if let img = m.image {
+                Image(decorative: img, scale: 1).resizable().aspectRatio(contentMode: .fit)
+            } else {
+                ProgressView().tint(.white)
+            }
+        }
+        .aspectRatio(1, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .stroke(breeder.chosen == m.id ? Color.accentColor : Color.white.opacity(0.12),
+                    lineWidth: breeder.chosen == m.id ? 3 : 1))
         .contentShape(Rectangle())
+        .hoverEffect()
         .onTapGesture(count: 2) {
             breeder.chosen = m.id
             breeder.breed(from: m.scene)

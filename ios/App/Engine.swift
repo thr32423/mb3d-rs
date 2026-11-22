@@ -244,7 +244,7 @@ final class RenderJob: @unchecked Sendable {
 
     /// MutaGen's 15 variations of `scene` (the first is the scene), on
     /// this thread.
-    func variations(_ scene: FractalScene, seed: UInt64) throws -> [FractalScene] {
+    func variations(_ scene: FractalScene, seed: UInt64, strength: Double = 1) throws -> [FractalScene] {
         let me = Unmanaged.passUnretained(self).toOpaque()
         let callback: mb3d_progress = { user, stage, done, total in
             guard let user else { return 0 }
@@ -254,7 +254,9 @@ final class RenderJob: @unchecked Sendable {
             return job.isStopped ? 1 : 0
         }
         var out = [OpaquePointer?](repeating: nil, count: 15)
-        if mb3d_variations(scene.ptr, seed, &out, callback, me) != 0 { throw EngineError(Engine.lastError()) }
+        if mb3d_variations_strength(scene.ptr, seed, strength, &out, callback, me) != 0 {
+            throw EngineError(Engine.lastError())
+        }
         return out.compactMap { $0.map(FractalScene.init) }
     }
 }
@@ -403,6 +405,14 @@ final class Navigator {
 
     var fov: Double {
         mb3d_navigator_fov(ptr)
+    }
+
+    /// The scene's directions of the picture's right, down and depth (9
+    /// numbers, row after row), for the compass.
+    var axes: [Double] {
+        var m = [Double](repeating: 0, count: 9)
+        mb3d_navigator_axes(ptr, &m)
+        return m
     }
 
     /// The view as a scene: quick (simpler light) or full.

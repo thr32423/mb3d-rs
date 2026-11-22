@@ -84,6 +84,20 @@ impl Navigator {
         self.nav.fov_y
     }
 
+    /// Where the camera looks: the scene's directions of the picture's
+    /// right, its down and its depth, each of length 1 (the rows of the
+    /// view matrix), for a compass.
+    pub fn axes(&self) -> [[f64; 3]; 3] {
+        let mut m = [[0.0; 3]; 3];
+        for (row, v) in m.iter_mut().zip(self.nav.vgrads.iter()) {
+            let n = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt();
+            if n > 0.0 {
+                *row = [v[0] / n, v[1] / n, v[2] / n];
+            }
+        }
+        m
+    }
+
     /// Slides the camera sideways so that what is in front of it follows
     /// a drag of `(dx, dy)` picture heights (right and down positive), as
     /// the Navigator's right-button drag does.

@@ -98,6 +98,16 @@ struct SceneText {
         self[key] = "off"
     }
 
+    /// The global keys that start with one of `prefixes`, in the text's order.
+    func keys(startingWith prefixes: [String]) -> [String] {
+        head.compactMap { line in
+            let parts = line.split(separator: "=", maxSplits: 1)
+            guard parts.count == 2 else { return nil }
+            let k = parts[0].trimmingCharacters(in: .whitespaces)
+            return prefixes.contains(where: { k.hasPrefix($0) }) ? k : nil
+        }
+    }
+
     func number(_ key: String) -> Double? {
         self[key].flatMap { Double($0) }
     }

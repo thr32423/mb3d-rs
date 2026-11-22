@@ -151,6 +151,9 @@ struct PaletteStrip: View {
                     ColorPicker("Specular", selection: studio.stopColor(chosen, specular: true), supportsOpacity: false)
                         .labelsHidden()
                 }
+                LabeledSlider(title: "Transparency",
+                              value: studio.wholeComponent("palette_alpha", chosen, [Double](repeating: 0, count: 10)),
+                              range: 0...255, format: "%.0f", done: studio.commit)
             }
         }
         .padding(.vertical, 4)
@@ -255,9 +258,9 @@ struct FormulaPicker: View {
         let favs = favourites
         let found = search.isEmpty ? names : names.filter { $0.localizedCaseInsensitiveContains(search) }
         let rest = found.filter { !own.contains($0) }
-        let shapes = rest.filter { $0.lowercased().hasPrefix("difs") }
-        let transforms = rest.filter { $0.hasPrefix("_") }
-        let fractals = rest.filter { !$0.hasPrefix("_") && !$0.lowercased().hasPrefix("difs") }
+        let book = Engine.formulaBook
+        let kinds: [LocalizedStringKey] = ["3D formulas", "3D formulas with analytic DE", "4D formulas",
+                                           "4D formulas with analytic DE", "Transforms", "dIFS shapes", "dIFS transforms"]
         List {
             if search.isEmpty, !favs.isEmpty {
                 Section("Favourites") {
@@ -265,9 +268,9 @@ struct FormulaPicker: View {
                 }
             }
             group("Your formulas", found.filter { own.contains($0) }, favs)
-            group("Fractals", fractals, favs)
-            group("Transforms", transforms, favs)
-            group("dIFS shapes", shapes, favs)
+            ForEach(kinds.indices, id: \.self) { k in
+                group(kinds[k], rest.filter { (book[$0]?.kind ?? 0) == k }, favs)
+            }
         }
         .searchable(text: $search)
         .onAppear { previews.text = preview }
@@ -299,7 +302,14 @@ struct FormulaPicker: View {
                         }
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
-                Text(name).foregroundStyle(Color.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(name).foregroundStyle(Color.primary)
+                    // (the author's words from the formula file, as the
+                    // desktop's Formula book shows them)
+                    if let about = Engine.formulaBook[name]?.about, !about.isEmpty {
+                        Text(verbatim: about).font(.caption).foregroundStyle(.secondary).lineLimit(3)
+                    }
+                }
                 Spacer()
                 if favs.contains(name) {
                     Image(systemName: "star.fill").font(.caption).foregroundStyle(Color.yellow)

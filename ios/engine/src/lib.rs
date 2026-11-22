@@ -543,6 +543,22 @@ pub extern "C" fn mb3d_formula_names() -> *mut c_char {
     guard(|| Ok(api::formula_names().join("\n"))).map_or(std::ptr::null_mut(), owned_text)
 }
 
+/// The Formula book in short: a line per formula, `name<TAB>kind<TAB>the
+/// author's description` (kind 0 to 6: 3D, 3D with analytic DE, 4D, 4D
+/// with analytic DE, transformation, dIFS shape, dIFS transformation; the
+/// description's line ends as the character 0x01); free it with
+/// mb3d_string_free.
+#[no_mangle]
+pub extern "C" fn mb3d_formula_book() -> *mut c_char {
+    guard(|| {
+        Ok(api::formula_book()
+            .iter()
+            .map(|(n, k, d)| format!("{n}\t{k}\t{}\n", d.replace("\r", "").replace('\n', "\u{1}").replace('\t', " ")))
+            .collect::<String>())
+    })
+    .map_or(std::ptr::null_mut(), owned_text)
+}
+
 /// A formula's settings with their default values, as `key = value` lines
 /// of a `[formula]` section; free it with mb3d_string_free.
 ///

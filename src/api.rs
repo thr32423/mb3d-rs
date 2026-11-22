@@ -61,6 +61,37 @@ pub fn formula_names() -> Vec<String> {
     v
 }
 
+/// The Formula book in short: every formula with its kind (0 a 3D escape
+/// time formula, 1 the same with an analytic DE, 2 a 4D formula, 3 the same
+/// with an analytic DE, 4 a transformation, 5 a dIFS shape, 6 a dIFS
+/// transformation) and the author's description from the formula file.
+pub fn formula_book() -> Vec<(String, u8, String)> {
+    // (as the Formula book's `Category::of`)
+    let kind = |de: i32| match de {
+        2 | 11 => 1,
+        4 => 2,
+        5 | 6 => 3,
+        -1 | -2 => 4,
+        20 => 5,
+        21 | 22 => 6,
+        _ => 0,
+    };
+    let mut v: Vec<(String, u8, String)> = crate::formulas::Formula::all_names()
+        .iter()
+        .filter_map(|n| crate::formulas::Formula::default_for(n))
+        .map(|f| (f.name(), kind(f.de_option()), String::new()))
+        .collect();
+    let own: Vec<String> = v.iter().map(|t| t.0.to_ascii_lowercase()).collect();
+    for (name, de) in crate::formulas::list_custom_with_de() {
+        if own.contains(&name.to_ascii_lowercase()) {
+            continue;
+        }
+        let about = crate::formulas::load_custom(&name).map(|m| m.description.trim().to_string()).unwrap_or_default();
+        v.push((name, kind(de), about));
+    }
+    v
+}
+
 /// The settings of a formula with their default values (the keys of a
 /// `[formula]` section).
 pub fn formula_settings(name: &str) -> Result<Vec<(String, f64)>, String> {
@@ -664,6 +695,8 @@ mod pick_tests {
         // nothing likely to change: every child is the scene
         let same = f.variations_mutation(7, [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0], &RenderOptions::default()).unwrap();
         assert!(same.iter().all(|(_, g)| g.text() == f.text()), "weights of 0 change nothing");
+        let book = formula_book();
+        assert!(book.iter().any(|(n, k, _)| n == "Integer Power" && *k <= 3), "the book knows the bulb");
         let mut cam = f.flight();
         let a = cam.axes();
         for row in a {

@@ -44,12 +44,27 @@ final class Breeder {
         (juliaWeight, juliaStrength, iterationsWeight, iterationsStrength) = (0.5, 1, 0.5, 1)
     }
     @ObservationIgnored private var job: RenderJob?
+    /// the generations before this one (the desktop's Generations list)
+    var past: [[Member]] = []
 
     var busy: Bool { job != nil }
+
+    /// Back to the generation before.
+    func back() {
+        guard let last = past.popLast() else { return }
+        stop()
+        members = last
+        chosen = nil
+        generation = max(1, generation - 1)
+    }
 
     /// A new generation from `parent` (a copy is bred).
     func breed(from parent: FractalScene) {
         job?.stop()
+        if !members.isEmpty, members.allSatisfy({ $0.image != nil }) {
+            past.append(members)
+            if past.count > 12 { past.removeFirst() }
+        }
         guard let p = try? parent.copy() else { return }
         let (w, h) = p.size
         let k = Double(Self.side) / Double(max(w, h, 1))
@@ -187,6 +202,8 @@ struct VariationsView: View {
                     if breeder.busy {
                         Button("Stop", systemImage: "stop.fill") { breeder.stop() }
                     }
+                    Button("Previous generation", systemImage: "arrow.uturn.backward") { breeder.back() }
+                        .disabled(breeder.past.isEmpty)
                     Button("Mutation", systemImage: "slider.horizontal.3") { showMutation = true }
                         .popover(isPresented: $showMutation) { mutation }
                     Button {

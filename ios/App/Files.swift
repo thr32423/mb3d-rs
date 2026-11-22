@@ -15,7 +15,7 @@ extension UTType {
 /// The app's own scenes: the Documents folder (shown in the Files app
 /// under On My iPad ▸ Mandelbulb3D).
 enum Library {
-    static let kinds: Set<String> = ["m3p", "m3i", "txt"]
+    static let kinds: Set<String> = ["m3p", "m3i", "m3s", "txt"]
 
     static var folder: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]

@@ -62,6 +62,24 @@ enum Engine {
     /// After formula files came in: the names again.
     @MainActor static func reloadFormulas() {
         formulaNames = readFormulaNames()
+        formulaBook = readFormulaBook()
+    }
+
+    /// The Formula book in short: a formula's kind (0 to 6: 3D, 3D with
+    /// analytic DE, 4D, 4D with analytic DE, transformation, dIFS shape,
+    /// dIFS transformation) and its author's description.
+    @MainActor static private(set) var formulaBook: [String: (kind: Int, about: String)] = readFormulaBook()
+
+    private static func readFormulaBook() -> [String: (kind: Int, about: String)] {
+        guard let t = mb3d_formula_book() else { return [:] }
+        defer { mb3d_string_free(t) }
+        var book: [String: (kind: Int, about: String)] = [:]
+        for line in String(cString: t).split(separator: "\n") {
+            let f = line.split(separator: "\t", maxSplits: 2, omittingEmptySubsequences: false)
+            guard f.count == 3 else { continue }
+            book[String(f[0])] = (Int(f[1]) ?? 0, f[2].replacingOccurrences(of: "\u{1}", with: "\n"))
+        }
+        return book
     }
 
     private static func readFormulaNames() -> [String] {

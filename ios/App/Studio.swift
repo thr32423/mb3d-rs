@@ -636,6 +636,103 @@ final class Studio {
         )
     }
 
+    /// A global switch the engine also writes as on/off (`fallback` while
+    /// the scene does not say), applied shortly after.
+    func onOff(_ key: String, _ fallback: Bool) -> Binding<Bool> {
+        Binding(
+            get: {
+                guard let v = self.doc[key]?.lowercased() else { return fallback }
+                return ["true", "on", "yes", "1"].contains(v)
+            },
+            set: { self.doc[key] = $0 ? "true" : "false"; self.commitSoon() }
+        )
+    }
+
+    /// One bit of a global number of options, applied shortly after.
+    func bit(_ key: String, _ mask: Int) -> Binding<Bool> {
+        Binding(
+            get: { (Int(self.doc[key] ?? "") ?? 0) & mask != 0 },
+            set: { on in
+                let v = Int(self.doc[key] ?? "") ?? 0
+                self.doc[key] = String(on ? v | mask : v & ~mask)
+                self.commitSoon()
+            }
+        )
+    }
+
+    /// Component `i` of a value of whole numbers (`a, b, c`).
+    func wholeComponent(_ key: String, _ i: Int, _ fallback: [Double]) -> Binding<Double> {
+        Binding(
+            get: { self.doc.component(key, i) ?? fallback[i] },
+            set: { self.doc.setComponent(key, i, $0.rounded(), fallback: fallback) }
+        )
+    }
+
+    /// A light at a place in the scene (`position`) or far away in a
+    /// direction (`x_angle`, `y_angle`).
+    func positional(_ id: Int) -> Binding<Bool> {
+        Binding(
+            get: { self.doc.sections.first { $0.id == id }?["position"] != nil },
+            set: { on in
+                guard var sec = self.doc.sections.first(where: { $0.id == id }) else { return }
+                if on {
+                    sec["x_angle"] = nil
+                    sec["y_angle"] = nil
+                    sec["position"] = "0, 0, -2"
+                } else {
+                    sec["position"] = nil
+                    sec["x_angle"] = "-30"
+                    sec["y_angle"] = "30"
+                }
+                self.doc.update(sec)
+                self.commit()
+            }
+        )
+    }
+
+    /// Component `i` of a section's value like `x, y, z`.
+    func sectionComponent(_ id: Int, _ key: String, _ i: Int) -> Binding<Double> {
+        func parts(_ sec: SceneText.Section?) -> [Double] {
+            (sec?[key] ?? "").split(separator: ",").map { Double($0.trimmingCharacters(in: .whitespaces)) ?? 0 }
+        }
+        return Binding(
+            get: {
+                let p = parts(self.doc.sections.first { $0.id == id })
+                return i < p.count ? p[i] : 0
+            },
+            set: { v in
+                guard var sec = self.doc.sections.first(where: { $0.id == id }) else { return }
+                var p = parts(sec)
+                while p.count <= i { p.append(0) }
+                p[i] = v
+                sec[key] = p.map { SceneText.format($0) }.joined(separator: ", ")
+                self.doc.update(sec)
+            }
+        )
+    }
+
+    /// The four colours of the inside (`interior_colors = position:#colour`).
+    func interiorColor(_ i: Int) -> Binding<CGColor> {
+        func items() -> [[String]] {
+            (self.doc["interior_colors"] ?? "").split(separator: ",").map {
+                $0.trimmingCharacters(in: .whitespaces).split(separator: ":").map(String.init)
+            }
+        }
+        return Binding(
+            get: {
+                let all = items()
+                return Self.cgColor(i < all.count && all[i].count == 2 ? all[i][1] : nil)
+            },
+            set: { c in
+                var all = items()
+                guard let h = Self.hex(c), i < all.count, all[i].count == 2 else { return }
+                all[i][1] = h
+                self.doc["interior_colors"] = all.map { $0.joined(separator: ":") }.joined(separator: ", ")
+                self.commitSoon()
+            }
+        )
+    }
+
     /// A global `true`/`false`, applied shortly after.
     func flag(_ key: String) -> Binding<Bool> {
         Binding(
@@ -666,7 +763,7 @@ final class Studio {
             get: { self.doc.sections.first { $0.id == id }?[key].flatMap { Double($0) } ?? 0 },
             set: { v in
                 guard var sec = self.doc.sections.first(where: { $0.id == id }) else { return }
-                sec[key] = key == "iterations" || key == "slot" ? String(Int(v.rounded())) : String(v)
+                sec[key] = ["iterations", "slot", "map", "visible"].contains(key) ? String(Int(v.rounded())) : String(v)
                 self.doc.update(sec)
             }
         )

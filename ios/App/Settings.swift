@@ -143,6 +143,7 @@ struct PicturePage: View {
             Section {
                 Button("Render a stereo pair", systemImage: "eyeglasses") { studio.renderStereoPair() }
                 Toggle("Cross-eyed (else parallel)", isOn: $studio.crossEyed)
+                PresentFields(studio: studio, prefixes: ["stereo_screen"])
             } header: {
                 Text("Stereo")
             } footer: {
@@ -189,6 +190,29 @@ struct FractalPage: View {
                 Toggle("First step random", isOn: studio.flag("first_step_random"))
                 Toggle("Ray step minus DE stop", isOn: studio.flag("step_sub_de_stop"))
             }
+            More {
+                Fields(studio: studio, fields: [
+                    .number("min_iterations", "Minimum iterations", 0, whole: true),
+                    .number("rstop", "Bailout", 16),
+                    .number("raystep_limiter", "Ray step limiter", 1),
+                    .number("z_start", "Ray start", 0),
+                    .number("z_end", "Ray end", 0),
+                    .choice("inside", "Rendering", [("outside", "Outside"), ("inside", "Inside"), ("both", "Inside and outside")], "outside"),
+                    .choice("slice_2d", "2D slice", [("off", "Off"), ("start", "At the ray start"), ("mid", "In the middle"), ("end", "At the ray end")], "off"),
+                    .toggle("normals_on_zbuf", "Normals on the z-buffer"),
+                    .vector("rotation_4d", ["4D rotation XW", "4D rotation YW", "4D rotation ZW"], [0, 0, 0]),
+                ])
+            }
+            More(title: "Experimental speed-ups") {
+                Fields(studio: studio, fields: [
+                    .toggle("experimental", "Experimental speed-ups"),
+                    .slider("step_relax", "Longer march steps", 1...2, 1, "%.2f"),
+                    .toggle("secant_search", "Secant search"),
+                    .toggle("free_steps", "No step limit"),
+                    .toggle("occlusion_half", "Occlusion at half size"),
+                    .toggle("cone_march", "Cone march"),
+                ])
+            }
         }
     }
 }
@@ -215,6 +239,19 @@ struct FormulasPage: View {
                 Toggle("Disable analytic DE", isOn: studio.flag("disable_analytic_de"))
             } footer: {
                 Text("Up to six formulas run one after the other (a hybrid); after the last, the iteration goes on from the one chosen.")
+            }
+            More(title: "Hybrid: interpolation, two objects") {
+                Toggle("Interpolate the first two formulas", isOn: studio.effect("interpolation", on: "0.5, 0.5"))
+                if studio.effect("interpolation", on: "0.5, 0.5").wrappedValue {
+                    Fields(studio: studio, fields: [.vector("interpolation", ["Weight of formula 1", "Weight of formula 2"], [0.5, 0.5])])
+                }
+                Fields(studio: studio, fields: [
+                    .choice("de_combination", "Combine two parts", [
+                        ("off", "Off"), ("min", "Union"), ("max", "Intersection"), ("max_inverted", "Cut out"),
+                        ("smooth_linear", "Smooth, linear"), ("smooth", "Smooth"), ("mix", "Mix"),
+                    ], "off"),
+                ])
+                PresentFields(studio: studio, prefixes: ["decomb_", "part2_"])
             }
             Section {
                 ForEach(studio.ownFormulas, id: \.self) { name in
@@ -288,6 +325,18 @@ struct LightingPage: View {
                 ColorPicker("Ambient from above", selection: studio.color("ambient_top"), supportsOpacity: false)
                 ColorPicker("Ambient from below", selection: studio.color("ambient_bottom"), supportsOpacity: false)
             }
+            More {
+                Fields(studio: studio, fields: [
+                    .number("indirect_light", "Indirect light", 0),
+                    .number("diffuse_shadowing", "Diffuse shadowing", 0),
+                    .toggle("ambient_relative_to_object", "Ambient relative to the object"),
+                    .toggle("internal_gamma2", "Gamma 2 inside"),
+                    .number("light_mode", "Second light mode", 0, whole: true),
+                    .choice("vol_light", "Volumetric light of", [("off", "Off"), ("1", "Light 1"), ("2", "Light 2"), ("3", "Light 3"),
+                                                                 ("4", "Light 4"), ("5", "Light 5"), ("6", "Light 6")], "off"),
+                    .slider("vol_light_map_size", "Volumetric light: map size", -7...7, 0, "%.0f", whole: true),
+                ])
+            }
             ForEach(Array(studio.doc.lights.enumerated()), id: \.element.id) { i, l in
                 LightSection(studio: studio, section: l, number: i + 1, removable: true)
             }
@@ -314,6 +363,32 @@ struct ColoursPage: View {
                 Toggle("Colour cycling", isOn: studio.flag("color_cycling"))
             } footer: {
                 Text("Each palette colour has a diffuse (left) and a specular (right) part; start and end place the palette over the surface.")
+            }
+            if studio.doc["interior_colors"] != nil {
+                Section("Inside colours") {
+                    ForEach(0..<4) { i in
+                        ColorPicker("Colour \(i + 1)", selection: studio.interiorColor(i), supportsOpacity: false)
+                    }
+                    Fields(studio: studio, fields: [
+                        .number("interior_start", "Colour start", 0),
+                        .number("interior_end", "Colour end", 0),
+                    ])
+                }
+            }
+            More {
+                Fields(studio: studio, fields: [
+                    .toggle("color_on_otrap", "Colour on orbit trap"),
+                    .number("color_on_iteration", "Colour on iteration (-1: off)", -1, whole: true),
+                    .choice("color_option", "Second colour choice", [("0", "0"), ("1", "1"), ("2", "2"), ("3", "3"), ("4", "4"), ("5", "5")], "0"),
+                    .number("color_var_z", "Colour variation on z", 0),
+                    .toggle("color_interpolation", "Blend the palette colours", true),
+                    .number("diffuse_map", "Diffuse map number", 0, whole: true),
+                    .choice("diffuse_map_mode", "Diffuse map on", [("iterations_otrap", "Iterations, orbit trap"), ("normals", "Normals"),
+                                                                    ("wrap_sine", "Wrap, sine"), ("wrap", "Wrap")], "iterations_otrap"),
+                ])
+                Toggle("Fine colour adjustment", isOn: studio.effect("fine_color_adjust", on: "0, 0"))
+                PresentFields(studio: studio, prefixes: ["fine_color_adjust", "diffuse_map_offset", "diffuse_map_rotation",
+                                                         "diffuse_map_scale", "diffuse_map_brightness_only"])
             }
         }
     }
@@ -383,6 +458,16 @@ struct FogPage: View {
                               range: 0...255, format: "%.0f", done: studio.commit)
                 ColorPicker("Colour", selection: studio.color("dynfog_color"), supportsOpacity: false)
                 ColorPicker("Colour 2", selection: studio.color("dynfog_color2"), supportsOpacity: false)
+            }
+            More {
+                Fields(studio: studio, fields: [
+                    .number("fog_offset", "Fog offset", 0),
+                    .number("fog_far_offset", "Far fog offset", 0),
+                    .choice("depth_func", "Background colour function", [("0", "0"), ("1", "1"), ("2", "2"), ("3", "3")], "0"),
+                    .bit("dynfog_options", "Glowing fog: blend", 1),
+                    .bit("dynfog_options", "Glowing fog: positive only", 2),
+                    .number("dfog_on_it", "Glowing fog on iteration", 0, whole: true),
+                ])
             }
         }
     }
@@ -458,6 +543,41 @@ struct EffectsPage: View {
                 Text("Surface detail")
             } footer: {
                 Text("A relief over the surface; its size in fractal units, about a twentieth of what the view shows.")
+            }
+            More(title: "Shadows, occlusion, depth of field") {
+                Fields(studio: studio, fields: [
+                    .slider("shadow_soft_radius", "Soft shadow radius", 0.01...20, 1, "%.2f", log: true),
+                    .number("shadow_max_len", "Shadow length", 1),
+                    .toggle("shadow_set_cos", "Shadows change the shading"),
+                    .number("ao_threshold", "Occlusion threshold", 1),
+                    .slider("ao_border", "Occlusion at the borders", 0...0.9, 0, "%.2f"),
+                    .number("ao_random", "Occlusion: random", 0, whole: true),
+                    .choice("deao_quality", "DE occlusion rays", [("0", "3"), ("1", "7"), ("2", "17"), ("3", "33")], "1"),
+                    .choice("deao_dither", "DE occlusion dithering", [("0", "Off"), ("1", "2 × 2"), ("2", "3 × 3")], "0"),
+                    .number("deao_max_len", "DE occlusion reach", 1),
+                    .number("dof_focus2", "Second focus", 1),
+                    .number("dof_max_radius", "Largest blur", 1),
+                    .number("dof_passes", "Depth of field passes", 1, whole: true),
+                ])
+                PresentFields(studio: studio, prefixes: ["deao_random"])
+            }
+            More(title: "Monte Carlo") {
+                Fields(studio: studio, fields: [
+                    .number("mc_depth", "Ray depth", 3, whole: true),
+                    .number("mc_reflection_depth", "Reflection depth", 2, whole: true),
+                    .number("mc_diffuse_reflects", "Diffuse reflections", 0),
+                    .number("mc_soft_shadow_radius", "Soft shadow radius", 1),
+                    .slider("mc_exposure", "Exposure", 0...255, 100, "%.0f", whole: true),
+                    .slider("mc_saturation", "Saturation", 0...127, 64, "%.0f", whole: true),
+                    .number("mc_refraction_index", "Refraction index", 1.5),
+                    .number("mc_absorption", "Absorption", 1),
+                    .number("mc_scattering", "Scattering", 0),
+                    .toggle("mc_only_difs", "Only dIFS"),
+                    .bit("mc_options", "Soft clip", 1),
+                    .bit("mc_options", "Secant search", 2),
+                    .bit("mc_options", "Auto clip", 4),
+                    .bit("mc_options", "Gaussian antialiasing", 8),
+                ])
             }
         }
     }
@@ -645,6 +765,22 @@ struct LightSection: View {
                 Text("(Cos/2+)²").tag("3")
             }
             Toggle("Relative to the object", isOn: studio.sectionFlag(section.id, "relative_to_object", false))
+            DisclosureGroup("More") {
+                Toggle("At a place in the scene", isOn: studio.positional(section.id))
+                if section["position"] != nil {
+                    ForEach(0..<3) { i in
+                        NumberField(title: (["x", "y", "z"] as [LocalizedStringKey])[i],
+                                    value: studio.sectionComponent(section.id, "position", i), done: studio.commit)
+                    }
+                }
+                Picker("Visible light source", selection: studio.sectionChoice(section.id, "visible", "0")) {
+                    Text("Off").tag("0")
+                    ForEach(1..<8) { n in Text(verbatim: "\(n)").tag("\(n)") }
+                }
+                Toggle("Casts hard shadows", isOn: studio.sectionFlag(section.id, "shadow", true))
+                NumberField(title: "Light map number", value: studio.sectionNumber(section.id, "map"), whole: true,
+                            done: studio.commit)
+            }
             if removable {
                 Button("Remove this light", systemImage: "minus.circle", role: .destructive) {
                     studio.removeSection(section.id)

@@ -160,6 +160,16 @@ char *mb3d_formula_names(void);
  * description's line ends as the character 0x01); free with
  * mb3d_string_free. */
 char *mb3d_formula_book(void);
+/* A formula's page of the Formula book as lines of tab-parted fields:
+ * "kind", number, label of its name, label of its explanation; "about",
+ * the author's text (line ends as 0x01) or a built-in formula's label;
+ * "value", name, default, label of what it does (or nothing); "hint",
+ * label. Labels ("@MB:...") are those of the program's language files.
+ * examples: how many example files use the formula. NULL when unknown. */
+char *mb3d_formula_page(const char *name, uint32_t examples);
+/* The example files of a folder by the formulas they use: a line per
+ * formula, its lower-case name and the files' names, parted by tabs. */
+char *mb3d_formula_examples(const char *folder);
 /* A formula's settings with their defaults as `key = value` lines of a
  * [formula] section; free with mb3d_string_free. */
 char *mb3d_formula_settings(const char *name);

@@ -61,34 +61,66 @@ pub fn formula_names() -> Vec<String> {
     v
 }
 
-/// The Formula book in short: every formula with its kind (0 a 3D escape
-/// time formula, 1 the same with an analytic DE, 2 a 4D formula, 3 the same
-/// with an analytic DE, 4 a transformation, 5 a dIFS shape, 6 a dIFS
-/// transformation) and the author's description from the formula file.
-pub fn formula_book() -> Vec<(String, u8, String)> {
-    // (as the Formula book's `Category::of`)
-    let kind = |de: i32| match de {
-        2 | 11 => 1,
-        4 => 2,
-        5 | 6 => 3,
-        -1 | -2 => 4,
-        20 => 5,
-        21 | 22 => 6,
-        _ => 0,
-    };
-    let mut v: Vec<(String, u8, String)> = crate::formulas::Formula::all_names()
-        .iter()
-        .filter_map(|n| crate::formulas::Formula::default_for(n))
-        .map(|f| (f.name(), kind(f.de_option()), String::new()))
-        .collect();
-    let own: Vec<String> = v.iter().map(|t| t.0.to_ascii_lowercase()).collect();
-    for (name, de) in crate::formulas::list_custom_with_de() {
-        if own.contains(&name.to_ascii_lowercase()) {
-            continue;
-        }
-        let about = crate::formulas::load_custom(&name).map(|m| m.description.trim().to_string()).unwrap_or_default();
-        v.push((name, kind(de), about));
+fn book_kind(c: crate::formula_book::Category) -> u8 {
+    use crate::formula_book::Category as C;
+    match c {
+        C::Escape3d => 0,
+        C::Escape3dAnalytic => 1,
+        C::Escape4d => 2,
+        C::Escape4dAnalytic => 3,
+        C::Transformation => 4,
+        C::DifsShape => 5,
+        C::DifsTransformation => 6,
     }
+}
+
+/// The Formula book in short: every formula the Formulas window lists with
+/// its kind (0 a 3D escape time formula, 1 the same with an analytic DE, 2
+/// a 4D formula, 3 the same with an analytic DE, 4 a transformation, 5 a
+/// dIFS shape, 6 a dIFS transformation) and its description: the author's
+/// text from the formula file, for a built-in formula the label of its
+/// text (`@MB:...`, to look up in the language files).
+pub fn formula_book() -> Vec<(String, u8, String)> {
+    crate::formula_book::topics().into_iter().map(|t| (t.name, book_kind(t.category), t.description)).collect()
+}
+
+/// A formula's page of the Formula book. The texts the book has in every
+/// language come as their labels (`@MB:...`).
+pub struct FormulaPage {
+    pub kind: u8,
+    /// the kind's name and the sentence that says what it means
+    pub kind_label: &'static str,
+    pub explanation_label: &'static str,
+    /// the author's text, or a built-in formula's label
+    pub description: String,
+    /// the values with their defaults and, for names that follow the
+    /// usual conventions, what they do
+    pub values: Vec<(String, f64, Option<&'static str>)>,
+    pub hints: Vec<&'static str>,
+}
+
+/// The page of the formula `name`; `examples`: how many example files use
+/// it (the hints say to start from one).
+pub fn formula_page(name: &str, examples: usize) -> Option<FormulaPage> {
+    let t = crate::formula_book::topics().into_iter().find(|t| t.name.eq_ignore_ascii_case(name))?;
+    Some(FormulaPage {
+        kind: book_kind(t.category),
+        kind_label: t.category.label(),
+        explanation_label: t.category.explanation(),
+        hints: crate::formula_book::hints(&t, examples),
+        values: t.options.iter().map(|(k, v)| (k.clone(), *v, crate::formula_book::option_explanation(k))).collect(),
+        description: t.description,
+    })
+}
+
+/// The example files of `folder` by the formulas they use (lower-case
+/// formula name, the files' names without extension).
+pub fn formula_examples(folder: &Path) -> Vec<(String, Vec<String>)> {
+    let mut v: Vec<(String, Vec<String>)> = crate::formula_book::example_index(&[folder.to_path_buf()])
+        .into_iter()
+        .map(|(k, files)| (k, files.iter().map(|p| crate::formula_book::file_title(p)).collect()))
+        .collect();
+    v.sort();
     v
 }
 
@@ -697,6 +729,8 @@ mod pick_tests {
         assert!(same.iter().all(|(_, g)| g.text() == f.text()), "weights of 0 change nothing");
         let book = formula_book();
         assert!(book.iter().any(|(n, k, _)| n == "Integer Power" && *k <= 3), "the book knows the bulb");
+        let page = formula_page("Integer Power", 1).expect("the bulb has a page");
+        assert!(page.kind_label.starts_with("@MB:") && !page.values.is_empty(), "{:?}", page.values);
         let mut cam = f.flight();
         let a = cam.axes();
         for row in a {

@@ -326,16 +326,7 @@ pub fn load_formula_names(app: &mut Mb3d, ui: &mut Ui) {
 /// versions of formulas whose newer file is there, and a few broken ones.
 /// `files` holds the lower-case names of the formula files.
 pub fn excluded_formula(name: &str, files: &std::collections::HashSet<String>) -> bool {
-    let has = |n: &str| files.contains(n);
-    match name.to_ascii_uppercase().as_str() {
-        "TRAFASSELQUAT" => has("commquat"),
-        "_FLIPXY" => has("_flipxyc"),
-        "_FLIPXZ" => has("_flipxzc"),
-        "_FLIPYZ" => has("_flipyzc"),
-        "ABOXMODKALIFIXED" => has("aboxmodkali"),
-        "SQKOCH" | "DJD-QUAT" | "_IFS-TESS" => true,
-        _ => false,
-    }
+    crate::formula_book::excluded_formula(name, files)
 }
 
 /// The order of a formula list: MB3D's lists are sorted (`Sorted = True`)
@@ -474,18 +465,10 @@ fn check_4d_and_info(app: &mut Mb3d, ui: &mut Ui) {
 /// `DescrOfFName`: a custom formula's description, for the built-in ones
 /// `CFdescriptionIntern` (CustomFormulas.pas; Tricorn has none).
 pub(crate) fn description(f: &Formula) -> String {
-    let id = match f {
-        Formula::Custom(c) => return c.def.description.clone(),
-        Formula::IntPow { .. } => "@MB:TheTriplexMathSineBulbAs",
-        Formula::RealPower { .. } => "@MB:TheSineBulbWhereArbitraryPower",
-        Formula::Quaternion { .. } => "@MB:A4dQuaternionFormulaOneIteration",
-        Formula::AmazingBox { .. } => "@MB:TheAmazingBoxAkaMandboxFormula",
-        Formula::Bulbox { .. } => "@MB:AHybridOfASinePower",
-        Formula::FoldingIntPow { .. } => "@MB:ASineIntegerPowerBulbWith",
-        Formula::AexionC { .. } => "@MB:ABulbFormulaAsSuggestedBy",
-        Formula::Tricorn { .. } => return String::new(),
-    };
-    tr(id)
+    match f {
+        Formula::Custom(c) => c.def.description.clone(),
+        _ => crate::formula_book::builtin_description_label(f).map(tr).unwrap_or_default(),
+    }
 }
 
 /// `CheckDEoption` (HeaderTrafos.pas): the DE type of the slots

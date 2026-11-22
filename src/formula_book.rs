@@ -87,6 +87,50 @@ impl Category {
     }
 }
 
+/// The label of a built-in formula's description (`CFdescriptionIntern`,
+/// CustomFormulas.pas; Tricorn has none), None for a formula file's.
+pub fn builtin_description_label(f: &Formula) -> Option<&'static str> {
+    Some(match f {
+        Formula::IntPow { .. } => "@MB:TheTriplexMathSineBulbAs",
+        Formula::RealPower { .. } => "@MB:TheSineBulbWhereArbitraryPower",
+        Formula::Quaternion { .. } => "@MB:A4dQuaternionFormulaOneIteration",
+        Formula::AmazingBox { .. } => "@MB:TheAmazingBoxAkaMandboxFormula",
+        Formula::Bulbox { .. } => "@MB:AHybridOfASinePower",
+        Formula::FoldingIntPow { .. } => "@MB:ASineIntegerPowerBulbWith",
+        Formula::AexionC { .. } => "@MB:ABulbFormulaAsSuggestedBy",
+        _ => return None,
+    })
+}
+
+/// A built-in formula's description: its text in the program's language,
+/// and where the program has no language files at hand (the engine as a
+/// library, as in the iPad app) its label for the caller to look up.
+fn builtin_description(f: &Formula) -> String {
+    #[cfg(feature = "gui")]
+    {
+        crate::app::formula_form::description(f)
+    }
+    #[cfg(not(feature = "gui"))]
+    {
+        builtin_description_label(f).map(str::to_string).unwrap_or_default()
+    }
+}
+
+/// Formula files the lists leave out (MB3D's own exclusions: older files
+/// a newer one replaces, and three that do not work).
+pub fn excluded_formula(name: &str, files: &std::collections::HashSet<String>) -> bool {
+    let has = |n: &str| files.contains(n);
+    match name.to_ascii_uppercase().as_str() {
+        "TRAFASSELQUAT" => has("commquat"),
+        "_FLIPXY" => has("_flipxyc"),
+        "_FLIPXZ" => has("_flipxzc"),
+        "_FLIPYZ" => has("_flipyzc"),
+        "ABOXMODKALIFIXED" => has("aboxmodkali"),
+        "SQKOCH" | "DJD-QUAT" | "_IFS-TESS" => true,
+        _ => false,
+    }
+}
+
 /// A formula's page of the book.
 #[derive(Clone, Debug)]
 pub struct Topic {
@@ -112,7 +156,7 @@ pub fn topics() -> Vec<Topic> {
             builtin: true,
             file: None,
             category: Category::of(f.de_option()),
-            description: crate::app::formula_form::description(&f),
+            description: builtin_description(&f),
             options: f.options(),
         })
         .collect();
@@ -120,7 +164,7 @@ pub fn topics() -> Vec<Topic> {
     let custom = crate::formulas::list_custom_with_de();
     let files: std::collections::HashSet<String> = custom.iter().map(|(n, _)| n.to_ascii_lowercase()).collect();
     for (name, de) in custom {
-        if builtin.contains(&name.to_ascii_lowercase()) || crate::app::formula_form::excluded_formula(&name, &files) {
+        if builtin.contains(&name.to_ascii_lowercase()) || excluded_formula(&name, &files) {
             continue;
         }
         // (the file is read for its description and values; a broken one
@@ -275,6 +319,7 @@ pub fn starter_file(name: &str) -> Result<PathBuf, String> {
 
 /// The page of a formula as plain text (the window's memo, the command
 /// line): kind, description, values, hints, examples.
+#[cfg(feature = "gui")]
 pub fn page_text(t: &Topic, examples: &[PathBuf]) -> String {
     use crate::vcl::lang::{tr, trf};
     let mut lines: Vec<String> = Vec::new();
@@ -323,7 +368,7 @@ pub fn file_title(p: &Path) -> String {
     p.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default()
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "gui"))]
 mod tests {
     use super::*;
 

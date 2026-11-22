@@ -559,6 +559,49 @@ pub extern "C" fn mb3d_formula_book() -> *mut c_char {
     .map_or(std::ptr::null_mut(), owned_text)
 }
 
+/// A formula's page of the Formula book as lines of fields parted by tabs:
+/// `kind`, its number, the labels of its name and of its explanation;
+/// `about`, the author's text (line ends as 0x01) or a built-in formula's
+/// label; `value`, name, default, the label of what it does (or nothing);
+/// `hint`, a label. The labels (`@MB:...`) are those of the program's
+/// language files. `examples`: how many example files use the formula.
+/// Null for an unknown formula; free it with mb3d_string_free.
+///
+/// # Safety
+/// `name` is a zero-terminated text.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_formula_page(name: *const c_char, examples: u32) -> *mut c_char {
+    guard(|| {
+        let p = api::formula_page(text(name, "the name")?, examples as usize).ok_or("no such formula")?;
+        let flat = |s: &str| s.replace("\r", "").replace('\n', "\u{1}").replace('\t', " ");
+        let mut t = format!("kind\t{}\t{}\t{}\n", p.kind, p.kind_label, p.explanation_label);
+        t += &format!("about\t{}\n", flat(&p.description));
+        for (k, v, l) in &p.values {
+            t += &format!("value\t{}\t{v}\t{}\n", flat(k), l.unwrap_or(""));
+        }
+        for h in &p.hints {
+            t += &format!("hint\t{h}\n");
+        }
+        Ok(t)
+    })
+    .map_or(std::ptr::null_mut(), owned_text)
+}
+
+/// The example files of a folder by the formulas they use: a line per
+/// formula, its lower-case name and the files' names (without extension)
+/// parted by tabs; free it with mb3d_string_free.
+///
+/// # Safety
+/// `folder` is a zero-terminated text.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_formula_examples(folder: *const c_char) -> *mut c_char {
+    guard(|| {
+        let dir = std::path::PathBuf::from(text(folder, "the folder")?);
+        Ok(api::formula_examples(&dir).iter().map(|(k, f)| format!("{k}\t{}\n", f.join("\t"))).collect::<String>())
+    })
+    .map_or(std::ptr::null_mut(), owned_text)
+}
+
 /// A formula's settings with their default values, as `key = value` lines
 /// of a `[formula]` section; free it with mb3d_string_free.
 ///

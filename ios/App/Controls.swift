@@ -245,6 +245,8 @@ struct FormulaPicker: View {
     let choose: (String) -> Void
 
     @State private var previews = FormulaPreviews()
+    /// the formula whose page of the Formula book is open
+    @State private var about: String?
 
     @State private var search = ""
     @AppStorage("favouriteFormulas") private var stored = ""
@@ -274,7 +276,14 @@ struct FormulaPicker: View {
         }
         .searchable(text: $search)
         .onAppear { previews.text = preview }
-        .onDisappear { previews.rest() }
+        .onDisappear { if about == nil { previews.rest() } }
+        .navigationDestination(item: $about) { name in
+            FormulaBookPage(name: name, image: previews.image(name)) {
+                about = nil
+                choose(name)
+                dismiss()
+            }
+        }
         .navigationTitle("Formula")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -289,6 +298,7 @@ struct FormulaPicker: View {
     }
 
     private func row(_ name: String, _ favs: [String]) -> some View {
+        HStack {
         Button {
             choose(name)
             dismiss()
@@ -307,7 +317,7 @@ struct FormulaPicker: View {
                     // (the author's words from the formula file, as the
                     // desktop's Formula book shows them)
                     if let about = Engine.formulaBook[name]?.about, !about.isEmpty {
-                        Text(verbatim: about).font(.caption).foregroundStyle(.secondary).lineLimit(3)
+                        BookLabels.view(about).font(.caption).foregroundStyle(.secondary).lineLimit(3)
                     }
                 }
                 Spacer()
@@ -321,6 +331,13 @@ struct FormulaPicker: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // the formula's page of the Formula book
+        Button { about = name } label: {
+            Image(systemName: "info.circle").font(.title3)
+        }
+        .buttonStyle(.borderless)
+        .accessibilityLabel("About this formula...")
+        }
         .onAppear { previews.want(name) }
         .onDisappear { previews.drop(name) }
         .swipeActions(edge: .leading) {
@@ -394,6 +411,94 @@ struct FormulaCards: View {
                 }
             }
             .padding(.vertical, 2)
+        }
+    }
+}
+
+/// A formula's page of the Formula book: its kind and what that means, the
+/// author's description, its values with what the usual names do, hints,
+/// and the example files that use it (a tap opens one).
+struct FormulaBookPage: View {
+    let name: String
+    let image: CGImage?
+    let use: () -> Void
+
+    @Environment(Studio.self) private var studio: Studio?
+    @State private var page = Engine.FormulaPage()
+    @State private var examples: [String]?
+
+    /// (read once: every example file is opened for it)
+    @MainActor private static var index: [String: [String]]?
+
+    var body: some View {
+        List {
+            Section {
+                if let image {
+                    Image(decorative: image, scale: 1).resizable().interpolation(.high).aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: .infinity, maxHeight: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                }
+                if !page.kindName.isEmpty {
+                    BookLabels.view(page.kindName).font(.headline)
+                    BookLabels.view(page.explanation).font(.callout).foregroundStyle(.secondary)
+                }
+            }
+            Section {
+                if page.about.isEmpty {
+                    Text("No description from the author.").foregroundStyle(.secondary)
+                } else {
+                    BookLabels.view(page.about)
+                }
+            }
+            if !page.values.isEmpty {
+                Section("Values:") {
+                    ForEach(page.values, id: \.name) { v in
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack {
+                                Text(verbatim: v.name)
+                                Spacer()
+                                Text(verbatim: v.value).monospacedDigit().foregroundStyle(.secondary)
+                            }
+                            if !v.about.isEmpty {
+                                BookLabels.view(v.about).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+            }
+            if !page.hints.isEmpty {
+                Section("Hints:") {
+                    ForEach(page.hints, id: \.self) { BookLabels.view($0) }
+                }
+            }
+            Section("Examples") {
+                if let examples, examples.isEmpty {
+                    BookLabels.view("@MB:NoExampleFileUsesItTry").foregroundStyle(.secondary)
+                } else if let examples {
+                    ForEach(examples, id: \.self) { title in
+                        Button(title) {
+                            if let url = studio?.examples.first(where: { $0.deletingPathExtension().lastPathComponent == title }) {
+                                studio?.open(url)
+                            }
+                        }
+                    }
+                } else {
+                    ProgressView()
+                }
+            }
+            Section {
+                Button("Use this formula", systemImage: "checkmark.circle", action: use)
+            }
+        }
+        .navigationTitle(name)
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            if Self.index == nil {
+                Self.index = await Task.detached(priority: .utility) { Engine.formulaExamples() }.value
+            }
+            let list = Self.index?[name.lowercased()] ?? []
+            examples = list
+            page = Engine.formulaPage(name, examples: list.count) ?? Engine.FormulaPage()
         }
     }
 }

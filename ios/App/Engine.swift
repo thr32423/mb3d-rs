@@ -70,6 +70,56 @@ enum Engine {
     /// dIFS transformation) and its author's description.
     @MainActor static private(set) var formulaBook: [String: (kind: Int, about: String)] = readFormulaBook()
 
+    /// A formula's page of the Formula book. Texts the book has in every
+    /// language are labels (`@MB:...`, see `BookLabels`).
+    struct FormulaPage {
+        var kindName = ""
+        var explanation = ""
+        var about = ""
+        var values: [(name: String, value: String, about: String)] = []
+        var hints: [String] = []
+    }
+
+    /// `examples`: how many example files use the formula.
+    static func formulaPage(_ name: String, examples: Int) -> FormulaPage? {
+        guard let t = name.withCString({ mb3d_formula_page($0, UInt32(max(examples, 0))) }) else { return nil }
+        defer { mb3d_string_free(t) }
+        var page = FormulaPage()
+        for line in String(cString: t).split(separator: "\n") {
+            let f = line.split(separator: "\t", omittingEmptySubsequences: false).map(String.init)
+            switch f.first {
+            case "kind" where f.count >= 4:
+                page.kindName = f[2]
+                page.explanation = f[3]
+            case "about" where f.count >= 2:
+                page.about = f[1].replacingOccurrences(of: "\u{1}", with: "\n")
+            case "value" where f.count >= 4:
+                page.values.append((f[1], f[2], f[3]))
+            case "hint" where f.count >= 2:
+                page.hints.append(f[1])
+            default:
+                break
+            }
+        }
+        return page
+    }
+
+    /// The example files by the formulas they use (lower-case formula
+    /// name to the files' names); reads every example, so not on the main
+    /// thread.
+    static func formulaExamples() -> [String: [String]] {
+        guard let folder = examples().first?.deletingLastPathComponent(),
+              let t = folder.path.withCString({ mb3d_formula_examples($0) })
+        else { return [:] }
+        defer { mb3d_string_free(t) }
+        var map: [String: [String]] = [:]
+        for line in String(cString: t).split(separator: "\n") {
+            let f = line.split(separator: "\t").map(String.init)
+            if let k = f.first { map[k] = Array(f.dropFirst()) }
+        }
+        return map
+    }
+
     private static func readFormulaBook() -> [String: (kind: Int, about: String)] {
         guard let t = mb3d_formula_book() else { return [:] }
         defer { mb3d_string_free(t) }

@@ -12,7 +12,7 @@ struct MB3DApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(studio: studio)
+            Sideways { ContentView(studio: studio) }
         }
         // the menu bar (iPadOS 26) and the keyboard's shortcuts
         .commands {

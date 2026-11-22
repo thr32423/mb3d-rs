@@ -94,6 +94,7 @@ enum Tour {
 
     static let page = argument("-page").flatMap(SettingsPage.init(rawValue:))
     static let sheet = argument("-sheet")
+    static let landscape = ProcessInfo.processInfo.arguments.contains("-landscape")
 }
 
 // MARK: pages

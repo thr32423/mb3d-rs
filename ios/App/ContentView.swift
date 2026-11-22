@@ -81,7 +81,7 @@ struct ContentView: View {
             ScenesView(studio: studio).preferredColorScheme(.dark)
         }
         .fullScreenCover(isPresented: $studio.breeding) {
-            VariationsView(studio: studio).preferredColorScheme(.dark)
+            Sideways { VariationsView(studio: studio) }.preferredColorScheme(.dark)
         }
         .sensoryFeedback(.success, trigger: studio.finishedCount)
         .sensoryFeedback(.impact, trigger: studio.focusCount)
@@ -358,11 +358,7 @@ struct ContentView: View {
     /// `-open NAME` (the build machine's screenshot run) opens that example.
     private func autoOpen() {
         let args = ProcessInfo.processInfo.arguments
-        // `-landscape` (the build machine's screenshots): the iPad on its side
-        if args.contains("-landscape"),
-           let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
-            scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight))
-        }
+
         if let i = args.firstIndex(of: "-open"), i + 1 < args.count,
            let url = studio.examples.first(where: { $0.deletingPathExtension().lastPathComponent == args[i + 1] }) {
             studio.open(url)
@@ -604,5 +600,26 @@ struct Compass: View {
             }
         }
         .accessibilityHidden(true)
+    }
+}
+
+/// `-landscape` (the build machine's screenshots): the interface laid out
+/// as on an iPad on its side and drawn turned, since an iPad app cannot
+/// turn the simulated device itself; the screenshot is turned back.
+struct Sideways<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        if Tour.landscape {
+            GeometryReader { geo in
+                content()
+                    .frame(width: geo.size.height, height: geo.size.width)
+                    .rotationEffect(.degrees(90))
+                    .frame(width: geo.size.width, height: geo.size.height)
+            }
+            .background(Color.black.ignoresSafeArea())
+        } else {
+            content()
+        }
     }
 }

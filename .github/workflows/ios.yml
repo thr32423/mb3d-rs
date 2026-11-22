@@ -97,6 +97,30 @@ jobs:
             sleep 60
             xcrun simctl io "$udid" screenshot "screens/ui-sheet-$sheet.png"
           done
+          # the iPad on its side (-landscape turns it): the picture alone,
+          # some settings beside it, the windows
+          xcrun simctl terminate "$udid" local.mb3d.ipad || true
+          xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -landscape
+          sleep 30
+          xcrun simctl io "$udid" screenshot "screens/land-start.png"
+          for page in formulas lighting colours effects; do
+            xcrun simctl terminate "$udid" local.mb3d.ipad || true
+            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -page "$page" -landscape
+            sleep 25
+            xcrun simctl io "$udid" screenshot "screens/land-page-$page.png"
+          done
+          for sheet in variations animation model; do
+            xcrun simctl terminate "$udid" local.mb3d.ipad || true
+            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -sheet "$sheet" -landscape
+            sleep 60
+            xcrun simctl io "$udid" screenshot "screens/land-sheet-$sheet.png"
+          done
+          # (the simulator's pictures stay upright: turned to match)
+          for f in screens/land-*.png; do
+            if [ "$(sips -g pixelWidth "$f" | awk '/pixelWidth/{print $2}')" -lt "$(sips -g pixelHeight "$f" | awk '/pixelHeight/{print $2}')" ]; then
+              sips -r 270 "$f" >/dev/null
+            fi
+          done
           # the translations: German, and Arabic (right to left)
           for lang in de ar; do
             xcrun simctl terminate "$udid" local.mb3d.ipad || true

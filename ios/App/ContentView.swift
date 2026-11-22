@@ -358,6 +358,11 @@ struct ContentView: View {
     /// `-open NAME` (the build machine's screenshot run) opens that example.
     private func autoOpen() {
         let args = ProcessInfo.processInfo.arguments
+        // `-landscape` (the build machine's screenshots): the iPad on its side
+        if args.contains("-landscape"),
+           let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
+            scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight))
+        }
         if let i = args.firstIndex(of: "-open"), i + 1 < args.count,
            let url = studio.examples.first(where: { $0.deletingPathExtension().lastPathComponent == args[i + 1] }) {
             studio.open(url)

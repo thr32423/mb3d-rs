@@ -7,6 +7,8 @@ enum Field: Identifiable {
     case number(String, LocalizedStringKey, Double, whole: Bool = false)
     case slider(String, LocalizedStringKey, ClosedRange<Double>, Double, String, log: Bool = false, whole: Bool = false)
     case toggle(String, LocalizedStringKey, Bool = false)
+    /// a switch named after what it turns off (on while the key is false)
+    case off(String, LocalizedStringKey, Bool = true)
     /// the words the engine takes with their titles
     case choice(String, LocalizedStringKey, [(String, LocalizedStringKey)], String)
     /// a value like `a, b, c`: a title per number
@@ -16,7 +18,7 @@ enum Field: Identifiable {
 
     var id: String {
         switch self {
-        case .number(let k, _, _, _), .slider(let k, _, _, _, _, _, _), .toggle(let k, _, _),
+        case .number(let k, _, _, _), .slider(let k, _, _, _, _, _, _), .toggle(let k, _, _), .off(let k, _, _),
              .choice(let k, _, _, _), .vector(let k, _, _):
             return k
         case .bit(let k, _, let m):
@@ -39,6 +41,9 @@ struct Fields: View {
                               format: format, done: studio.commit)
             case .toggle(let k, let t, let d):
                 Toggle(t, isOn: studio.onOff(k, d))
+            case .off(let k, let t, let d):
+                Toggle(t, isOn: Binding(get: { !studio.onOff(k, d).wrappedValue },
+                                        set: { studio.onOff(k, d).wrappedValue = !$0 }))
             case .choice(let k, let t, let options, let d):
                 Picker(t, selection: studio.choice(k, d)) {
                     ForEach(options, id: \.0) { o in
@@ -61,12 +66,14 @@ struct Fields: View {
 struct PresentFields: View {
     let studio: Studio
     let prefixes: [String]
+    /// the desktop's names for some of them (the others show their key)
+    var titles: [String: LocalizedStringKey] = [:]
 
     var body: some View {
         ForEach(studio.doc.keys(startingWith: prefixes), id: \.self) { k in
             let value = studio.doc[k] ?? ""
             let parts = value.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-            let title = LocalizedStringKey(stringLiteral: k.replacingOccurrences(of: "_", with: " "))
+            let title = titles[k] ?? LocalizedStringKey(stringLiteral: k.replacingOccurrences(of: "_", with: " "))
             if ["true", "false", "on", "off"].contains(value.lowercased()) {
                 Toggle(title, isOn: studio.onOff(k, false))
             } else if parts.count == 1, Double(parts[0]) != nil {

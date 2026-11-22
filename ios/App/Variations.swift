@@ -202,7 +202,7 @@ struct VariationsView: View {
                     if breeder.busy {
                         Button("Stop", systemImage: "stop.fill") { breeder.stop() }
                     }
-                    Button("Previous generation", systemImage: "arrow.uturn.backward") { breeder.back() }
+                    Button("Generations", systemImage: "arrow.uturn.backward") { breeder.back() }
                         .disabled(breeder.past.isEmpty)
                     Button("Mutation", systemImage: "slider.horizontal.3") { showMutation = true }
                         .popover(isPresented: $showMutation) { mutation }

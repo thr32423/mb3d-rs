@@ -259,8 +259,8 @@ struct FormulaPicker: View {
         let found = search.isEmpty ? names : names.filter { $0.localizedCaseInsensitiveContains(search) }
         let rest = found.filter { !own.contains($0) }
         let book = Engine.formulaBook
-        let kinds: [LocalizedStringKey] = ["3D formulas", "3D formulas with analytic DE", "4D formulas",
-                                           "4D formulas with analytic DE", "Transforms", "dIFS shapes", "dIFS transforms"]
+        let kinds: [LocalizedStringKey] = ["3D escape-time formulas", "3D formulas with analytic DE (fast)", "4D formulas",
+                                           "4D formulas with analytic DE", "Transformations (only in combination)", "dIFS shapes", "dIFS transformations"]
         List {
             if search.isEmpty, !favs.isEmpty {
                 Section("Favourites") {

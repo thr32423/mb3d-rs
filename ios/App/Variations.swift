@@ -267,7 +267,11 @@ struct VariationsView: View {
         let parent = breeder.members.first
         let chosen = breeder.chosen.flatMap { i in breeder.members.first { $0.id == i } }
         let shown = comparing ? parent : chosen ?? parent
+        // (the frame takes the picture's shape, so the line under it stays
+        // with it in a tall column)
+        let shape = shown?.image.map { CGFloat($0.width) / CGFloat(max($0.height, 1)) } ?? 1
         return VStack(spacing: 8) {
+            Spacer(minLength: 0)
             ZStack {
                 Color.black
                 if let img = shown?.image {
@@ -276,11 +280,13 @@ struct VariationsView: View {
                     ProgressView().tint(.white)
                 }
             }
+            .aspectRatio(shape, contentMode: .fit)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .onLongPressGesture(minimumDuration: 0.15, perform: {}, onPressingChanged: { comparing = $0 })
             Text(chosen == nil || comparing ? "The scene" : "Hold the picture to compare with the scene")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+            Spacer(minLength: 0)
         }
     }
 

@@ -122,7 +122,9 @@ jobs:
             sleep 60
             xcrun simctl io "$udid" screenshot "screens/land-sheet-$sheet.png"
           done
-          for f in screens/land-*.png; do sips -g pixelWidth -g pixelHeight "$f" | tr '\n' ' '; echo; done
+          # (the simulator keeps its picture upright, the app on its side in
+          # it: a quarter turn to the right shows it as one sees the iPad)
+          for f in screens/land-*.png; do sips -r 90 "$f" >/dev/null; done
           # the translations: German, and Arabic (right to left)
           for lang in de ar; do
             xcrun simctl terminate "$udid" local.mb3d.ipad || true

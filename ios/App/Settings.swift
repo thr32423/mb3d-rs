@@ -875,7 +875,6 @@ struct NumberField: View {
                             done()
                         }
                     }
-                    .accessibilityLabel(Text(title))
                     .accessibilityValue(shown)
                     .accessibilityIdentifier("number")
                     .accessibilityAdjustableAction { direction in

@@ -67,9 +67,11 @@ final class MB3DUITests: XCTestCase {
         _ = done.waitForExistence(timeout: timeout)
     }
 
+    /// A number's row (the row reads "title, value"; the pill is at its
+    /// right end).
     private func number(_ title: String) -> XCUIElement {
         app.descendants(matching: .any).matching(identifier: "number")
-            .matching(NSPredicate(format: "label == %@", title)).firstMatch
+            .matching(NSPredicate(format: "label BEGINSWITH %@", title + ",")).firstMatch
     }
 
     private func scrollTo(_ e: XCUIElement, in list: XCUIElement, tries: Int = 8) {
@@ -90,15 +92,16 @@ final class MB3DUITests: XCTestCase {
         XCTAssertTrue(scale.waitForExistence(timeout: 20), "the formula's scale")
         let before = scale.value as? String
         live(true, "number scrub")
-        let start = scale.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-        start.press(forDuration: 0.2, thenDragTo: start.withOffset(CGVector(dx: 220, dy: 0)),
+        // (from the pill at the row's right end, leftwards: smaller)
+        let start = scale.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5))
+        start.press(forDuration: 0.2, thenDragTo: start.withOffset(CGVector(dx: -220, dy: 0)),
                     withVelocity: .slow, thenHoldForDuration: 4)
         live(false)
         sleep(2)
         let after = scale.value as? String
         XCTAssertNotEqual(before, after, "dragging the number changed it (\(before ?? "?") → \(after ?? "?"))")
         shot("number-scrubbed")
-        scale.tap()
+        scale.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5)).tap()
         sleep(1)
         shot("number-typing")
         XCTAssertTrue(app.textFields.firstMatch.waitForExistence(timeout: 5), "a tap types the number")
@@ -180,19 +183,22 @@ final class MB3DUITests: XCTestCase {
     func test5MoreSections() {
         open(["-page", "lighting"])
         waitForPicture()
+        // (the panel's list makes its rows as they scroll into view)
+        let list = app.collectionViews.firstMatch
+        XCTAssertTrue(list.waitForExistence(timeout: 20), "Lighting's list")
         let more = app.buttons["More"].firstMatch
-        XCTAssertTrue(more.waitForExistence(timeout: 20), "Lighting's More")
+        scrollTo(more, in: list)
+        XCTAssertTrue(more.exists, "Lighting's More")
         more.tap()
         sleep(2)
         shot("more-lighting")
-        app.collectionViews.firstMatch.swipeUp()
+        list.swipeUp()
         sleep(1)
         shot("more-lighting-2")
         let effects = app.buttons["Effects"].firstMatch
         XCTAssertTrue(effects.waitForExistence(timeout: 5), "the rail's Effects")
         effects.tap()
         sleep(2)
-        let list = app.collectionViews.firstMatch
         let mc = app.buttons["Monte carlo rendering"].firstMatch
         scrollTo(mc, in: list)
         XCTAssertTrue(mc.exists, "Effects' Monte carlo rendering")

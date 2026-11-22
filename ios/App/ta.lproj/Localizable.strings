@@ -66,12 +66,14 @@
 "Between keyframes" = "முக்கிய பிரேம்களுக்கு இடையே";
 "Blend" = "கலவை";
 "Blend dFog" = "dFog கல";
+"Bokeh" = "போக்கே";
 "Border size" = "விளிம்பு அளவு";
 "Breed" = "இனப்பெருக்கு";
 "Breed a generation from the scene." = "காட்சியிலிருந்து ஒரு தலைமுறையை உருவாக்கு.";
 "Breeding" = "இனப்பெருக்கம்";
 "Brightness" = "ஒளிர்மை";
 "Built-in formula" = "உள்ளமைந்த சூத்திரம்";
+"Calculate DoF" = "DoF ஐக் கணக்கிடு";
 "Calculation" = "கணக்கீடு";
 "Camera" = "கேமரா";
 "Centre across" = "மையம் கிடைமட்டம்";
@@ -278,6 +280,7 @@
 "OK" = "சரி";
 "Off" = "அணை";
 "One finger: look around" = "ஒரு விரல்: சுற்றிப் பார்";
+"Only 1 focuspoint, made from average of Zsharp1+2!" = "ஒரே ஒரு குவியப் புள்ளி, Zsharp1+2 இன் சராசரியிலிருந்து!";
 "Only add light" = "ஒளியை மட்டும் சேர்";
 "Only dIFS" = "dIFS மட்டும்";
 "Open a scene first." = "முதலில் ஒரு காட்சியைத் திறக்கவும்.";

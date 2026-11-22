@@ -186,6 +186,11 @@ final class FractalScene: @unchecked Sendable {
     }
 
     /// The depth at a pixel as `dof_focus` takes it; nil on the background.
+    /// The bailout radius in use (the scene's own, else its formulas').
+    var bailout: Double {
+        mb3d_scene_bailout(ptr)
+    }
+
     func focus(x: Int, y: Int) -> Double? {
         guard x >= 0, y >= 0 else { return nil }
         var f = 0.0

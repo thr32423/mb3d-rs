@@ -66,12 +66,14 @@
 "Between keyframes" = "Di antara keyframe";
 "Blend" = "Campur";
 "Blend dFog" = "Campur dFog";
+"Bokeh" = "Bokeh";
 "Border size" = "Ukuran tepi";
 "Breed" = "Biakkan";
 "Breed a generation from the scene." = "Biakkan satu generasi dari adegan.";
 "Breeding" = "Pembiakan";
 "Brightness" = "Kecerahan";
 "Built-in formula" = "Rumus bawaan";
+"Calculate DoF" = "Hitung DoF";
 "Calculation" = "Perhitungan";
 "Camera" = "Kamera";
 "Centre across" = "Pusat mendatar";
@@ -278,6 +280,7 @@
 "OK" = "OK";
 "Off" = "Mati";
 "One finger: look around" = "Satu jari: melihat sekeliling";
+"Only 1 focuspoint, made from average of Zsharp1+2!" = "Hanya 1 titik fokus, dari rata-rata Zsharp1+2!";
 "Only add light" = "Hanya tambah cahaya";
 "Only dIFS" = "Hanya dIFS";
 "Open a scene first." = "Buka adegan terlebih dahulu.";

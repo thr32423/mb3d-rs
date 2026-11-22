@@ -66,12 +66,14 @@
 "Between keyframes" = "Między klatkami kluczowymi";
 "Blend" = "Mieszanie";
 "Blend dFog" = "Mieszaj dMgłę";
+"Bokeh" = "Bokeh";
 "Border size" = "Rozmiar marginesu";
 "Breed" = "Krzyżuj";
 "Breed a generation from the scene." = "Wyhoduj generację ze sceny.";
 "Breeding" = "Krzyżowanie";
 "Brightness" = "Jasność";
 "Built-in formula" = "Wzór wbudowany";
+"Calculate DoF" = "Oblicz DoF";
 "Calculation" = "Obliczanie";
 "Camera" = "Kamera";
 "Centre across" = "Środek w poziomie";
@@ -278,6 +280,7 @@
 "OK" = "OK";
 "Off" = "Wył.";
 "One finger: look around" = "Jeden palec: rozglądanie się";
+"Only 1 focuspoint, made from average of Zsharp1+2!" = "Tylko 1 punkt ostrości, ze średniej Zsharp1+2!";
 "Only add light" = "Tylko dodawaj światło";
 "Only dIFS" = "Tylko dIFS";
 "Open a scene first." = "Najpierw otwórz scenę.";

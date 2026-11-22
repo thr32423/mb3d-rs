@@ -648,12 +648,30 @@ final class Studio {
         )
     }
 
-    /// One bit of a global number of options, applied shortly after.
-    func bit(_ key: String, _ mask: Int) -> Binding<Bool> {
+    /// The bailout radius the scene renders with (its own `rstop`, else
+    /// its formulas' default).
+    var bailout: Double { scene?.bailout ?? 16 }
+
+    /// The shape of the Monte Carlo depth of field's blur, 1 to 6 (bits 4
+    /// to 6 of `mc_options`; the engine's own options are 2).
+    func bokeh() -> Binding<Int> {
         Binding(
-            get: { (Int(self.doc[key] ?? "") ?? 0) & mask != 0 },
+            get: { min(((Int(self.doc["mc_options"] ?? "") ?? 2) >> 4) & 7, 5) + 1 },
+            set: { n in
+                let v = Int(self.doc["mc_options"] ?? "") ?? 2
+                self.doc["mc_options"] = String((v & 0x0F) | ((min(max(n, 1), 6) - 1) << 4))
+                self.commitSoon()
+            }
+        )
+    }
+
+    /// One bit of a global number of options (`fallback`: the engine's
+    /// own value while the scene has none), applied shortly after.
+    func bit(_ key: String, _ mask: Int, _ fallback: Int = 0) -> Binding<Bool> {
+        Binding(
+            get: { (Int(self.doc[key] ?? "") ?? fallback) & mask != 0 },
             set: { on in
-                let v = Int(self.doc[key] ?? "") ?? 0
+                let v = Int(self.doc[key] ?? "") ?? fallback
                 self.doc[key] = String(on ? v | mask : v & ~mask)
                 self.commitSoon()
             }
@@ -711,7 +729,8 @@ final class Studio {
         )
     }
 
-    /// The four colours of the inside (`interior_colors = position:#colour`).
+    /// The four colours of the inside (`interior_colors =
+    /// position:#colour:specular`).
     func interiorColor(_ i: Int) -> Binding<CGColor> {
         func items() -> [[String]] {
             (self.doc["interior_colors"] ?? "").split(separator: ",").map {
@@ -721,11 +740,11 @@ final class Studio {
         return Binding(
             get: {
                 let all = items()
-                return Self.cgColor(i < all.count && all[i].count == 2 ? all[i][1] : nil)
+                return Self.cgColor(i < all.count && all[i].count >= 2 ? all[i][1] : nil)
             },
             set: { c in
                 var all = items()
-                guard let h = Self.hex(c), i < all.count, all[i].count == 2 else { return }
+                guard let h = Self.hex(c), i < all.count, all[i].count >= 2 else { return }
                 all[i][1] = h
                 self.doc["interior_colors"] = all.map { $0.joined(separator: ":") }.joined(separator: ", ")
                 self.commitSoon()

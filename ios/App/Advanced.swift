@@ -13,15 +13,16 @@ enum Field: Identifiable {
     case choice(String, LocalizedStringKey, [(String, LocalizedStringKey)], String)
     /// a value like `a, b, c`: a title per number
     case vector(String, [LocalizedStringKey], [Double])
-    /// one bit of a number of options
-    case bit(String, LocalizedStringKey, Int)
+    /// one bit of a number of options (and the engine's own options while
+    /// the scene has none)
+    case bit(String, LocalizedStringKey, Int, Int = 0)
 
     var id: String {
         switch self {
         case .number(let k, _, _, _), .slider(let k, _, _, _, _, _, _), .toggle(let k, _, _), .off(let k, _, _),
              .choice(let k, _, _, _), .vector(let k, _, _):
             return k
-        case .bit(let k, _, let m):
+        case .bit(let k, _, let m, _):
             return "\(k).\(m)"
         }
     }
@@ -54,8 +55,8 @@ struct Fields: View {
                 ForEach(titles.indices, id: \.self) { i in
                     NumberField(title: titles[i], value: studio.component(k, i, d), done: studio.commit)
                 }
-            case .bit(let k, let t, let mask):
-                Toggle(t, isOn: studio.bit(k, mask))
+            case .bit(let k, let t, let mask, let own):
+                Toggle(t, isOn: studio.bit(k, mask, own))
             }
         }
     }

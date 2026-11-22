@@ -66,12 +66,14 @@
 "Between keyframes" = "کی فریمز کے درمیان";
 "Blend" = "آمیزش";
 "Blend dFog" = "dFog ملائیں";
+"Bokeh" = "بوکے";
 "Border size" = "کنارے کا سائز";
 "Breed" = "نسل بنائیں";
 "Breed a generation from the scene." = "منظر سے ایک نسل بنائیں۔";
 "Breeding" = "افزائش نسل";
 "Brightness" = "چمک";
 "Built-in formula" = "بلٹ اِن فارمولا";
+"Calculate DoF" = "DoF کا حساب کریں";
 "Calculation" = "حساب";
 "Camera" = "کیمرا";
 "Centre across" = "مرکز افقی";
@@ -278,6 +280,7 @@
 "OK" = "ٹھیک ہے";
 "Off" = "بند";
 "One finger: look around" = "ایک انگلی: اردگرد دیکھیں";
+"Only 1 focuspoint, made from average of Zsharp1+2!" = "صرف 1 فوکس پوائنٹ، Zsharp1+2 کے اوسط سے بنا!";
 "Only add light" = "صرف روشنی شامل کریں";
 "Only dIFS" = "صرف dIFS";
 "Open a scene first." = "پہلے کوئی منظر کھولیں۔";

@@ -192,11 +192,11 @@ struct FractalPage: View {
             }
             More {
                 Fields(studio: studio, fields: [
-                    .number("min_iterations", "Min. iterations", 0, whole: true),
-                    .number("rstop", "R bailout", 16),
+                    .number("min_iterations", "Min. iterations", 1, whole: true),
+                    .number("rstop", "R bailout", studio.bailout),
                     .number("raystep_limiter", "Ray step limiter", 1),
-                    .number("z_start", "Ray start", 0),
-                    .number("z_end", "Ray end", 0),
+                    .number("z_start", "Ray start", -2),
+                    .number("z_end", "Ray end", 30),
                     .choice("inside", "In/out option", [("outside", "Outside render"), ("inside", "Inside render"), ("both", "In and outside")], "outside"),
                     .choice("slice_2d", "2D slice", [("off", "Off"), ("start", "At the ray start"), ("mid", "In the middle"), ("end", "At the ray end")], "off"),
                     .toggle("normals_on_zbuf", "Normals on Z-buffer"),
@@ -330,7 +330,7 @@ struct LightingPage: View {
             }
             More {
                 Fields(studio: studio, fields: [
-                    .number("indirect_light", "Indirect light", 0),
+                    .number("indirect_light", "Indirect light", 53),
                     .number("diffuse_shadowing", "Diffuse shadow", 0),
                     .toggle("ambient_relative_to_object", "Relative to object"),
                     .toggle("internal_gamma2", "Gamma 2 inside"),
@@ -373,8 +373,8 @@ struct ColoursPage: View {
                         ColorPicker("Colour \(i + 1)", selection: studio.interiorColor(i), supportsOpacity: false)
                     }
                     Fields(studio: studio, fields: [
-                        .number("interior_start", "Colour start", 0),
-                        .number("interior_end", "Colour end", 0),
+                        .number("interior_start", "Colour start", 60),
+                        .number("interior_end", "Colour end", 60),
                     ])
                 }
             }
@@ -464,8 +464,8 @@ struct FogPage: View {
             }
             More {
                 Fields(studio: studio, fields: [
-                    .number("fog_offset", "Fog offset", 0),
-                    .number("fog_far_offset", "Far offset", 0),
+                    .number("fog_offset", "Fog offset", 128),
+                    .number("fog_far_offset", "Far offset", 128),
                     .choice("depth_func", "Background colour function", [("0", "0"), ("1", "1"), ("2", "2"), ("3", "3")], "0"),
                     .bit("dynfog_options", "Blend dFog", 1),
                     .bit("dynfog_options", "Only add light", 2),
@@ -556,7 +556,7 @@ struct EffectsPage: View {
             }
             More(title: "Ambient Shadows") {
                 Fields(studio: studio, fields: [
-                    .number("ao_threshold", "Z/R Threshold", 1),
+                    .number("ao_threshold", "Z/R Threshold", 2),
                     .slider("ao_border", "Border size", 0...0.9, 0, "%.2f"),
                     .number("ao_random", "Occlusion: random", 0, whole: true),
                     .choice("deao_quality", "Rays", [("0", "3"), ("1", "7"), ("2", "17"), ("3", "33")], "1"),
@@ -568,26 +568,33 @@ struct EffectsPage: View {
             More(title: "Depth of field") {
                 Fields(studio: studio, fields: [
                     .number("dof_focus2", "Z2 sharp", 1),
-                    .number("dof_max_radius", "ClippingR", 1),
+                    .number("dof_max_radius", "ClippingR", 30),
                     .number("dof_passes", "Passes", 1, whole: true),
                 ])
             }
             More(title: "Monte carlo rendering") {
+                // (the Monte Carlo render blurs by the scene's depth of
+                // field: its switch, focus and aperture above)
+                Toggle("Calculate DoF", isOn: studio.effect("dof", on: "sorted"))
+                Picker("Bokeh", selection: studio.bokeh()) {
+                    ForEach(1..<7) { n in Text(verbatim: "\(n)").tag(n) }
+                }
+                Text("Only 1 focuspoint, made from average of Zsharp1+2!").font(.caption).foregroundStyle(.secondary)
                 Fields(studio: studio, fields: [
                     .number("mc_depth", "Ambient rays depth", 3, whole: true),
-                    .number("mc_reflection_depth", "Reflection rays depth", 2, whole: true),
+                    .number("mc_reflection_depth", "Reflection rays depth", 1, whole: true),
                     .number("mc_diffuse_reflects", "Reflection diffusity", 0),
                     .number("mc_soft_shadow_radius", "Hard shadow radius", 1),
-                    .slider("mc_exposure", "Exposure", 0...255, 100, "%.0f", whole: true),
-                    .slider("mc_saturation", "Saturation", 0...127, 64, "%.0f", whole: true),
+                    .slider("mc_exposure", "Exposure", 0...255, 128, "%.0f", whole: true),
+                    .slider("mc_saturation", "Saturation", 0...127, 32, "%.0f", whole: true),
                     .number("mc_refraction_index", "Refractive index", 1.5),
-                    .number("mc_absorption", "Absorption", 1),
-                    .number("mc_scattering", "Light scattering", 0),
+                    .number("mc_absorption", "Absorption", 0.2),
+                    .number("mc_scattering", "Light scattering", 1),
                     .toggle("mc_only_difs", "Only dIFS"),
-                    .bit("mc_options", "Soft clipping", 1),
-                    .bit("mc_options", "Secant searchmode", 2),
-                    .bit("mc_options", "Autoclip spec+diff", 4),
-                    .bit("mc_options", "Anti aliasing Gauss", 8),
+                    .bit("mc_options", "Soft clipping", 1, 2),
+                    .bit("mc_options", "Secant searchmode", 2, 2),
+                    .bit("mc_options", "Autoclip spec+diff", 4, 2),
+                    .bit("mc_options", "Anti aliasing Gauss", 8, 2),
                 ])
             }
         }
@@ -634,11 +641,11 @@ struct FinishingPage: View {
                                   logarithmic: true, format: "%.3f", done: studio.commit)
                     LabeledSlider(title: "Outer radius", value: studio.component("droste", 3, [0.5, 0.5, 0.12, 0.45]), range: 0.01...4,
                                   logarithmic: true, format: "%.3f", done: studio.commit)
-                    LabeledSlider(title: "Twist", value: studio.number("droste_twist", 0), range: -8...8,
+                    LabeledSlider(title: "Twist", value: studio.number("droste_twist", 1), range: -8...8,
                                   format: "%.2f", done: studio.commit)
                     LabeledSlider(title: "Phase", value: studio.number("droste_phase", 0), range: -4...4,
                                   format: "%.2f", done: studio.commit)
-                    LabeledSlider(title: "Blend", value: studio.number("droste_blend", 0), range: 0...1,
+                    LabeledSlider(title: "Blend", value: studio.number("droste_blend", 0.35), range: 0...1,
                                   format: "%.2f", done: studio.commit)
                 }
             } header: {
@@ -652,7 +659,7 @@ struct FinishingPage: View {
 
 struct GroundPage: View {
     let studio: Studio
-    private let waves = [0.0, 0.4]
+    private let waves = [0.0, 1.0]
 
     var body: some View {
         Form {
@@ -692,7 +699,7 @@ struct GroundPage: View {
                                   format: "%.2f", done: studio.commit)
                     LabeledSlider(title: "Coverage", value: studio.number("cloud_coverage", 0.5), range: 0...1,
                                   format: "%.2f", done: studio.commit)
-                    NumberField(title: "Size", value: studio.number("cloud_size", 1), done: studio.commit)
+                    NumberField(title: "Size", value: studio.number("cloud_size", 0.5), done: studio.commit)
                     ColorPicker("Colour", selection: studio.color("cloud_color"), supportsOpacity: false)
                 }
             } header: {

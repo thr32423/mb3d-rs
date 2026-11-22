@@ -66,12 +66,14 @@
 "Between keyframes" = "キーフレーム間";
 "Blend" = "ブレンド";
 "Blend dFog" = "dFogをブレンド";
+"Bokeh" = "ボケ";
 "Border size" = "境界サイズ";
 "Breed" = "交配";
 "Breed a generation from the scene." = "シーンから 1 世代を交配します。";
 "Breeding" = "交配中";
 "Brightness" = "明るさ";
 "Built-in formula" = "内蔵数式";
+"Calculate DoF" = "DoFを計算";
 "Calculation" = "計算";
 "Camera" = "カメラ";
 "Centre across" = "中心 (横)";
@@ -278,6 +280,7 @@
 "OK" = "OK";
 "Off" = "オフ";
 "One finger: look around" = "1本指：見回す";
+"Only 1 focuspoint, made from average of Zsharp1+2!" = "焦点は1つのみ。Zsharp1+2の平均から作られます!";
 "Only add light" = "ライトを加算のみ";
 "Only dIFS" = "dIFSのみ";
 "Open a scene first." = "先にシーンを開いてください。";

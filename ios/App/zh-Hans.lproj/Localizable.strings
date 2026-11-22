@@ -66,12 +66,14 @@
 "Between keyframes" = "关键帧之间";
 "Blend" = "混合";
 "Blend dFog" = "混合动态雾";
+"Bokeh" = "散景";
 "Border size" = "边界大小";
 "Breed" = "繁育";
 "Breed a generation from the scene." = "从场景繁育出一代。";
 "Breeding" = "正在繁育";
 "Brightness" = "亮度";
 "Built-in formula" = "内置公式";
+"Calculate DoF" = "计算景深";
 "Calculation" = "计算";
 "Camera" = "相机";
 "Centre across" = "中心（横向）";
@@ -278,6 +280,7 @@
 "OK" = "好";
 "Off" = "关";
 "One finger: look around" = "单指：环顾四周";
+"Only 1 focuspoint, made from average of Zsharp1+2!" = "仅 1 个焦点，取 Zsharp1+2 的平均值！";
 "Only add light" = "仅叠加光照";
 "Only dIFS" = "仅 dIFS";
 "Open a scene first." = "请先打开一个场景。";

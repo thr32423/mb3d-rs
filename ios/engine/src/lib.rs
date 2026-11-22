@@ -640,6 +640,16 @@ pub unsafe extern "C" fn mb3d_scene_mb3d_text(scene: *const Fractal, title: *con
     guard(|| Ok(scene_ref(scene)?.mb3d_text(text(title, "the title")?))).map_or(std::ptr::null_mut(), owned_text)
 }
 
+/// The bailout radius in use (the scene's `rstop`, else its formulas'
+/// default); 0 for a null scene.
+///
+/// # Safety
+/// `scene` is a scene of this library.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_scene_bailout(scene: *const Fractal) -> f64 {
+    scene_ref(scene).map_or(0.0, |f| f.bailout())
+}
+
 /// The depth at pixel (x, y) of the scene's picture as `dof_focus` takes
 /// it, into `focus`: 0, or -1 on the background (or a failure).
 ///

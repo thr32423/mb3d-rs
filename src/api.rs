@@ -302,6 +302,12 @@ impl Fractal {
             .collect())
     }
 
+    /// The bailout radius in use: the scene's own (`rstop`), else the
+    /// largest of its formulas' defaults.
+    pub fn bailout(&self) -> f64 {
+        self.scene.effective_rstop()
+    }
+
     /// What the picture shows at pixel (`x`, `y`): the surface point and
     /// its depth as `dof_focus` takes it (the Post-process window's "Get
     /// Z" on a clicked point); None on the background.
@@ -727,6 +733,7 @@ mod pick_tests {
         // nothing likely to change: every child is the scene
         let same = f.variations_mutation(7, [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0], &RenderOptions::default()).unwrap();
         assert!(same.iter().all(|(_, g)| g.text() == f.text()), "weights of 0 change nothing");
+        assert!(f.bailout() > 1.0, "{}", f.bailout());
         let book = formula_book();
         assert!(book.iter().any(|(n, k, _)| n == "Integer Power" && *k <= 3), "the book knows the bulb");
         let page = formula_page("Integer Power", 1).expect("the bulb has a page");

@@ -181,6 +181,8 @@ char *mb3d_scene_mb3d_text(const mb3d_scene *scene, const char *title);
 /* The depth at pixel (x, y) as dof_focus takes it, into *focus: 0, or -1
  * on the background. */
 int mb3d_scene_pick(const mb3d_scene *scene, uint32_t x, uint32_t y, double *focus);
+/* The bailout radius in use (the scene's rstop, else its formulas' default). */
+double mb3d_scene_bailout(const mb3d_scene *scene);
 /* MutaGen: 15 variations of the scene into out[15] (each freed with
  * mb3d_scene_free; out[0] is the scene itself; the tree: 1, 1.1, 1.2, then
  * their children); progress as mb3d_render's. 0, or -1. */

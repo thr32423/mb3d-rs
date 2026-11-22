@@ -66,12 +66,14 @@
 "Between keyframes" = "Midzë kluczowima klatkama";
 "Blend" = "Mieszanié";
 "Blend dFog" = "Mieszôj dMgłã";
+"Bokeh" = "Bokeh";
 "Border size" = "Wiôlgòsc krézu";
 "Breed" = "Krziżëj";
 "Breed a generation from the scene." = "Krziżëj generacjã ze scenë.";
 "Breeding" = "Krziżowanié";
 "Brightness" = "Jasnosc";
 "Built-in formula" = "Wbùdowóny wzór";
+"Calculate DoF" = "Rechùj DoF";
 "Calculation" = "Rechòwanié";
 "Camera" = "Kamera";
 "Centre across" = "Westrzódk w pòzémie";
@@ -278,6 +280,7 @@
 "OK" = "OK";
 "Off" = "Wëł.";
 "One finger: look around" = "Jeden pôlc: rozzéranié sã";
+"Only 1 focuspoint, made from average of Zsharp1+2!" = "Le 1 pónkt òstrotë, zrobiony ze strzédny Zsharp1+2!";
 "Only add light" = "Leno dodôwôj wid";
 "Only dIFS" = "Leno dIFS";
 "Open a scene first." = "Nôprzód òtemkni scenã.";

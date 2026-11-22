@@ -9,6 +9,10 @@ targets:
   MB3D:
     type: application
     platform: iOS
+    # the UI tests run with the scheme's Test action (the workflow's
+    # touch checks)
+    scheme:
+      testTargets: [MB3DUITests]
     sources:
       - path: App
       # the formula, map and example folders (made by build.sh, not kept in git)
@@ -63,3 +67,20 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         MARKETING_VERSION: "0.1"
         CURRENT_PROJECT_VERSION: "1"
+  # touches the screenshots cannot show: dragging numbers, the slider's
+  # fade, the light ball, the picture's gestures, and the windows that open
+  # with a tap (UITests/; run by the workflow)
+  MB3DUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: MB3D
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: local.mb3d.ipad.uitests
+        TARGETED_DEVICE_FAMILY: "2"
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: MB3D

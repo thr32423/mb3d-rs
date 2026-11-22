@@ -20,6 +20,10 @@ struct GestureLayer: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         view.backgroundColor = .clear
+        // (found by the UI tests)
+        view.isAccessibilityElement = true
+        view.accessibilityIdentifier = "picture"
+        view.accessibilityLabel = "Picture"
         let c = context.coordinator
 
         let look = UIPanGestureRecognizer(target: c, action: #selector(Coordinator.look(_:)))

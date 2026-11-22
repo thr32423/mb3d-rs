@@ -737,6 +737,7 @@ struct FormulaSection: View {
             } label: {
                 LabeledContent("Formula", value: section["name"] ?? "")
             }
+            .accessibilityIdentifier("formula-picker")
             ForEach(section.entries.filter { $0.key != "name" }, id: \.key) { e in
                 NumberField(title: e.key == "iterations" ? "Iterations" : LocalizedStringKey(stringLiteral: e.key),
                             value: studio.sectionNumber(section.id, e.key),
@@ -874,7 +875,9 @@ struct NumberField: View {
                             done()
                         }
                     }
+                    .accessibilityLabel(Text(title))
                     .accessibilityValue(shown)
+                    .accessibilityIdentifier("number")
                     .accessibilityAdjustableAction { direction in
                         let step = whole ? 1 : max(abs(value), 0.25) * 0.05
                         switch direction {

@@ -19,7 +19,7 @@ permissions:
 jobs:
   simulator:
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     defaults:
       run:
         shell: bash
@@ -133,6 +133,32 @@ jobs:
             xcrun simctl io "$udid" screenshot "screens/lang-$lang.png"
           done
           tail -30 screens/app.log
+      # the touches (ios/UITests): built and run with the scheme's Test
+      # action on the same simulated iPad; while a test holds a finger down
+      # (screens/live-on), a picture of the screen every second
+      - name: Touches
+        continue-on-error: true
+        run: |
+          udid=$(xcrun simctl list devices booted | grep -oE '[0-9A-F-]{36}' | head -1)
+          screens="$PWD/screens"
+          ( while [ ! -f "$screens/.tests-done" ]; do
+              if [ -f "$screens/live-on" ]; then
+                xcrun simctl io "$udid" screenshot "$screens/live-$(date +%s)-$RANDOM.png" >/dev/null 2>&1
+              fi
+              sleep 1
+            done ) &
+          cd ios
+          # (the shell stops at a failing command: the result is kept, the
+          # frame loop ended and the attachments taken first)
+          status=0
+          TEST_RUNNER_SCREENS="$screens" xcodebuild test -project MB3D.xcodeproj -scheme MB3D \
+            -destination "id=$udid" -resultBundlePath "$PWD/build/UITests.xcresult" \
+            CODE_SIGNING_ALLOWED=NO > "$screens/uitests.log" 2>&1 || status=$?
+          grep -E "Test Case|error:|XCTAssert|Executed" "$screens/uitests.log" | tail -80 || true
+          touch "$screens/.tests-done"
+          xcrun xcresulttool export attachments --path build/UITests.xcresult --output-path "$screens/attachments" >/dev/null 2>&1 || true
+          ls "$screens" | grep -E "^test-|^live-" | head -80 || true
+          exit $status
       - uses: actions/upload-artifact@v4
         if: always()
         with:

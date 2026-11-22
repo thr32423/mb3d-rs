@@ -66,6 +66,7 @@ struct LightBall: View {
         .accessibilityElement()
         .accessibilityLabel("Light")
         .accessibilityValue(text)
+        .accessibilityIdentifier("lightball")
     }
 
     private var text: String {

@@ -17,10 +17,13 @@ struct ContentView: View {
     @AppStorage("seenGestures") private var seenGestures = false
 
     var body: some View {
+        // (the rail and the panels lie over the navigation stack, not in
+        // it: a panel's own title and Close button went into the main
+        // toolbar otherwise)
+        GeometryReader { geo in
+        ZStack {
         NavigationStack {
-            GeometryReader { geo in
-                workspace(geo.size)
-            }
+            picture(geo.size)
             .background(Color.black.ignoresSafeArea())
             .navigationTitle(studio.title)
             .navigationBarTitleDisplayMode(.inline)
@@ -64,6 +67,10 @@ struct ContentView: View {
                     renderButton
                 }
             }
+        }
+        chrome(geo.size)
+            .padding(.top, studio.pictureOnly ? 0 : 58)
+        }
         }
         .preferredColorScheme(.dark)
         .fileExporter(isPresented: $exporting, document: exportDoc, contentType: .m3p,
@@ -130,16 +137,14 @@ struct ContentView: View {
 
     // MARK: the picture, the rail and the panel
 
-    @ViewBuilder
-    private func workspace(_ size: CGSize) -> some View {
+    /// The picture, clear of the open panel.
+    private func picture(_ size: CGSize) -> some View {
         let wide = size.width > size.height
         let panelWidth = max(240, min(360, size.width - 92))
         let panelHeight = size.height * (raised ? 0.62 : 0.4)
         let bare = studio.pictureOnly
         let open = studio.panel != nil && !bare
-        ZStack {
-            // the picture keeps clear of the open panel
-            PictureView(studio: studio)
+        return PictureView(studio: studio)
                 .overlay(alignment: .bottom) {
                     if studio.panel == .animation, !studio.director.turntable, !bare {
                         KeyframeStrip(studio: studio, director: studio.director)
@@ -151,6 +156,16 @@ struct ContentView: View {
                 }
                 .padding(.trailing, wide && open ? panelWidth + 80 : 0)
                 .padding(.bottom, !wide && open ? panelHeight + 76 : 0)
+    }
+
+    /// The rail, the open panel and the controls on the picture.
+    @ViewBuilder
+    private func chrome(_ size: CGSize) -> some View {
+        let wide = size.width > size.height
+        let panelWidth = max(240, min(360, size.width - 92))
+        let panelHeight = size.height * (raised ? 0.62 : 0.4)
+        let bare = studio.pictureOnly
+        ZStack {
             if !bare {
                 Group {
                     if wide {

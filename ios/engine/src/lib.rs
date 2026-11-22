@@ -630,7 +630,38 @@ pub unsafe extern "C" fn mb3d_variations_strength(
     progress: Mb3dProgress,
     user: *mut c_void,
 ) -> c_int {
+    let k = if strength.is_finite() { strength.clamp(0.1, 3.0) } else { 1.0 };
+    let m = [0.75, 1.0, k, 0.5, k, 0.5, k];
+    // SAFETY: the same contract; `m` holds 7 numbers
+    unsafe { mb3d_variations_mutation(scene, seed, m.as_ptr(), out, progress, user) }
+}
+
+/// mb3d_variations with the MutaGen window's settings in mutation[7]: the
+/// weight of other formulas, then weight and strength of the formulas'
+/// values, of the Julia constant and of the iteration counts (weights 0
+/// to 1, strengths 0 to 3; MutaGen's own: 0.75, 1, 1, 0.5, 1, 0.5, 1).
+///
+/// # Safety
+/// `scene` is a scene of this library; `mutation` points to 7 numbers,
+/// `out` to 15 pointers.
+#[no_mangle]
+pub unsafe extern "C" fn mb3d_variations_mutation(
+    scene: *const Fractal,
+    seed: u64,
+    mutation: *const f64,
+    out: *mut *mut Fractal,
+    progress: Mb3dProgress,
+    user: *mut c_void,
+) -> c_int {
     guard(|| {
+        if mutation.is_null() {
+            return Err("mutation is null".into());
+        }
+        let mut m = [0.0; 7];
+        for (i, v) in m.iter_mut().enumerate() {
+            // SAFETY: `mutation` holds 7 numbers (the header's contract)
+            *v = unsafe { *mutation.add(i) };
+        }
         let f = scene_ref(scene)?;
         if out.is_null() {
             return Err("out is null".into());
@@ -645,7 +676,7 @@ pub unsafe extern "C" fn mb3d_variations_strength(
             }
         };
         let cancel = || stop.load(Ordering::SeqCst);
-        let v = f.variations_with(seed, strength, &RenderOptions { progress: Some(&report), cancel: Some(&cancel) })?;
+        let v = f.variations_mutation(seed, m, &RenderOptions { progress: Some(&report), cancel: Some(&cancel) })?;
         for (i, (_, g)) in v.into_iter().take(15).enumerate() {
             // SAFETY: `out` holds 15 pointers (the header's contract)
             unsafe { *out.add(i) = Box::into_raw(Box::new(g)) };

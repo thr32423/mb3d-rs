@@ -186,6 +186,8 @@
 "Move the camera with your fingers, then add the view. Swipe to remove a keyframe." = "손가락으로 카메라를 움직인 다음 보기를 추가하십시오. 키프레임을 제거하려면 쓸어넘기십시오.";
 "Moving parts sharp in every frame." = "움직이는 부분도 모든 프레임에서 선명합니다.";
 "Murkiness" = "탁도";
+"MutaGen's own values" = "MutaGen 기본값";
+"Mutation" = "변이";
 "My scenes" = "내 장면";
 "Name" = "이름";
 "Near" = "근거리";
@@ -320,6 +322,7 @@
 "Use" = "사용";
 "Use it as the ambient colour" = "주변광 색상으로 사용";
 "Value" = "값";
+"Values" = "값";
 "Variation %@" = "변형 %@";
 "Variations" = "변형";
 "Variations, generation %lld" = "변형, %lld세대";
@@ -331,6 +334,7 @@
 "Warmth" = "색온도";
 "Wave height" = "물결 높이";
 "Wave length" = "물결 길이";
+"Weight" = "가중치";
 "Your formulas" = "내 공식";
 "Zoom" = "줌";
 "a frame could not be written" = "프레임을 기록할 수 없습니다";

@@ -186,6 +186,8 @@
 "Move the camera with your fingers, then add the view. Swipe to remove a keyframe." = "Mova a câmera com os dedos e depois adicione a vista. Deslize para remover um quadro-chave.";
 "Moving parts sharp in every frame." = "Partes em movimento nítidas em cada quadro.";
 "Murkiness" = "Turbidez";
+"MutaGen's own values" = "Valores próprios do MutaGen";
+"Mutation" = "Mutação";
 "My scenes" = "Minhas cenas";
 "Name" = "Nome";
 "Near" = "Perto";
@@ -320,6 +322,7 @@
 "Use" = "Usar";
 "Use it as the ambient colour" = "Usar como cor ambiente";
 "Value" = "Valor";
+"Values" = "Valores";
 "Variation %@" = "Variação %@";
 "Variations" = "Variações";
 "Variations, generation %lld" = "Variações, geração %lld";
@@ -331,6 +334,7 @@
 "Warmth" = "Calor";
 "Wave height" = "Altura das ondas";
 "Wave length" = "Comprimento de onda";
+"Weight" = "Peso";
 "Your formulas" = "Suas fórmulas";
 "Zoom" = "Zoom";
 "a frame could not be written" = "não foi possível gravar um quadro";

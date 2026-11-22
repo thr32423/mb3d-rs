@@ -186,6 +186,8 @@
 "Move the camera with your fingers, then add the view. Swipe to remove a keyframe." = "Przesëwôj kamerã pôlcama, pòtemù dodôj widok. Przecygni pôlcã, żebë rëmnąc kluczową klatkã.";
 "Moving parts sharp in every frame." = "Rëchòmé dzélë òstré w kòżdi klatce.";
 "Murkiness" = "Mãtnosc";
+"MutaGen's own values" = "Włôsné wôrtnotë MutaGen";
+"Mutation" = "Mùtacëjô";
 "My scenes" = "Mòje scenë";
 "Name" = "Miono";
 "Near" = "Blëskò";
@@ -320,6 +322,7 @@
 "Use" = "Brëkùjë";
 "Use it as the ambient colour" = "Brëkùjë jakno òkòlną farwã";
 "Value" = "Wôrtosc";
+"Values" = "Wôrtnotë";
 "Variation %@" = "Wariant %@";
 "Variations" = "Warianté";
 "Variations, generation %lld" = "Warianté, generacjô %lld";
@@ -331,6 +334,7 @@
 "Warmth" = "Cepło";
 "Wave height" = "Wësokòsc falów";
 "Wave length" = "Dłëgòsc falów";
+"Weight" = "Wôga";
 "Your formulas" = "Twòje fòrmùłë";
 "Zoom" = "Zblëżenié";
 "a frame could not be written" = "nie dało sã zapisac klatczi";

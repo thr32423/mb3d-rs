@@ -191,10 +191,37 @@ impl Fractal {
     /// change that much less or more; which formulas change stays).
     pub fn variations_with(&self, seed: u64, strength: f64, opt: &RenderOptions) -> Result<Vec<(String, Fractal)>, String> {
         let k = if strength.is_finite() { strength.clamp(0.1, 3.0) } else { 1.0 };
-        let mut cfg = crate::mutagen::MutationConfig::default();
-        cfg.params_strength *= k;
-        cfg.julia_strength *= k;
-        cfg.iterations_strength *= k;
+        let d = crate::mutagen::MutationConfig::default();
+        let cfg = [
+            d.formula_weight,
+            d.params_weight,
+            d.params_strength * k,
+            d.julia_weight,
+            d.julia_strength * k,
+            d.iterations_weight,
+            d.iterations_strength * k,
+        ];
+        self.variations_mutation(seed, cfg, opt)
+    }
+
+    /// [`Fractal::variations`] with the MutaGen window's own settings:
+    /// how likely a child gets other formulas (0 to 1), then for the
+    /// formulas' values, the Julia constant and the iteration counts how
+    /// likely they change (0 to 1) and how much (0 to 3; MutaGen's own
+    /// are 0.75, 1, 1, 0.5, 1, 0.5, 1).
+    pub fn variations_mutation(&self, seed: u64, mutation: [f64; 7], opt: &RenderOptions) -> Result<Vec<(String, Fractal)>, String> {
+        let d = crate::mutagen::MutationConfig::default();
+        let fix = |v: f64, max: f64, own: f64| if v.is_finite() { v.clamp(0.0, max) } else { own };
+        let cfg = crate::mutagen::MutationConfig {
+            formula_weight: fix(mutation[0], 1.0, d.formula_weight),
+            params_weight: fix(mutation[1], 1.0, d.params_weight),
+            params_strength: fix(mutation[2], 3.0, d.params_strength),
+            julia_weight: fix(mutation[3], 1.0, d.julia_weight),
+            julia_strength: fix(mutation[4], 3.0, d.julia_strength),
+            iterations_weight: fix(mutation[5], 1.0, d.iterations_weight),
+            iterations_strength: fix(mutation[6], 3.0, d.iterations_strength),
+            ..d
+        };
         let mut rng = crate::mutagen::Rng::new(seed);
         let threads = std::thread::available_parallelism().map_or(4, |n| n.get());
         let total = crate::mutagen::TREE.len();
@@ -634,6 +661,9 @@ mod pick_tests {
         let weak = f.variations_with(7, 0.1, &RenderOptions::default()).unwrap();
         assert_eq!(weak.len(), 15);
         assert!(weak.iter().zip(&v).any(|(a, b)| a.1.text() != b.1.text()), "the strength changes the children");
+        // nothing likely to change: every child is the scene
+        let same = f.variations_mutation(7, [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0], &RenderOptions::default()).unwrap();
+        assert!(same.iter().all(|(_, g)| g.text() == f.text()), "weights of 0 change nothing");
         let mut cam = f.flight();
         let a = cam.axes();
         for row in a {

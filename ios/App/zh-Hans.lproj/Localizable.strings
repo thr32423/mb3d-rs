@@ -186,6 +186,8 @@
 "Move the camera with your fingers, then add the view. Swipe to remove a keyframe." = "用手指移动相机，然后添加视图。轻扫可移除关键帧。";
 "Moving parts sharp in every frame." = "运动部分在每一帧中都清晰。";
 "Murkiness" = "浑浊度";
+"MutaGen's own values" = "MutaGen 的默认值";
+"Mutation" = "变异";
 "My scenes" = "我的场景";
 "Name" = "名称";
 "Near" = "近处";
@@ -320,6 +322,7 @@
 "Use" = "使用";
 "Use it as the ambient colour" = "用作环境光颜色";
 "Value" = "值";
+"Values" = "数值";
 "Variation %@" = "变体 %@";
 "Variations" = "变体";
 "Variations, generation %lld" = "变体，第 %lld 代";
@@ -331,6 +334,7 @@
 "Warmth" = "色温";
 "Wave height" = "波高";
 "Wave length" = "波长";
+"Weight" = "权重";
 "Your formulas" = "你的公式";
 "Zoom" = "缩放";
 "a frame could not be written" = "无法写入一帧";

@@ -186,6 +186,8 @@
 "Move the camera with your fingers, then add the view. Swipe to remove a keyframe." = "指でカメラを動かしてから、視点を追加します。スワイプするとキーフレームを削除できます。";
 "Moving parts sharp in every frame." = "動く部分もどのフレームでもくっきり。";
 "Murkiness" = "濁り";
+"MutaGen's own values" = "MutaGen の既定値";
+"Mutation" = "突然変異";
 "My scenes" = "マイシーン";
 "Name" = "名前";
 "Near" = "近く";
@@ -320,6 +322,7 @@
 "Use" = "使用";
 "Use it as the ambient colour" = "環境光の色として使う";
 "Value" = "値";
+"Values" = "値";
 "Variation %@" = "バリエーション %@";
 "Variations" = "バリエーション";
 "Variations, generation %lld" = "バリエーション、第 %lld 世代";
@@ -331,6 +334,7 @@
 "Warmth" = "色温度";
 "Wave height" = "波の高さ";
 "Wave length" = "波長";
+"Weight" = "重み";
 "Your formulas" = "自分の数式";
 "Zoom" = "ズーム";
 "a frame could not be written" = "フレームを書き込めませんでした";

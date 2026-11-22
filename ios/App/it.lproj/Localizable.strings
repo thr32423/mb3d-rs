@@ -186,6 +186,8 @@
 "Move the camera with your fingers, then add the view. Swipe to remove a keyframe." = "Muovi la fotocamera con le dita, poi aggiungi la vista. Scorri per rimuovere un fotogramma chiave.";
 "Moving parts sharp in every frame." = "Parti in movimento nitide in ogni fotogramma.";
 "Murkiness" = "Torbidità";
+"MutaGen's own values" = "Valori propri di MutaGen";
+"Mutation" = "Mutazione";
 "My scenes" = "Le mie scene";
 "Name" = "Nome";
 "Near" = "Vicino";
@@ -320,6 +322,7 @@
 "Use" = "Usa";
 "Use it as the ambient colour" = "Usalo come colore ambientale";
 "Value" = "Valore";
+"Values" = "Valori";
 "Variation %@" = "Variazione %@";
 "Variations" = "Variazioni";
 "Variations, generation %lld" = "Variazioni, generazione %lld";
@@ -331,6 +334,7 @@
 "Warmth" = "Calore";
 "Wave height" = "Altezza delle onde";
 "Wave length" = "Lunghezza d’onda";
+"Weight" = "Peso";
 "Your formulas" = "Le tue formule";
 "Zoom" = "Zoom";
 "a frame could not be written" = "impossibile scrivere un fotogramma";

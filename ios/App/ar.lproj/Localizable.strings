@@ -186,6 +186,8 @@
 "Move the camera with your fingers, then add the view. Swipe to remove a keyframe." = "حرّك الكاميرا بأصابعك ثم أضف المنظر. اسحب لإزالة إطار مفتاحي.";
 "Moving parts sharp in every frame." = "الأجزاء المتحركة حادة في كل إطار.";
 "Murkiness" = "العكارة";
+"MutaGen's own values" = "قيم MutaGen الأصلية";
+"Mutation" = "الطفرة";
 "My scenes" = "مشاهدي";
 "Name" = "الاسم";
 "Near" = "قريب";
@@ -320,6 +322,7 @@
 "Use" = "استخدام";
 "Use it as the ambient colour" = "استخدامه كلون المحيط";
 "Value" = "القيمة";
+"Values" = "القيم";
 "Variation %@" = "التنويع %@";
 "Variations" = "التنويعات";
 "Variations, generation %lld" = "التنويعات، الجيل %lld";
@@ -331,6 +334,7 @@
 "Warmth" = "الدفء";
 "Wave height" = "ارتفاع الموج";
 "Wave length" = "طول الموج";
+"Weight" = "الوزن";
 "Your formulas" = "صيغك";
 "Zoom" = "التكبير";
 "a frame could not be written" = "تعذّرت كتابة إطار";

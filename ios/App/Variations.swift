@@ -24,8 +24,25 @@ final class Breeder {
     var progress: Double?
     var status = ""
     var generation = 0
-    /// how much the children differ from their parent (1: as MutaGen)
-    var strength = 1.0
+    /// MutaGen's settings, as its window has them: how likely a child gets
+    /// other formulas, then how likely and how much the formulas' values,
+    /// the Julia constant and the iteration counts change.
+    var formulaWeight = 0.75
+    var valuesWeight = 1.0
+    var valuesStrength = 1.0
+    var juliaWeight = 0.5
+    var juliaStrength = 1.0
+    var iterationsWeight = 0.5
+    var iterationsStrength = 1.0
+
+    var mutation: [Double] {
+        [formulaWeight, valuesWeight, valuesStrength, juliaWeight, juliaStrength, iterationsWeight, iterationsStrength]
+    }
+
+    func resetMutation() {
+        (formulaWeight, valuesWeight, valuesStrength) = (0.75, 1, 1)
+        (juliaWeight, juliaStrength, iterationsWeight, iterationsStrength) = (0.5, 1, 0.5, 1)
+    }
     @ObservationIgnored private var job: RenderJob?
 
     var busy: Bool { job != nil }
@@ -51,9 +68,9 @@ final class Breeder {
         status = String(localized: "Breeding")
         generation += 1
         let seed = UInt64.random(in: 1...UInt64.max)
-        let strength = strength
+        let mutation = self.mutation
         Task.detached(priority: .userInitiated) {
-            let result = Result { try job.variations(p, seed: seed, strength: strength) }
+            let result = Result { try job.variations(p, seed: seed, mutation: mutation) }
             await MainActor.run { [weak self] in self?.bred(job, result) }
         }
     }
@@ -118,6 +135,7 @@ struct VariationsView: View {
     let studio: Studio
     @State private var breeder = Breeder()
     @State private var comparing = false
+    @State private var showMutation = false
     @Environment(\.dismiss) private var dismiss
 
     private let columns = [GridItem(.adaptive(minimum: 112, maximum: 200), spacing: 10)]
@@ -169,6 +187,8 @@ struct VariationsView: View {
                     if breeder.busy {
                         Button("Stop", systemImage: "stop.fill") { breeder.stop() }
                     }
+                    Button("Mutation", systemImage: "slider.horizontal.3") { showMutation = true }
+                        .popover(isPresented: $showMutation) { mutation }
                     Button {
                         if let s = chosenScene ?? studio.currentScene { breeder.breed(from: s) }
                     } label: {
@@ -190,6 +210,34 @@ struct VariationsView: View {
                 if breeder.members.isEmpty, let s = studio.currentScene { breeder.breed(from: s) }
             }
         }
+    }
+
+    /// MutaGen's settings for the next generation, as in its window: a
+    /// weight (how likely it changes) and a strength (how much).
+    private var mutation: some View {
+        @Bindable var b = breeder
+        return Form {
+            Section("Formulas") {
+                LabeledSlider(title: "Weight", value: $b.formulaWeight, range: 0...1, format: "%.2f", done: {})
+            }
+            Section("Values") {
+                LabeledSlider(title: "Weight", value: $b.valuesWeight, range: 0...1, format: "%.2f", done: {})
+                LabeledSlider(title: "Strength", value: $b.valuesStrength, range: 0...2, format: "%.2f", done: {})
+            }
+            Section("Julia") {
+                LabeledSlider(title: "Weight", value: $b.juliaWeight, range: 0...1, format: "%.2f", done: {})
+                LabeledSlider(title: "Strength", value: $b.juliaStrength, range: 0...2, format: "%.2f", done: {})
+            }
+            Section("Iterations") {
+                LabeledSlider(title: "Weight", value: $b.iterationsWeight, range: 0...1, format: "%.2f", done: {})
+                LabeledSlider(title: "Strength", value: $b.iterationsStrength, range: 0...2, format: "%.2f", done: {})
+            }
+            Section {
+                Button("MutaGen's own values", systemImage: "arrow.counterclockwise") { breeder.resetMutation() }
+            }
+        }
+        .frame(minWidth: 380, minHeight: 620)
+        .presentationCompactAdaptation(.popover)
     }
 
     private var chosenScene: FractalScene? {
@@ -216,11 +264,6 @@ struct VariationsView: View {
             Text(chosen == nil || comparing ? "The scene" : "Hold the picture to compare with the scene")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            // how far the next generation strays
-            LabeledSlider(title: "Strength",
-                          value: Binding(get: { breeder.strength }, set: { breeder.strength = $0 }),
-                          range: 0.2...2.5, format: "%.1f ×", done: {})
-                .frame(maxWidth: 420)
         }
     }
 

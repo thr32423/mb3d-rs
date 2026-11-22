@@ -172,6 +172,12 @@ int mb3d_variations(const mb3d_scene *scene, uint64_t seed, mb3d_scene **out, mb
 /* The same with the changes `strength` times MutaGen's own (0.1 to 3). */
 int mb3d_variations_strength(const mb3d_scene *scene, uint64_t seed, double strength, mb3d_scene **out,
                              mb3d_progress progress, void *user);
+/* The same with the MutaGen window's settings in mutation[7]: the weight of
+ * other formulas, then weight and strength of the formulas' values, of the
+ * Julia constant and of the iteration counts (weights 0 to 1, strengths 0
+ * to 3; MutaGen's own: 0.75, 1, 1, 0.5, 1, 0.5, 1). */
+int mb3d_variations_mutation(const mb3d_scene *scene, uint64_t seed, const double *mutation, mb3d_scene **out,
+                             mb3d_progress progress, void *user);
 
 /* Monte Carlo: soft light by random rays, pass after pass less noisy. */
 typedef struct mb3d_montecarlo mb3d_montecarlo;

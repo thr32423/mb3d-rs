@@ -97,30 +97,32 @@ jobs:
             sleep 60
             xcrun simctl io "$udid" screenshot "screens/ui-sheet-$sheet.png"
           done
-          # the iPad on its side (-landscape turns it): the picture alone,
-          # some settings beside it, the windows
+          # the iPad on its side: Simulator's Device > Rotate Right (cmd-right
+          # arrow) turns the simulated iPad, as a person would; the app
+          # cannot turn it itself
           xcrun simctl terminate "$udid" local.mb3d.ipad || true
-          xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -landscape
+          open -a Simulator --args -CurrentDeviceUDID "$udid"
+          sleep 15
+          osascript -e 'tell application "Simulator" to activate' -e 'delay 2' \
+            -e 'tell application "System Events" to key code 124 using command down' \
+            || echo "rotating the simulator failed (no accessibility access?)"
+          sleep 5
+          xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex"
           sleep 30
           xcrun simctl io "$udid" screenshot "screens/land-start.png"
           for page in formulas lighting colours effects; do
             xcrun simctl terminate "$udid" local.mb3d.ipad || true
-            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -page "$page" -landscape
+            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -page "$page"
             sleep 25
             xcrun simctl io "$udid" screenshot "screens/land-page-$page.png"
           done
           for sheet in variations animation model; do
             xcrun simctl terminate "$udid" local.mb3d.ipad || true
-            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -sheet "$sheet" -landscape
+            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -sheet "$sheet"
             sleep 60
             xcrun simctl io "$udid" screenshot "screens/land-sheet-$sheet.png"
           done
-          # (the simulator's pictures stay upright: turned to match)
-          for f in screens/land-*.png; do
-            if [ "$(sips -g pixelWidth "$f" | awk '/pixelWidth/{print $2}')" -lt "$(sips -g pixelHeight "$f" | awk '/pixelHeight/{print $2}')" ]; then
-              sips -r 270 "$f" >/dev/null
-            fi
-          done
+          for f in screens/land-*.png; do sips -g pixelWidth -g pixelHeight "$f" | tr '\n' ' '; echo; done
           # the translations: German, and Arabic (right to left)
           for lang in de ar; do
             xcrun simctl terminate "$udid" local.mb3d.ipad || true

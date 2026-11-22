@@ -104,7 +104,14 @@ final class MB3DUITests: XCTestCase {
         scale.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5)).tap()
         sleep(1)
         shot("number-typing")
-        XCTAssertTrue(app.textFields.firstMatch.waitForExistence(timeout: 5), "a tap types the number")
+        let typing = app.textFields.firstMatch.waitForExistence(timeout: 5)
+        if !typing {
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = "after the tap"
+            tree.lifetime = .keepAlways
+            add(tree)
+        }
+        XCTAssertTrue(typing, "a tap types the number")
     }
 
     /// While a slider is held the panels fade and its name and value show

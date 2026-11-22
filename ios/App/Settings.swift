@@ -840,13 +840,16 @@ struct NumberField: View {
                     .monospacedDigit()
                     .frame(maxWidth: 110)
                     .focused($focused)
-                    .onAppear { focused = true }
+                    // (focus on the next turn: a list row just swapped in
+                    // takes it then, not while it appears)
+                    .task { focused = true }
                     .onSubmit {
                         value = typed
                         typing = false
                         done()
                     }
-                    .onChange(of: focused) { if !focused { typing = false } }
+                    // (closed when focus goes after it came, not before)
+                    .onChange(of: focused) { was, now in if was && !now { typing = false } }
             } else {
                 Text(shown)
                     .monospacedDigit()

@@ -4,7 +4,7 @@
 use super::canvas::{line_height, Rect};
 use super::control::{Id, Kind};
 use super::form::*;
-use super::paint::{self, char_xs, combo_list_rect, memo_lines, menu_item_rects, menu_items, menu_size, sb_geom, track_geom, updown_rects, SB};
+use super::paint::{self, char_xs, combo_list_rect, combo_scrollbar, memo_lines, menu_item_rects, menu_items, menu_size, sb_geom, track_geom, updown_rects, SB};
 use std::time::{Duration, Instant};
 
 /// A raw event: the control, the VCL event property (`OnClick`) and its
@@ -221,7 +221,7 @@ impl Form {
             if self.popup_contains(&p, x, y) {
                 if let Popup::Combo { id, .. } = p {
                     if button == MouseButton::Left {
-                        if let Some((sr, vis, max)) = self.combo_scrollbar(id) {
+                        if let Some((sr, vis, max)) = combo_scrollbar(self, id) {
                             if sr.contains(x, y) {
                                 let part = sb_part(sr, true, 0, max as i64, vis as i64, self.combo_top(id) as i64, x, y);
                                 self.capture = Some(id);
@@ -507,7 +507,7 @@ impl Form {
             }
             if lr.contains(x, y) {
                 self.hot = Some(id);
-                if let Some((sr, vis, max)) = self.combo_scrollbar(id) {
+                if let Some((sr, vis, max)) = combo_scrollbar(self, id) {
                     if sr.contains(x, y) {
                         self.hot_part = sb_part(sr, true, 0, max as i64, vis as i64, top as i64, x, y);
                         self.dirty = true;
@@ -690,7 +690,7 @@ impl Form {
                 return out;
             }
             let lr = combo_list_rect(self, id);
-            let on_scrollbar = self.combo_scrollbar(id).is_some_and(|(sr, _, _)| sr.contains(x, y));
+            let on_scrollbar = combo_scrollbar(self, id).is_some_and(|(sr, _, _)| sr.contains(x, y));
             if lr.contains(x, y) && !on_scrollbar {
                 self.popup = None;
                 self.capture = None;
@@ -813,9 +813,7 @@ impl Form {
         self.hint = None;
         if let Some(Popup::Combo { id, hot, top }) = self.popup {
             let n = self.ctl[id].items.len() as i32;
-            let lr = combo_list_rect(self, id);
-            let ih = line_height(&self.font(id)) + 2;
-            let vis = (lr.h - 2) / ih;
+            let vis = paint::combo_rows(self, id);
             let t = (top - steps * 3).clamp(0, (n - vis).max(0));
             self.popup = Some(Popup::Combo { id, hot, top: t });
             self.dirty = true;
@@ -1075,49 +1073,25 @@ impl Form {
                 let c = &mut self.ctl[id];
                 let vis = ((r.h - 4) / c.item_height.max(8)).max(1);
                 let max = (c.items.len() as i32 - vis).max(0);
-                let d = match part {
-                    PART_UP => -1,
-                    PART_DOWN => 1,
-                    PART_PAGE_UP => -vis,
-                    PART_PAGE_DOWN => vis,
-                    PART_THUMB => {
-                        self.cap_value = c.top_index as i64;
-                        0
-                    }
-                    _ => 0,
-                };
-                c.top_index = (c.top_index + d).clamp(0, max);
+                if part == PART_THUMB {
+                    self.cap_value = c.top_index as i64;
+                }
+                c.top_index = (c.top_index + sb_step(part, vis)).clamp(0, max);
             }
             Kind::ListView => {
                 let (_, _, vis, max, top) = self.listview_rows(id);
-                let d = match part {
-                    PART_UP => -1,
-                    PART_DOWN => 1,
-                    PART_PAGE_UP => -vis,
-                    PART_PAGE_DOWN => vis,
-                    PART_THUMB => {
-                        self.cap_value = top as i64;
-                        0
-                    }
-                    _ => 0,
-                };
-                self.ctl[id].scroll_y = (top + d).clamp(0, max);
+                if part == PART_THUMB {
+                    self.cap_value = top as i64;
+                }
+                self.ctl[id].scroll_y = (top + sb_step(part, vis)).clamp(0, max);
             }
             Kind::Memo => {
                 let (vis, max) = self.memo_range(id);
                 let c = &mut self.ctl[id];
-                let d = match part {
-                    PART_UP => -1,
-                    PART_DOWN => 1,
-                    PART_PAGE_UP => -(vis as i32),
-                    PART_PAGE_DOWN => vis as i32,
-                    PART_THUMB => {
-                        self.cap_value = c.scroll_y as i64;
-                        0
-                    }
-                    _ => 0,
-                };
-                c.scroll_y = (c.scroll_y + d).clamp(0, max as i32);
+                if part == PART_THUMB {
+                    self.cap_value = c.scroll_y as i64;
+                }
+                c.scroll_y = (c.scroll_y + sb_step(part, vis as i32)).clamp(0, max as i32);
             }
             _ => {}
         }
@@ -1228,15 +1202,6 @@ impl Form {
         self.dirty = true;
     }
 
-    /// The popup list's vertical scroll bar: its rectangle, visible rows
-    /// and largest top row. Short lists have none.
-    fn combo_scrollbar(&self, id: Id) -> Option<(Rect, i32, i32)> {
-        let lr = combo_list_rect(self, id);
-        let vis = paint::combo_rows(self, id).max(1);
-        let max = (self.ctl[id].items.len() as i32 - vis).max(0);
-        (max > 0).then_some((Rect::new(lr.right() - 1 - SB, lr.y + 1, SB, lr.h - 2), vis, max))
-    }
-
     fn combo_top(&self, id: Id) -> i32 {
         match self.popup {
             Some(Popup::Combo { id: p, top, .. }) if p == id => top,
@@ -1250,19 +1215,11 @@ impl Form {
         if p != id {
             return;
         }
-        let Some((_, vis, max)) = self.combo_scrollbar(id) else { return };
-        let d = match part {
-            PART_UP => -1,
-            PART_DOWN => 1,
-            PART_PAGE_UP => -vis,
-            PART_PAGE_DOWN => vis,
-            PART_THUMB => {
-                self.cap_value = top as i64;
-                0
-            }
-            _ => 0,
-        };
-        self.popup = Some(Popup::Combo { id, hot, top: (top + d).clamp(0, max) });
+        let Some((_, vis, max)) = combo_scrollbar(self, id) else { return };
+        if part == PART_THUMB {
+            self.cap_value = top as i64;
+        }
+        self.popup = Some(Popup::Combo { id, hot, top: (top + sb_step(part, vis)).clamp(0, max) });
         self.dirty = true;
     }
 
@@ -1271,7 +1228,7 @@ impl Form {
         if p != id {
             return;
         }
-        let Some((sr, vis, max)) = self.combo_scrollbar(id) else { return };
+        let Some((sr, vis, max)) = combo_scrollbar(self, id) else { return };
         let (_, _, track, thumb) = sb_geom(sr, true, 0, max as i64, vis as i64, self.cap_value);
         let span = (track.h - thumb.h).max(1);
         let d = y - self.cap_start.1;
@@ -1991,6 +1948,18 @@ impl Form {
                 self.text_changed(id, out);
             }
         }
+    }
+}
+
+/// How far an arrow or page press on a vertical scroll bar moves a list
+/// that shows `page` rows: one row or one page (the thumb does not step).
+fn sb_step(part: i32, page: i32) -> i32 {
+    match part {
+        PART_UP => -1,
+        PART_DOWN => 1,
+        PART_PAGE_UP => -page,
+        PART_PAGE_DOWN => page,
+        _ => 0,
     }
 }
 

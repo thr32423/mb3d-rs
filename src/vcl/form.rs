@@ -1354,18 +1354,17 @@ mod tests {
         f.mouse_down(r.right() - 5, r.y + 5, MouseButton::Left, 0);
         f.mouse_up(r.right() - 5, r.y + 5, MouseButton::Left, 0);
 
-        let lr = super::super::paint::combo_list_rect(&f, c);
-        let rows = super::super::paint::combo_rows(&f, c);
-        let sx = lr.right() - 1 - super::super::paint::SB / 2;
+        let (sr, rows, max) = super::super::paint::combo_scrollbar(&f, c).expect("100 lights need a scroll bar");
+        assert_eq!(max, 100 - rows);
+        let sx = sr.x + sr.w / 2;
         // The down arrow advances one row and releasing it leaves the list open.
-        f.mouse_down(sx, lr.bottom() - 3, MouseButton::Left, 0);
-        f.mouse_up(sx, lr.bottom() - 3, MouseButton::Left, 0);
+        f.mouse_down(sx, sr.bottom() - 2, MouseButton::Left, 0);
+        f.mouse_up(sx, sr.bottom() - 2, MouseButton::Left, 0);
         let Some(Popup::Combo { top, .. }) = f.popup else { panic!("scrolling closed the list") };
         assert_eq!(top, 1);
 
         // Dragging the thumb to the bottom reaches the last page.
-        let sr = Rect::new(lr.right() - 1 - super::super::paint::SB, lr.y + 1, super::super::paint::SB, lr.h - 2);
-        let (_, _, track, thumb) = super::super::paint::sb_geom(sr, true, 0, 100 - rows as i64, rows as i64, top as i64);
+        let (_, _, track, thumb) = super::super::paint::sb_geom(sr, true, 0, max as i64, rows as i64, top as i64);
         let sy = thumb.y + thumb.h / 2;
         let ey = sy + track.h - thumb.h;
         f.mouse_down(sx, sy, MouseButton::Left, 0);

@@ -10,3 +10,4 @@ scenes/
 !M3Maps-*/*.png
 /build/
 __pycache__/
+!ios/App/Assets.xcassets/AppIcon.appiconset/*.png

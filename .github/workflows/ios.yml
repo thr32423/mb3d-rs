@@ -2,7 +2,10 @@ name: iPad app
 
 # Builds the iPad app (ios/) on a Mac for the iPad Simulator, runs it with
 # an example opened and keeps screenshots and its log (artifact
-# ipad-screens): the app is developed without a Mac at hand.
+# ipad-screens): the app is developed without a Mac at hand. The testflight
+# job builds it for real iPads, signs it with the App Store Connect API key
+# (secrets ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8) and uploads it to
+# TestFlight; the build number is the workflow's run number.
 on:
   push:
     branches: [ipad-app]
@@ -12,6 +15,10 @@ on:
       example:
         description: "example file to open (name without .m3p)"
         default: "ABoxScale2Start"
+      testflight:
+        description: "also upload a build to TestFlight"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -63,14 +70,14 @@ jobs:
           echo "iPad: $(grep -m1 "$udid" screens/devices.txt)"
           xcrun simctl boot "$udid"
           xcrun simctl bootstatus "$udid" -b
-          xcrun simctl install "$udid" ios/build/Release-iphonesimulator/Mandelbulb3D.app
+          xcrun simctl install "$udid" ios/build/Release-iphonesimulator/OrbitTrap.app
           # -demo moves the camera as gestures would (7 moves), changes
           # settings (2), saves, then effects, focus, undo, 16:9, paste (5); -snapshots
           # writes every full picture to the app's Documents folder
-          xcrun simctl launch "$udid" local.mb3d.ipad -open "${{ inputs.example || 'ABoxScale2Start' }}" -demo -snapshots
+          xcrun simctl launch "$udid" io.github.thr32423.orbittrap -open "${{ inputs.example || 'ABoxScale2Start' }}" -demo -snapshots
           sleep 10
           xcrun simctl io "$udid" screenshot screens/start.png
-          docs="$(xcrun simctl get_app_container "$udid" local.mb3d.ipad data)/Documents"
+          docs="$(xcrun simctl get_app_container "$udid" io.github.thr32423.orbittrap data)/Documents"
           for i in $(seq 1 480); do
             [ -f "$docs/montecarlo.png" ] && break
             sleep 5
@@ -86,39 +93,39 @@ jobs:
           # the interface: every settings page and window
           ex="${{ inputs.example || 'ABoxScale2Start' }}"
           for page in picture fractal formulas julia lighting colours fog effects finishing ground; do
-            xcrun simctl terminate "$udid" local.mb3d.ipad || true
-            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -page "$page"
+            xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
+            xcrun simctl launch "$udid" io.github.thr32423.orbittrap -open "$ex" -page "$page"
             sleep 25
             xcrun simctl io "$udid" screenshot "screens/ui-page-$page.png"
           done
           for sheet in variations animation model curves; do
-            xcrun simctl terminate "$udid" local.mb3d.ipad || true
-            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -sheet "$sheet"
+            xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
+            xcrun simctl launch "$udid" io.github.thr32423.orbittrap -open "$ex" -sheet "$sheet"
             sleep 60
             xcrun simctl io "$udid" screenshot "screens/ui-sheet-$sheet.png"
           done
           # the iPad on its side: Simulator's Device > Rotate Right (cmd-right
           # arrow) turns the simulated iPad, as a person would; the app
           # cannot turn it itself
-          xcrun simctl terminate "$udid" local.mb3d.ipad || true
+          xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
           open -a Simulator --args -CurrentDeviceUDID "$udid"
           sleep 15
           osascript -e 'tell application "Simulator" to activate' -e 'delay 2' \
             -e 'tell application "System Events" to key code 124 using command down' \
             || echo "rotating the simulator failed (no accessibility access?)"
           sleep 5
-          xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex"
+          xcrun simctl launch "$udid" io.github.thr32423.orbittrap -open "$ex"
           sleep 30
           xcrun simctl io "$udid" screenshot "screens/land-start.png"
           for page in formulas lighting colours effects; do
-            xcrun simctl terminate "$udid" local.mb3d.ipad || true
-            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -page "$page"
+            xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
+            xcrun simctl launch "$udid" io.github.thr32423.orbittrap -open "$ex" -page "$page"
             sleep 25
             xcrun simctl io "$udid" screenshot "screens/land-page-$page.png"
           done
           for sheet in variations animation model; do
-            xcrun simctl terminate "$udid" local.mb3d.ipad || true
-            xcrun simctl launch "$udid" local.mb3d.ipad -open "$ex" -sheet "$sheet"
+            xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
+            xcrun simctl launch "$udid" io.github.thr32423.orbittrap -open "$ex" -sheet "$sheet"
             sleep 60
             xcrun simctl io "$udid" screenshot "screens/land-sheet-$sheet.png"
           done
@@ -127,8 +134,8 @@ jobs:
           for f in screens/land-*.png; do sips -r 90 "$f" >/dev/null; done
           # the translations: German, and Arabic (right to left)
           for lang in de ar; do
-            xcrun simctl terminate "$udid" local.mb3d.ipad || true
-            xcrun simctl launch "$udid" local.mb3d.ipad -AppleLanguages "($lang)" -AppleLocale "$lang" -open "${{ inputs.example || 'ABoxScale2Start' }}"
+            xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
+            xcrun simctl launch "$udid" io.github.thr32423.orbittrap -AppleLanguages "($lang)" -AppleLocale "$lang" -open "${{ inputs.example || 'ABoxScale2Start' }}"
             sleep 40
             xcrun simctl io "$udid" screenshot "screens/lang-$lang.png"
           done
@@ -164,3 +171,64 @@ jobs:
         with:
           name: ipad-screens
           path: screens
+
+  testflight:
+    if: github.event_name == 'push' || inputs.testflight
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios, aarch64-apple-ios-sim
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ios/engine
+      - name: XcodeGen
+        run: brew install xcodegen
+      - name: Data of the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)
+          release=https://github.com/$GITHUB_REPOSITORY/releases/download/$tag
+          curl -sSfL -o rel.tar.gz $release/mb3d-rs-linux-x64.tar.gz
+          curl -sSfL $release/SHA256SUMS | grep ' mb3d-rs-linux-x64.tar.gz$' | sed 's/mb3d-rs-linux-x64.tar.gz/rel.tar.gz/' > sum
+          shasum -a 256 -c sum
+          mkdir data && tar xzf rel.tar.gz -C data --strip-components=1 \
+            "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Formulas" "mb3d-rs-$tag-x86_64-unknown-linux-gnu/EM_JIT_M3Formulas" \
+            "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Maps" "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Parameter"
+      - name: Engine and project
+        run: ios/build.sh "$PWD/data"
+      - name: Archive, sign and upload
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          key="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+          printf '%s\n' "$ASC_KEY_P8" > "$key"
+          auth=(-allowProvisioningUpdates -authenticationKeyPath "$key"
+                -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          cd ios
+          xcodebuild -project MB3D.xcodeproj -scheme MB3D -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/OrbitTrap.xcarchive" \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} "${auth[@]}" archive | tail -40
+          cat > "$RUNNER_TEMP/export.plist" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>VZR9K6NY6T</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/OrbitTrap.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" "${auth[@]}" | tail -40
+          rm -f "$key"

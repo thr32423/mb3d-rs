@@ -1,0 +1,91 @@
+# mb3d scene
+width = 1024
+height = 1024
+iterations = 12
+min_iterations = 1
+zoom = 2.5
+mid = -1.15, -0.25, 0
+z_start = -2.5
+z_end = 30
+vgrads = 0.9004471023526769, 0, -0.43496553411123023, 0.22735092970494306, 0.8525245220595057, 0.47065220072736236, 0.37081878408053415, -0.5226872289306592, 0.7676532355730826
+fov = 30
+optic = 0
+de_stop = 1
+raystep = 0.5
+raystep_limiter = 1
+smooth_normals = 0
+bin_search = 8
+first_step_random = true
+step_sub_de_stop = false
+vary_de_stop = true
+normals_on_de = true
+disable_analytic_de = false
+julia = true
+julia_c = 0, 0, 0, 0
+rotation_4d = 0, 0, 0
+color_option = 0
+color_mul = 1
+dfog_on_it = 0
+repeat_from = 0
+threads = 0
+ao = ssao15
+ao_threshold = 2
+ao_border = 0
+dof = off
+vol_light = off
+shadows = 1
+ambient_top = #2A4A8A
+ambient_bottom = #4A3A20
+depth_color = #03050F
+depth_color2 = #1B2C66
+dynfog_color = #FFFFFF
+dynfog_color2 = #FFFFFF
+fog_offset = 128
+depth_fog = 0
+dyn_fog = 53
+diffuse = 110
+specular = 80
+ambient = 100
+ambient_shadow = 53
+indirect_light = 53
+gamma = 32
+roughness = 0
+color_start = 0
+color_end = 100
+color_cycling = false
+color_var_z = 0
+color_on_otrap = true
+far_fog = false
+depth_func = 0
+interior_start = 60
+interior_end = 60
+diffuse_shadowing = 0
+palette_full = 0:#7A4A12:#FFE0A0, 3633:#7A4A12:#FFE0A0, 7266:#7A4A12:#FFE0A0, 10900:#C8862E:#FFF0C8, 14533:#C8862E:#FFF0C8, 18166:#F2C25A:#FFFFFF, 21800:#F2C25A:#FFFFFF, 25433:#F2C25A:#FFFFFF, 29066:#B86A22:#FFD8A0, 32700:#B86A22:#FFD8A0
+interior_colors = 0:#E1A059:160, 10922:#3A992D:160, 21844:#203CAC:160, 32700:#E1A059:160
+
+finish_tonemap = filmic
+vignette = 0.3
+glow = 0.3, 0.012, 0.93
+rotation = 60, 20, 0
+
+[formula]
+name = loxodromeIFS
+iterations = 3
+
+[light]
+slot = 1
+color = #FFE6B8
+x_angle = -35
+y_angle = -30
+amplitude = 1.1
+spec_power = 32
+diffuse_func = 0
+
+[light]
+slot = 2
+color = #5AA8FF
+x_angle = 160
+y_angle = 20
+amplitude = 0.8
+spec_power = 16
+diffuse_func = 0

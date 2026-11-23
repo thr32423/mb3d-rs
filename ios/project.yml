@@ -2,7 +2,7 @@
 # folder); build.sh does all steps.
 name: MB3D
 options:
-  bundleIdPrefix: local.mb3d
+  bundleIdPrefix: io.github.thr32423
   deploymentTarget:
     iOS: "17.0"
 targets:
@@ -26,18 +26,20 @@ targets:
       properties:
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: false
+        # no encryption beyond what iPadOS itself provides (no export questions per build)
+        ITSAppUsesNonExemptEncryption: false
         UTImportedTypeDeclarations:
-          - UTTypeIdentifier: local.mb3d.m3p
+          - UTTypeIdentifier: io.github.thr32423.orbittrap.m3p
             UTTypeDescription: Mandelbulb3D parameters
             UTTypeConformsTo: [public.data]
             UTTypeTagSpecification:
               public.filename-extension: [m3p]
-          - UTTypeIdentifier: local.mb3d.m3f
+          - UTTypeIdentifier: io.github.thr32423.orbittrap.m3f
             UTTypeDescription: Mandelbulb3D formula
             UTTypeConformsTo: [public.data]
             UTTypeTagSpecification:
               public.filename-extension: [m3f]
-          - UTTypeIdentifier: local.mb3d.m3i
+          - UTTypeIdentifier: io.github.thr32423.orbittrap.m3i
             UTTypeDescription: Mandelbulb3D picture
             UTTypeConformsTo: [public.data]
             UTTypeTagSpecification:
@@ -46,11 +48,11 @@ targets:
           - CFBundleTypeName: Mandelbulb3D parameters
             CFBundleTypeRole: Viewer
             LSHandlerRank: Owner
-            LSItemContentTypes: [local.mb3d.m3p, local.mb3d.m3i]
+            LSItemContentTypes: [io.github.thr32423.orbittrap.m3p, io.github.thr32423.orbittrap.m3i]
     settings:
       base:
-        PRODUCT_NAME: Mandelbulb3D
-        PRODUCT_BUNDLE_IDENTIFIER: local.mb3d.ipad
+        PRODUCT_NAME: OrbitTrap
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.thr32423.orbittrap
         TARGETED_DEVICE_FAMILY: "2"
         SWIFT_VERSION: "5.0"
         SWIFT_OBJC_BRIDGING_HEADER: App/Bridging-Header.h
@@ -60,7 +62,10 @@ targets:
         # the engine and what it needs (cargo --print native-static-libs)
         OTHER_LDFLAGS: "-lmb3d -liconv -lobjc -framework Metal -framework QuartzCore -framework CoreGraphics -framework Foundation -framework CoreFoundation"
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: Mandelbulb3D
+        INFOPLIST_KEY_CFBundleDisplayName: Orbit Trap
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        DEVELOPMENT_TEAM: VZR9K6NY6T
+        CODE_SIGN_STYLE: Automatic
         INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: "Saves your rendered pictures to Photos."
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
@@ -79,7 +84,7 @@ targets:
       - target: MB3D
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: local.mb3d.ipad.uitests
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.thr32423.orbittrap.uitests
         TARGETED_DEVICE_FAMILY: "2"
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: YES

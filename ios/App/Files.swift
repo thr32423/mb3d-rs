@@ -3,11 +3,11 @@ import UniformTypeIdentifiers
 
 extension UTType {
     /// Mandelbulb3D's parameter file (declared in the app's Info.plist).
-    static let m3p = UTType(importedAs: "local.mb3d.m3p", conformingTo: .data)
+    static let m3p = UTType(importedAs: "io.github.thr32423.orbittrap.m3p", conformingTo: .data)
     /// Mandelbulb3D's picture with its parameters.
-    static let m3i = UTType(importedAs: "local.mb3d.m3i", conformingTo: .data)
+    static let m3i = UTType(importedAs: "io.github.thr32423.orbittrap.m3i", conformingTo: .data)
     /// A Mandelbulb3D formula.
-    static let m3f = UTType(importedAs: "local.mb3d.m3f", conformingTo: .data)
+    static let m3f = UTType(importedAs: "io.github.thr32423.orbittrap.m3f", conformingTo: .data)
     /// A Radiance HDR picture (light probes).
     static let hdr = UTType(filenameExtension: "hdr") ?? .image
 }

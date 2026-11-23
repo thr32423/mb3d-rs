@@ -415,6 +415,7 @@ struct AdjustingView: View {
 /// question mark on the picture.
 struct GesturesCard: View {
     let close: () -> Void
+    @State private var showLicences = false
 
     private let rows: [(String, LocalizedStringKey)] = [
         ("hand.point.up.left", "One finger: look around"),
@@ -435,14 +436,20 @@ struct GesturesCard: View {
                 ForEach(rows, id: \.0) { row in
                     Label { Text(row.1) } icon: { Image(systemName: row.0).frame(width: 28) }
                 }
-                Button("OK", action: close)
-                    .buttonStyle(.borderedProminent)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                HStack {
+                    Button("Licences and credits") { showLicences = true }
+                    Spacer()
+                    Button("OK", action: close)
+                        .buttonStyle(.borderedProminent)
+                }
             }
             .padding(22)
             .frame(maxWidth: 420)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
             .padding()
+        }
+        .sheet(isPresented: $showLicences) {
+            LicencesView { showLicences = false }
         }
     }
 }

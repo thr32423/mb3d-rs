@@ -3293,8 +3293,41 @@ pub fn compose_stereo(left: &[u8], right: &[u8], w: usize, h: usize, layout: Ste
     }
 }
 
+/// [`compose_stereo`] for colours before their final rounding to 8 bits.
+pub fn compose_stereo16(left: &[u16], right: &[u16], w: usize, h: usize, layout: StereoLayout) -> (Vec<u16>, usize, usize) {
+    match layout {
+        StereoLayout::Anaglyph => {
+            let mut out = right.to_vec();
+            for (o, l) in out.chunks_mut(3).zip(left.chunks(3)) {
+                o[0] = (0.299 * l[0] as f64 + 0.587 * l[1] as f64 + 0.114 * l[2] as f64).round().min(65535.0) as u16;
+            }
+            (out, w, h)
+        }
+        StereoLayout::TopBottom => ([left, right].concat(), w, h * 2),
+        _ => {
+            let (a, b) = if layout == StereoLayout::Parallel { (left, right) } else { (right, left) };
+            let mut out = vec![0u16; w * 2 * h * 3];
+            for y in 0..h {
+                out[y * w * 6..y * w * 6 + w * 3].copy_from_slice(&a[y * w * 3..(y + 1) * w * 3]);
+                out[y * w * 6 + w * 3..(y + 1) * w * 6].copy_from_slice(&b[y * w * 3..(y + 1) * w * 3]);
+            }
+            (out, w * 2, h)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn stereo_16_bit_layouts_keep_the_eyes_in_order() {
+        use super::{compose_stereo16, StereoLayout};
+        let left = [1, 2, 3, 4, 5, 6];
+        let right = [11, 12, 13, 14, 15, 16];
+        assert_eq!(compose_stereo16(&left, &right, 2, 1, StereoLayout::Parallel), ([left, right].concat(), 4, 1));
+        assert_eq!(compose_stereo16(&left, &right, 2, 1, StereoLayout::Cross), ([right, left].concat(), 4, 1));
+        assert_eq!(compose_stereo16(&left, &right, 2, 1, StereoLayout::TopBottom), ([left, right].concat(), 2, 2));
+    }
+
     #[test]
     fn memory_model() {
         use super::*;

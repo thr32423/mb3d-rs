@@ -113,6 +113,7 @@ impl Mb3d {
     pub fn message(&self, ui: &mut Ui, s: &str) {
         if !s.trim().is_empty() {
             crate::log::info("message", s);
+            main_form::toast(ui, s);
         }
         let c = ui.cm(MAIN, "Memo1");
         let old = c.text.clone();

@@ -2911,10 +2911,17 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "FormResize" => {
             place_sticky(app, ui, None, false);
             place_ani(app, ui);
+            if ui.visible(F, "ToastPanel") {
+                position_toast(ui);
+            }
             let ph = ui.c(F, "Panel1").height;
             let mt = ui.c(F, "Memo1").top;
             let p4 = ui.c(F, "Panel4").height;
             ui.cm(F, "Memo1").height = (ph - mt - p4 - 1).clamp(80, 240);
+        }
+        "ToastTimer" => {
+            ui.set_visible(F, "ToastPanel", false);
+            ui.set_enabled(F, "ToastTimer", false);
         }
         "FormCloseQuery" => {
             // (also while the Monte Carlo window renders, Mand.pas:2979)
@@ -3606,20 +3613,31 @@ fn saved(app: &Mb3d, ui: &mut Ui, res: Result<String, String>, path: &std::path:
 
 /// "PNG 16 bit colour": the picture painted again from the kept G-buffer
 /// with the colours as calculated (before the rounding to 8 bit), reduced
-/// by the viewing scale as the 8 bit picture.
+/// by the viewing scale as the 8 bit picture. A stereo preview uses both
+/// retained eye buffers and is composed in its displayed layout.
 fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
-    let Some(b) = app.eng.base() else {
+    let base = app.eng.base();
+    let stereo = app.eng.stereo_base();
+    if base.is_none() && stereo.is_none() {
         app.message(ui, &tr("@MB:CalculateTheImageFirst"));
         return;
-    };
+    }
     let s = app.main.image_scale.max(1) as usize;
+    let current = app.scene.clone();
     let text = png_comment(app, ui);
     let ok = trf("@MB:Saved16BitColour", &[&path.display()]);
     let enc: SaveEnc = Box::new(move || {
-        let rgb = crate::render::paint16(&b.scene, &b.params, &b.post);
-        let (rgb, w, h) = if s > 1 { crate::render::downsample(&rgb, b.w, b.h, s) } else { (rgb, b.w, b.h) };
+        let (rgb, w, h, scene) = if let Some(b) = base {
+            (crate::render::paint16(&b.scene, &b.params, &b.post), b.w, b.h, b.scene.clone())
+        } else {
+            let b = stereo.expect("a retained picture was checked above");
+            let scene = b.scene().clone();
+            let (rgb, w, h) = b.paint16(&current);
+            (rgb, w, h, scene)
+        };
+        let (rgb, w, h) = if s > 1 { crate::render::downsample(&rgb, w, h, s) } else { (rgb, w, h) };
         let mut data = crate::png::encode_rgb16(w, h, &rgb);
-        if crate::vr::is_pano(&b.scene, w, h) {
+        if crate::vr::is_pano(&scene, w, h) {
             data = crate::vr::png_with_pano(data, w, h);
         }
         if let Some(t) = text {
@@ -3628,6 +3646,26 @@ fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
         Ok(data)
     });
     spawn_save(app, ui, path, ok, enc);
+}
+
+/// Shows a main-window log message briefly over the picture as well.
+pub fn toast(ui: &mut Ui, text: &str) {
+    if text.trim().is_empty() {
+        return;
+    }
+    position_toast(ui);
+    ui.set_caption(F, "ToastLabel", text);
+    ui.set_visible(F, "ToastPanel", true);
+    ui.set_enabled(F, "ToastTimer", true);
+    ui.reset_timer(F, "ToastTimer");
+}
+
+fn position_toast(ui: &mut Ui) {
+    let area = ui.c(F, "Panel5").width;
+    let width = 420.min((area - 24).max(160));
+    let left = ((area - width) / 2).max(0);
+    ui.cm(F, "ToastPanel").set_bounds(left, 84, width, 44);
+    ui.cm(F, "ToastLabel").set_bounds(10, 5, width - 20, 34);
 }
 
 /// "OpenEXR": the colours in floating point (not clipped above white) with

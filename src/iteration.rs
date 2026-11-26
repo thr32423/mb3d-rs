@@ -26,6 +26,19 @@ pub struct HybridSlot {
     pub uncounted: bool,
     /// Use the analytic-DE variant of the formula (derivative in `w`).
     pub ade: bool,
+    /// Add `j` (the Julia constant in Julia mode) to x, y, z after each
+    /// step: the Menger formulas in Julia mode (not in MB3D, where Julia
+    /// mode leaves them alone), see [`HybridSlot::julia_adds`].
+    pub julia_add: bool,
+}
+
+impl HybridSlot {
+    /// Whether formula `f` gets the Julia constant added after its steps in
+    /// Julia mode: every Menger formula but the dIFS ones (shapes, not
+    /// iterations).
+    pub fn julia_adds(f: &Formula) -> bool {
+        f.name().to_ascii_lowercase().contains("menger") && f.de_option() < 20
+    }
 }
 
 /// How the iteration loop is evaluated (`mMandFunction`).
@@ -275,6 +288,9 @@ impl Iteration {
             }
             let slot = &slots[n];
             call(self, n);
+            if slot.julia_add {
+                self.add_j();
+            }
             btmp -= 1;
             if slot.uncounted {
                 uncounted_guard += 1;
@@ -293,6 +309,14 @@ impl Iteration {
             if self.it_result >= self.max_it || self.rout > self.rstop {
                 return n;
             }
+        }
+    }
+
+    /// After a slot with `julia_add`: x, y, z += j (as `_addC`).
+    #[inline(always)]
+    fn add_j(&mut self) {
+        for k in 0..3 {
+            self.v[k] += self.j[k];
         }
     }
 
@@ -329,6 +353,9 @@ impl Iteration {
             let y1 = self.v;
             let dt = self.deriv1;
             self.call_slot(slots, 0);
+            if slots[0].julia_add {
+                self.add_j();
+            }
             let x1 = scalar_loads(&self.v);
             self.v = y1;
             let dd = self.deriv1;
@@ -336,6 +363,9 @@ impl Iteration {
                 self.deriv1 = dt;
             }
             self.call_slot(slots, 1);
+            if slots[1].julia_add {
+                self.add_j();
+            }
             let [x, y, z, w] = scalar_loads(&self.v);
             let (xx, yy) = if four_d {
                 ((x1[0] * x1[0] + x1[1] * x1[1] + x1[2] * x1[2] + x1[3] * x1[3]).sqrt(), (x * x + y * y + z * z + w * w).sqrt())

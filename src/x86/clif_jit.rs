@@ -519,6 +519,10 @@ pub fn compile_hybrid(m: &Machine, slots: &[HybridSlot], start: usize, end: usiz
     if slots.is_empty() || end >= slots.len() || repeat > end || start > end {
         return None;
     }
+    // a Menger formula in Julia mode (j added after it) runs the direct way
+    if slots.iter().any(|s| s.julia_add) {
+        return None;
+    }
     // every slot of the cycle must be compilable; the cycle must count.
     // A Pascal formula goes in as its tree for the slot's option values
     // (when the JIT compiled it for them: `CustomFormula::compiled`)

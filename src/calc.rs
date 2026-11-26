@@ -408,6 +408,7 @@ impl CalcParams {
                 iterations: if ipol.is_some() { 1 } else { f.iterations.abs() },
                 uncounted: ipol.is_none() && f.iterations < 0,
                 ade: false,
+                julia_add: sc.julia && HybridSlot::julia_adds(&f.formula),
             })
             .collect();
         // the Pascal formulas compiled for their option values

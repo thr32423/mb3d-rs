@@ -86,6 +86,35 @@ fn custom_formulas_render() {
 }
 
 #[test]
+fn menger_formulas_follow_julia_mode() {
+    // Julia mode adds the Julia constant after each Menger step (MB3D
+    // leaves them alone); reported by Geoffrey N. Barnes
+    mb3d::formulas::add_formula_dir(std::path::PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/formulas")));
+    let mut off = Scene::preset("MengerHyper").unwrap();
+    off.width = 64;
+    off.height = 48;
+    off.z_start = -4.0;
+    off.zoom = 0.5;
+    off.threads = 1;
+    let mut zero = off.clone();
+    zero.julia = true;
+    zero.julia_c = [0.0; 4];
+    let mut on = zero.clone();
+    on.julia_c = [0.4, 0.3, 0.2, 0.0];
+    assert!(CalcParams::new(&on).unwrap().slots.iter().all(|s| s.julia_add));
+    assert!(CalcParams::new(&off).unwrap().slots.iter().all(|s| !s.julia_add));
+    let r_off = mb3d::render(&off, &|_, _| {}).unwrap();
+    let r_zero = mb3d::render(&zero, &|_, _| {}).unwrap();
+    let r_on = mb3d::render(&on, &|_, _| {}).unwrap();
+    assert_eq!(r_off.rgb, r_zero.rgb, "a zero Julia constant adds nothing");
+    assert_ne!(r_off.rgb, r_on.rgb, "the Julia constant changes the Menger formula");
+    // other formulas are not flagged
+    let mut other = small("Integer Power");
+    other.julia = true;
+    assert!(CalcParams::new(&other).unwrap().slots.iter().all(|s| !s.julia_add));
+}
+
+#[test]
 fn shadows_darken_and_round_trip() {
     let s = small("Integer Power").apply("shadows = all\nshadow_soft_radius = 2").unwrap();
     let h = s.shadows.unwrap();

@@ -154,7 +154,8 @@ const MC_WORDS: u32 = 23u;       // a task: 0-2 position, 3-5 direction, 6 zz, 7
                                  // 3-5 normal, 6 zz, 7 zz2, 8 dynamic fog steps, 9 len, 10 seed,
                                  // 11 kind, inside (2), DE limited (3), first (4) and last (5) DE dIFS,
                                  // 12 DE stop, 19 gradient and orbit trap
-// 6 slots of 8 words: iterations, uncounted, constants base, fHln,
+// 6 slots of 8 words: iterations, uncounted (bit 0; bit 1: j added after
+// the formula, the Menger formulas in Julia mode), constants base, fHln,
 // Integer Power power, z multiplier, kind (0 none, 1 Integer Power, 2 .m3f,
 // 3 Amazing Box: see amazing_box)
 const SLOTS: u32 = 64u;
@@ -895,7 +896,7 @@ fn hybrid(de: bool, four_d: bool, ipol: bool) -> R {
             continue;
         }
         btmp -= 1;
-        if (slot(n, 1u) != 0u) {
+        if ((slot(n, 1u) & 1u) != 0u) {
             uncounted_guard += 1u;
             if (uncounted_guard > 100000u) {
                 break;
@@ -1032,7 +1033,7 @@ fn hybrid_difs(vec_ini: bool, rs: R, ins: bool) -> R {
         if (guard > 1000000u) {
             break;
         }
-        if (slot(n, 1u) != 0u) {
+        if ((slot(n, 1u) & 1u) != 0u) {
             continue;
         }
         it += 1;

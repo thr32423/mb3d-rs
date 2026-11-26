@@ -623,7 +623,8 @@ fn make_scene_shader(p: &CalcParams, max_buffer: Option<u64>) -> Result<SceneSha
     for (n, sl) in p.slots.iter().enumerate() {
         let row = &mut slots[n];
         row[0] = sl.iterations as u32;
-        row[1] = sl.uncounted as u32;
+        // bit 0 uncounted, bit 1 j added after the formula (julia_add)
+        row[1] = sl.uncounted as u32 | (sl.julia_add as u32) << 1;
         row[3] = p.fhln[n].to_bits();
         if sl.iterations == 0 && !(ipol && n < 2) {
             continue;
@@ -954,6 +955,8 @@ fn make_scene_shader(p: &CalcParams, max_buffer: Option<u64>) -> Result<SceneSha
     }
     let _ = writeln!(g, "        default: {{}}");
     let _ = writeln!(g, "    }}");
+    // a Menger formula in Julia mode: x, y, z += j (HybridSlot::julia_add)
+    let _ = writeln!(g, "    if ((slot(n, 1u) & 2u) != 0u) {{ v += j; }}");
     let _ = writeln!(g, "}}");
     // call_slot_difs: Machine::call_difs (esi = the record + 144, edx =
     // esi + 128, edi = the variables, ebx = the slot, ecx = the count)

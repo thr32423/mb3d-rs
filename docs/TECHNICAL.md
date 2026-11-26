@@ -1178,6 +1178,31 @@ is written from the published algorithm only.
   the original program.
 * Points exactly on the z axis are degenerate in MB3D's triplex formulas
   (division by `x² + y²`). This is kept as in the original.
+* **Menger formulas in Julia mode (since 0.3.16):** in MB3D, Julia mode
+  does nothing to the Menger formulas (Menger3, Menger4, MengerIFS,
+  MengerSmt, CrossMenger, ... every formula with "Menger" in its name but
+  the dIFS ones): they never read the Julia constant. Now, with Julia mode
+  on, the Julia constant is added to x, y, z after each Menger step, as the
+  `_addC` transform does (reported by Geoffrey N. Barnes). With Julia mode
+  off nothing changes. Older pictures that combine a Menger formula with
+  Julia mode on look different now; 6 of MB3D's 80 example files do
+  (*Hyperben2 - Ozosphere tweak*, *KentPress - Parameter 3 tweak fogits*,
+  *Theli-At - MengerSpheres*, *julia on box*, *Abominog-Ua*, *Dainbramage -
+  Nothing left but bones*).
+
+  **To get an older picture back:** in the Formula window, insert the
+  transform `_addC` directly after each Menger formula (iteration count 1,
+  `Cx multiplier`, `Cy multiplier` and `Cz multiplier` all `-1`): it takes
+  the Julia constant away again. If the scene combines two hybrid parts
+  (DE combination) or repeats from a formula, move the part limits and the
+  repeat formula along with the formulas that moved. Save the parameters.
+  Five of the six example files come back this way (identical or within
+  0.2 % of the pixels). This works when the Menger formula's own iteration
+  count is 1; with a higher count the constant is added after every one of
+  those iterations and `_addC` takes it away only once
+  (*Dainbramage - Nothing left but bones*, MengerIFS 300 times in a row:
+  2.6 % of the pixels stay different), and not when the hybrid already
+  has 6 formulas.
 
 ## Videos
 

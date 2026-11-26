@@ -1190,20 +1190,6 @@ is written from the published algorithm only.
   *Theli-At - MengerSpheres*, *julia on box*, *Abominog-Ua*, *Dainbramage -
   Nothing left but bones*).
 
-  **To get an older picture back:** in the Formula window, insert the
-  transform `_addC` directly after each Menger formula (iteration count 1,
-  `Cx multiplier`, `Cy multiplier` and `Cz multiplier` all `-1`): it takes
-  the Julia constant away again. If the scene combines two hybrid parts
-  (DE combination) or repeats from a formula, move the part limits and the
-  repeat formula along with the formulas that moved. Save the parameters.
-  Five of the six example files come back this way (identical or within
-  0.2 % of the pixels). This works when the Menger formula's own iteration
-  count is 1; with a higher count the constant is added after every one of
-  those iterations and `_addC` takes it away only once
-  (*Dainbramage - Nothing left but bones*, MengerIFS 300 times in a row:
-  2.6 % of the pixels stay different), and not when the hybrid already
-  has 6 formulas.
-
 ## Videos
 
 `src/video.rs` writes animation frames into an AVI file (RIFF, one Motion

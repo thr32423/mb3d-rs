@@ -113,6 +113,10 @@ Surface material (not in MB3D; on top of the palette)
 - material_emission = ten numbers, one per palette colour (0..: where the surface has that
   colour it shines in it; strong values like 20 to 60 make lamps), material_light_rays
   (0 = the parts only shine; 8 to 16: they also light what is around them, about a second).
+- material_subsurface = ten numbers, one per palette colour (0..1: light goes into the
+  surface, comes out softened and tinted, thin parts glow lit from behind: wax, jade),
+  material_subsurface_depth (part of the picture's width, default 0.03; more: thicker
+  parts let light through). Best with a lamp behind or beside the fractal.
 Finishing (not in MB3D; a last pass over the picture, cheap to change)
 - finish_exposure (stops), finish_tonemap = filmic | off (bright light rolls off softly),
   glow = strength, radius, threshold (e.g. 0.6, 0.02, 0.8: glow around bright light),

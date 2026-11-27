@@ -1265,6 +1265,60 @@ The idea of light sources chosen by palette colour is Mandelbulb3D SE's
 (Glenn Olander; its emissive dIFS shapes with an opacity per colour, 64
 searching rays per pixel). None of its code is used.
 
+## Subsurface scattering: light through the material
+
+`Material::subsurface` gives each palette colour an amount (0..1, read as
+the emission is, `LightVals::subsurface_at`): where the surface has that
+colour, light goes into it, spreads and comes out softened and tinted.
+`material_subsurface_depth` is how far it goes: after that much of the
+picture's width (default 0.03) e^-1 of the light is left, more of the
+surface's own colours (`subsurface::tint`: a colour channel goes 0.25 to
+1 times as far, by its share of the diffuse colour's brightest).
+
+The painting (`src/subsurface.rs`, the stage "subsurface light"):
+
+1. **Lines.** For every pixel with an amount and every lamp not in front
+   of the surface: a line from just under the surface towards the lamp,
+   with the lamp's share: from behind fully, from the side half
+   (`0.5 - 0.5 n·l`), more where the light goes on towards the eye
+   (`0.5 + 1.5 (l·v)^4`), a positional lamp by its distance squared.
+2. **Thickness.** A ray inside the set (inside rendering's march) to where
+   the line comes out; more than 3 depths: no light.
+3. **Shadow.** From there on towards the lamp, the ordinary march, up to
+   twice the picture's width (a positional lamp: to the lamp).
+4. **Light.** The lamp's colour times e^-(thickness / depth / tint) times
+   its share; lone bright pixels limited to 1.5 times their second
+   brightest neighbour (a part thinner than a pixel lets everything
+   through where its neighbours let nothing), then the emission's
+   smoothing.
+
+Both ray batches run through the card's reflection march
+(`gpu::reflect_batch`, `ReflectTask::inside` for the thickness) when that
+shader is compiled, else on the CPU through `Marcher::march_ray_from`;
+card and CPU give the same light within about 1 % (single pixels on
+glowing edges differ). The shading adds the result as a light's diffuse
+part (as `EmitLight`), and wraps the lamps' diffuse light by half the
+amount around the side turned away (`(cos + w) / (1 + w)`; a hard shadow
+still darkens that side).
+
+Monte Carlo (`mc.rs`): the same direct light per hit (`sss_direct`: the
+thickness with a march through the material, `McReq` kind 2, and the
+lamp's shadow beyond, kind 1), the same wrap in `calc_phong_light`, and a
+second diffuse bounce, mirrored into the material, that comes out on the
+far side weakened and tinted and goes on from there (drawn with the
+chance of half the amount), so light from the sky, other parts and
+shining parts comes through thin parts. Without subsurface the paths and
+their random numbers are as before.
+
+Light that scatters many times inside a thick part (the glow just under a
+lit surface) is not modelled beyond the wrap. Not on tiles, not in inside
+rendering. `MB3D_SUBSURFACE_TIMING=1` prints the stages,
+`MB3D_SUBSURFACE_CPU=1` keeps the rays off the card.
+
+Mandelbulb3D SE (Glenn Olander) has subsurface scattering for its
+transparent dIFS parts; the depth as a part of the picture's width is its
+idea. None of its code is used.
+
 ## The Navigator and the main window's picture
 
 The Navigator (`src/app/navi_form.rs`) draws its own copy of the parameters

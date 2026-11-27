@@ -4,25 +4,29 @@
 //! material it crossed, and tinted: the colours of the surface go farther
 //! than the others (wax, jade, marble, leaves against the sun).
 //!
-//! Step 1, the quick way real-time renderers use: for every pixel and
-//! lamp, the material between the pixel's surface and the lamp is
-//! measured along one line towards the lamp (points at even distances,
-//! inside or outside the fractal), and the lamp's light comes out of the
-//! surface weakened by it (Beer-Lambert: half of it lost every
-//! [`Material::depth`] of the picture's width, scaled by the colour), more
-//! when the lamp is behind the part than to its side, more when the light
-//! goes on towards the eye.  What the light meets beyond the part (another
-//! part in front of the lamp) does not count, nor light that scatters
-//! more than once: Monte Carlo does not have it yet.  The side of the
+//! The quick way real-time renderers use, with real rays: for every pixel
+//! and lamp a ray goes from just under the surface towards the lamp,
+//! inside the material, to where it comes out (the thickness), and from
+//! there on towards the lamp (its shadow).  The lamp's light comes out of
+//! the surface weakened by the thickness (Beer-Lambert: e^-1 left after
+//! every [`Material::depth`] of the picture's width, the surface's own
+//! colours going farther), more when the lamp is behind the part than to
+//! its side, more when the light goes on towards the eye.  Light that
+//! scatters more than once is Monte Carlo's (`mc`, which has the same
+//! direct light and a bounce through the material).  The side of the
 //! surface turned away from a lamp is lit a little in the shading
 //! (`LightVals::subsurface_at`, the light wraps around).
+//!
+//! The rays run on the graphics card (the reflection pass's march, inside
+//! the set for the thickness) or on the CPU, the same march.
 //!
 //! Mandelbulb3D SE (Glenn Olander, github.com/Rodrigo-Spacecraft/
 //! Mandelbulb3D-SE) has subsurface scattering for its transparent dIFS
 //! parts; from it comes the depth as a part of the picture's width, so
 //! the look stays the same with the zoom.  Nothing of its code is used.
 //!
-//! Only when the whole picture is calculated at once (not on tiles).
+//! Only when the whole picture is calculated at once (not on tiles), not
+//! in inside rendering.
 //!
 //! [`Material::subsurface`]: crate::scene::Material::subsurface
 //! [`Material::depth`]: crate::scene::Material::depth
@@ -34,12 +38,17 @@ use crate::math::*;
 use crate::scene::Scene;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-/// Points measured along the line to a lamp.
-const POINTS: usize = 24;
-/// The line's length, in depths ([`crate::scene::Material::depth`]): the
-/// light left after it is e^-3 (5 %, less for the colours the surface
+/// The thickness counted, in depths ([`crate::scene::Material::depth`]):
+/// the light left after it is e^-3 (5 %, less for the colours the surface
 /// does not have).
-const REACH: f64 = 3.0;
+pub(crate) const REACH: f64 = 3.0;
+
+/// How far each colour goes, relative to the depth: the surface's own
+/// colours (`dif`, its diffuse colour) farther than the others.
+pub(crate) fn tint(dif: [f32; 3]) -> [f32; 3] {
+    let cmax = dif[0].max(dif[1]).max(dif[2]).max(1e-6);
+    dif.map(|v| 0.25 + 0.75 * (v / cmax).clamp(0.0, 1.0))
+}
 
 /// A lamp as the pass sees it: the direction to it (scene space) or its
 /// place, and its colour (as the shading adds it, 0..255).
@@ -47,6 +56,74 @@ struct Lamp {
     dir: Vec3,
     pos: Option<Vec3>,
     col: [f32; 3],
+}
+
+/// A line from a pixel to a lamp.
+#[derive(Clone, Copy)]
+struct Line {
+    pix: u32,
+    lamp: u8,
+    /// just under the surface, and the unit direction to the lamp
+    start: Vec3,
+    dir: Vec3,
+    /// the pixel's depth (steps)
+    zz: f32,
+    /// how far the lamp's shadow is followed (scene units)
+    far: f64,
+    /// the light's share: back side, phase, distance, amount (/255)
+    k: f32,
+    tint: [f32; 3],
+}
+
+/// A batch of rays from `origin` along the unit `dir` at the depth `zz`,
+/// inside the set or not: where each meets the surface (None: nowhere).
+/// On the card when it is ready (`card`), else (or for what the card
+/// leaves) on the CPU.
+#[cfg_attr(not(feature = "gpu"), allow(unused_variables))]
+fn rays(p: &CalcParams, rays: &[(Vec3, Vec3, f32)], inside: bool, threads: usize, card: bool, cancel: &(dyn Fn() -> bool + Sync)) -> (Vec<Option<Vec3>>, usize) {
+    let sw = p.step_width;
+    let mut out: Vec<Option<Vec3>> = vec![None; rays.len()];
+    let mut done = 0;
+    #[cfg(feature = "gpu")]
+    if card && !rays.is_empty() {
+        let tasks: Vec<crate::gpu::ReflectTask> = rays
+            .iter()
+            .enumerate()
+            .map(|(i, (o, d, zz))| crate::gpu::ReflectTask { origin: *o, dir: [(d[0] * sw) as f32, (d[1] * sw) as f32, (d[2] * sw) as f32], zz: *zz, pixel: i as u32, inside, ..Default::default() })
+            .collect();
+        match crate::gpu::reflect_batch(p, &tasks, &crate::gpu::ReflectOpts::default(), None, cancel) {
+            Ok((hits, n, _)) => {
+                for (o, h) in out.iter_mut().zip(&hits).take(n) {
+                    *o = (h.hit && !h.skip).then_some(h.pos);
+                }
+                done = n;
+            }
+            Err(e) => crate::elog!("  subsurface: the card gave up ({e}), the rays on the CPU"),
+        }
+    }
+    let on_card = done;
+    let rest = &rays[done..];
+    let per = rest.len().div_ceil(threads.max(1)).max(1);
+    std::thread::scope(|s| {
+        for (part, o) in rest.chunks(per).zip(out[done..].chunks_mut(per)) {
+            s.spawn(move || {
+                let mut m = Marcher::new(p, 1);
+                m.no_ground = true;
+                m.inside = inside;
+                m.calc_inside = inside;
+                for (k, ((org, d, zz), v)) in part.iter().zip(o.iter_mut()).enumerate() {
+                    if k % 256 == 0 && cancel() {
+                        return;
+                    }
+                    let (si, _) = m.march_ray_from(*org, scale(*d, sw), *zz as f64);
+                    if si.zpos() < 32768 {
+                        *v = Some(m.it.c);
+                    }
+                }
+            });
+        }
+    });
+    (out, on_card)
 }
 
 /// The light that comes through the material to each pixel of the
@@ -64,7 +141,7 @@ pub(crate) fn light(
     cancel: &(dyn Fn() -> bool + Sync),
 ) -> Option<std::sync::Arc<EmitLight>> {
     let m = sc.material?;
-    if !m.scatters() {
+    if !m.scatters() || p.inside_rendering {
         return None;
     }
     let timing = std::env::var_os("MB3D_SUBSURFACE_TIMING").is_some();
@@ -94,120 +171,160 @@ pub(crate) fn light(
     // the depth in scene units: a part of the picture's width
     let depth = m.depth() as f64 * p.width as f64 * p.step_width;
     let reach = REACH * depth;
-    let step = reach / POINTS as f64;
+    // how far the lamps' shadow is followed: twice the picture's width at
+    // the middle of the scene
+    let shadow_len = 2.0 * p.width as f64 * p.step_width * (1.0 + 0.5 * p.zend.abs() * p.de_stop_factor as f64);
 
-    let mut light = vec![[0f32; 3]; wu * hu];
+    // 1. the surfaces and the lines to the lamps
     let mut pix = vec![Pix::default(); wu * hu];
     let rows = hu.div_ceil(threads).max(1);
     let done = AtomicUsize::new(0);
-    let lamps = &lamps;
-    std::thread::scope(|s| {
-        for (ci, (lc, pc)) in light.chunks_mut(rows * wu).zip(pix.chunks_mut(rows * wu)).enumerate() {
-            let done = &done;
-            s.spawn(move || {
-                let mut mr = Marcher::new(p, 1);
-                // (the ground plane is not material)
-                mr.no_ground = true;
-                for (k, (out, px)) in lc.iter_mut().zip(pc.iter_mut()).enumerate() {
-                    let i = ci * rows * wu + k;
-                    if k % wu == 0 {
-                        if cancel() {
-                            return;
-                        }
-                        progress(done.fetch_add(1, Ordering::Relaxed), hu);
-                    }
-                    let (x, y) = ((i % wu) as i32, (i / wu) as i32);
-                    let si = &gbuf[i];
-                    let plv = lv.plv_for_pixel(si, x + x0, y + y0, cam);
-                    let idif0 = lv.s_col_zmul * plv.z_pos;
-                    let amount = lv.subsurface_at(si, idif0);
-                    if amount <= 0.0 || !mr.surface_point(x, y, si, 4, 0.01) {
-                        continue;
-                    }
-                    let view = normalize(mr.vfov);
-                    let mut n = normalize(rotate_vector_reverse(&[si.normal[0] as f64, si.normal[1] as f64, si.normal[2] as f64], &p.vgrads));
-                    if !n.iter().all(|v| v.is_finite()) {
-                        continue;
-                    }
-                    if dot(&n, &view) > 0.0 {
-                        n = scale(n, -1.0);
-                    }
-                    let pos = mr.it.c;
-                    let eps = mr.ms_de_stop.max(1e-6);
-                    let width = p.step_width * (1.0 + mr.mzz.abs() * p.de_stop_factor as f64);
-                    *px = Pix { pos, n: [n[0] as f32, n[1] as f32, n[2] as f32], eps, zz: mr.mzz as f32, width: width as f32, ok: true };
-                    // the tint: the surface's own colours go farther
-                    let c = lv.calc_colors(si, idif0).0;
-                    let cmax = c[0].max(c[1]).max(c[2]).max(1e-6);
-                    let tint = c.map(|v| 0.25 + 0.75 * (v / cmax).clamp(0.0, 1.0));
-                    // where the line starts: just under the surface
-                    let start = [pos[0] - n[0] * width * 2.0, pos[1] - n[1] * width * 2.0, pos[2] - n[2] * width * 2.0];
-                    // (the points' offset, the same for a pixel and its lamps)
-                    let jitter = (((i as u32).wrapping_mul(2654435761) >> 8) as f64) / (1u32 << 24) as f64;
-                    let mut sum = [0f32; 3];
-                    for l in lamps {
-                        let (dir, att) = match l.pos {
-                            None => (l.dir, 1.0),
-                            Some(lp) => {
-                                let v = sub(lp, pos);
-                                let d2 = dot(&v, &v);
-                                (scale(v, 1.0 / d2.sqrt().max(1e-300)), 1.0 / (d2 as f32 + 1e-30))
+    let lamps_r = &lamps;
+    let mut lines: Vec<Line> = std::thread::scope(|s| {
+        let hs: Vec<_> = pix
+            .chunks_mut(rows * wu)
+            .enumerate()
+            .map(|(ci, pc)| {
+                let done = &done;
+                s.spawn(move || {
+                    let mut out = Vec::new();
+                    let mut mr = Marcher::new(p, 1);
+                    for (k, px) in pc.iter_mut().enumerate() {
+                        let i = ci * rows * wu + k;
+                        if k % wu == 0 {
+                            if cancel() {
+                                return out;
                             }
-                        };
-                        let ndl = dot(&n, &dir) as f32;
-                        // from behind fully, from the side half, from the
-                        // front not at all (that light falls on it)
-                        let back = 0.5 - 0.5 * ndl;
-                        if back <= 0.01 {
+                            progress(done.fetch_add(1, Ordering::Relaxed), hu * 2);
+                        }
+                        let (x, y) = ((i % wu) as i32, (i / wu) as i32);
+                        let si = &gbuf[i];
+                        let plv = lv.plv_for_pixel(si, x + x0, y + y0, cam);
+                        let idif0 = lv.s_col_zmul * plv.z_pos;
+                        let amount = lv.subsurface_at(si, idif0);
+                        if amount <= 0.0 || !mr.surface_point(x, y, si, 4, 0.01) {
                             continue;
                         }
-                        // more where the light goes on towards the eye
-                        let fwd = (dot(&dir, &view) as f32).max(0.0);
-                        let phase = 0.5 + 1.5 * fwd * fwd * fwd * fwd;
-                        // the material on the line to the lamp
-                        let mut thick = 0f64;
-                        let mut t = step * jitter;
-                        while t < reach {
-                            mr.it.c = [start[0] + dir[0] * t, start[1] + dir[1] * t, start[2] + dir[2] * t];
-                            mr.ms_de_stop = eps;
-                            let d = mr.calc_de();
-                            if mr.it.it_result >= mr.max_its_result || d <= eps as f64 {
-                                thick += step;
-                                t += step;
-                            } else {
-                                // no material nearer than the distance
-                                let free = d * p.step_width;
-                                if free >= reach - t {
-                                    break;
-                                }
-                                t += step.max((free / step).floor() * step);
-                            }
+                        let view = normalize(mr.vfov);
+                        let mut n = normalize(rotate_vector_reverse(&[si.normal[0] as f64, si.normal[1] as f64, si.normal[2] as f64], &p.vgrads));
+                        if !n.iter().all(|v| v.is_finite()) {
+                            continue;
                         }
-                        let k = back * phase * att * amount / 255.0;
-                        for ch in 0..3 {
-                            let tr = (-(thick / (depth * tint[ch] as f64)) as f32).exp();
-                            sum[ch] += l.col[ch] * tr * k;
+                        if dot(&n, &view) > 0.0 {
+                            n = scale(n, -1.0);
+                        }
+                        let pos = mr.it.c;
+                        let width = p.step_width * (1.0 + mr.mzz.abs() * p.de_stop_factor as f64);
+                        *px = Pix { pos, n: [n[0] as f32, n[1] as f32, n[2] as f32], eps: mr.ms_de_stop.max(1e-6), zz: mr.mzz as f32, width: width as f32, ok: true };
+                        let tint = tint(lv.calc_colors(si, idif0).0);
+                        // just under the surface
+                        let start = [pos[0] - n[0] * width * 2.0, pos[1] - n[1] * width * 2.0, pos[2] - n[2] * width * 2.0];
+                        for (li, l) in lamps_r.iter().enumerate() {
+                            let (dir, att, far) = match l.pos {
+                                None => (l.dir, 1.0, shadow_len),
+                                Some(lp) => {
+                                    let v = sub(lp, pos);
+                                    let d2 = dot(&v, &v);
+                                    (scale(v, 1.0 / d2.sqrt().max(1e-300)), 1.0 / (d2 as f32 + 1e-30), d2.sqrt().min(shadow_len))
+                                }
+                            };
+                            // from behind fully, from the side half, from
+                            // the front not at all (that light falls on it)
+                            let back = 0.5 - 0.5 * dot(&n, &dir) as f32;
+                            if back <= 0.01 {
+                                continue;
+                            }
+                            // more where the light goes on towards the eye
+                            let fwd = (dot(&dir, &view) as f32).max(0.0);
+                            let phase = 0.5 + 1.5 * fwd * fwd * fwd * fwd;
+                            out.push(Line { pix: i as u32, lamp: li as u8, start, dir, zz: mr.mzz as f32, far, k: back * phase * att * amount / 255.0, tint });
                         }
                     }
-                    *out = sum;
-                }
-            });
-        }
+                    out
+                })
+            })
+            .collect();
+        hs.into_iter().flat_map(|h| h.join().unwrap_or_default()).collect()
     });
     if cancel() {
         return None;
     }
     let t1 = t0.elapsed().as_secs_f64();
+    #[cfg(feature = "gpu")]
+    let card = crate::gpu::enabled() && crate::gpu::unsupported(p).is_none() && std::env::var_os("MB3D_SUBSURFACE_CPU").is_none() && crate::gpu::reflect_compiled(p);
+    #[cfg(not(feature = "gpu"))]
+    let card = false;
+
+    // 2. the thickness: inside the set to where the line comes out
+    let first: Vec<(Vec3, Vec3, f32)> = lines.iter().map(|l| (l.start, l.dir, l.zz)).collect();
+    let (exits, card1) = rays(p, &first, true, threads, card, cancel);
+    if cancel() {
+        return None;
+    }
+    let mut thick = vec![f64::INFINITY; lines.len()];
+    for (k, (l, e)) in lines.iter().zip(&exits).enumerate() {
+        if let Some(e) = e {
+            let t = dot(&sub(*e, l.start), &l.dir);
+            if t < reach {
+                thick[k] = t.max(0.0);
+            }
+        }
+    }
+    let t2 = t0.elapsed().as_secs_f64();
+
+    // 3. the lamps' shadow beyond: on from where the line came out
+    let keep: Vec<usize> = (0..lines.len()).filter(|&k| thick[k].is_finite()).collect();
+    let second: Vec<(Vec3, Vec3, f32)> = keep
+        .iter()
+        .map(|&k| {
+            let l = &lines[k];
+            let px = &pix[l.pix as usize];
+            let o = add(l.start, scale(l.dir, thick[k] + 2.0 * px.width as f64));
+            (o, l.dir, l.zz)
+        })
+        .collect();
+    let (blocked, card2) = rays(p, &second, false, threads, card, cancel);
+    if cancel() {
+        return None;
+    }
+    for (j, &k) in keep.iter().enumerate() {
+        if let Some(b) = blocked[j] {
+            if dot(&sub(b, second[j].0), &lines[k].dir) < lines[k].far {
+                thick[k] = f64::INFINITY;
+            }
+        }
+    }
+    progress(hu * 2, hu * 2);
+
+    // 4. the light
+    let mut light = vec![[0f32; 3]; wu * hu];
+    for (k, l) in lines.iter_mut().enumerate() {
+        if !thick[k].is_finite() {
+            continue;
+        }
+        let col = lamps[l.lamp as usize].col;
+        let o = &mut light[l.pix as usize];
+        for ch in 0..3 {
+            o[ch] += col[ch] * (-(thick[k] / (depth * l.tint[ch] as f64)) as f32).exp() * l.k;
+        }
+    }
     despeckle(&mut light, &pix, wu, hu);
     crate::emission::smooth(&mut light, &pix, wu, hu, threads, cancel);
     if cancel() {
         return None;
     }
     if timing {
-        let n = pix.iter().filter(|p| p.ok).count();
-        let most = light.iter().map(|c| c[0].max(c[1]).max(c[2])).fold(0f32, f32::max);
-        let mean = light.iter().map(|c| c[0] + c[1] + c[2]).sum::<f32>() / (3 * n.max(1)) as f32;
-        crate::elog!("  subsurface: {} pixels, {} lamps, {:.2} s, smoothed in {:.2} s; light mean {:.4}, most {:.4}", n, lamps.len(), t1, t0.elapsed().as_secs_f64() - t1, mean, most);
+        let lit = thick.iter().filter(|t| t.is_finite()).count();
+        crate::elog!(
+            "  subsurface: {} lines ({} through, {} on the card), surfaces {:.2} s, thickness {:.2} s, shadows {:.2} s, all {:.2} s",
+            lines.len(),
+            lit,
+            card1 + card2,
+            t1,
+            t2 - t1,
+            t0.elapsed().as_secs_f64() - t2,
+            t0.elapsed().as_secs_f64()
+        );
     }
     Some(std::sync::Arc::new(EmitLight { rect: p.rect, light }))
 }
@@ -276,8 +393,8 @@ mod tests {
     #[test]
     fn light_comes_through_the_material() {
         let on = "material_subsurface = 1, 1, 1, 1, 1, 1, 1, 1, 1, 1";
-        let thin = total(&bulb(&format!("{on}\nmaterial_subsurface_depth = 0.01"))).unwrap();
-        let deep = total(&bulb(&format!("{on}\nmaterial_subsurface_depth = 0.1"))).unwrap();
+        let thin = total(&bulb(&format!("{on}\nmaterial_subsurface_depth = 0.05"))).unwrap();
+        let deep = total(&bulb(&format!("{on}\nmaterial_subsurface_depth = 0.2"))).unwrap();
         assert!(thin > 0.0, "some light comes through: {thin}");
         assert!(deep > thin * 1.2, "more where it goes deeper: {thin} {deep}");
         assert!(total(&bulb("material_glow = 0")).is_none());

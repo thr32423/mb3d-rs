@@ -1673,9 +1673,79 @@ impl<'a, 'c> Tracer<'a, 'c> {
         self.pos = ic;
     }
 
+    /// Subsurface scattering (`subsurface` of the painting, here per hit):
+    /// the material on the line from just under the surface at `cc` (unit
+    /// normal `n`) along `v` (a step long), up to `reach` steps; the
+    /// thickness in steps (`reach` when the line does not come out).
+    async fn sss_thickness(&mut self, cc: Vec3, n: Vec3, v: Vec3, reach: f64, ms_de_stop: f32) -> f64 {
+        let sw = self.sw();
+        let start = add(cc, scale(n, -2.0 * sw));
+        let t = self.march(McReq { kind: 2, pos: start, dir: v, len: reach, seed: self.seed, inside: !self.inside, ms_de_stop, ..Default::default() }).await;
+        self.seed = t.seed;
+        t.len.clamp(0.0, reach)
+    }
+
+    /// The lamps' light that comes through the material to the hit at `cc`
+    /// (unit normal `n`, the ray along `dir`): through the thickness towards
+    /// each lamp, then in the lamp's shadow beyond; as the painting's pass
+    /// (`subsurface::light`), per lamp `col * T * back * phase * amount`
+    /// with the diffuse light's scale, times the surface colour `dif`.
+    #[allow(clippy::too_many_arguments)]
+    async fn sss_direct(&mut self, cc: Vec3, n: Vec3, dir: &Vec3, amount: f32, dif: S3, depth: f64, ms_de_stop: f32) -> S3 {
+        let c = self.c;
+        let p = c.p;
+        let lv = c.lv;
+        let sw = p.step_width;
+        let reach = crate::subsurface::REACH * depth / sw;
+        let tint = crate::subsurface::tint(dif);
+        let view = normalize(*dir);
+        let zz = self.mzz.abs() as f32;
+        let max_lhs = (c.hs_max_lmul * (1.0 + 0.5 * zz.min(p.zend as f32 * 0.4) * (p.fov_y as f32).max(0.0) / c.height as f32)) as f64;
+        let mut sum = [0f32; 3];
+        for (i, l) in lv.lights.iter().enumerate() {
+            if !l.on || l.col.iter().all(|v| *v <= 0.0) {
+                continue;
+            }
+            let (to, att) = if l.positional {
+                let d = sub(c.hs_vecs[i], cc);
+                (normalize(d), (1.0 / (sqr_len(&d) + 1e-26)) as f32)
+            } else {
+                (normalize(scale(c.hs_vecs[i], -1.0)), 1.0)
+            };
+            let back = 0.5 - 0.5 * dot(&n, &to) as f32;
+            if back <= 0.01 {
+                continue;
+            }
+            let fwd = (dot(&to, &view) as f32).max(0.0);
+            let phase = 0.5 + 1.5 * fwd * fwd * fwd * fwd;
+            let v = scale(to, sw);
+            let thick = self.sss_thickness(cc, n, v, reach, ms_de_stop).await;
+            if thick >= reach {
+                continue;
+            }
+            // beyond the part: the lamp's shadow
+            let exit = add(add(cc, scale(n, -2.0 * sw)), scale(v, thick + 2.0));
+            let h = self
+                .march(McReq { kind: 1, pos: exit, dir: v, zz: zz as f64, zz2: self.mzz, zzplus: dot(&to, &view), len: max_lhs, seed: self.seed, inside: self.inside, ..Default::default() })
+                .await;
+            self.seed = h.seed;
+            if h.len > 0.01 {
+                continue;
+            }
+            let k = back * phase * att * amount * lv.s_diff / 255.0;
+            for ch in 0..3 {
+                let tr = (-(thick * sw / (depth * tint[ch] as f64)) as f32).exp();
+                sum[ch] += l.col[ch] * tr * k * dif[ch];
+            }
+        }
+        sum
+    }
+
     /// `CalcPhongLight`: direct light with soft shadows from lights with a
     /// size (`MCSoftShadowRadius`): [specular, diffuse]
-    async fn calc_phong_light(&mut self, reflect: &Vec3) -> [S3; 2] {
+    /// `wrap` (0..): subsurface scattering's light around the side turned
+    /// away (as `LightVals::shade`'s, where the shadow lets it).
+    async fn calc_phong_light(&mut self, reflect: &Vec3, wrap: f32) -> [S3; 2] {
         let c = self.c;
         let lv = c.lv;
         let sw = self.sw();
@@ -1734,7 +1804,11 @@ impl<'a, 'c> Tracer<'a, 'c> {
                 }
                 let sp = fast_int_pow((dot(reflect, &t) * hs[3] as f64 / -(sw * sw)) as f32, l.pow_func) * lv.s_spec / 255.0;
                 addw3(&mut res[0], l0, sp);
-                let df = ((dot(&self.normals, &t) / -sw).max(0.0) as f32).powi(2) * lv.s_diff / 255.0;
+                let mut cos = (dot(&self.normals, &t) / -sw) as f32;
+                if wrap > 0.0 {
+                    cos = (cos + wrap) / (1.0 + wrap);
+                }
+                let df = cos.max(0.0).powi(2) * lv.s_diff / 255.0;
                 addw3(&mut res[1], l0, df);
             }
             self.hs_vecs[i] = saved[i];
@@ -2117,7 +2191,10 @@ impl<'a, 'c> Tracer<'a, 'c> {
         } else {
             self.last_difs
         };
-        let light_sd = self.calc_phong_light(&reflect).await;
+        // subsurface scattering (0..1) of the surface
+        let sss = if cr.is_ground() { 0.0 } else { lv.subsurface_at(&cr, lv.s_col_zmul * (self.mzz * sw + p.zz_stmit_dif) as f32) };
+        let sss_depth = lv.material.map_or(0.0, |m| m.depth() as f64 * p.width as f64 * sw);
+        let light_sd = self.calc_phong_light(&reflect, 0.5 * sss).await;
         let mut d2 = 1f32;
         let d3v;
         let mut d4 = 0f32;
@@ -2210,6 +2287,13 @@ impl<'a, 'c> Tracer<'a, 'c> {
         let spec = mul3(sc3(spe_col, (0.25 + d3v) * 0.8), light_sd[0]);
         let diff = mul3(sc3(first3(obj[1]), d2), light_sd[1]);
         self.total_light = add3(self.total_light, mul3(add3(spec, diff), t_absorb));
+        // subsurface scattering: the lamps' light through the material
+        if sss > 0.0 {
+            let n = normalize(self.normals);
+            let l = self.sss_direct(cc, n, &dir, sss, first3(obj[1]), sss_depth, h.ms_de_stop).await;
+            self.total_light = add3(self.total_light, mul3(l, t_absorb));
+            self.pos = cc;
+        }
         if d1 > 1.0 {
             t_absorb = sc3(t_absorb, 1.0 / d1);
         }
@@ -2288,6 +2372,26 @@ impl<'a, 'c> Tracer<'a, 'c> {
             self.calc_amb_shadow = true;
             let w = sc3(first3(obj[1]), d2);
             self.calc_ray(zz, nv, mul3(t_absorb, w), rit, false).await;
+            // subsurface scattering: a second bounce, into the material
+            // (mirrored to the inside), out on the far side weakened and
+            // tinted, and on from there; on top of the bounce off the
+            // surface, as in the painting, with half the amount of its
+            // light at most (drawn with the chance q, weighted by 1/q)
+            let q = (0.5 * sss) as f64;
+            if q > 0.0 && self.rand() < q {
+                let n = normalize(nvec);
+                let into = sub(nv, scale(n, 2.0 * dot(&nv, &n)));
+                let reach = crate::subsurface::REACH * sss_depth / sw;
+                let thick = self.sss_thickness(cc, n, into, reach, h.ms_de_stop).await;
+                if thick < reach {
+                    let tint = crate::subsurface::tint(first3(obj[1]));
+                    let tr: S3 = std::array::from_fn(|ch| (-(thick * sw / (sss_depth * tint[ch] as f64)) as f32).exp());
+                    self.pos = add(add(cc, scale(n, -2.0 * sw)), scale(into, thick + 2.0));
+                    let w = sc3(mul3(tr, w), sss / q as f32 * 0.5);
+                    self.calc_amb_shadow = true;
+                    self.calc_ray(zz, into, mul3(t_absorb, w), rit, false).await;
+                }
+            }
         }
         None
     }

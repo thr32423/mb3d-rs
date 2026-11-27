@@ -558,6 +558,8 @@ fn calculate_rows(
         // the reflection pass's pipelines compile meanwhile
         if sc.mc.reflections {
             crate::gpu::reflect_prepare(&p, sc.shadows.is_some(), sc.ao.is_some());
+        } else if material_rays(sc) {
+            crate::gpu::reflect_prepare(&p, false, false);
         }
         // Auto: the CPU threads and the card share the march (the CPU
         // starts at once, the card joins when its shader is compiled);
@@ -2044,10 +2046,19 @@ pub fn prewarm_gpu(sc: Scene) {
         let _ = crate::gpu::march_prepare(&p, &post_job(&sc, &p));
         if sc.mc.reflections {
             crate::gpu::reflect_prepare(&p, sc.shadows.is_some(), sc.ao.is_some());
+        } else if material_rays(&sc) {
+            crate::gpu::reflect_prepare(&p, false, false);
         }
     });
     #[cfg(not(feature = "gpu"))]
     let _ = sc;
+}
+
+/// The scene's material sends rays through the reflection pass's march
+/// (the emission's light rays, the subsurface scattering's): its
+/// pipelines are compiled ahead, as for the reflections.
+fn material_rays(sc: &Scene) -> bool {
+    sc.material.is_some_and(|m| m.scatters() || (m.emits() && m.cast_rays > 0))
 }
 
 pub fn post_job(sc: &Scene, p: &CalcParams) -> PostJob {

@@ -2269,6 +2269,14 @@ MatLightRays=Lichtstralen:
 ;Light rays:
 MatLightRaysHint=De stralen die elke pixel uitzendt voor het licht dat de stralende delen op hun omgeving werpen (0 = geen, 8 tot 16 is gebruikelijk, hoogstens 64).\nMeer stralen: minder ruis, meer tijd.
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=Onder oppervlak:
+;Subsurface:
+MatSubsurfaceHint=Tien getallen, één voor elke kleur van het palet van links naar rechts (0 tot 1): waar het oppervlak die kleur heeft, dringt licht erin en komt zachter en gekleurd weer naar buiten, en dunne delen gloeien als ze van achteren worden belicht (was, jade, marmer).\nVoorbeeld: 0 1 0 0 0 0 0 0 0 0 voor de tweede kleur.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=Diepte:
+;Depth:
+MatSubsurfaceDepthHint=Hoe ver licht in het materiaal doordringt, als deel van de breedte van het beeld (0.03 is gebruikelijk; meer: licht gaat door dikkere delen).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=Materiaal
 ;Material
 Max=Max

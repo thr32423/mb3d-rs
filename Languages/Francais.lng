@@ -2269,6 +2269,14 @@ MatLightRays=Rayons de lumière :
 ;Light rays:
 MatLightRaysHint=Les rayons que chaque pixel envoie pour la lumière que les parties brillantes projettent sur ce qui les entoure (0 = aucun, 8 à 16 d'habitude, 64 au plus).\nPlus de rayons : moins de bruit, plus de temps.
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=Sous la surface :
+;Subsurface:
+MatSubsurfaceHint=Dix nombres, un pour chaque couleur de la palette de gauche à droite (de 0 à 1) : là où la surface a cette couleur, la lumière y pénètre et ressort adoucie et teintée, et les parties fines brillent éclairées par derrière (cire, jade, marbre).\nExemple : 0 1 0 0 0 0 0 0 0 0 pour la deuxième couleur.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=Profondeur :
+;Depth:
+MatSubsurfaceDepthHint=Jusqu'où la lumière pénètre dans la matière, en part de la largeur de l'image (0.03 est habituel ; plus : la lumière traverse des parties plus épaisses).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=Matériau
 ;Material
 Max=Max

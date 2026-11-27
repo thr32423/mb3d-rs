@@ -2270,6 +2270,14 @@ MatLightRays=光線数:
 ;Light rays:
 MatLightRaysHint=光る部分が周囲に投げかける光のために各ピクセルが飛ばす光線の数（0 = なし、通常は 8～16、最大 64）。\n光線が多いほどノイズが減り、時間がかかります。
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=表面下散乱:
+;Subsurface:
+MatSubsurfaceHint=パレットの各色に左から右へ 1 つずつ、10 個の数値（0～1）：表面がその色の場所では光が中に入り、柔らかく色づいて出てきます。薄い部分は後ろから照らされると光ります（ろう、翡翠、大理石）。\n例: 0 1 0 0 0 0 0 0 0 0 は 2 番目の色です。
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=深さ:
+;Depth:
+MatSubsurfaceDepthHint=光が素材の中に入る距離、画像の幅に対する割合（通常は 0.03、大きくすると光がより厚い部分を通ります）。
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=マテリアル
 ;Material
 Max=Max

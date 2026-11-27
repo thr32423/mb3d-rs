@@ -2270,6 +2270,14 @@ MatLightRays=光线数：
 ;Light rays:
 MatLightRaysHint=每个像素为发光部分投向周围的光所发出的光线数（0 = 无，通常为 8 到 16，最多 64）。\n光线越多：噪点越少，时间越长。
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=次表面:
+;Subsurface:
+MatSubsurfaceHint=十个数字，调色板从左到右每种颜色一个（0 到 1）：表面为该颜色的地方，光会进入其中，再柔和并带着颜色射出，薄的部分在背光时发亮（蜡、玉、大理石）。\n例：0 1 0 0 0 0 0 0 0 0 用于第二种颜色。
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=深度:
+;Depth:
+MatSubsurfaceDepthHint=光进入材料的距离，以图像宽度的比例表示（通常为 0.03；更大：光能穿过更厚的部分）。
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=材质
 ;Material
 Max=Max

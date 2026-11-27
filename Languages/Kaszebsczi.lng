@@ -2269,6 +2269,14 @@ MatLightRays=Parminie swiatła:
 ;Light rays:
 MatLightRaysHint=Parminie, chtërne kòżdi piksel wësyłô dlô swiatła rzucónégò bez swiécącé dzéle na jich òkòlé (0 = felënk, zwëkle òd 8 do 16, nôwicy 64).\nWicy parminiów: mni szëmù, wicy czasu.
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=Pòd wiérzchã:
+;Subsurface:
+MatSubsurfaceHint=Dzesãc lëczbów, pò jednym dlô kòżdi farwë palétë òd lewi do prawi (òd 0 do 1): tam, dze wiérzch mô nã farwã, swiatło wchòdzy w niegò ë wëchòdzy miękczészé ë zabarwioné, a cenczé dzélë swiécą òswiétloné òd zadu (wòsk, jadeit, marmùr).\nPrzëkłôd: 0 1 0 0 0 0 0 0 0 0 dlô drëgi farwë.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=Głãbòkòsc:
+;Depth:
+MatSubsurfaceDepthHint=Jak dalek swiatło wchòdzy w materiał, jakno dzél szérzi òbrazu (zwëczajno 0.03; wicy: swiatło przechòdzy bez grëbszé dzélë).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=Materiał
 ;Material
 Max=Max

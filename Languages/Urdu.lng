@@ -2270,6 +2270,14 @@ MatLightRays=روشنی کی شعاعیں:
 ;Light rays:
 MatLightRaysHint=وہ شعاعیں جو ہر پکسل اس روشنی کے لیے بھیجتا ہے جو چمکتے حصے اپنے اردگرد ڈالتے ہیں (0 = کوئی نہیں، عام طور پر 8 سے 16، زیادہ سے زیادہ 64)۔\nزیادہ شعاعیں: کم شور، زیادہ وقت۔
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=سطح کے نیچے:
+;Subsurface:
+MatSubsurfaceHint=دس اعداد، پیلیٹ کے ہر رنگ کے لیے ایک، بائیں سے دائیں (0 سے 1): جہاں سطح کا وہ رنگ ہو وہاں روشنی اس میں داخل ہوتی ہے اور نرم اور رنگین ہو کر نکلتی ہے، اور پتلے حصے پیچھے سے روشن ہونے پر چمکتے ہیں (موم، یشب، سنگ مرمر)۔\nمثال: 0 1 0 0 0 0 0 0 0 0 دوسرے رنگ کے لیے۔
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=گہرائی:
+;Depth:
+MatSubsurfaceDepthHint=روشنی مادے میں کتنی دور جاتی ہے، تصویر کی چوڑائی کے حصے کے طور پر (عام طور پر 0.03؛ زیادہ: روشنی موٹے حصوں سے گزرتی ہے)۔
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=مادہ
 ;Material
 Max=Max

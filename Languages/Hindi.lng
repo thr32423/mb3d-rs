@@ -2270,6 +2270,14 @@ MatLightRays=प्रकाश किरणें:
 ;Light rays:
 MatLightRaysHint=वे किरणें जो हर पिक्सेल उस रोशनी के लिए भेजता है जो चमकते हिस्से अपने आसपास डालते हैं (0 = कोई नहीं, सामान्यतः 8 से 16, अधिकतम 64)।\nअधिक किरणें: कम शोर, अधिक समय।
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=सतह के नीचे:
+;Subsurface:
+MatSubsurfaceHint=दस संख्याएँ, पैलेट के हर रंग के लिए एक, बाएँ से दाएँ (0 से 1): जहाँ सतह का वह रंग है वहाँ रोशनी उसमें जाती है और नरम व रंगीन होकर निकलती है, और पतले हिस्से पीछे से रोशनी पड़ने पर चमकते हैं (मोम, जेड, संगमरमर)।\nउदाहरण: 0 1 0 0 0 0 0 0 0 0 दूसरे रंग के लिए।
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=गहराई:
+;Depth:
+MatSubsurfaceDepthHint=रोशनी पदार्थ में कितनी दूर जाती है, चित्र की चौड़ाई के हिस्से के रूप में (आम तौर पर 0.03; ज़्यादा: रोशनी मोटे हिस्सों से गुज़रती है)।
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=सामग्री
 ;Material
 Max=Max

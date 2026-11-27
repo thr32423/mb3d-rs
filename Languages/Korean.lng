@@ -2270,6 +2270,14 @@ MatLightRays=광선 수:
 ;Light rays:
 MatLightRaysHint=빛나는 부분이 주변에 비추는 빛을 위해 각 픽셀이 보내는 광선 수(0 = 없음, 보통 8~16, 최대 64).\n광선이 많을수록 노이즈가 줄고 시간이 늘어납니다.
 ;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=표면 아래:
+;Subsurface:
+MatSubsurfaceHint=팔레트의 각 색에 왼쪽에서 오른쪽으로 하나씩, 10개의 숫자(0~1): 표면이 그 색인 곳에서는 빛이 안으로 들어갔다가 부드럽고 물든 채로 나오며, 얇은 부분은 뒤에서 빛을 받으면 빛납니다(밀랍, 옥, 대리석).\n예: 0 1 0 0 0 0 0 0 0 0 은 두 번째 색입니다.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=깊이:
+;Depth:
+MatSubsurfaceDepthHint=빛이 재질 안으로 들어가는 거리, 그림 너비에 대한 비율(보통 0.03; 크게 하면 빛이 더 두꺼운 부분을 통과합니다).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=재질
 ;Material
 Max=Max

@@ -168,6 +168,12 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
         *e = (super::util::ptf(v) as f32).max(0.0);
     }
     let cast_rays = (num("LightRaysEdit").round() as i64).clamp(0, 64) as u8;
+    // the subsurface scattering of the ten colours (0..1), as the emission
+    let mut subsurface = [0f32; 10];
+    for (e, v) in subsurface.iter_mut().zip(ui.text(F, "SubsurfaceEdit").split(|c: char| c.is_whitespace() || c == ',' || c == ';').filter(|t| !t.is_empty())) {
+        *e = (super::util::ptf(v) as f32).clamp(0.0, 1.0);
+    }
+    let subsurface_depth = (num("SubsurfaceDepthEdit") as f32).max(0.0);
     sc.material = ui.checked(F, "MaterialCbx").then(|| crate::scene::Material {
         fresnel: (num("FresnelEdit") as f32).clamp(0.0, 1.0),
         iridescence: (num("IridEdit") as f32).clamp(0.0, 1.0),
@@ -175,9 +181,9 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
         glow: (num("GlowEdit") as f32).max(0.0),
         emission,
         cast_rays,
-        // (no controls yet: kept as they are)
-        subsurface: sc.material.map(|m| m.subsurface).unwrap_or_default(),
-        subsurface_depth: sc.material.map(|m| m.subsurface_depth).unwrap_or_default(),
+        subsurface,
+        // (the default written as 0, so a file keeps following the default)
+        subsurface_depth: if subsurface_depth == crate::scene::Material::SUBSURFACE_DEPTH { 0.0 } else { subsurface_depth },
     });
     sc.finish = ui.checked(F, "FinishCbx").then(|| crate::finish::Finish {
         exposure: (num("FinExpEdit") as f32).clamp(-10.0, 10.0),
@@ -253,6 +259,8 @@ pub fn set_from_header(app: &mut Mb3d, ui: &mut Ui) {
     }
     ui.set_text(F, "EmissionEdit", &m.emission.map(|v| super::util::fts_single(v as f64)).join(" "));
     ui.set_text(F, "LightRaysEdit", &m.cast_rays.to_string());
+    ui.set_text(F, "SubsurfaceEdit", &m.subsurface.map(|v| super::util::fts_single(v as f64)).join(" "));
+    ui.set_text(F, "SubsurfaceDepthEdit", &super::util::fts_single(m.depth() as f64));
     // the relief: without one a size that suits the view (a small part of
     // what the zoom shows)
     let suggest = {

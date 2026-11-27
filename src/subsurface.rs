@@ -43,6 +43,10 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 /// does not have).
 pub(crate) const REACH: f64 = 3.0;
 
+/// How far a lamp's shadow is followed beyond a part, in picture widths
+/// (at the middle of the scene).
+const SHADOW_WIDTHS: f64 = 2.0;
+
 /// How far each colour goes, relative to the depth: the surface's own
 /// colours (`dif`, its diffuse colour) farther than the others.
 pub(crate) fn tint(dif: [f32; 3]) -> [f32; 3] {
@@ -75,12 +79,41 @@ struct Line {
     tint: [f32; 3],
 }
 
+/// A ray from `origin` along the unit `dir` at the depth `zz` (steps),
+/// inside the set or not, marched as the pixel march steps
+/// (`Marcher::march_from`'s steps and its test for the surface; inside the
+/// set the DE is inverted) but without what the pixels need at the hit
+/// (the binary search, colour, depth values), and only up to `max` (scene
+/// units): where it meets the surface.
+fn march_line(m: &mut Marcher, origin: Vec3, dir: Vec3, zz: f32, max: f64, step_mul: f64) -> Option<Vec3> {
+    let p = m.p;
+    let sw = p.step_width;
+    let max = max / sw;
+    let mut t = 0f64;
+    for _ in 0..100_000 {
+        m.it.c = [origin[0] + dir[0] * t * sw, origin[1] + dir[1] * t * sw, origin[2] + dir[2] * t * sw];
+        m.mzz = zz as f64 + t;
+        m.ms_de_stop = (p.de_stop as f64 * (1.0 + m.mzz.abs() * p.de_stop_factor as f64)) as f32;
+        let d = m.calc_de();
+        let eps = m.ms_de_stop as f64;
+        if !(m.it.it_result < p.min_it || (m.it.it_result < m.max_its_result && d >= eps)) {
+            return Some(m.it.c);
+        }
+        t += f64::max(0.11, (d - p.ms_de_sub as f64 * eps) * step_mul);
+        if t > max {
+            return None;
+        }
+    }
+    None
+}
+
 /// A batch of rays from `origin` along the unit `dir` at the depth `zz`,
-/// inside the set or not: where each meets the surface (None: nowhere).
-/// On the card when it is ready (`card`), else (or for what the card
-/// leaves) on the CPU.
+/// up to the length `max` (scene units), inside the set or not: where each
+/// meets the surface (None: nowhere).  On the card when it is ready
+/// (`card`; its march goes to the far end, what lies beyond `max` is left
+/// out after), else (or for what the card leaves) on the CPU.
 #[cfg_attr(not(feature = "gpu"), allow(unused_variables))]
-fn rays(p: &CalcParams, rays: &[(Vec3, Vec3, f32)], inside: bool, threads: usize, card: bool, cancel: &(dyn Fn() -> bool + Sync)) -> (Vec<Option<Vec3>>, usize) {
+fn rays(p: &CalcParams, rays: &[(Vec3, Vec3, f32, f64)], inside: bool, threads: usize, card: bool, cancel: &(dyn Fn() -> bool + Sync)) -> (Vec<Option<Vec3>>, usize) {
     let sw = p.step_width;
     let mut out: Vec<Option<Vec3>> = vec![None; rays.len()];
     let mut done = 0;
@@ -89,12 +122,12 @@ fn rays(p: &CalcParams, rays: &[(Vec3, Vec3, f32)], inside: bool, threads: usize
         let tasks: Vec<crate::gpu::ReflectTask> = rays
             .iter()
             .enumerate()
-            .map(|(i, (o, d, zz))| crate::gpu::ReflectTask { origin: *o, dir: [(d[0] * sw) as f32, (d[1] * sw) as f32, (d[2] * sw) as f32], zz: *zz, pixel: i as u32, inside, ..Default::default() })
+            .map(|(i, (o, d, zz, _))| crate::gpu::ReflectTask { origin: *o, dir: [(d[0] * sw) as f32, (d[1] * sw) as f32, (d[2] * sw) as f32], zz: *zz, pixel: i as u32, inside, ..Default::default() })
             .collect();
         match crate::gpu::reflect_batch(p, &tasks, &crate::gpu::ReflectOpts::default(), None, cancel) {
             Ok((hits, n, _)) => {
-                for (o, h) in out.iter_mut().zip(&hits).take(n) {
-                    *o = (h.hit && !h.skip).then_some(h.pos);
+                for ((o, h), (org, d, _, max)) in out.iter_mut().zip(&hits).zip(rays).take(n) {
+                    *o = (h.hit && !h.skip && dot(&sub(h.pos, *org), d) <= *max).then_some(h.pos);
                 }
                 done = n;
             }
@@ -111,14 +144,15 @@ fn rays(p: &CalcParams, rays: &[(Vec3, Vec3, f32)], inside: bool, threads: usize
                 m.no_ground = true;
                 m.inside = inside;
                 m.calc_inside = inside;
-                for (k, ((org, d, zz), v)) in part.iter().zip(o.iter_mut()).enumerate() {
+                for (k, ((org, d, zz, max), v)) in part.iter().zip(o.iter_mut()).enumerate() {
                     if k % 256 == 0 && cancel() {
                         return;
                     }
-                    let (si, _) = m.march_ray_from(*org, scale(*d, sw), *zz as f64);
-                    if si.zpos() < 32768 {
-                        *v = Some(m.it.c);
-                    }
+                    // (the thickness with the scene's ray step; the shadow,
+                    // which only asks whether anything is in the way, by the
+                    // whole distance: twice as fast, the same light within
+                    // a tenth of a grey level on ApolloBalloons)
+                    *v = march_line(&mut m, *org, *d, *zz, *max, if inside { p.z_step_div as f64 } else { (p.z_step_div as f64).max(1.0) });
                 }
             });
         }
@@ -171,9 +205,8 @@ pub(crate) fn light(
     // the depth in scene units: a part of the picture's width
     let depth = m.depth() as f64 * p.width as f64 * p.step_width;
     let reach = REACH * depth;
-    // how far the lamps' shadow is followed: twice the picture's width at
-    // the middle of the scene
-    let shadow_len = 2.0 * p.width as f64 * p.step_width * (1.0 + 0.5 * p.zend.abs() * p.de_stop_factor as f64);
+    // how far the lamps' shadow is followed (SHADOW_WIDTHS)
+    let shadow_len = SHADOW_WIDTHS * p.width as f64 * p.step_width * (1.0 + 0.5 * p.zend.abs() * p.de_stop_factor as f64);
 
     // 1. the surfaces and the lines to the lamps
     let mut pix = vec![Pix::default(); wu * hu];
@@ -256,7 +289,9 @@ pub(crate) fn light(
     let card = false;
 
     // 2. the thickness: inside the set to where the line comes out
-    let first: Vec<(Vec3, Vec3, f32)> = lines.iter().map(|l| (l.start, l.dir, l.zz)).collect();
+    // (a line that does not come out within 3 depths lets no light through:
+    // its march ends there)
+    let first: Vec<(Vec3, Vec3, f32, f64)> = lines.iter().map(|l| (l.start, l.dir, l.zz, reach)).collect();
     let (exits, card1) = rays(p, &first, true, threads, card, cancel);
     if cancel() {
         return None;
@@ -272,15 +307,27 @@ pub(crate) fn light(
     }
     let t2 = t0.elapsed().as_secs_f64();
 
-    // 3. the lamps' shadow beyond: on from where the line came out
+    // 3. the lamps' shadow beyond: on from where the line came out, where
+    // the light would be seen (more than about a tenth of a grey level)
+    let seen = |k: usize, th: f64| {
+        let l = &lines[k];
+        let col = lamps[l.lamp as usize].col;
+        let most = (0..3).map(|ch| col[ch] * (-(th / (depth * l.tint[ch] as f64)) as f32).exp()).fold(0f32, f32::max);
+        most * l.k > 3e-4
+    };
+    for k in 0..lines.len() {
+        if thick[k].is_finite() && !seen(k, thick[k]) {
+            thick[k] = f64::INFINITY;
+        }
+    }
     let keep: Vec<usize> = (0..lines.len()).filter(|&k| thick[k].is_finite()).collect();
-    let second: Vec<(Vec3, Vec3, f32)> = keep
+    let second: Vec<(Vec3, Vec3, f32, f64)> = keep
         .iter()
         .map(|&k| {
             let l = &lines[k];
             let px = &pix[l.pix as usize];
             let o = add(l.start, scale(l.dir, thick[k] + 2.0 * px.width as f64));
-            (o, l.dir, l.zz)
+            (o, l.dir, l.zz, l.far)
         })
         .collect();
     let (blocked, card2) = rays(p, &second, false, threads, card, cancel);
@@ -288,10 +335,8 @@ pub(crate) fn light(
         return None;
     }
     for (j, &k) in keep.iter().enumerate() {
-        if let Some(b) = blocked[j] {
-            if dot(&sub(b, second[j].0), &lines[k].dir) < lines[k].far {
-                thick[k] = f64::INFINITY;
-            }
+        if blocked[j].is_some() {
+            thick[k] = f64::INFINITY;
         }
     }
     progress(hu * 2, hu * 2);

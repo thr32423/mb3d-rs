@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animatie: de ffmpeg-opdracht staat op het klembord
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=Animatie: video geschreven: {}
 ;Animation: video written: {}
+AnimationFramesRendered=Animatie: alle {} beelden berekend.
+;Animation: all {} frames rendered.
 Animations=Animaties
 ;Animations
 AnotherFolder=Andere map…

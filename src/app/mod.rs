@@ -109,11 +109,13 @@ pub struct Mb3d {
 }
 
 impl Mb3d {
-    /// A warning or an error: a line in the message memo ([`Mb3d::message`])
-    /// that also shows a few seconds over the picture (the memo is small and
-    /// far from where the user clicked).  Routine lines (saved, done,
-    /// loaded) stay in the memo only.
-    pub fn warn(&self, ui: &mut Ui, s: &str) {
+    /// A line worth noticing: a warning, an error, or the end of a long job
+    /// (an animation, a big render's tile, a mesh, slices, splats, and their
+    /// stop): a line in the message memo ([`Mb3d::message`]) that also shows
+    /// a few seconds over the picture (the memo is small and far from where
+    /// the user clicked).  Routine lines (saved, done, loaded, copied) stay
+    /// in the memo only.
+    pub fn notify(&self, ui: &mut Ui, s: &str) {
         self.message(ui, s);
         main_form::toast(ui, s);
     }

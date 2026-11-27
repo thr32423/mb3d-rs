@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=एनिमेशन: ffmpeg कमांड क�
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=एनिमेशन: वीडियो लिखा गया: {}
 ;Animation: video written: {}
+AnimationFramesRendered=एनिमेशन: सभी {} फ़्रेम बन गए।
+;Animation: all {} frames rendered.
 Animations=एनिमेशन
 ;Animations
 AnotherFolder=दूसरा फ़ोल्डर…

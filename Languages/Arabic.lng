@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=التحريك: أمر ffmpeg في الحافظة 
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=التحريك: كُتب الفيديو: {}
 ;Animation: video written: {}
+AnimationFramesRendered=الرسوم المتحركة: تم إنشاء جميع الإطارات ({}).
+;Animation: all {} frames rendered.
 Animations=التحريكات
 ;Animations
 AnotherFolder=مجلد آخر…

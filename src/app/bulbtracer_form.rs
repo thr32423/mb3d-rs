@@ -589,7 +589,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             app.btracer.previewing = false;
             ui.set_caption(F, "RefreshPreviewBtn", &tr("@MB:CalculatePreview"));
             if let Some(Err(e)) = &mesh {
-                app.warn(ui, e);
+                app.notify(ui, e);
             }
             if std::mem::take(&mut app.btracer.calc_after_preview) {
                 app.btracer.restart_preview = false;
@@ -614,11 +614,11 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             if !cancelled && (0..=1).contains(&st) {
                 let out = PathBuf::from(&app.btracer.h.output);
                 match m.save(&out) {
-                    Ok(()) => app.message(ui, &trf("@MB:MeshSavedVerticesFaces", &[&out.display(), &m.vertices.len(), &m.faces.len()])),
+                    Ok(()) => app.notify(ui, &trf("@MB:MeshSavedVerticesFaces", &[&out.display(), &m.vertices.len(), &m.faces.len()])),
                     Err(e) => ui.show_message(&e),
                 }
             } else if st == 2 {
-                app.warn(ui, &tr("@MB:TheBTracer2CacheFormatIsNot2"));
+                app.notify(ui, &tr("@MB:TheBTracer2CacheFormatIsNot2"));
             }
             ui.set_caption(F, "Label13", &if cancelled { tr("@MB:OperationCancelled") } else { trf("@MB:ElapsedTimeS", &[&secs]) });
             if ui.checked(F, "OpenGLPreviewCBx") && (!cancelled || app.btracer.cancel_type == 0) {
@@ -628,7 +628,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
                 }
             }
             ui.cm(F, "ProgressBar").position = 1000;
-            app.message(ui, &tr("@MB:FinishedTracingObject"));
+            app.notify(ui, &tr("@MB:FinishedTracingObject"));
         }
         Err(e) => {
             ui.set_caption(F, "Label13", &if cancelled { tr("@MB:OperationCancelled") } else { String::new() });

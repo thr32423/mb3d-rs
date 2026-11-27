@@ -470,7 +470,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         ui.cm(F, "ProgressBar").position += 1;
     }
     if !err.is_empty() {
-        app.warn(ui, &trf("@MB:MutaGen2", &[&err]));
+        app.notify(ui, &trf("@MB:MutaGen2", &[&err]));
     }
     if finished {
         app.mutagen.running = false;

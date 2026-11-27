@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=애니메이션: ffmpeg 명령을 클립보드에 
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=애니메이션: 동영상 저장됨: {}
 ;Animation: video written: {}
+AnimationFramesRendered=애니메이션: {}개 프레임을 모두 렌더링했습니다.
+;Animation: all {} frames rendered.
 Animations=애니메이션
 ;Animations
 AnotherFolder=다른 폴더…

@@ -667,7 +667,7 @@ pub fn select_formula(app: &mut Mb3d, ui: &mut Ui, name: &str) {
             app.formula.slots[t] = None;
             app.formula.its[t] = 0;
             if !s.is_empty() {
-                app.warn(ui, &trf("@MB:FormulaNotFound", &[&s]));
+                app.notify(ui, &trf("@MB:FormulaNotFound", &[&s]));
             }
             tab_control1_change(app, ui);
         }

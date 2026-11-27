@@ -386,7 +386,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         ui.set_caption(F, "Label13", &slice_caption(nr, n, v.left_shown.map(|s| s.0)));
     }
     if !err.is_empty() {
-        app.warn(ui, &err);
+        app.notify(ui, &err);
     }
     if done {
         let was = app.voxel.running;
@@ -395,7 +395,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             super::main_form::enable_buttons(app, ui);
             ui.set_caption(F, "Label13", "");
             if err.is_empty() && !app.voxel.stop.load(Ordering::SeqCst) {
-                app.message(ui, &tr("@MB:FinishedRenderingSlices"));
+                app.notify(ui, &tr("@MB:FinishedRenderingSlices"));
             }
         } else {
             ui.set_caption(F, "Button5", &tr("@MB:CalculatePreview"));

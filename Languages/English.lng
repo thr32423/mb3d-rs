@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animation: the ffmpeg command is on the clipboard 
 ;the program
 AnimationVideoWritten=Animation: video written: {}
 ;the program
+AnimationFramesRendered=Animation: all {} frames rendered.
+;the program
 Animations=Animations
 ;HistoryFrm.ComboBox1.Items, Mand3DForm.SpeedButton12.Caption
 AnotherFolder=Another folder…

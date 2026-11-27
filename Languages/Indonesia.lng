@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animasi: perintah ffmpeg ada di clipboard (jalanka
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=Animasi: video ditulis: {}
 ;Animation: video written: {}
+AnimationFramesRendered=Animasi: semua {} bingkai selesai dirender.
+;Animation: all {} frames rendered.
 Animations=Animasi
 ;Animations
 AnotherFolder=Folder lain…

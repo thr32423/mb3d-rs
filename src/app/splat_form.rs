@@ -150,7 +150,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             let msg = trf("@MB:SplatsInWrittenTo", &[&count, &time, &path.display()]);
             ui.cm(F, "ProgressBar").position = 1000;
             ui.set_caption(F, "StatusLabel", &msg);
-            app.message(ui, &msg);
+            app.notify(ui, &msg);
         }
         Err(e) => {
             ui.cm(F, "ProgressBar").position = 0;

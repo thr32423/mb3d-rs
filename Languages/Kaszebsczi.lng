@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animacjô: pòlét ffmpeg je w schówkù (zrëszë
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=Animacjô: wideò zapisóné: {}
 ;Animation: video written: {}
+AnimationFramesRendered=Animacjô: wszëtczé klatczi ({}) są gotowé.
+;Animation: all {} frames rendered.
 Animations=Animacje
 ;Animations
 AnotherFolder=Jiny katalog…

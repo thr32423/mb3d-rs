@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animazione: il comando ffmpeg è negli appunti (es
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=Animazione: video scritto: {}
 ;Animation: video written: {}
+AnimationFramesRendered=Animazione: tutti i {} fotogrammi calcolati.
+;Animation: all {} frames rendered.
 Animations=Animazioni
 ;Animations
 AnotherFolder=Altra cartella…

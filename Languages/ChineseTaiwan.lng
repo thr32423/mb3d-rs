@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=動畫：ffmpeg 指令已複製到剪貼簿（影�
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=動畫：影片已寫入：{}
 ;Animation: video written: {}
+AnimationFramesRendered=動畫：全部 {} 格已算圖。
+;Animation: all {} frames rendered.
 Animations=動畫
 ;Animations
 AnotherFolder=其他資料夾…

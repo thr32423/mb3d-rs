@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=アニメーション: ffmpeg コマンドをク�
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=アニメーション: 動画を書き出しました: {}
 ;Animation: video written: {}
+AnimationFramesRendered=アニメーション: 全 {} フレームをレンダリングしました。
+;Animation: all {} frames rendered.
 Animations=アニメーション
 ;Animations
 AnotherFolder=別のフォルダー…

@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=அனிமேஷன்: ffmpeg கட்டள�
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=அனிமேஷன்: வீடியோ எழுதப்பட்டது: {}
 ;Animation: video written: {}
+AnimationFramesRendered=அசைவூட்டம்: அனைத்து {} சட்டகங்களும் உருவாக்கப்பட்டன.
+;Animation: all {} frames rendered.
 Animations=அனிமேஷன்கள்
 ;Animations
 AnotherFolder=வேறு கோப்புறை…

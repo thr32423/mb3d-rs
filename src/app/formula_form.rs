@@ -368,6 +368,13 @@ fn last_words(s: &str) -> String {
     s.trim().to_string()
 }
 
+/// The formula a left click on list `c` selects (`ListBoxEx1MouseDown`):
+/// any row, the blank first one of the 4Da list too, which clears the
+/// formula (MB3D's `SelectFormula(' ')`); None without a row.
+fn clicked_formula(c: &crate::vcl::control::Control) -> Option<String> {
+    (c.item_index >= 0 && (c.item_index as usize) < c.items.len()).then(|| last_words(&c.item_text()))
+}
+
 /// `SetTabNames`.
 fn set_tab_names(app: &mut Mb3d, ui: &mut Ui) {
     let st = &app.formula;
@@ -971,9 +978,8 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             let lb = e.sender.clone();
             match e.ev {
                 Ev::MouseDown { button: crate::vcl::MouseButton::Left, .. } => {
-                    let it = ui.c(F, &lb).item_text();
-                    if !it.trim().is_empty() {
-                        select_formula(app, ui, &last_words(&it));
+                    if let Some(name) = clicked_formula(ui.c(F, &lb)) {
+                        select_formula(app, ui, &name);
                     }
                     ui.set_visible(F, &lb, false);
                     if let Some(sb) = list_button(list_no(&lb)) {
@@ -1308,6 +1314,19 @@ mod tests {
         let mut l = vec![("Quaternion".to_string(), 1), (" ".to_string(), 1), ("A".to_string(), 0)];
         sort_list(&mut l);
         assert_eq!(l[0].0, " ");
+    }
+
+    #[test]
+    fn blank_row_clears_the_formula() {
+        // reported by Geoffrey N. Barnes: the blank first row of the 4Da list did nothing
+        let mut c = crate::vcl::control::Control::new("ListBoxEx4", "TListBoxEx");
+        c.items = vec!["     ".into(), "    _ScaleC4d".into()];
+        c.item_index = -1;
+        assert_eq!(clicked_formula(&c), None);
+        c.item_index = 0;
+        assert_eq!(clicked_formula(&c).as_deref(), Some(""));
+        c.item_index = 1;
+        assert_eq!(clicked_formula(&c).as_deref(), Some("_ScaleC4d"));
     }
 
     #[test]

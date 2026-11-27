@@ -77,7 +77,10 @@ pub fn hybrid_key(m: &Machine, slots: &[HybridSlot], start: usize, end: usize, r
     let mut h = std::collections::hash_map::DefaultHasher::new();
     (start, end, repeat, four_d, slots.len()).hash(&mut h);
     for (n, s) in slots.iter().enumerate() {
-        (s.iterations, s.uncounted, s.ade).hash(&mut h);
+        // (julia_add: a Menger formula in Julia mode has no compiled loop;
+        // without it in the key, a loop of the scene in Julia off was
+        // taken from the cache for Julia on)
+        (s.iterations, s.uncounted, s.ade, s.julia_add).hash(&mut h);
         match &s.formula {
             Formula::Custom(c) if c.def.jit.is_some() => {
                 // a Pascal formula: its source and option values

@@ -7,7 +7,7 @@
 <!-- languages:end -->
 
 <!-- latest:start -->
-**Latest release: [v0.3.16](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.16)** (26 Nov 2026, 07:43 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
+**Latest release: [v0.3.17](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.17)** (27 Nov 2026, 06:59 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
 <!-- latest:end -->
 
 mb3d-rs is [Mandelbulb3D](https://github.com/thargor6/mb3d) (MB3D), the
@@ -1511,6 +1511,14 @@ Each commit links to its full description and code on GitHub; the downloads
 of a release are on its page. Times are in UTC.
 
 <!-- updates:start -->
+### [v0.3.17](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.17) · 27 Nov 2026, 06:59 UTC
+
+| Commit | What it does |
+|---|---|
+| [`903b737`](https://github.com/thr32423/mb3d-rs/commit/903b737ac8c76ae299aeddfaeeab39a94a9f998c) | Version number and release notes of this release |
+| [`37a6bb1`](https://github.com/thr32423/mb3d-rs/commit/37a6bb1541864f8ff65b3cf08926cecabea16906) | Formula lists: the blank row clears the formula; Menger Julia mode in the program (reported by Geoffrey N. Barnes) |
+| [`36b231e`](https://github.com/thr32423/mb3d-rs/commit/36b231e5b8234b214c51db109ecb2608da9a69c7) | README: Updates for v0.3.16 |
+
 ### [v0.3.16](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.16) · 26 Nov 2026, 07:43 UTC
 
 | Commit | What it does |
@@ -1545,19 +1553,7 @@ of a release are on its page. Times are in UTC.
 | [`3f0b4e9`](https://github.com/thr32423/mb3d-rs/commit/3f0b4e951194bdec815cee4b377270b14a415638) | Claude's desktop app is found on Windows again: its installer from claude.ai/download is now a Store-style package that keeps its settings in %LOCALAPPDATA%\Claude-Data\<package> (seen with 5.11492.5 on a fresh Windows 11: Claude-Data\claude_pzs8sxrjxfjjc), and 0.3.14 looked only in %APPDATA%\Claude, so the AI assistant window said "Not installed" beside the installed, signed-in app and Connect stayed grey (reported by John Paleo). The settings folder is now the newest place that is there: Claude-Data, then the folder Windows kept for an earlier package (not when the package left it behind with its .user-data-left note), then %APPDATA%\Claude. Claude Code is no longer "Found" on Windows and macOS because of the .claude folder alone (the desktop app makes one at sign-in, with no claude command). Paths lose Windows' \\?\ prefix in the window, in Claude Code's command and in the settings entry. Tested in a Windows 11 VM: Connect writes the entry, Claude starts mb3d and answers from its log |
 | [`57365f2`](https://github.com/thr32423/mb3d-rs/commit/57365f249b16bfe33a5677b04357a96fd698137a) | README: Updates for v0.3.14 |
 
-### [v0.3.14](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.14) · 18 Nov 2026, 08:32 UTC
-
-| Commit | What it does |
-|---|---|
-| [`9bb6f22`](https://github.com/thr32423/mb3d-rs/commit/9bb6f22bf0e15b8cee962ad2de6b5d99f33da1b5) | Version number and release notes of this release |
-| [`488d3ab`](https://github.com/thr32423/mb3d-rs/commit/488d3abceed93a73e4a6c373af13f8a89a4fb3aa) | The window tests (MutaGen, Navigator buttons, UpDown arrows) only with the gui feature: the build without the desktop program has no windows, and the pre-push check that builds it could not compile them |
-| [`57503f1`](https://github.com/thr32423/mb3d-rs/commit/57503f174e2dc825601fd76ecd652f6bc7c109c0) | Claude Code on Windows: the command to connect it runs alike in PowerShell, Command Prompt and the terminals of Linux and macOS: `claude mcp add --scope user mb3d "C:\...\mb3d.exe" mcp`, the options before the name and no `--` (PowerShell may take `--` as its own end of options, and mb3d's one argument needs none; tried with Claude Code: a path with spaces is kept as one), the program always in double quotes on Windows. Not found, the AI window (and mb3d mcp --setup) says how to install it, from Claude Code's documentation: on Windows in PowerShell, not the Run box, with `irm https://claude.ai/install.ps1 \| iex`, then in a new PowerShell window the command; elsewhere `curl -fsSL https://claude.ai/install.sh \| bash` in a terminal (Linux without the desktop app's sentence). Claude Code counts as installed also in the native installer's place (%USERPROFILE%\.local\bin\claude.exe, not always on the PATH), connected also with CLAUDE_CONFIG_DIR; on Windows .claude.json is looked for in %USERPROFILE% first (HOME is set only inside Git Bash). 18 languages; a test for the command's form |
-| [`e55ca61`](https://github.com/thr32423/mb3d-rs/commit/e55ca61adcd920f9b83952e7ca6d8b62d6f5c0a5) | Horizontal UpDowns have left and right arrows side by side, the right one counting up, as in the VCL (MutaGen's generation arrows, three in the Lighting window, one in the voxel export showed up/down arrows on top of each other since 0.2.0): an UpDown without Orientation is vertical, the VCL's default (it was taken as horizontal and drawn the other way round, which hid the mistake for the 74 vertical ones; their pictures are the same to the pixel, the 47 windows compared). tests/updown_arrows.rs |
-| [`86d173c`](https://github.com/thr32423/mb3d-rs/commit/86d173c4115c7f3e5d671623b1c7a4672998cb0f) | AI window: Claude Code's command says where it goes (a user ran it in Windows' Run box and got an error): "in a terminal (on Windows: PowerShell or Command Prompt, not the Run box)", and when Claude Code is not found, that Claude's desktop app needs only the Connect button above. The label has room for four lines (window 26 px taller). 18 languages; the Korean font subset gained one character |
-| [`7f88ee8`](https://github.com/thr32423/mb3d-rs/commit/7f88ee8a7a41ec50447ba1e3633b9c11bb23a731) | Navigator: the move, turn and roll buttons go on while held, as their keys do (a user's report, 2026-11-18: they had to be clicked again and again; MB3D also moves one step a click). A SpeedButton can repeat (Control::auto_repeat, Ui::set_auto_repeat): it clicks when pressed, after 0.4 s every 60 ms while held over it, as the arrows of an UpDown, and not again when let go. tests/navigator_hold.rs |
-| [`e1939ce`](https://github.com/thr32423/mb3d-rs/commit/e1939ce007cf1991b88c83ed86f23fb29edb2226) | MutaGen: a variation sent to the main window is the centre picture when the window opens again (a user's report, 2026-11-18: after a double-click, Send to Main and a calculation in the main window, MutaGen still showed the old centre). Three causes: the window refused to close while the generation a double-click started was still being made, so Send to Main left it in front unchanged; with the window closed its pictures were never taken in, so the generation never ended and the window opened again as it was; and the main window gives the parameters back rounded (Julia values to 15 digits), so they never matched the variation as text. Now the window always closes, the generation finishes behind it, and Send to Main hands the variation itself over: it becomes the root of a further generation with its picture (after the kept generations); opened again with the same parameters, nothing changes. tests/mutagen_window.rs (its own process: the program's settings disturb the library's tests) sends variations during a generation until one the main window rounds |
-
-All 127 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
+All 128 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
 <!-- updates:end -->
 
 ## For developers

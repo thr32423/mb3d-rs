@@ -5,6 +5,14 @@ Every release of mb3d-rs, newest first, with the time it was published
 description and code; the downloads of a release are on its page. Back to
 the [README](../README.md).
 
+## [v0.3.17](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.17) · 27 Nov 2026, 06:59 UTC
+
+| Commit | What it does |
+|---|---|
+| [`903b737`](https://github.com/thr32423/mb3d-rs/commit/903b737ac8c76ae299aeddfaeeab39a94a9f998c) | Version number and release notes of this release |
+| [`37a6bb1`](https://github.com/thr32423/mb3d-rs/commit/37a6bb1541864f8ff65b3cf08926cecabea16906) | Formula lists: the blank row clears the formula; Menger Julia mode in the program (reported by Geoffrey N. Barnes) |
+| [`36b231e`](https://github.com/thr32423/mb3d-rs/commit/36b231e5b8234b214c51db109ecb2608da9a69c7) | README: Updates for v0.3.16 |
+
 ## [v0.3.16](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.16) · 26 Nov 2026, 07:43 UTC
 
 | Commit | What it does |

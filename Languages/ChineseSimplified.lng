@@ -1202,6 +1202,7 @@ Elapsed=已用时间
 ElapsedTimeS=已用时间：{} 秒
 ;Elapsed time: {} s
 EmissionLightLower=发光照明
+SubsurfaceLightLower=次表面光照
 ;emission light
 Enable=启用
 ;Enable

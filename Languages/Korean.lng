@@ -1202,6 +1202,7 @@ Elapsed=경과
 ElapsedTimeS=경과 시간: {}초
 ;Elapsed time: {} s
 EmissionLightLower=발광 조명
+SubsurfaceLightLower=표면 아래 산란광
 ;emission light
 Enable=사용
 ;Enable

@@ -1201,6 +1201,7 @@ Elapsed=Upłynęło
 ElapsedTimeS=Czas, który upłynął: {} s
 ;Elapsed time: {} s
 EmissionLightLower=światło emisji
+SubsurfaceLightLower=światło podpowierzchniowe
 ;emission light
 Enable=Włącz
 ;Enable

@@ -1202,6 +1202,7 @@ Elapsed=経過
 ElapsedTimeS=経過時間: {} 秒
 ;Elapsed time: {} s
 EmissionLightLower=発光の光
+SubsurfaceLightLower=表面下散乱の光
 ;emission light
 Enable=有効
 ;Enable

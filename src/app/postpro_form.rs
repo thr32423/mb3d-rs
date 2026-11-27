@@ -175,6 +175,9 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
         glow: (num("GlowEdit") as f32).max(0.0),
         emission,
         cast_rays,
+        // (no controls yet: kept as they are)
+        subsurface: sc.material.map(|m| m.subsurface).unwrap_or_default(),
+        subsurface_depth: sc.material.map(|m| m.subsurface_depth).unwrap_or_default(),
     });
     sc.finish = ui.checked(F, "FinishCbx").then(|| crate::finish::Finish {
         exposure: (num("FinExpEdit") as f32).clamp(-10.0, 10.0),

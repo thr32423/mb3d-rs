@@ -1201,6 +1201,7 @@ Elapsed=Minãło
 ElapsedTimeS=Minãłi czas: {} s
 ;Elapsed time: {} s
 EmissionLightLower=swiatło emisji
+SubsurfaceLightLower=swiatło pòd wiérzchã
 ;emission light
 Enable=Włączë
 ;Enable

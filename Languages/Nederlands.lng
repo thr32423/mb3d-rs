@@ -1201,6 +1201,7 @@ Elapsed=Verstreken
 ElapsedTimeS=Verstreken tijd: {} s
 ;Elapsed time: {} s
 EmissionLightLower=emissielicht
+SubsurfaceLightLower=licht onder het oppervlak
 ;emission light
 Enable=Inschakelen
 ;Enable

@@ -1201,6 +1201,7 @@ Elapsed=Transcurrido
 ElapsedTimeS=Tiempo transcurrido: {} s
 ;Elapsed time: {} s
 EmissionLightLower=luz de emisión
+SubsurfaceLightLower=luz subsuperficial
 ;emission light
 Enable=Activar
 ;Enable

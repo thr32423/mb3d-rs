@@ -60,15 +60,15 @@ impl EmitLight {
 
 /// What the pass knows of a pixel's surface.
 #[derive(Clone, Copy, Default)]
-struct Pix {
-    pos: Vec3,
-    n: [f32; 3],
+pub(crate) struct Pix {
+    pub(crate) pos: Vec3,
+    pub(crate) n: [f32; 3],
     /// the DE stop there (steps) and the depth (steps)
-    eps: f32,
-    zz: f32,
+    pub(crate) eps: f32,
+    pub(crate) zz: f32,
     /// the width of surface the pixel shows (world)
-    width: f32,
-    ok: bool,
+    pub(crate) width: f32,
+    pub(crate) ok: bool,
 }
 
 /// A light sample: a shining pixel.
@@ -561,7 +561,7 @@ fn calculate(
 /// rounds of a 5x5 filter with growing holes (the "à trous" wavelet filter
 /// of Dammertz et al. 2010), so the noise of the few rays goes and the
 /// edges of the light and of the surface stay.
-fn smooth(light: &mut Vec<[f32; 3]>, pix: &[Pix], w: usize, h: usize, threads: usize, cancel: &(dyn Fn() -> bool + Sync)) {
+pub(crate) fn smooth(light: &mut Vec<[f32; 3]>, pix: &[Pix], w: usize, h: usize, threads: usize, cancel: &(dyn Fn() -> bool + Sync)) {
     const K: [f32; 3] = [3.0 / 8.0, 1.0 / 4.0, 1.0 / 16.0];
     let rows = h.div_ceil(threads.max(1)).max(1);
     for round in 0..4 {

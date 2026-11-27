@@ -2702,6 +2702,11 @@ fn paint_core<S: crate::lighting::Sample>(
         stage("emission light");
         lv.emit_light = crate::emission::light(sc, p, gbuf, &lv, &cam, thread_count(sc), progress, cancel);
     }
+    // the light that comes through the material (the whole picture only)
+    if full && sc.material.is_some_and(|m| m.scatters()) {
+        stage("subsurface light");
+        lv.sub_light = crate::subsurface::light(sc, p, gbuf, &lv, &cam, thread_count(sc), progress, cancel);
+    }
     let mut rgb = vec![S::default(); (w * h * 3) as usize];
     let chunk_rows = ((h as usize) + threads - 1) / threads;
     std::thread::scope(|s| {

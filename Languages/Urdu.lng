@@ -1202,6 +1202,7 @@ Elapsed=گزرا وقت
 ElapsedTimeS=گزرا وقت: {} s
 ;Elapsed time: {} s
 EmissionLightLower=اخراج کی روشنی
+SubsurfaceLightLower=سطح کے نیچے کی روشنی
 ;emission light
 Enable=فعال
 ;Enable

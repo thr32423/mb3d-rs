@@ -1202,6 +1202,7 @@ Elapsed=बीता समय
 ElapsedTimeS=बीता समय: {} s
 ;Elapsed time: {} s
 EmissionLightLower=उत्सर्जन की रोशनी
+SubsurfaceLightLower=सतह के नीचे की रोशनी
 ;emission light
 Enable=सक्षम करें
 ;Enable

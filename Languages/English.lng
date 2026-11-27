@@ -1201,6 +1201,7 @@ Elapsed=Elapsed
 ElapsedTimeS=Elapsed time: {} s
 ;the program
 EmissionLightLower=emission light
+SubsurfaceLightLower=subsurface light
 ;the program
 Enable=Enable
 ;PostProForm.CheckBox21.Caption

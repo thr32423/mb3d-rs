@@ -1201,6 +1201,7 @@ Elapsed=Berlalu
 ElapsedTimeS=Waktu berlalu: {} d
 ;Elapsed time: {} s
 EmissionLightLower=cahaya emisi
+SubsurfaceLightLower=cahaya bawah permukaan
 ;emission light
 Enable=Aktifkan
 ;Enable

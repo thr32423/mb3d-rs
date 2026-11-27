@@ -87,9 +87,33 @@ pub struct Material {
     /// the light they cast on what is around them (`emission`; 0: none,
     /// the parts only shine themselves)
     pub cast_rays: u8,
+    /// subsurface scattering (0..1) of each of the palette's ten colours:
+    /// where the surface has that colour, light goes into it, spreads and
+    /// comes out softened and tinted by the colour, and thin parts shine
+    /// when lit from behind (wax, jade, marble; the painting's subsurface
+    /// pass).  Not in MB3D; Mandelbulb3D SE has a subsurface switch for
+    /// its transparent parts.
+    pub subsurface: [f32; 10],
+    /// how far light goes into the material before half of it is lost, as
+    /// a part of the picture's width (so a zoom keeps the look); 0: the
+    /// default [`Material::SUBSURFACE_DEPTH`]
+    pub subsurface_depth: f32,
 }
 
 impl Material {
+    /// [`Material::subsurface_depth`] when none is given.
+    pub const SUBSURFACE_DEPTH: f32 = 0.03;
+
+    /// Some of the palette's colours let light in (`subsurface`).
+    pub fn scatters(&self) -> bool {
+        self.subsurface.iter().any(|v| *v > 0.0)
+    }
+
+    /// [`Material::subsurface_depth`], the default for 0.
+    pub fn depth(&self) -> f32 {
+        if self.subsurface_depth > 0.0 { self.subsurface_depth } else { Self::SUBSURFACE_DEPTH }
+    }
+
     /// Some of the palette's colours shine (`emission`).
     pub fn emits_by_colour(&self) -> bool {
         self.emission.iter().any(|v| *v > 0.0)
@@ -1149,6 +1173,12 @@ impl Scene {
             if m.cast_rays > 0 {
                 let _ = writeln!(t, "material_light_rays = {}", m.cast_rays);
             }
+            if m.scatters() {
+                let _ = writeln!(t, "material_subsurface = {}", m.subsurface.map(|v| v.to_string()).join(", "));
+                if m.subsurface_depth > 0.0 {
+                    let _ = writeln!(t, "material_subsurface_depth = {}", m.subsurface_depth);
+                }
+            }
         }
         if let Some(c) = &self.clouds {
             let k = c.color;
@@ -1645,6 +1675,14 @@ impl Scene {
                         }
                         s.material.get_or_insert_with(Default::default).emission = std::array::from_fn(|i| p[i].max(0.0) as f32);
                     }
+                    "material_subsurface" => {
+                        let p: Vec<f64> = val.split(',').map(|v| v.trim().parse::<f64>()).collect::<Result<_, _>>().map_err(|_| err(format!("bad material_subsurface '{val}' (ten numbers, one per palette colour)")))?;
+                        if p.len() != 10 {
+                            return Err(err(format!("bad material_subsurface '{val}' (ten numbers, one per palette colour)")));
+                        }
+                        s.material.get_or_insert_with(Default::default).subsurface = std::array::from_fn(|i| p[i].clamp(0.0, 1.0) as f32);
+                    }
+                    "material_subsurface_depth" => s.material.get_or_insert_with(Default::default).subsurface_depth = num()?.max(0.0) as f32,
                     "material" if matches!(val.to_ascii_lowercase().as_str(), "off" | "none" | "no") => s.material = None,
                     "cloud_density" => s.clouds.get_or_insert_with(Default::default).density = num()?.max(0.0) as f32,
                     "cloud_coverage" => s.clouds.get_or_insert_with(Default::default).coverage = num()?.clamp(0.0, 1.0) as f32,

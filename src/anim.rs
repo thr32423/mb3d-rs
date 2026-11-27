@@ -418,6 +418,8 @@ fn interpolate_header(base: &Scene, h: &[&Scene], w: &[f64], rot: Quat, bezier: 
             glow: lin(&|x| m(x).glow as f64) as f32,
             emission: std::array::from_fn(|i| lin(&|x| m(x).emission[i] as f64) as f32),
             cast_rays: m(&h[0]).cast_rays,
+            subsurface: std::array::from_fn(|i| lin(&|x| m(x).subsurface[i] as f64) as f32),
+            subsurface_depth: lin(&|x| m(x).subsurface_depth as f64) as f32,
         });
     }
     // the Droste effect (mb3d-rs): blended when the base keyframe has it,

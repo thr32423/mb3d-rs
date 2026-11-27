@@ -650,6 +650,9 @@ pub struct LightVals {
     /// the light the shining parts of the surface cast on each pixel
     /// (`emission::light`), None: not calculated
     pub(crate) emit_light: Option<std::sync::Arc<crate::emission::EmitLight>>,
+    /// the light that comes through the material to each pixel
+    /// (`subsurface::light`), None: not calculated
+    pub(crate) sub_light: Option<std::sync::Arc<crate::emission::EmitLight>>,
     /// the fractal's surface material (Fresnel, iridescence, glow)
     pub(crate) material: Option<crate::scene::Material>,
     /// the surface detail (relief and colour variation)
@@ -1189,6 +1192,7 @@ impl LightVals {
             ground: None,
             material: None,
             emit_light: None,
+            sub_light: None,
             detail: None,
             bg: if l.bg_image.is_empty() {
                 None
@@ -1635,6 +1639,19 @@ impl LightVals {
             }
     }
 
+    /// The material's subsurface scattering (0..1) at the surface `si`
+    /// (the palette colours' `subsurface`, blended as the colours are).
+    pub(crate) fn subsurface_at(&self, si: &SiLight, idif0: f32) -> f32 {
+        let Some(m) = self.material.as_ref().filter(|m| m.scatters() && !si.is_ground()) else { return 0.0 };
+        if si.si_gradient > 32767 {
+            return 0.0;
+        }
+        match self.palette_place(si, idif0) {
+            (a, None) => m.subsurface[a],
+            (a, Some((b, t))) => m.subsurface[a] + t * (m.subsurface[b] - m.subsurface[a]),
+        }
+    }
+
     /// `CalcColorsInside`: diffuse colour and specular amount (alpha)
     pub(crate) fn calc_colors_inside(&self, si: &SiLight, idif0: f32) -> (SVec, SVec) {
         let mut ir =
@@ -1842,6 +1859,12 @@ impl LightVals {
                     lns = cam.to_view(b.map(|v| (v * l) as f32));
                 }
             }
+            // subsurface scattering: light that goes into the surface
+            // comes out also a little beyond where it falls, so the side
+            // turned away from a light is lit a little (the light wraps
+            // around; the light through thin parts is `sub_light`)
+            let sss = self.subsurface_at(si, self.s_col_zmul * plv_zpos);
+            let wrap = 0.5 * sss;
             let mut li_dif = [0f32; 3]; // LiLSDAI[1]
             let mut li_spe = [0f32; 3];
             let mut li_amb = [0f32; 3]; // LiLSDAI[3]
@@ -1860,7 +1883,10 @@ impl LightVals {
                 } else {
                     (lv.ln, 1.0)
                 };
-                let dot = lns[0] * ln[0] + lns[1] * ln[1] + lns[2] * ln[2];
+                let mut dot = lns[0] * ln[0] + lns[1] * ln[1] + lns[2] * ln[2];
+                if wrap > 0.0 {
+                    dot = (dot + wrap) / (1.0 + wrap);
+                }
                 let mut d = if sqr { get_cos_tab_val_sqr(lv.diff_func, dot, d_rough) } else { get_cos_tab_val(lv.diff_func, dot, d_rough) } * att;
                 sv_add_w(&mut li_amb, lv.col, d);
                 if no_hs {
@@ -1972,6 +1998,10 @@ impl LightVals {
                 if let Some(l) = self.emit_light.as_ref().filter(|_| o.own_pixel).and_then(|e| e.at(plv.px, plv.py)) {
                     sv_add_w(&mut out, sv_mul(dif_s, l), 255.0);
                 }
+                // the light that came through the material (subsurface)
+                if let Some(l) = self.sub_light.as_ref().filter(|_| o.own_pixel && sss > 0.0).and_then(|e| e.at(plv.px, plv.py)) {
+                    sv_add_w(&mut out, sv_mul(dif_s, l), 255.0);
+                }
             } else {
                 // CalcTotalLight2
                 let st = (1.0 - d_amb_sh).max(0.0);
@@ -1985,6 +2015,10 @@ impl LightVals {
                 }
                 // the light of the shining parts, as a light's diffuse part
                 if let Some(l) = self.emit_light.as_ref().filter(|_| o.own_pixel).and_then(|e| e.at(plv.px, plv.py)) {
+                    sv_add_w(&mut out, sv_mul(dif_s, l), 255.0);
+                }
+                // the light that came through the material (subsurface)
+                if let Some(l) = self.sub_light.as_ref().filter(|_| o.own_pixel && sss > 0.0).and_then(|e| e.at(plv.px, plv.py)) {
                     sv_add_w(&mut out, sv_mul(dif_s, l), 255.0);
                 }
             }

@@ -1202,6 +1202,7 @@ Elapsed=கழிந்தது
 ElapsedTimeS=கழிந்த நேரம்: {} வி
 ;Elapsed time: {} s
 EmissionLightLower=உமிழ்வு ஒளி
+SubsurfaceLightLower=மேற்பரப்புக்கு அடியிலான ஒளி
 ;emission light
 Enable=இயக்கு
 ;Enable

@@ -1630,6 +1630,7 @@ fn short_stage(stage: &str) -> String {
         "post processing" => tr("@MB:PostProcessingLower"),
         "reflections" => tr("@MB:ReflectionsLower"),
         "emission light" => tr("@MB:EmissionLightLower"),
+        "subsurface light" => tr("@MB:SubsurfaceLightLower"),
         "reflections of the selection" => tr("@MB:ReflectionsOfTheSelection"),
         "depth of field" => tr("@MB:DepthOfFieldLower"),
         "painting a preview" => tr("@MB:PaintingAPreview"),

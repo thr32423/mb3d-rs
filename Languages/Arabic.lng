@@ -1202,6 +1202,7 @@ Elapsed=المنقضي
 ElapsedTimeS=الوقت المنقضي: {} ث
 ;Elapsed time: {} s
 EmissionLightLower=ضوء الانبعاث
+SubsurfaceLightLower=الضوء تحت السطح
 ;emission light
 Enable=تمكين
 ;Enable

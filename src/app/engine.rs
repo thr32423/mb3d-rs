@@ -141,10 +141,11 @@ pub struct Base {
 }
 
 /// The two kept eye buffers of a stereo preview. Unlike a normal
-/// [`Base`], these are only used for the Lighting window's immediate
-/// repaint: post-processing actions still require a single-camera image.
+/// [`Base`], these are used for the Lighting window's immediate repaint
+/// and for saving the composed pair in 16-bit colour; other post-processing
+/// actions still require a single-camera image.
 #[derive(Clone)]
-struct StereoBase {
+pub(crate) struct StereoBase {
     scene: Scene,
     layout: crate::render::StereoLayout,
     left: StereoEye,
@@ -157,6 +158,30 @@ struct StereoEye {
     post: Arc<Vec<SiLight>>,
     w: usize,
     h: usize,
+}
+
+impl StereoBase {
+    /// Paints both retained eyes with the colours before 8-bit rounding and
+    /// composes them in the same layout as the displayed stereo preview.
+    pub fn paint16(&self, current: &Scene) -> (Vec<u16>, usize, usize) {
+        let mut target = current.clone();
+        target.width = self.scene.width;
+        target.height = self.scene.height;
+        target.slice_2d = 0;
+        target.calc_rect = None;
+        let paint = |eye: &StereoEye, mode| {
+            let mut scene = target.clone();
+            scene.stereo_mode = mode;
+            crate::render::paint16(&scene, &eye.params, &eye.post)
+        };
+        let left = paint(&self.left, 4);
+        let right = paint(&self.right, 3);
+        crate::render::compose_stereo16(&left, &right, self.left.w, self.left.h, self.layout)
+    }
+
+    pub fn scene(&self) -> &Scene {
+        &self.scene
+    }
 }
 
 #[derive(Default)]
@@ -448,6 +473,10 @@ impl Engine {
 
     pub fn base(&self) -> Option<Arc<Base>> {
         self.0.base.locked().clone()
+    }
+
+    pub(crate) fn stereo_base(&self) -> Option<Arc<StereoBase>> {
+        self.0.stereo_base.locked().clone()
     }
 
     /// Whether the Lighting window can repaint the displayed calculation.
@@ -1361,12 +1390,16 @@ mod tests {
         stereo(&engine.0, &scene, crate::render::StereoLayout::Parallel, &|| false).unwrap();
         assert!(engine.can_relight());
         assert!(engine.base().is_none(), "stereo is not a single-camera base");
+        let stereo_base = engine.stereo_base().unwrap();
+        let (deep, w, h) = stereo_base.paint16(&scene);
+        assert_eq!((w, h, deep.len()), (64, 24, 64 * 24 * 3));
         let before = engine.picture().unwrap().0;
 
         let mut changed = scene.clone();
         changed.lighting.diffuse = 0.0;
         changed.lighting.ambient = 0.0;
         changed.lighting.specular = 0.0;
+        assert_ne!(stereo_base.paint16(&changed).0, deep, "16-bit painting uses the current lighting");
         relight(&engine.0, &changed, 0).unwrap();
         let after = engine.picture().unwrap().0;
         assert_eq!(before.len(), after.len());

@@ -386,7 +386,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         ui.set_caption(F, "Label13", &slice_caption(nr, n, v.left_shown.map(|s| s.0)));
     }
     if !err.is_empty() {
-        app.message(ui, &err);
+        app.warn(ui, &err);
     }
     if done {
         let was = app.voxel.running;

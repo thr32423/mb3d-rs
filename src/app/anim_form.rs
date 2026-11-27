@@ -662,7 +662,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     if !running {
         end_rendering(app, ui);
         if !err.is_empty() {
-            app.message(ui, &trf("@MB:Animation2", &[&err]));
+            app.warn(ui, &trf("@MB:Animation2", &[&err]));
         }
         if ui.showing(PV) {
             ui.set_visible(PV, "ProgressBar1", false);

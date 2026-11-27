@@ -109,11 +109,19 @@ pub struct Mb3d {
 }
 
 impl Mb3d {
+    /// A warning or an error: a line in the message memo ([`Mb3d::message`])
+    /// that also shows a few seconds over the picture (the memo is small and
+    /// far from where the user clicked).  Routine lines (saved, done,
+    /// loaded) stay in the memo only.
+    pub fn warn(&self, ui: &mut Ui, s: &str) {
+        self.message(ui, s);
+        main_form::toast(ui, s);
+    }
+
     /// MB3D's `OutMessage`: a line in the message memo of the main window.
     pub fn message(&self, ui: &mut Ui, s: &str) {
         if !s.trim().is_empty() {
             crate::log::info("message", s);
-            main_form::toast(ui, s);
         }
         let c = ui.cm(MAIN, "Memo1");
         let old = c.text.clone();

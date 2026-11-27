@@ -589,7 +589,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             app.btracer.previewing = false;
             ui.set_caption(F, "RefreshPreviewBtn", &tr("@MB:CalculatePreview"));
             if let Some(Err(e)) = &mesh {
-                app.message(ui, e);
+                app.warn(ui, e);
             }
             if std::mem::take(&mut app.btracer.calc_after_preview) {
                 app.btracer.restart_preview = false;
@@ -618,7 +618,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
                     Err(e) => ui.show_message(&e),
                 }
             } else if st == 2 {
-                app.message(ui, &tr("@MB:TheBTracer2CacheFormatIsNot2"));
+                app.warn(ui, &tr("@MB:TheBTracer2CacheFormatIsNot2"));
             }
             ui.set_caption(F, "Label13", &if cancelled { tr("@MB:OperationCancelled") } else { trf("@MB:ElapsedTimeS", &[&secs]) });
             if ui.checked(F, "OpenGLPreviewCBx") && (!cancelled || app.btracer.cancel_type == 0) {

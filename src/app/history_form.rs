@@ -906,7 +906,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
 /// Load (parameters, an image with them) or Open (any other file).
 fn load(app: &mut Mb3d, ui: &mut Ui, e: &Entry) {
     if !e.path.is_file() {
-        app.message(ui, &tr("@MB:TheFileIsNotThereAny"));
+        app.warn(ui, &tr("@MB:TheFileIsNotThereAny"));
         return;
     }
     if matches!(e.kind, Kind::Params | Kind::M3i) {
@@ -925,7 +925,7 @@ fn show_in_folder(p: &Path) {
 /// Takes an entry out of the history and the list (no reading again).
 fn remove(app: &mut Mb3d, ui: &mut Ui, e: &Entry) {
     if !crate::history::remove(e) {
-        app.message(ui, &tr("@MB:TheEntryCouldNotBeRemoved"));
+        app.warn(ui, &tr("@MB:TheEntryCouldNotBeRemoved"));
         return;
     }
     if let Some(i) = app.history.all.iter().position(|r| r.e.secs == e.secs && r.e.path == e.path) {

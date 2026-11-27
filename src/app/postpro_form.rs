@@ -428,11 +428,11 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &crate::vcl::DialogRes
 /// Whether a processing can start on the kept image (else the message).
 fn can_start(app: &mut Mb3d, ui: &mut Ui) -> bool {
     if app.main.calculating {
-        app.message(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
+        app.warn(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
         return false;
     }
     if app.eng.base().is_none() {
-        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        app.warn(ui, &tr("@MB:CalculateTheImageFirst"));
         return false;
     }
     true
@@ -618,11 +618,11 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                 // "Calculate only a selection in the image": the reflections
                 // of the selection only (MB3D's CalcSRT with the selection)
                 if app.main.calculating {
-                    app.message(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
+                    app.warn(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
                     return;
                 }
                 if app.eng.base().is_none() {
-                    app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+                    app.warn(ui, &tr("@MB:CalculateTheImageFirst"));
                     return;
                 }
                 let Some(rect) = selection_rect(app, ui) else { return };

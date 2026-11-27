@@ -86,7 +86,7 @@ pub fn batch_next(app: &mut Mb3d, ui: &mut Ui) {
         if checks[i] {
             match app.load_params(ui, Path::new(&rows[i][0])) {
                 Ok(()) => break,
-                Err(e) => app.message(ui, &e),
+                Err(e) => app.warn(ui, &e),
             }
         }
     }
@@ -949,7 +949,7 @@ pub fn tiling_idle(app: &mut Mb3d, ui: &mut Ui) {
             ui.fm(MAIN).set_caption(&app.title.clone());
             app.message(ui, &tr("@MB:BigRenderStopped"));
         }
-        Err(e) => app.message(ui, &trf("@MB:BigRender2", &[&e])),
+        Err(e) => app.warn(ui, &trf("@MB:BigRender2", &[&e])),
     }
 }
 

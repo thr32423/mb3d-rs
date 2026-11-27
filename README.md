@@ -7,7 +7,7 @@
 <!-- languages:end -->
 
 <!-- latest:start -->
-**Latest release: [v0.3.17](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.17)** (27 Nov 2026, 06:59 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
+**Latest release: [v0.3.18](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.18)** (27 Nov 2026, 20:04 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
 <!-- latest:end -->
 
 mb3d-rs is [Mandelbulb3D](https://github.com/thargor6/mb3d) (MB3D), the
@@ -1542,6 +1542,29 @@ Each commit links to its full description and code on GitHub; the downloads
 of a release are on its page. Times are in UTC.
 
 <!-- updates:start -->
+### [v0.3.18](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.18) · 27 Nov 2026, 20:04 UTC
+
+| Commit | What it does |
+|---|---|
+| [`81e1a75`](https://github.com/thr32423/mb3d-rs/commit/81e1a752181936965341940ed5be873d31212cb9) | Version number and release notes of this release |
+| [`70a8b84`](https://github.com/thr32423/mb3d-rs/commit/70a8b845ca5affe82f2ac204ffbfaa8ca42ab7c5) | README: shining colours and light through thin parts |
+| [`39ad9f0`](https://github.com/thr32423/mb3d-rs/commit/39ad9f0835ca50828db29d804743814d28686369) | Toast also for a stopped calculation |
+| [`aa7cc4c`](https://github.com/thr32423/mb3d-rs/commit/aa7cc4c7eeaa4c290265d714e76f075fce28e0d8) | Toasts also for the end of long jobs (animation frames or video, big render tiles, mesh, slices, splats, fly-through) and an animation's or big render's stop; Mb3d::warn renamed notify; new text: Animation: all {} frames rendered (18 languages) |
+| [`4f36132`](https://github.com/thr32423/mb3d-rs/commit/4f361322e73a57436d41f59b63c2d65ca26a54bb) | Toasts only for warnings and errors (Mb3d::warn); routine lines (welcome, saved, done, loaded, copied) stay in the message memo |
+| [`97a37fa`](https://github.com/thr32423/mb3d-rs/commit/97a37fae20db3bd96f6c7329d7198a5598509311) | Card's reflection march: a task may end its march early (ReflectTask::max_len, word 20); the subsurface rays end at 3 depths and at the shadow's length (ApolloBalloons full HD: the pass on the card 13.2 s -> 10.6 s) |
+| [`f2fdf7f`](https://github.com/thr32423/mb3d-rs/commit/f2fdf7fc77094344806c26e4da205b0a076f700e) | Subsurface: faster on the CPU (ApolloBalloons full HD 54.5 s -> 14.9 s): the thickness march ends after 3 depths, a light march without the pixel's hit values, the shadow by the whole DE, no shadow where the light would not be seen |
+| [`20ed4b6`](https://github.com/thr32423/mb3d-rs/commit/20ed4b64df762ea9b82c43d129dbca0993d5b8f8) | Subsurface: TECHNICAL.md section, MCP scene guide |
+| [`912c343`](https://github.com/thr32423/mb3d-rs/commit/912c34383887d110322b5308f66fea32678c7886) | Subsurface: Monte Carlo, graphics card, shadow beyond the part |
+| [`d01d4c8`](https://github.com/thr32423/mb3d-rs/commit/d01d4c8dfd8d8a0bff10a677acc07e114aff9ba7) | Subsurface: controls in Post processing, section Material (Subsurface, Depth), labels and hints in 18 languages |
+| [`cc846a8`](https://github.com/thr32423/mb3d-rs/commit/cc846a83a7774386f3e4b4fb0c02a1237e55f022) | Subsurface scattering, step 1: light through thin parts |
+| [`ce4ca5c`](https://github.com/thr32423/mb3d-rs/commit/ce4ca5c7326185bbefebb3d1a88d02011f4d4e30) | Reflection pass: set the pixel of a repainted surface (emission light was lost on surfaces with reflections) |
+| [`452b134`](https://github.com/thr32423/mb3d-rs/commit/452b1344138b045c78ab92d7d69072781eb05af2) | Emission, step 3: controls, the reflection pass, a test, the notes. Post processing, section Material: Emission (ten numbers, one per palette colour) and Light rays (labels and hints in 18 languages, the stage "emission light" in the bar); the reflection pass keeps the emission light on the surface its rays start from (SrTracer::shade_own), what the rays hit only shines; the rays go to the card only when its shader for them is compiled (a scene new to the card: on the CPU at once, the compile meanwhile; before, the pass waited some 20 s for it); the calculation apart from its cache (emission::calculate), with a test on the default bulb (the shining parts light the surfaces next to them, the same every time, 8 and 32 rays within 15 %). TECHNICAL.md (Emission: parts of the surface as light sources), the scene guide of the MCP server. Without emission the pictures are the same to the bit (DEcomb1) |
+| [`c188ee2`](https://github.com/thr32423/mb3d-rs/commit/c188ee246d43fa34bed93e30f13a032aa3085a74) | Emission, step 2: the shining parts light what is around them in the painting (src/emission.rs, the stage "emission light" before the painting when the material has material_light_rays > 0). Every shining pixel is a light sample (place, normal, colour times emission, the area of surface it shows); each pixel sends material_light_rays rays aimed at samples, each kept among 8 candidates drawn by power for what it would give the pixel (resampled importance sampling), and as many searching rays over the half space above its surface for the shining parts the picture does not show (in gaps, behind other parts), which count where no light sample lies. The rays run through the card's reflection march or on the CPU through the pixel march (Marcher::march_ray_from); the light is smoothed along the surface (a trous filter on depth and normal) and added in the shading as a light's diffuse part (LightVals::emit_light, the pixel's own surface only). Kept while the picture, the palette and the material stay the same (a repaint with other lights does not calculate it again). The default bulb with its first colour shining, 600 x 450, 8 + 8 rays: 0.6 s on the CPU, 0.8 s on the card, the two within 1 % in the rays that arrive, and the picture close to Monte Carlo's of 200 s. The whole picture only (not tiles), not inside rendering. MB3D_EMISSION_TIMING=1 prints the stages. The way differs from Mandelbulb3D SE's (64 rays searching per pixel; credit for the idea in the module's text) |
+| [`66d22d8`](https://github.com/thr32423/mb3d-rs/commit/66d22d8fdac15a7695210e9acf73fd1fbcd03f19) | Emission per palette colour, step 1: the surface material has an emission strength for each of the palette's ten colours (Material::emission, text key material_emission = ten numbers, written only when a colour shines; blended between keyframes), on top of the glow that makes the whole surface shine: where the surface has that colour it shines in it, between two colours as the colours blend (LightVals::emission_at on CalcColors' palette search, now LightVals::palette_place). The painting adds it as the glow was added; Monte Carlo adds it at every hit of a path, so the shining parts light what is around them there. No controls in the windows yet (the Post processing window keeps the values), no light cast in the painting yet. The idea of light sources chosen by palette colour is Mandelbulb3D SE's (its emissive dIFS with an opacity per colour, by Glenn Olander, github.com/Rodrigo-Spacecraft/Mandelbulb3D-SE); nothing of its code is used: here any surface can shine, in its own colour. Without emission the pictures are the same to the bit (DEcomb1) |
+| [`3eb3568`](https://github.com/thr32423/mb3d-rs/commit/3eb356853ba3678cc249d7c337eac14b7326be6f) | Orbit Trap privacy policy |
+| [`6a10ddd`](https://github.com/thr32423/mb3d-rs/commit/6a10ddd76f7a71e9a53b6b000d9365608409c5a9) | README: Updates for v0.3.17 |
+| [`02ddec0`](https://github.com/thr32423/mb3d-rs/commit/02ddec095e39074cc132b7c73d63e07320a91949) | Save stereo previews as 16-bit PNG and show message toasts |
+
 ### [v0.3.17](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.17) · 27 Nov 2026, 06:59 UTC
 
 | Commit | What it does |
@@ -1576,15 +1599,7 @@ of a release are on its page. Times are in UTC.
 | [`57f0494`](https://github.com/thr32423/mb3d-rs/commit/57f0494c81792528bcb2bbea83f285b0dcbdabba) | Save stereo settings for the next launch |
 | [`5c5b93b`](https://github.com/thr32423/mb3d-rs/commit/5c5b93b3dba3c9075e7553204add6e838020c49d) | Relight stereo pair previews |
 
-### [v0.3.15](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.15) · 19 Nov 2026, 10:08 UTC
-
-| Commit | What it does |
-|---|---|
-| [`830e5c8`](https://github.com/thr32423/mb3d-rs/commit/830e5c8337089c30378882b45d069c438b1cdc79) | Version number and release notes of this release |
-| [`3f0b4e9`](https://github.com/thr32423/mb3d-rs/commit/3f0b4e951194bdec815cee4b377270b14a415638) | Claude's desktop app is found on Windows again: its installer from claude.ai/download is now a Store-style package that keeps its settings in %LOCALAPPDATA%\Claude-Data\<package> (seen with 5.11492.5 on a fresh Windows 11: Claude-Data\claude_pzs8sxrjxfjjc), and 0.3.14 looked only in %APPDATA%\Claude, so the AI assistant window said "Not installed" beside the installed, signed-in app and Connect stayed grey (reported by John Paleo). The settings folder is now the newest place that is there: Claude-Data, then the folder Windows kept for an earlier package (not when the package left it behind with its .user-data-left note), then %APPDATA%\Claude. Claude Code is no longer "Found" on Windows and macOS because of the .claude folder alone (the desktop app makes one at sign-in, with no claude command). Paths lose Windows' \\?\ prefix in the window, in Claude Code's command and in the settings entry. Tested in a Windows 11 VM: Connect writes the entry, Claude starts mb3d and answers from its log |
-| [`57365f2`](https://github.com/thr32423/mb3d-rs/commit/57365f249b16bfe33a5677b04357a96fd698137a) | README: Updates for v0.3.14 |
-
-All 128 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
+All 129 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
 <!-- updates:end -->
 
 ## For developers

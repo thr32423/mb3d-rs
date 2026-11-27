@@ -3109,13 +3109,7 @@ fn stop_calc(app: &mut Mb3d, ui: &mut Ui) {
     if anim {
         ui.set_caption("AnimationForm", "Button2", &tr("@MB:StartRenderingAnimationImages"));
     }
-    // (an animation's stop shown over the picture too: a long job; the
-    // picture's own stop the user sees there)
-    if anim {
-        app.notify(ui, &tr("@MB:AnimationRenderingStopped"));
-    } else {
-        app.message(ui, &tr("@MB:CalculationStopped"));
-    }
+    app.notify(ui, &if anim { tr("@MB:AnimationRenderingStopped") } else { tr("@MB:CalculationStopped") });
 }
 
 fn speed_button3_click(app: &mut Mb3d, ui: &mut Ui, sender: &str) {

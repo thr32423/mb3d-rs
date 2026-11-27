@@ -19,6 +19,10 @@ on:
         description: "also upload a build to TestFlight"
         type: boolean
         default: true
+      showcase:
+        description: "only showcase screenshots: the scenes of ios/showcase on a 13-inch iPad, upright and on its side"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -26,7 +30,7 @@ permissions:
 jobs:
   simulator:
     runs-on: macos-latest
-    timeout-minutes: 90
+    timeout-minutes: 150
     defaults:
       run:
         shell: bash
@@ -54,6 +58,11 @@ jobs:
           mkdir data && tar xzf rel.tar.gz -C data --strip-components=1 \
             "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Formulas" "mb3d-rs-$tag-x86_64-unknown-linux-gnu/EM_JIT_M3Formulas" \
             "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Maps" "mb3d-rs-$tag-x86_64-unknown-linux-gnu/M3Parameter"
+      # the showcase scenes (own scenes on built-in formulas) join the
+      # examples of this build only
+      - name: Showcase scenes
+        if: inputs.showcase
+        run: cp ios/showcase/*.m3p data/M3Parameter/
       - name: Engine and project
         run: ios/build.sh "$PWD/data"
       - name: Build for the Simulator
@@ -62,7 +71,49 @@ jobs:
           xcodebuild -project MB3D.xcodeproj -target MB3D -configuration Release -sdk iphonesimulator \
             ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO SYMROOT="$PWD/build" build | tail -40
           ls build/Release-iphonesimulator
+      # pictures for showing the app: each scene finished (two minutes to
+      # render), alone and with a settings page or window, upright and on
+      # its side, with the clean status bar of Apple's own screenshots
+      - name: Showcase
+        if: inputs.showcase
+        run: |
+          mkdir -p screens
+          udid=$(xcrun simctl list devices available | grep -m1 -E 'iPad Pro 13' | grep -oE '[0-9A-F-]{36}')
+          echo "iPad: $(xcrun simctl list devices available | grep -m1 "$udid")"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl status_bar "$udid" override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularMode notSupported
+          xcrun simctl install "$udid" ios/build/Release-iphonesimulator/OrbitTrap.app
+          shot() { # name, scene, [-page X | -sheet X]
+            local name=$1 scene=$2; shift 2
+            xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
+            xcrun simctl launch "$udid" io.github.thr32423.orbittrap -open "$scene" "$@"
+            sleep 120
+            xcrun simctl io "$udid" screenshot "screens/$name.png"
+          }
+          all() { # prefix
+            for i in 1 2 3 4 5 6; do
+              scene=$(ls ios/showcase | grep "^Orbit Trap $i - " | sed 's/\.m3p$//')
+              shot "$1-$i-scene" "$scene"
+            done
+            shot "$1-7-lighting" "Orbit Trap 1 - Sunset sea" -page lighting
+            shot "$1-8-colours" "Orbit Trap 3 - Lagoon" -page colours
+            shot "$1-9-effects" "Orbit Trap 2 - Coral dusk" -page effects
+            shot "$1-10-variations" "Orbit Trap 4 - Golden hour" -sheet variations
+          }
+          all portrait
+          xcrun simctl terminate "$udid" io.github.thr32423.orbittrap || true
+          open -a Simulator --args -CurrentDeviceUDID "$udid"
+          sleep 15
+          osascript -e 'tell application "Simulator" to activate' -e 'delay 2' \
+            -e 'tell application "System Events" to key code 124 using command down' \
+            || echo "rotating the simulator failed (no accessibility access?)"
+          sleep 5
+          all landscape
+          for f in screens/landscape-*.png; do sips -r 90 "$f" >/dev/null; done
+          sips -g pixelWidth -g pixelHeight screens/portrait-1-scene.png screens/landscape-1-scene.png
       - name: Run on a simulated iPad
+        if: ${{ !inputs.showcase }}
         run: |
           mkdir -p screens
           xcrun simctl list devices available > screens/devices.txt
@@ -144,6 +195,7 @@ jobs:
       # action on the same simulated iPad; while a test holds a finger down
       # (screens/live-on), a picture of the screen every second
       - name: Touches
+        if: ${{ !inputs.showcase }}
         continue-on-error: true
         run: |
           udid=$(xcrun simctl list devices booted | grep -oE '[0-9A-F-]{36}' | head -1)

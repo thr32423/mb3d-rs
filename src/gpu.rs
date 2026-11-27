@@ -2418,6 +2418,8 @@ pub struct ReflectTask {
     /// the ground plane is left out (a mirror ray rising from the water,
     /// water_layer)
     pub no_ground: bool,
+    /// the longest march (steps; 0: to the far end, as the reflections)
+    pub max_len: f32,
 }
 
 /// The result of a task: the G-buffer value of the hit (normal, depth,
@@ -2553,6 +2555,7 @@ fn reflect_batch_card(p: &CalcParams, tasks: &[ReflectTask], offset: usize, o: &
             }
             w[6] = t.zz.to_bits();
             w[7] = t.pixel;
+            w[20] = t.max_len.to_bits();
             w[23] = t.inside as u32 | (t.ao_q as u32) << 8 | (t.no_ground as u32) << 16;
             w
         })

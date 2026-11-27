@@ -122,7 +122,7 @@ fn rays(p: &CalcParams, rays: &[(Vec3, Vec3, f32, f64)], inside: bool, threads: 
         let tasks: Vec<crate::gpu::ReflectTask> = rays
             .iter()
             .enumerate()
-            .map(|(i, (o, d, zz, _))| crate::gpu::ReflectTask { origin: *o, dir: [(d[0] * sw) as f32, (d[1] * sw) as f32, (d[2] * sw) as f32], zz: *zz, pixel: i as u32, inside, ..Default::default() })
+            .map(|(i, (o, d, zz, max))| crate::gpu::ReflectTask { origin: *o, dir: [(d[0] * sw) as f32, (d[1] * sw) as f32, (d[2] * sw) as f32], zz: *zz, pixel: i as u32, inside, max_len: (*max / sw) as f32, ..Default::default() })
             .collect();
         match crate::gpu::reflect_batch(p, &tasks, &crate::gpu::ReflectOpts::default(), None, cancel) {
             Ok((hits, n, _)) => {

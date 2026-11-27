@@ -134,6 +134,7 @@ const R_SURFACE: u32 = 169u;     // 1: the tasks are the pixels' surfaces (no ma
 const R_N: u32 = 170u;           // the number of tasks
 const R_LIGHTS: u32 = 172u;      // 6 x (index, HSvec or position, positional, lmax_l, visible, 0)
 const R_WORDS: u32 = 36u;        // a task: 0-2 origin, 3-5 direction, 6 zz (surface: zpos), 7 pixel,
+                                 // 20 the longest march (steps, 0: to the far end),
                                  // 23 inside (bit 0) and AO quality (bits 8-15), 24-29 the origin as doubles;
                                  // out 8-12 the G-buffer value, 13-15 position, 16 zz, 17 zz2, 18 flags, 19 step count,
                                  // 30-35 the position as doubles (double mode)
@@ -1532,6 +1533,10 @@ fn max_length_to_cut_plane() -> vec2<R> {
 // planes ahead (more than one step away), at most ZEND
 fn r_max_len() -> R {
     var len = pf(ZEND);
+    // the task's own limit (word 20, steps; 0: none)
+    if (r_task.w > 0.0) {
+        len = min(len, r_task.w);
+    }
     let opts = P[CUT_OPT];
     if (opts == 0u) {
         return len;
@@ -4523,7 +4528,7 @@ fn reflect_task(idx: u32) {
     r_keep = false;
     r_task_origin = task_origin(o);
     r_task_dir = vec3<R>(R(bitcast<f32>(OUT[o + 3u])), R(bitcast<f32>(OUT[o + 4u])), R(bitcast<f32>(OUT[o + 5u])));
-    r_task = vec4<R>(0.0, 0.0, R(bitcast<f32>(OUT[o + 6u])), 0.0);
+    r_task = vec4<R>(0.0, 0.0, R(bitcast<f32>(OUT[o + 6u])), R(bitcast<f32>(OUT[o + 20u])));
     let pix = OUT[o + 7u];
     let x = pi(RECT_X0) + i32(pix % u32(pi(RECT_W)));
     let y = pi(RECT_Y0) + i32(pix / u32(pi(RECT_W)));

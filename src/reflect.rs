@@ -2365,7 +2365,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
     let march_gpu = |list: &[&(usize, RayReq)], share: Option<&crate::gpu::RaySharing>| -> Result<(Vec<RayHit>, usize, Vec<usize>), String> {
         let tasks: Vec<ReflectTask> = list
             .iter()
-            .map(|(i, r)| ReflectTask { origin: r.origin, dir: s3(&r.dir), zz: r.zz as f32, pixel: *i as u32, inside: r.inside, ao_q: rit_q(r.rit), no_ground: crate::water_layer::leaves_water(p, &r.origin, &r.dir, r.zz) })
+            .map(|(i, r)| ReflectTask { origin: r.origin, dir: s3(&r.dir), zz: r.zz as f32, pixel: *i as u32, inside: r.inside, ao_q: rit_q(r.rit), no_ground: crate::water_layer::leaves_water(p, &r.origin, &r.dir, r.zz), max_len: 0.0 })
             .collect();
         let opts = ReflectOpts { surface: false, lights: lights.clone(), soft_radius, hs_mul, ao: ao.map(|(m, f)| (0, m, f)), far_fog };
         let (hits, n_card, unfinished) = crate::gpu::reflect_batch(p, &tasks, &opts, share, cancel)?;

@@ -1681,6 +1681,10 @@ impl<'a, 'c> SrTracer<'a, 'c> {
         self.plv.view = c.cam.to_view(av);
         self.plv.y_pos = y as f32 / p.height as f32;
         self.plv.x_pos = (x + 1) as f32 / p.width as f32;
+        // (the pixel: the passes' light per pixel, emission and
+        // subsurface, is looked up by it)
+        self.plv.px = x;
+        self.plv.py = y;
         {
             let ys = self.plv.y_pos;
             let s = match lv.depth_func {
@@ -2277,6 +2281,8 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
                     t.plv.view = cam.to_view(av);
                     t.plv.y_pos = y as f32 / p.height as f32;
                     t.plv.x_pos = (x + 1) as f32 / p.width as f32;
+                    t.plv.px = x;
+                    t.plv.py = y;
                     let ys = t.plv.y_pos;
                     let sd = match lv.depth_func {
                         1 => ys * ys,

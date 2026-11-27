@@ -829,6 +829,37 @@ you check further on your own:
   colour and reflection. Also in Monte Carlo.
 
   </details>
+* **Shining colours and light through thin parts**: any palette colour
+  can shine and light the surfaces around it, and light can pass through
+  the thin parts of the fractal, as through wax, leaves or skin.
+
+  <a href="docs/img/emission.jpg"><img src="docs/img/emission.jpg" width="300" alt="A dim bulb, then the same bulb with its first palette colour shining and lighting the parts around it"></a>
+
+  <details><summary>Read more</summary>
+
+  Post processing window, section *Material*:
+
+  **Emission** (ten numbers, one per palette colour): where the surface
+  has that colour it shines in it, and with *Light rays* above 0 it lights
+  what is around it, also in gaps and behind other parts. The idea of
+  shining palette colours comes from Glenn Olander's Mandelbulb3D SE.
+  Left without, right with the first colour at 0.5:
+
+  <a href="docs/img/emission.jpg"><img src="docs/img/emission.jpg" width="760" alt="A dim bulb, then the same bulb with its first palette colour shining and lighting the parts around it"></a>
+
+  **Subsurface** (ten numbers, one per palette colour) and **Depth**: light
+  goes into the surface and comes out on the other side of thin parts,
+  tinted by their colour; the depth says how far it gets. A bulb lit from
+  behind, left without, right with subsurface 1 and depth 0.12:
+
+  <a href="docs/img/subsurface.jpg"><img src="docs/img/subsurface.jpg" width="760" alt="A bulb lit from behind, dark, then with its thin edges glowing where the light comes through"></a>
+
+  Both work in the painting, on the graphics card and in Monte Carlo. With
+  both at 0 the pictures are exactly as before. Details:
+  [TECHNICAL.md](docs/TECHNICAL.md#emission-parts-of-the-surface-as-light-sources),
+  [subsurface](docs/TECHNICAL.md#subsurface-scattering-light-through-the-material).
+
+  </details>
 * **Two fractals in one scene** (an idea from Mandelbulber): with a DE
   combination, the second hybrid part can stand apart from the first,
   moved, turned and scaled, combined as union, intersection or cut.

@@ -379,14 +379,12 @@ pub fn stage_mark(name: &str) {
 /// `stage times: march 1.23 | hard shadows (graphics card) 4.56 | ...`
 /// (seconds; a stage reported twice is summed).
 pub fn stage_times_print() {
-    if std::env::var_os("MB3D_STAGE_TIMES").is_some() {
-        let (n, b) = crate::cone::counts();
-        if n > 0 {
-            crate::elog!("  cone march: {n} pixels on the CPU, {b} of them from the start (the estimate was no bound there)");
-        }
-    }
     if !stage_times_on() {
         return;
+    }
+    let (n, b) = crate::cone::counts();
+    if n > 0 {
+        crate::elog!("  cone march: {n} pixels on the CPU, {b} of them from the start (the estimate was no bound there)");
     }
     stage_mark("");
     let Some((_, _, v)) = STAGE_LOG.locked().take() else { return };
@@ -3206,11 +3204,7 @@ pub fn render_tile_staged(
     }
     let (p, mut gbuf) = calculate_inner(&ts, progress, &no_stage, cancel, if full { 0 } else { 1 }, None, ck)?;
     if full && post_pending(&ts, &p) {
-        stage(match (ts.shadows.is_some(), ts.ao.is_some()) {
-            (true, true) => "hard shadows and ambient occlusion",
-            (true, false) => "hard shadows",
-            _ => "ambient occlusion",
-        });
+        stage(&post_stage_name(ts.shadows.is_some(), ts.ao.is_some(), ""));
         post_process_cancellable(&ts, &p, &mut gbuf, thread_count(&ts), cancel)?;
     }
     let t1 = Instant::now();
@@ -3444,6 +3438,25 @@ mod tests {
         keys.sort();
         keys.dedup();
         assert_eq!(keys.len(), n);
+    }
+
+    /// A swarm tile names what runs after its march: the Z-buffer normals
+    /// alone are "post calculations", not "ambient occlusion".
+    #[test]
+    fn a_tile_names_its_post_calculation() {
+        let stage_of = |change: &dyn Fn(&mut Scene)| {
+            let mut sc = Scene::preset("Integer Power").unwrap();
+            (sc.width, sc.height, sc.threads) = (32, 24, 2);
+            (sc.shadows, sc.ao, sc.deao) = (None, None, None);
+            change(&mut sc);
+            sc.tiling = Some(crate::scene::Tiling { cols: 1, rows: 1, pos: Some((0, 0)), downscale: 1 });
+            let named = std::sync::Mutex::new(Vec::new());
+            render_tile_staged(&sc, true, &|_, _| {}, &|s| named.locked().push(s.to_string()), &|| false, None).unwrap();
+            let first = named.locked().first().cloned();
+            first
+        };
+        assert_eq!(stage_of(&|sc| sc.normals_on_zbuf = true).as_deref(), Some("post calculations"));
+        assert_eq!(stage_of(&|sc| sc.ao = Some(Default::default())).as_deref(), Some("ambient occlusion"));
     }
 
     #[test]

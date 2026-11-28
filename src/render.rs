@@ -337,7 +337,8 @@ pub fn calculate_with(
     calculate_inner(sc, progress, stage, cancel, post, rows, ck)
 }
 
-/// A stage callback that ignores the stages.
+/// A stage callback for callers that show no stages: it only notes them
+/// for `MB3D_STAGE_TIMES` ([`stage_mark`]).
 pub fn no_stage(name: &str) {
     stage_mark(name);
 }
@@ -1377,7 +1378,7 @@ pub struct Probe {
 }
 
 /// How much faster than the CPU threads the card must march for Auto to give
-/// it the shadows and the DE occlusion (see `calculate_inner`).
+/// it the shadows and the DE occlusion (see `calculate_rows`).
 #[cfg(feature = "gpu")]
 const POST_ON_CARD_RATIO: f64 = 1.5;
 
@@ -2015,8 +2016,6 @@ fn finish_calculation(
     Ok((p, gbuf))
 }
 
-/// The post calculations the scene asks for that the graphics card can
-/// run with the main calculation.
 /// Starts compiling the card's shaders for the scene in the background
 /// (opening a file, changing a formula), so that they are ready when it is
 /// calculated: the march with its shadow and occlusion passes, and the
@@ -2051,6 +2050,8 @@ fn material_rays(sc: &Scene) -> bool {
     sc.material.is_some_and(|m| m.scatters() || (m.emits() && m.cast_rays > 0))
 }
 
+/// The post calculations the scene asks for that the graphics card can
+/// run with the main calculation.
 pub fn post_job(sc: &Scene, p: &CalcParams) -> PostJob {
     PostJob { shadows: shadow_job(sc, p), deao: sc.ao.and(sc.deao) }
 }

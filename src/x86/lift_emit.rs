@@ -82,8 +82,8 @@ pub(super) fn op_mem(op: &Op) -> Option<Mem> {
 }
 
 /// An op whose memory operand is an indexed location, as a switch over
-/// the elements: `gen` generates the op for the element IDX_AT; `sel` the
-/// selector expression of the index register; `case` the arm syntax.
+/// the elements: `gen` generates the op for the element IDX_AT; `wgsl`
+/// chooses the shader's syntax for the selector and the arms.
 pub(super) fn idx_switch(op: &Op, an: &Analysis, k: usize, cs: &[usize], wgsl: bool, gen: &mut dyn FnMut() -> Option<String>) -> Option<Option<String>> {
     if IDX_AT.with(|c| c.get()).is_some() {
         return None;

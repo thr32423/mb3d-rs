@@ -942,7 +942,6 @@ impl Prog {
         cells.written_cells().any(|(p, _)| p == 'v')
     }
 
-    #[allow(clippy::too_many_arguments)]
     /// An x87 double access to a record field chosen by a small index
     /// (`Loc::FieldIdx`): a select chain / switch over the possible cells.
     fn wgsl_idx_op(&self, k: usize, cs: &[usize], an: &Analysis, t: &Typed) -> Option<String> {

@@ -1158,9 +1158,6 @@ pub(crate) fn to_short_float(v: f32) -> u16 {
     (m as i8 as u8 as u16) | ((e as i8 as u8 as u16) << 8)
 }
 
-/// Writes a scene as a MB3D parameter file (`.m3p`, MandId 44): the
-/// `TMandHeader10` with the light record and the formula block.  Settings
-/// that this port does not model keep MB3D's neutral values.
 /// Writes a parameter file so that a write that fails (a full disk) leaves
 /// the file that was there: into a temporary file next to it, which then
 /// takes its name. What is not an ordinary file (a link, a device) and a
@@ -1192,6 +1189,9 @@ pub fn write_file(path: &std::path::Path, data: &[u8]) -> std::io::Result<()> {
     done
 }
 
+/// Writes a scene as a MB3D parameter file (`.m3p`, MandId 44): the
+/// `TMandHeader10` with the light record and the formula block.  Settings
+/// that this port does not model keep MB3D's neutral values.
 pub fn write(sc: &Scene) -> Vec<u8> {
     let mut d = vec![0u8; HEADER_SIZE + ADDON_SIZE];
     fn put(d: &mut [u8], o: usize, b: &[u8]) {

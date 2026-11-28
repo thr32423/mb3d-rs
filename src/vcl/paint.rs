@@ -563,9 +563,7 @@ impl Form {
                     let st = BtnState { hot: hot && self.hot_part == PART_THUMB, pressed: self.capture == Some(id) && self.cap_part == PART_THUMB, enabled: en, ..Default::default() };
                     th.track_thumb(cv, thumb.offset(r.x, r.y), st);
                 }
-                if focused && !th.glossy() {
-                    // the native control shows no focus rectangle in MB3D's style
-                }
+                // (the native control shows no focus rectangle in MB3D's style)
             }
             Kind::UpDown => {
                 let (a, b) = updown_rects(c, r);
@@ -836,7 +834,6 @@ impl Form {
             cv.fill(r, c.color.unwrap_or(th.window()));
             r
         };
-        let tc = if c.read_only && !c.font.as_ref().map(|f| f.custom_color).unwrap_or(false) { tc } else { tc };
         self.paint_edit_text(cv, th, id, Rect::new(inner.x + 1, inner.y, inner.w - 2, inner.h), focused, font, tc);
     }
 
@@ -1008,7 +1005,6 @@ impl Form {
         let pp = if self.capture == Some(id) { self.cap_part } else { PART_NONE };
         if vs {
             let sr = Rect::new(r.right() - b - SB, r.y + b, SB, ch);
-            let (hp, pp) = if self.cap_value == 1 || self.hot_part_v() { (hp, pp) } else { (PART_NONE, PART_NONE) };
             paint_scrollbar(cv, th, sr, true, 0, (ey - ch).max(0) as i64, ch as i64, c.scroll_y as i64, hp, pp, true);
         }
         if hs {
@@ -1018,10 +1014,6 @@ impl Form {
         if vs && hs {
             cv.fill(Rect::new(r.right() - b - SB, r.bottom() - b - SB, SB, SB), th.face());
         }
-    }
-
-    fn hot_part_v(&self) -> bool {
-        true
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1064,9 +1056,6 @@ impl Form {
         cv.set_clip(old);
     }
 
-    #[allow(clippy::too_many_arguments)]
-    /// A list view's rows: (header height, row height, rows shown, the
-    /// largest first row, the first row shown).
     /// A list view shown as tiles (`Control::tile`): the tiles in a line,
     /// a tile's width and height (the picture box and the caption).
     pub(crate) fn listview_tiles(&self, id: Id) -> Option<(i32, i32, i32)> {

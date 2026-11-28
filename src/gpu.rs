@@ -1,4 +1,4 @@
-//! Ray marching on the graphics card (prototype, cargo feature `gpu`).
+//! Ray marching on the graphics card (cargo feature `gpu`).
 //!
 //! The main calculation (`Marcher::march_pixel` for every pixel) runs as a
 //! wgpu compute shader (`gpu_march.wgsl`: Vulkan, Metal or DirectX 12) and

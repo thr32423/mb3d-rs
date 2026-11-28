@@ -34,7 +34,7 @@ use std::collections::{BTreeSet, HashMap};
 
 const STACK_LOW: u32 = BASE + 0x4000;
 
-/// The Rust functions the compiled code calls: (name, address, number of
+/// The Rust functions the compiled code calls: (name, number of
 /// f64 arguments; `round_int` takes the machine first).
 pub const HELPERS: [(&str, usize); 11] = [
     ("mb3d_sin", 1),

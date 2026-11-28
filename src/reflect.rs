@@ -1464,7 +1464,7 @@ impl<'a, 'c> SrTracer<'a, 'c> {
             let mut guard = 0u32;
             if dtmp > 1e-10 {
                 loop {
-                    let mut rlast_de = dtmp;
+                    let rlast_de = dtmp;
                     let mut dstep;
                     if c.vol {
                         dstep = dtmp;
@@ -1503,7 +1503,6 @@ impl<'a, 'c> SrTracer<'a, 'c> {
                                 let vf = self.m.vfov;
                                 vl.integrate(p, &cc, &vf, rlast_sw, self.m.mzz, &mut step_count);
                             }
-                            let _ = &mut rlast_de;
                         }
                         open_air = true;
                         break;
@@ -1532,8 +1531,6 @@ impl<'a, 'c> SrTracer<'a, 'c> {
                     } else {
                         1.0
                     };
-                    rlast_de = dtmp;
-                    let _ = rlast_de;
                     guard += 1;
                     if guard > 1_000_000 {
                         open_air = true;

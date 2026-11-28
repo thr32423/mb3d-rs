@@ -473,9 +473,8 @@ impl CalcParams {
             return Err("formula option is not valid".into());
         }
         let mut mode = if (4..=6).contains(&de_option) { HybridMode::Alt4D } else { HybridMode::Alt3D };
-        if let Some(w) = ipol {
+        if ipol.is_some() {
             // CheckDEoption(0, 1)
-            let _ = w;
             de_option = ipol_de_option(&slots, sc.interpolation.unwrap_or_default());
             if de_option >= 20 {
                 return Err("dIFS formulas do not work in an interpolation hybrid".into());

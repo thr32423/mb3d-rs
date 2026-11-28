@@ -687,7 +687,6 @@ fn end_rendering(app: &mut Mb3d, ui: &mut Ui) {
     paint_box(app, ui);
 }
 
-/// `Button2Click`: renders the frames into the output folder.
 /// "waiting for 3 of 12 units ..." -> (3, 12)
 fn parse_waiting(st: &str) -> Option<(usize, usize)> {
     let rest = st.strip_prefix("waiting for ")?;
@@ -696,6 +695,7 @@ fn parse_waiting(st: &str) -> Option<(usize, usize)> {
     Some((left.parse().ok()?, all.parse().ok()?))
 }
 
+/// `Button2Click`: renders the frames into the output folder.
 fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
     let cap = ui.caption(F, "Button2");
     if cap == tr("@MB:PauseRendering") {

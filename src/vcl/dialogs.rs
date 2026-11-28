@@ -1146,6 +1146,12 @@ mod tests {
         ui.open_dialog("t:other", &o);
         assert_eq!(dir_of(&ui), asked);
         cancel(&mut ui);
+        // the remembered folders forgotten (the Ini-dirs window, when its
+        // folders change): where it is asked to again
+        ui.dialog_dirs.clear();
+        ui.open_dialog("t:open", &o);
+        assert_eq!(dir_of(&ui), asked);
+        cancel(&mut ui);
         // a folder chooser is not taken elsewhere
         ui.dialog_dirs.insert("t:folder".into(), left.clone());
         ui.folder_dialog("t:folder", "", Some(asked.clone()));

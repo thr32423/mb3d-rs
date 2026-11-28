@@ -30,9 +30,6 @@ pub struct State {
     pub hist_ot: Vec<u32>,
     pub hist_int: Vec<u32>,
     pub first_show: bool,
-    /// the folder of the last .m3l opened ("Open"), for this session: the
-    /// lights folder of the settings stays (MB3D's OpenDialog1)
-    pub open_dir: Option<std::path::PathBuf>,
 }
 
 impl Default for State {
@@ -51,7 +48,6 @@ impl Default for State {
             hist_ot: Vec::new(),
             hist_int: Vec::new(),
             first_show: true,
-            open_dir: None,
         }
     }
 }
@@ -1663,7 +1659,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "Button1Click" => {
             let o = crate::vcl::dialogs::FileOptions {
                 filter: format!("{}|*.m3l", tr("@MB:M3DLightParameterM3l")),
-                initial_dir: Some(app.light.open_dir.clone().unwrap_or_else(|| app.ini.dir(super::ini::DIR_LIGHTS))),
+                initial_dir: Some(app.ini.dir(super::ini::DIR_LIGHTS)),
                 ..Default::default()
             };
             ui.open_dialog("light:load", &o);
@@ -1882,7 +1878,6 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             trigger_repaint(app, ui);
         }
         ("load", DialogResult::File(Some(p))) => {
-            app.light.open_dir = p.parent().map(|d| d.to_path_buf());
             if load_light_file(app, ui, p) {
                 // (Button1Click: the quick load list shows no file)
                 ui.set_item_index(F, "ComboBox3", -1);

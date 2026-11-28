@@ -111,7 +111,7 @@ impl Form {
             }
             Kind::ListBox => {
                 let inner = r.inset(if c.border { 2 } else { 0 });
-                let vis = (inner.h / c.item_height.max(8)).max(1);
+                let vis = self.listbox_rows(id);
                 if c.items.len() as i32 > vis && x >= inner.right() - SB {
                     let sr = Rect::new(inner.right() - SB, inner.y, SB, inner.h);
                     return sb_part(sr, true, 0, c.items.len() as i64 - vis as i64, vis as i64, c.top_index as i64, x, y);
@@ -608,7 +608,7 @@ impl Form {
                     self.memo_range(id)
                 } else {
                     let c = &self.ctl[id];
-                    let vis = ((r.h - 4) / c.item_height.max(8)).max(1) as i64;
+                    let vis = self.listbox_rows(id) as i64;
                     (vis, (c.items.len() as i64 - vis).max(0))
                 };
                 let track = r.h - 4 - 2 * SB;
@@ -854,9 +854,8 @@ impl Form {
             let kind = self.ctl[id].kind;
             let done = match kind {
                 Kind::ListBox => {
-                    let r = self.abs_rect(id);
+                    let vis = self.listbox_rows(id);
                     let c = &mut self.ctl[id];
-                    let vis = ((r.h - 4) / c.item_height.max(8)).max(1);
                     c.top_index = (c.top_index - steps * 3).clamp(0, (c.items.len() as i32 - vis).max(0));
                     true
                 }
@@ -1050,7 +1049,6 @@ impl Form {
     /// Scroll bar part action on a scroll bar, list box or memo.
     fn scroll_part(&mut self, id: Id, part: i32, out: &mut Vec<Raw>) {
         let kind = self.ctl[id].kind;
-        let r = self.abs_rect(id);
         match kind {
             Kind::ScrollBar => {
                 let c = &mut self.ctl[id];
@@ -1070,8 +1068,8 @@ impl Form {
                 }
             }
             Kind::ListBox => {
+                let vis = self.listbox_rows(id);
                 let c = &mut self.ctl[id];
-                let vis = ((r.h - 4) / c.item_height.max(8)).max(1);
                 let max = (c.items.len() as i32 - vis).max(0);
                 if part == PART_THUMB {
                     self.cap_value = c.top_index as i64;
@@ -1376,6 +1374,14 @@ impl Form {
         if total - c.scroll_x < tr.w - 2 {
             c.scroll_x = (total - tr.w + 2).max(0);
         }
+    }
+
+    /// The rows a list box shows: what fits inside its border (the
+    /// painting, the scroll bar and the keys count them here).
+    pub(crate) fn listbox_rows(&self, id: Id) -> i32 {
+        let c = &self.ctl[id];
+        let inner = self.abs_rect(id).h - if c.border { 4 } else { 0 };
+        (inner / c.item_height.max(8)).max(1)
     }
 
     fn editable(&self, id: Id) -> bool {
@@ -1683,10 +1689,9 @@ impl Form {
                 _ => {}
             },
             Kind::ListBox => {
-                let r = self.abs_rect(id);
+                let vis = self.listbox_rows(id);
                 let c = &mut self.ctl[id];
                 let n = c.items.len() as i32;
-                let vis = ((r.h - 4) / c.item_height.max(8)).max(1);
                 let i = match key {
                     vk::UP => c.item_index - 1,
                     vk::DOWN => c.item_index + 1,
@@ -2051,6 +2056,24 @@ fn thousands(v: i64) -> String {
 mod tests {
     use super::wheel_steps;
     use super::*;
+
+    /// A list box without a border shows as many rows as fit its whole
+    /// height: the keys scroll by what the painting shows (they took the
+    /// border's 4 pixels off all the same, and End left a row hidden
+    /// below the last one shown).
+    #[test]
+    fn a_borderless_list_box_scrolls_by_the_rows_it_shows() {
+        let items: String = (0..12).map(|i| format!("      'item {i}'\n")).collect();
+        let dfm = format!("object F: TForm\n  ClientWidth = 200\n  ClientHeight = 200\n  object L: TListBox\n    Left = 8\n    Top = 8\n    Width = 100\n    Height = 104\n    BorderStyle = bsNone\n    ItemHeight = 13\n    Items.Strings = (\n{})\n  end\nend\n", items.trim_end().to_string() + "\n");
+        let mut f = Form::from_dfm(&dfm, &super::super::theme::Theme::new(super::super::theme::Style::default())).unwrap();
+        f.layout();
+        let l = f.id("L").unwrap();
+        assert!(!f.ctl[l].border && f.ctl[l].item_height == 13 && f.ctl[l].items.len() == 12);
+        f.set_focus(Some(l), &mut Vec::new());
+        f.key_down(vk::END, 0);
+        // 104 / 13 = 8 rows shown: the last item is the eighth row
+        assert_eq!((f.ctl[l].item_index, f.ctl[l].top_index), (11, 4));
+    }
 
     /// Alt+Down opens the list of a combo box one can type in, as F4 does
     /// (Down alone picks the next item, also there).

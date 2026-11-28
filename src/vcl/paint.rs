@@ -937,7 +937,7 @@ impl Form {
             r
         };
         let ih = c.item_height.max(8);
-        let vis = (inner.h / ih).max(1);
+        let vis = self.listbox_rows(id);
         let need_sb = c.items.len() as i32 > vis;
         let lr = Rect::new(inner.x, inner.y, inner.w - if need_sb { SB } else { 0 }, inner.h);
         let old = cv.clip_to(lr);

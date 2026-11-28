@@ -111,9 +111,7 @@ fn start(app: &mut Mb3d, ui: &mut Ui) {
     std::thread::spawn(move || {
         let progress = |v: usize, _n: usize| {
             view.store(v, Ordering::Relaxed);
-            if let Some(w) = &waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
         };
         let r = crate::splat::export(&sc, &sp, &progress, &|| stop.load(Ordering::Relaxed)).and_then(|r| {
             if r.splats.is_empty() {
@@ -123,9 +121,7 @@ fn start(app: &mut Mb3d, ui: &mut Ui) {
             Ok((r.splats.len(), out))
         });
         *result.locked() = Some(r);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

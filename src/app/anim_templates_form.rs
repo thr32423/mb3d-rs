@@ -190,9 +190,7 @@ fn add(app: &mut Mb3d, ui: &mut Ui) {
             };
             let r = crate::autopilot::fly_through(&sc, &fp, &progress, &|| cancel.load(Ordering::Relaxed));
             *result.locked() = Some(r);
-            if let Some(w) = waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
         });
         app.anim_tpl.flying = Some(fl);
         show_flying(app, ui);

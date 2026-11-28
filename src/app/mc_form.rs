@@ -580,9 +580,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
         std::thread::spawn(move || {
             let report = |st: &str| {
                 shared.locked().status = st.to_string();
-                if let Some(w) = &waker {
-                    w.wake();
-                }
+                super::util::wake(&waker);
             };
             let opts = crate::swarm::RunOptions { name, threads: 0, quiet: true, keep: false, cancel: Some(cancel_fn), resume: crate::checkpoint::Policy::Continue };
             // the blocks merged so far, shown as the running pass is
@@ -591,9 +589,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
                 s.live = Some(Arc::new(img));
                 s.live_ver += 1;
                 drop(s);
-                if let Some(w) = &waker {
-                    w.wake();
-                }
+                super::util::wake(&waker);
             };
             let r = crate::swarm::run_montecarlo_live(&dir, &p, units, rays, 0, 0.0, &opts, &report, Some(&live));
             let mut s = shared.locked();
@@ -610,9 +606,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
             }
             s.finished = true;
             drop(s);
-            if let Some(w) = &waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
         });
         return;
     }
@@ -633,9 +627,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
             }
             let row = |y: usize, recs: &[McRecord]| {
                 shared.locked().rows.push((y, recs.to_vec()));
-                if let Some(wk) = &waker {
-                    wk.wake();
-                }
+                super::util::wake(&waker);
             };
             let r = crate::mc::pass_with(&p, &mut img, 0, &pr, &cancel, Some(&row), ck.as_ref(), Some(&start.recs));
             let mut s = shared.locked();
@@ -667,9 +659,7 @@ fn start_with(app: &mut Mb3d, ui: &mut Ui, resume: Option<crate::checkpoint::Pol
                 s.finished = true;
             }
             drop(s);
-            if let Some(w) = &waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
             if done {
                 // (a batch entry with its rays: finished, its checkpoint
                 // goes; a stopped render keeps it)

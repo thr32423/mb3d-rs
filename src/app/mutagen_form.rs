@@ -425,9 +425,7 @@ fn create_mutation(app: &mut Mb3d, ui: &mut Ui, from: Option<usize>, root_only: 
                 };
                 out.push(m.clone());
                 shared.locked().done.push((i, m, img));
-                if let Some(w) = &waker {
-                    w.wake();
-                }
+                super::util::wake(&waker);
             }
             Ok(())
         })();
@@ -437,9 +435,7 @@ fn create_mutation(app: &mut Mb3d, ui: &mut Ui, from: Option<usize>, root_only: 
             s.error = e;
         }
         drop(s);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

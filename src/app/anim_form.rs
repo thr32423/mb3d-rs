@@ -305,9 +305,7 @@ fn render_thumb(app: &mut Mb3d, ui: &Ui, i: usize) {
             j.thumbs.push((i, id, b, ms));
             j.changed = true;
         }
-        if let Some(w) = waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 
@@ -780,9 +778,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
                     j.done = all.saturating_sub(left);
                     j.changed = true;
                 }
-                if let Some(w) = &waker {
-                    w.wake();
-                }
+                super::util::wake(&waker);
             };
             let r = crate::swarm::run_animation(&dir, &a, Some(&frames), &opts, &report);
             let mut j = job.locked();
@@ -804,9 +800,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
             }
             j.changed = true;
             drop(j);
-            if let Some(w) = &waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
         } else {
         // (several frames at once on a computer with several graphics
         // cards: see `frames::render_frames`)
@@ -816,9 +810,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
                 j.paused = p;
                 j.changed = true;
                 drop(j);
-                if let Some(w) = &waker {
-                    w.wake();
-                }
+                super::util::wake(&waker);
             };
             if pause.load(Ordering::SeqCst) && !cancel() {
                 tell(true);
@@ -856,9 +848,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
             };
             j.changed = true;
             drop(j);
-            if let Some(w) = &waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
             go
         });
         }
@@ -869,9 +859,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
                 j.making_video = true;
                 j.changed = true;
             }
-            if let Some(w) = &waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
             let progress = |d: usize, t: usize| prog.store((d * 1000 / t.max(1)) as u32, Ordering::Relaxed);
             let r = crate::vr::video_frames(&a, &frames).and_then(|files| crate::video::frames_to_avi(&files, fps, &path, &progress, &cancel));
             let mut j = job.locked();
@@ -886,9 +874,7 @@ fn start_rendering(app: &mut Mb3d, ui: &mut Ui) {
         j.running = false;
         j.changed = true;
         drop(j);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 
@@ -973,17 +959,13 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
             }
             j.changed = true;
             drop(j);
-            if let Some(w) = &waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
         }
         let mut j = job.locked();
         j.running = false;
         j.changed = true;
         drop(j);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

@@ -259,3 +259,11 @@ mod tests {
         assert_eq!(left_str(7199.0), "about 2 h left");
     }
 }
+
+/// Wakes the event loop from a background thread, when it runs (none
+/// before the first window is shown, and in the tests).
+pub fn wake(waker: &Option<crate::vcl::ui::Waker>) {
+    if let Some(w) = waker {
+        w.wake();
+    }
+}

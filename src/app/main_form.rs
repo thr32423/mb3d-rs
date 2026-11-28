@@ -3533,9 +3533,7 @@ fn spawn_save(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path, ok: String, e
     std::thread::spawn(move || {
         let res = enc().and_then(|data| std::fs::write(&p, data).map_err(|e| format!("{}: {e}", p.display())));
         *slot.locked() = Some(res.map(|()| ok));
-        if let Some(w) = waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

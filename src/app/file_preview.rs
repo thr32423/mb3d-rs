@@ -143,9 +143,7 @@ fn start(app: &mut Mb3d, ui: &Ui, path: PathBuf) {
         // (a panic must not leave `busy` set: no more previews then)
         let (r, text) = std::panic::catch_unwind(|| calculate(&path, &stop)).unwrap_or_else(|_| (Err(tr("@MB:TheCalculationFailedLower")), String::new()));
         *slot.locked() = Some((path, r, text));
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

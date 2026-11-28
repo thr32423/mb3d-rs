@@ -140,9 +140,7 @@ pub fn open(app: &mut Mb3d, ui: &mut Ui) {
 fn waker(ui: &Ui) -> Box<dyn Fn() + Send> {
     let w = ui.waker();
     Box::new(move || {
-        if let Some(w) = &w {
-            w.wake();
-        }
+        super::util::wake(&w);
     })
 }
 

@@ -440,9 +440,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
                 sh.preview = Some(bmp.clone());
                 sh.preview_changed = true;
                 drop(sh);
-                if let Some(w) = &waker {
-                    w.wake();
-                }
+                super::util::wake(&waker);
             }
             Ok(())
         })();
@@ -452,9 +450,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
             sh.mesh = Some(Err(e));
         }
         drop(sh);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 
@@ -558,9 +554,7 @@ fn start_calc(app: &mut Mb3d, ui: &mut Ui) {
             c.finish();
         }
         shared.locked().mesh = Some(r);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

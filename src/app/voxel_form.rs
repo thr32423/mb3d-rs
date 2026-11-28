@@ -283,9 +283,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
                 sh.preview = Some(bmp.clone());
                 sh.preview_changed = true;
                 drop(sh);
-                if let Some(w) = &waker {
-                    w.wake();
-                }
+                super::util::wake(&waker);
             }
             Ok(())
         })();
@@ -295,9 +293,7 @@ fn start_preview(app: &mut Mb3d, ui: &mut Ui) {
         }
         sh.done = true;
         drop(sh);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 
@@ -328,9 +324,7 @@ fn start_slices(app: &mut Mb3d, ui: &mut Ui) {
             let slice = |nr: u32, n: u32, on: Option<&[bool]>| {
                 if let Some(on) = on {
                     shared.locked().slice = Some((nr, n, on.to_vec()));
-                    if let Some(w) = &waker {
-                        w.wake();
-                    }
+                    super::util::wake(&waker);
                 }
             };
             match crate::voxel::export_with(&sc, &vp, &dir, &name, threads, &slice, &|| stop.load(Ordering::Relaxed), crate::checkpoint::Policy::Continue) {
@@ -345,9 +339,7 @@ fn start_slices(app: &mut Mb3d, ui: &mut Ui) {
         }
         sh.done = true;
         drop(sh);
-        if let Some(w) = &waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

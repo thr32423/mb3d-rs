@@ -825,24 +825,18 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
                         }
                     }
                     saved.fetch_add(1, Ordering::SeqCst);
-                    if let Some(w) = &waker {
-                        w.wake();
-                    }
+                    super::util::wake(&waker);
                     Ok(())
                 };
                 let report = |st: &str| {
                     *status.locked() = st.to_string();
-                    if let Some(w) = &waker {
-                        w.wake();
-                    }
+                    super::util::wake(&waker);
                 };
                 crate::swarm::run_tiles_files(&dir, &full, d.cols as u32, d.rows as u32, Some(&subset), &opts, &report, None, &collect)?;
                 Ok(last)
             })();
             *job.locked() = Some(r);
-            if let Some(w) = waker {
-                w.wake();
-            }
+            super::util::wake(&waker);
         });
         return;
     }
@@ -877,9 +871,7 @@ fn render_tile(app: &mut Mb3d, ui: &mut Ui) {
             Ok((x, y))
         })();
         *job.locked() = Some(r);
-        if let Some(w) = waker {
-            w.wake();
-        }
+        super::util::wake(&waker);
     });
 }
 

@@ -411,79 +411,43 @@ impl Theme {
     // ---- basic colours
 
     pub fn face(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("face"),
-            Family::Flat => self.v("face"),
-        }
+        self.v("face")
     }
     pub fn face_dither(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("face.dither"),
-            Family::Flat => self.v("face.dither"),
-        }
+        self.v("face.dither")
     }
     pub fn text(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("text"),
-            Family::Flat => self.v("text"),
-        }
+        self.v("text")
     }
     pub fn text_disabled(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("text.disabled"),
-            Family::Flat => self.v("text.disabled"),
-        }
+        self.v("text.disabled")
     }
     pub fn window(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("window"),
-            Family::Flat => self.v("window"),
-        }
+        self.v("window")
     }
     pub fn window_text(&self) -> u32 {
         self.text()
     }
     pub fn highlight(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("highlight"),
-            Family::Flat => self.v("highlight"),
-        }
+        self.v("highlight")
     }
     pub fn highlight_text(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("highlight.text"),
-            Family::Flat => self.v("highlight.text"),
-        }
+        self.v("highlight.text")
     }
     pub fn shadow(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("shadow"),
-            Family::Flat => self.v("shadow"),
-        }
+        self.v("shadow")
     }
     pub fn light(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("light"),
-            Family::Flat => self.v("light"),
-        }
+        self.v("light")
     }
     pub fn hint_bg(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("hint.bg"),
-            Family::Flat => self.v("hint.bg"),
-        }
+        self.v("hint.bg")
     }
     pub fn hint_text(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("hint.text"),
-            Family::Flat => self.v("hint.text"),
-        }
+        self.v("hint.text")
     }
     pub fn image_bg(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("image.bg"),
-            Family::Flat => self.v("image.bg"),
-        }
+        self.v("image.bg")
     }
     /// The colour of a text that the form gave explicitly: dark colours
     /// would vanish on the dark style and are replaced by the text colour.
@@ -716,10 +680,7 @@ impl Theme {
     // ---- frames
 
     pub fn groupbox(&self, cv: &mut Canvas, r: Rect, gap: Option<(i32, i32)>) {
-        let col = match self.d.family {
-            Family::Gloss => self.v("group.border"),
-            Family::Flat => self.v("group.border"),
-        };
+        let col = self.v("group.border");
         let old = cv.clip();
         // leave the caption gap open
         let mut parts = vec![r];
@@ -745,10 +706,7 @@ impl Theme {
 
     /// TPanel / TBevel edges: `raised` true = bvRaised, false = bvLowered.
     pub fn bevel(&self, cv: &mut Canvas, r: Rect, raised: bool) {
-        let (l, d) = match self.d.family {
-            Family::Gloss => (self.v("bevel.light"), self.v("bevel.dark")),
-            Family::Flat => (self.v("bevel.light"), self.v("bevel.dark")),
-        };
+        let (l, d) = (self.v("bevel.light"), self.v("bevel.dark"));
         if raised {
             cv.edge(r, l, d);
         } else {
@@ -840,10 +798,7 @@ impl Theme {
     }
 
     pub fn tick(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("tick"),
-            Family::Flat => self.v("tick"),
-        }
+        self.v("tick")
     }
 
     pub fn progress(&self, cv: &mut Canvas, r: Rect, frac: f32, vertical: bool) {
@@ -876,10 +831,7 @@ impl Theme {
     }
 
     pub fn scroll_track(&self, cv: &mut Canvas, r: Rect) {
-        cv.fill(r, match self.d.family {
-            Family::Gloss => self.v("scroll.track"),
-            Family::Flat => self.v("scroll.track"),
-        });
+        cv.fill(r, self.v("scroll.track"));
     }
 
     pub fn scroll_thumb(&self, cv: &mut Canvas, r: Rect, s: BtnState) {
@@ -898,16 +850,10 @@ impl Theme {
     // ---- menus, hints, list selection
 
     pub fn menu_bg(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("menu.bg"),
-            Family::Flat => self.v("menu.bg"),
-        }
+        self.v("menu.bg")
     }
     pub fn menu_border(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("menu.border"),
-            Family::Flat => self.v("menu.border"),
-        }
+        self.v("menu.border")
     }
     pub fn menu_hot(&self, cv: &mut Canvas, r: Rect) {
         match self.d.family {
@@ -916,10 +862,7 @@ impl Theme {
         }
     }
     pub fn menu_hot_text(&self) -> u32 {
-        match self.d.family {
-            Family::Gloss => self.v("menu.hot.text"),
-            Family::Flat => self.v("menu.hot.text"),
-        }
+        self.v("menu.hot.text")
     }
 
     pub fn selection(&self, cv: &mut Canvas, r: Rect, focused: bool) {

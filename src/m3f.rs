@@ -5,6 +5,7 @@
 //! variables), an optional `[CONSTANTS]` block and the `[CODE]` block with
 //! 32-bit x86 machine code, which is run by the interpreter in `x86.rs`.
 
+use crate::math::build_rot_matrix;
 use std::path::{Path, PathBuf};
 
 /// Option types (`byOptionTypes`), index = MB3D type number.
@@ -450,18 +451,6 @@ impl M3f {
         let _ = &mut wr_d;
         buf
     }
-}
-
-/// `BuildRotMatrix`
-pub fn build_rot_matrix(xa: f64, ya: f64, za: f64) -> [[f64; 3]; 3] {
-    let (sx, cx) = xa.sin_cos();
-    let (sy, cy) = ya.sin_cos();
-    let (sz, cz) = za.sin_cos();
-    [
-        [cy * cz, -cy * sz, sy],
-        [sx * sy * cz + cx * sz, cx * cz - sx * sy * sz, -sx * cy],
-        [sx * sz - cx * sy * cz, cx * sy * sz + sx * cz, cx * cy],
-    ]
 }
 
 /// `BuildRotMatrix4d` (single precision matrix, angles yz xz xy xw yw zw)

@@ -149,7 +149,8 @@ fn read_at(f: &File, mut buf: &mut [u8], mut off: u64) -> std::io::Result<()> {
     Ok(())
 }
 
-/// Writes a file so that a reader never sees it half written.
+/// Writes a file so that a reader never sees it half written: into a
+/// temporary file next to it, then renamed over it.
 pub fn write_atomic(path: &Path, data: &[u8]) -> Result<(), String> {
     let tmp = path.with_extension(format!("tmp{}", std::process::id()));
     std::fs::write(&tmp, data).map_err(|e| format!("{}: {e}", tmp.display()))?;

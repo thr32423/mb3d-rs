@@ -29,7 +29,7 @@
 
 use crate::anim::Animation;
 use crate::batch::{BatchItem, BatchOptions, ItemResult};
-use crate::checkpoint::{Policy, Store};
+use crate::checkpoint::{write_atomic, Policy, Store};
 use crate::frames::{FrameResult, FrameRun};
 use crate::mc::McImage;
 use crate::scene::Scene;
@@ -121,14 +121,6 @@ fn parse_kv(text: &str) -> BTreeMap<String, String> {
 
 fn format_kv(map: &BTreeMap<String, String>) -> String {
     map.iter().map(|(k, v)| format!("{k} = {v}\n")).collect()
-}
-
-/// Writes a file so that a reader never sees it half written: into a
-/// temporary file next to it, then renamed over it.
-fn write_atomic(path: &Path, data: &[u8]) -> Result<(), String> {
-    let tmp = path.with_extension(format!("tmp{}", std::process::id()));
-    std::fs::write(&tmp, data).map_err(|e| io(&tmp, e))?;
-    std::fs::rename(&tmp, path).map_err(|e| io(path, e))
 }
 
 /// A name for this machine: the host name the system tells, else "pc".

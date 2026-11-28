@@ -114,7 +114,7 @@ impl Sampler {
         }
         let p = CalcParams::new(&s)?;
         let d = 2.2 / (sc.zoom * mp.scale.max(1e-12) * (GRID - 1.0));
-        let r = crate::m3f::build_rot_matrix(mp.angles[0].to_radians(), mp.angles[1].to_radians(), mp.angles[2].to_radians());
+        let r = crate::math::build_rot_matrix(mp.angles[0].to_radians(), mp.angles[1].to_radians(), mp.angles[2].to_radians());
         let m = normalise_matrix_to(d, &r);
         let mut origin = sc.mid;
         let f = [-GRID * 0.5 + mp.offset[0] / d, -GRID * 0.5 + mp.offset[1] / d, -GRID * 0.5 + mp.offset[2] / d];

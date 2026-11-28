@@ -28,7 +28,7 @@ use std::rc::Rc;
 use std::sync::OnceLock;
 use std::task::{Context, Poll};
 
-type S3 = [f32; 3];
+use crate::svec::*;
 type S4 = [f32; 4];
 
 const SEED_MUL: f64 = 1.0 / 0x7FFF_FFFF as f64;
@@ -40,63 +40,14 @@ const MC_MAX: f64 = 1096.6331584284585 - std::f64::consts::E + 2.0;
 // small vector helpers (TSVec = 4 singles, TVec3D = 3 doubles)
 
 #[inline]
-fn s3(v: &Vec3) -> S3 {
-    [v[0] as f32, v[1] as f32, v[2] as f32]
-}
-#[inline]
-fn d3(v: S3) -> Vec3 {
-    [v[0] as f64, v[1] as f64, v[2] as f64]
-}
-#[inline]
-fn add3(a: S3, b: S3) -> S3 {
-    [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
-}
-#[inline]
-fn sub3(a: S3, b: S3) -> S3 {
-    [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
-}
-#[inline]
-fn mul3(a: S3, b: S3) -> S3 {
-    [a[0] * b[0], a[1] * b[1], a[2] * b[2]]
-}
-#[inline]
-fn sc3(a: S3, s: f32) -> S3 {
-    [a[0] * s, a[1] * s, a[2] * s]
-}
-#[inline]
 fn addw3(a: &mut S3, b: S3, w: f32) {
     a[0] += b[0] * w;
     a[1] += b[1] * w;
     a[2] += b[2] * w;
 }
 #[inline]
-fn dot3(a: S3, b: S3) -> f32 {
-    a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
-}
-#[inline]
 fn first3(a: S4) -> S3 {
     [a[0], a[1], a[2]]
-}
-/// `YofSVec` (negative results are 0)
-#[inline]
-fn luma(v: S3) -> f32 {
-    (v[0] * 0.3 + v[1] * 0.59 + v[2] * 0.11).max(0.0)
-}
-/// `SVecPow`
-#[inline]
-fn spow(v: S3, e: f32) -> S3 {
-    [v[0].powf(e), v[1].powf(e), v[2].powf(e)]
-}
-/// `LinInterpolate2SVecs(sv1, sv2, w1)` = sv1 * w1 + sv2 * (1 - w1)
-#[inline]
-fn lin2(sv1: S3, sv2: S3, w1: f32) -> S3 {
-    [sv2[0] + w1 * (sv1[0] - sv2[0]), sv2[1] + w1 * (sv1[1] - sv2[1]), sv2[2] + w1 * (sv1[2] - sv2[2])]
-}
-/// `NormaliseVectorTo`
-#[inline]
-fn norm_to(n: f64, v: Vec3) -> Vec3 {
-    let d = n / (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + 1e-100).sqrt();
-    [v[0] * d, v[1] * d, v[2] * d]
 }
 #[inline]
 fn not_zero(d: f64) -> f64 {

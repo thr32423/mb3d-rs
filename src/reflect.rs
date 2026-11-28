@@ -17,50 +17,8 @@ use crate::gbuffer::SiLight;
 use crate::lighting::{LightVals, PaintCamera, Plv, Sample, ShadeOpts};
 use crate::math::*;
 use crate::scene::{CameraOptic, Scene};
+use crate::svec::*;
 
-type S3 = [f32; 3];
-
-#[inline]
-fn s3(v: &Vec3) -> S3 {
-    [v[0] as f32, v[1] as f32, v[2] as f32]
-}
-#[inline]
-fn add3(a: S3, b: S3) -> S3 {
-    [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
-}
-#[inline]
-fn sub3(a: S3, b: S3) -> S3 {
-    [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
-}
-#[inline]
-fn mul3(a: S3, b: S3) -> S3 {
-    [a[0] * b[0], a[1] * b[1], a[2] * b[2]]
-}
-#[inline]
-fn sc3(a: S3, s: f32) -> S3 {
-    [a[0] * s, a[1] * s, a[2] * s]
-}
-#[inline]
-fn dot3(a: S3, b: S3) -> f32 {
-    a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
-}
-#[inline]
-fn luma(v: S3) -> f32 {
-    (v[0] * 0.3 + v[1] * 0.59 + v[2] * 0.11).max(0.0)
-}
-#[inline]
-fn spow(v: S3, e: f32) -> S3 {
-    [v[0].powf(e), v[1].powf(e), v[2].powf(e)]
-}
-#[inline]
-fn lin2(sv1: S3, sv2: S3, w1: f32) -> S3 {
-    [sv2[0] + w1 * (sv1[0] - sv2[0]), sv2[1] + w1 * (sv1[1] - sv2[1]), sv2[2] + w1 * (sv1[2] - sv2[2])]
-}
-#[inline]
-fn norm_to(n: f64, v: Vec3) -> Vec3 {
-    let d = n / (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + 1e-100).sqrt();
-    [v[0] * d, v[1] * d, v[2] * d]
-}
 fn normal_of(si: &SiLight) -> Vec3 {
     [si.normal[0] as f64 / 32767.0, si.normal[1] as f64 / 32767.0, si.normal[2] as f64 / 32767.0]
 }
@@ -856,7 +814,7 @@ impl<'a, 'c> SrTracer<'a, 'c> {
             let mut dmaxl = max_lhs;
             let mut hsvec = self.c.hs_vecs[li];
             if l.positional {
-                let v = sub(add(s3d(l.ln), self.c.mid), self.m.it.c);
+                let v = sub(add(d3(l.ln), self.c.mid), self.m.it.c);
                 let d = sqr_len(&v);
                 if d > (l.lmax_l * hs_mul) as f64 {
                     return;
@@ -895,7 +853,7 @@ impl<'a, 'c> SrTracer<'a, 'c> {
             let mut dt1 = max_lhs;
             let mut hsvec = self.c.hs_vecs[li];
             if l.positional {
-                let v = sub(add(s3d(l.ln), self.c.mid), self.m.it.c);
+                let v = sub(add(d3(l.ln), self.c.mid), self.m.it.c);
                 let d = sqr_len(&v);
                 if d > (l.lmax_l * hs_mul) as f64 {
                     si.shadow |= 0x400 << idx;
@@ -1845,9 +1803,6 @@ pub fn rss_mb() -> u64 {
         / 1024
 }
 
-fn s3d(v: S3) -> Vec3 {
-    [v[0] as f64, v[1] as f64, v[2] as f64]
-}
 
 /// The pixels of one [`reflections_gpu`] call: big pictures go through in
 /// bands of rows of at most 2M pixels, fewer when the free memory is short
@@ -1999,9 +1954,9 @@ fn reflections_cpu<S: Sample>(
         .iter()
         .map(|l| {
             if l.positional {
-                add(s3d(l.ln), mid)
+                add(d3(l.ln), mid)
             } else {
-                rotate_vector_reverse(&norm_to(-p.step_width, s3d(l.ln)), &m1)
+                rotate_vector_reverse(&norm_to(-p.step_width, d3(l.ln)), &m1)
             }
         })
         .collect();
@@ -2155,7 +2110,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
     let hs_vecs: Vec<Vec3> = lv
         .lights
         .iter()
-        .map(|l| if l.positional { add(s3d(l.ln), mid) } else { rotate_vector_reverse(&norm_to(-p.step_width, s3d(l.ln)), &m1) })
+        .map(|l| if l.positional { add(d3(l.ln), mid) } else { rotate_vector_reverse(&norm_to(-p.step_width, d3(l.ln)), &m1) })
         .collect();
     let hs = sc.shadows.map(|h| {
         let lights: Vec<(usize, usize)> = lv.lights.iter().enumerate().filter(|(_, l)| (h.lights >> l.idx) & 1 != 0).map(|(i, l)| (i, l.idx)).collect();

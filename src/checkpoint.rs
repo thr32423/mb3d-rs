@@ -730,7 +730,7 @@ mod tests {
 
     #[test]
     fn an_image_checkpoint_is_an_image_file() {
-        let _one = ONE.lock().unwrap_or_else(|e| e.into_inner());
+        let _one = ONE.locked();
         let d = std::env::temp_dir().join(format!("mb3d-ck-img-{}", std::process::id()));
         std::env::set_var("MB3D_RESUME_DIR", &d);
         let key = "test-0002";
@@ -756,7 +756,7 @@ mod tests {
 
     #[test]
     fn units_survive_and_bad_ones_are_dropped() {
-        let _one = ONE.lock().unwrap_or_else(|e| e.into_inner());
+        let _one = ONE.locked();
         let d = std::env::temp_dir().join(format!("mb3d-ck-{}", std::process::id()));
         std::env::set_var("MB3D_RESUME_DIR", &d);
         let key = "test-0001";

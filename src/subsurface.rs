@@ -116,6 +116,7 @@ fn march_line(m: &mut Marcher, origin: Vec3, dir: Vec3, zz: f32, max: f64, step_
 fn rays(p: &CalcParams, rays: &[(Vec3, Vec3, f32, f64)], inside: bool, threads: usize, card: bool, cancel: &(dyn Fn() -> bool + Sync)) -> (Vec<Option<Vec3>>, usize) {
     let sw = p.step_width;
     let mut out: Vec<Option<Vec3>> = vec![None; rays.len()];
+    #[cfg_attr(not(feature = "gpu"), allow(unused_mut))] // counted by the card's part only
     let mut done = 0;
     #[cfg(feature = "gpu")]
     if card && !rays.is_empty() {

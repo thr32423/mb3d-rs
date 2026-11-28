@@ -6,6 +6,7 @@
 //! is in it.
 
 use super::eta::ItemsLeft;
+use crate::sync::Locked;
 use super::util::{left_str, smooth_shown, Shown};
 use super::{Mb3d, Ui};
 use crate::vcl::lang::{tr, trf};
@@ -175,7 +176,7 @@ fn start_worker(app: &mut Mb3d) -> Result<(), String> {
     let (control2, error2, dir2) = (control.clone(), error.clone(), dir.clone());
     let thread = std::thread::spawn(move || {
         if let Err(e) = crate::swarm::worker_controlled(&dir2, &name, threads, false, true, &control2) {
-            *error2.lock().unwrap_or_else(|e| e.into_inner()) = Some(e);
+            *error2.locked() = Some(e);
         }
     });
     app.swarm.worker = Some(Worker { dir, name: app.swarm.name.clone(), control, error, thread: Some(thread) });

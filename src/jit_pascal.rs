@@ -18,6 +18,7 @@
 //! fields read and written through [`Fields`].
 
 use crate::iteration::Iteration;
+use crate::sync::Locked;
 use crate::jit::{assigned_locals, fold, lit, Cmp, Field, IOp, Place, Program, Rnd, Ty, E, F1, F1_ALL, F2, F2_ALL, ROp, S};
 use crate::m3f::M3f;
 use cranelift_codegen::ir::condcodes::{FloatCC, IntCC};
@@ -857,7 +858,7 @@ pub fn cached(prog: &std::sync::Arc<Program>, def: &M3f, values: &[f64]) -> Opti
     // the program's address (the cache keeps the program, so the address
     // is not used again for another one)
     let key = (std::sync::Arc::as_ptr(prog) as usize, values.iter().map(|v| v.to_bits()).collect::<Vec<u64>>());
-    let mut c = CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    let mut c = CACHE.locked();
     if let Some((_, r)) = c.get(&key) {
         return r.clone();
     }

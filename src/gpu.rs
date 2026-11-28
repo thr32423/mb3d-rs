@@ -1335,7 +1335,7 @@ struct CompileRoom;
 impl CompileRoom {
     fn take() -> CompileRoom {
         let (m, cv) = &COMPILES_RUNNING;
-        let mut n = m.lock().unwrap_or_else(|e| e.into_inner());
+        let mut n = m.locked();
         let mut waiting = false;
         loop {
             if compile_room(*n, crate::render::memory_available()) {
@@ -1365,7 +1365,7 @@ fn compile_room(running: usize, free: Option<u64>) -> bool {
 impl Drop for CompileRoom {
     fn drop(&mut self) {
         let (m, cv) = &COMPILES_RUNNING;
-        *m.lock().unwrap_or_else(|e| e.into_inner()) -= 1;
+        *m.locked() -= 1;
         cv.notify_all();
     }
 }
@@ -1375,6 +1375,7 @@ impl Drop for CompileRoom {
 /// with the card and driver it was compiled for.  A batch tells from it
 /// how many of its files bring formula combinations new to the card.
 mod seen {
+    use crate::sync::Locked;
     use std::collections::HashSet;
     use std::sync::Mutex;
 
@@ -1385,7 +1386,7 @@ mod seen {
     }
 
     fn with<R>(f: impl FnOnce(&mut HashSet<(String, u64)>) -> R) -> R {
-        let mut g = SEEN.lock().unwrap_or_else(|e| e.into_inner());
+        let mut g = SEEN.locked();
         let set = g.get_or_insert_with(|| {
             std::fs::read_to_string(path())
                 .unwrap_or_default()

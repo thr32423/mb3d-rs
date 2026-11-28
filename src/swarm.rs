@@ -35,6 +35,7 @@ use crate::mc::McImage;
 use crate::scene::Scene;
 use std::collections::{BTreeMap, HashSet};
 use std::path::{Path, PathBuf};
+use crate::sync::Locked;
 use std::sync::{Arc, Mutex, Weak};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
@@ -83,7 +84,7 @@ fn written_at(swarm: &Path, p: &Path) -> Option<u64> {
 fn share_offset(swarm: &Path) -> i64 {
     static OFFSETS: Mutex<Vec<(PathBuf, i64, Instant)>> = Mutex::new(Vec::new());
     let dir = swarm.join("peers");
-    let mut all = OFFSETS.lock().unwrap_or_else(|e| e.into_inner());
+    let mut all = OFFSETS.locked();
     all.retain(|(_, _, at)| at.elapsed().as_secs() < 60);
     match all.iter().find(|(d, _, _)| *d == dir) {
         Some(&(_, off, _)) => off,
@@ -262,7 +263,7 @@ impl Presence {
     /// The presence for this folder and name, shared while any part holds it.
     fn get(swarm: &Path, name: &str) -> Arc<Presence> {
         let key = (folder_key(swarm), name.to_string());
-        let mut all = PRESENCES.lock().unwrap_or_else(|e| e.into_inner());
+        let mut all = PRESENCES.locked();
         all.retain(|(_, w)| w.strong_count() > 0);
         if let Some(p) = all.iter().find(|(k, _)| *k == key).and_then(|(_, w)| w.upgrade()) {
             return p;
@@ -294,8 +295,8 @@ impl Presence {
         std::thread::spawn(move || loop {
             std::thread::sleep(Duration::from_secs_f64(BEAT_SECS));
             let Some(p) = weak.upgrade() else { return };
-            let parts = p.parts.lock().unwrap_or_else(|e| e.into_inner());
-            let due = p.last.lock().unwrap_or_else(|e| e.into_inner()).is_none_or(|t| t.elapsed().as_secs_f64() >= BEAT_SECS);
+            let parts = p.parts.locked();
+            let due = p.last.locked().is_none_or(|t| t.elapsed().as_secs_f64() >= BEAT_SECS);
             if !parts.is_empty() && due {
                 let _ = p.write(&parts);
             }
@@ -320,7 +321,7 @@ impl Presence {
         m.insert("state".to_string(), if busy.is_empty() { "idle".to_string() } else { busy.join("; ").replace('\n', " ") });
         m.insert("time".to_string(), now_secs().to_string());
         write_atomic(&self.file(), format_kv(&m).as_bytes())?;
-        *self.last.lock().unwrap_or_else(|e| e.into_inner()) = Some(Instant::now());
+        *self.last.locked() = Some(Instant::now());
         Ok(())
     }
 }
@@ -360,7 +361,7 @@ impl Heart {
     }
     /// What this part last said it was doing.
     pub fn state(&self) -> String {
-        self.state.lock().unwrap_or_else(|e| e.into_inner()).clone()
+        self.state.locked().clone()
     }
     pub fn name(&self) -> &str {
         &self.presence.peer.name
@@ -368,8 +369,8 @@ impl Heart {
 
     /// Writes the heartbeat now.
     pub fn beat_now(&self, state: &str) -> Result<(), String> {
-        *self.state.lock().unwrap_or_else(|e| e.into_inner()) = state.to_string();
-        let mut parts = self.presence.parts.lock().unwrap_or_else(|e| e.into_inner());
+        *self.state.locked() = state.to_string();
+        let mut parts = self.presence.parts.locked();
         parts.insert(self.part, state.to_string());
         self.presence.write(&parts)
     }
@@ -377,10 +378,10 @@ impl Heart {
     /// Writes the heartbeat if the last one is older than a few seconds
     /// (called from progress callbacks).
     pub fn beat(&self, state: &str) {
-        *self.state.lock().unwrap_or_else(|e| e.into_inner()) = state.to_string();
-        let mut parts = self.presence.parts.lock().unwrap_or_else(|e| e.into_inner());
+        *self.state.locked() = state.to_string();
+        let mut parts = self.presence.parts.locked();
         parts.insert(self.part, state.to_string());
-        let due = self.presence.last.lock().unwrap_or_else(|e| e.into_inner()).is_none_or(|t| t.elapsed().as_secs_f64() >= BEAT_SECS);
+        let due = self.presence.last.locked().is_none_or(|t| t.elapsed().as_secs_f64() >= BEAT_SECS);
         if due {
             let _ = self.presence.write(&parts);
         }
@@ -392,7 +393,7 @@ impl Heart {
         if self.left.swap(true, std::sync::atomic::Ordering::Relaxed) {
             return;
         }
-        let mut parts = self.presence.parts.lock().unwrap_or_else(|e| e.into_inner());
+        let mut parts = self.presence.parts.locked();
         if parts.remove(&self.part).is_none() {
             return;
         }
@@ -415,7 +416,7 @@ impl Drop for Heart {
 pub fn others(swarm: &Path, name: &str) -> Vec<Peer> {
     let name = if name.trim().is_empty() { machine_name() } else { name.trim().to_string() };
     let key = (folder_key(swarm), name);
-    let own = PRESENCES.lock().unwrap_or_else(|e| e.into_inner()).iter().find(|(k, _)| *k == key).and_then(|(_, w)| w.upgrade()).map(|p| p.peer.id.clone());
+    let own = PRESENCES.locked().iter().find(|(k, _)| *k == key).and_then(|(_, w)| w.upgrade()).map(|p| p.peer.id.clone());
     let now = now_secs();
     peers(swarm).into_iter().filter(|p| !p.stale(now) && Some(&p.id) != own.as_ref()).collect()
 }
@@ -899,7 +900,7 @@ pub fn work_on(job: &Job, heart: &Heart, threads: usize, quiet: bool, seen: &mut
         if cancel_outer() || ended.load(std::sync::atomic::Ordering::Relaxed) {
             return true;
         }
-        let mut t = looked.lock().unwrap_or_else(|e| e.into_inner());
+        let mut t = looked.locked();
         if t.elapsed() >= Duration::from_secs(1) {
             *t = Instant::now();
             if job.done() || !job.dir.join("job.txt").exists() {
@@ -1020,7 +1021,7 @@ pub fn work_on(job: &Job, heart: &Heart, threads: usize, quiet: bool, seen: &mut
                 if stopped.load(std::sync::atomic::Ordering::Relaxed) || no_more() {
                     return true;
                 }
-                let mut t = looked.lock().unwrap_or_else(|e| e.into_inner());
+                let mut t = looked.locked();
                 if t.elapsed() >= Duration::from_secs(1) {
                     *t = Instant::now();
                     if job.stopping() {
@@ -1075,14 +1076,14 @@ pub fn work_on(job: &Job, heart: &Heart, threads: usize, quiet: bool, seen: &mut
                     done_passes += 1;
                     if heart.want_block.load(std::sync::atomic::Ordering::Relaxed) {
                         let n = heart.block_seq.fetch_add(1, std::sync::atomic::Ordering::Relaxed) + 1;
-                        *heart.block.lock().unwrap_or_else(|e| e.into_inner()) = Some((n, img.clone()));
+                        *heart.block.locked() = Some((n, img.clone()));
                     }
                     if open && snapped.elapsed().as_secs_f64() >= SNAP_SECS {
                         let _ = write_atomic(&out.with_extension("snap"), &crate::mc::write_m3c(&scene, &img));
                         snapped = Instant::now();
                     }
                 }
-                *heart.block.lock().unwrap_or_else(|e| e.into_inner()) = None;
+                *heart.block.locked() = None;
                 if cancel() || img.recs.iter().all(|r| r.ray_count == 0) {
                     // the claim is dropped empty: another computer takes the
                     // block (an open-ended one's snapshot stays for the owner)
@@ -1812,10 +1813,10 @@ pub fn run_montecarlo_live(swarm: &Path, scene: &Scene, units: usize, rays: f64,
             }
             report(st);
             if let Some(l) = live {
-                let mut c = cache.lock().unwrap_or_else(|e| e.into_inner());
+                let mut c = cache.locked();
                 let before = c.0.version();
                 let done = c.0.update(&job).cloned();
-                let own = heart.block.lock().unwrap_or_else(|e| e.into_inner()).clone();
+                let own = heart.block.locked().clone();
                 let own_new = own.as_ref().is_some_and(|o| o.0 != c.1);
                 if c.0.version() == before && !own_new {
                     return;
@@ -1902,7 +1903,7 @@ pub fn run_tiles(swarm: &Path, scene: &Scene, cols: u32, rows: u32, opts: &RunOp
         if tw != t[2] as usize || th != t[3] as usize {
             return Err(format!("{}: tile of {tw}x{th}, expected {}x{}", m3i.display(), t[2], t[3]));
         }
-        let mut full = full.lock().unwrap_or_else(|e| e.into_inner());
+        let mut full = full.locked();
         for y in 0..th {
             let d = (t[1] as usize + y) * w + t[0] as usize;
             full[d..d + tw].copy_from_slice(&g[y * tw..(y + 1) * tw]);
@@ -2032,14 +2033,14 @@ fn run_tiles_job(
         let collected = Mutex::new(vec![false; tiles.len()]);
         let failed: Mutex<Option<String>> = Mutex::new(None);
         let collect_ready = || {
-            let mut got = collected.lock().unwrap_or_else(|e| e.into_inner());
+            let mut got = collected.locked();
             for ((k, f), got) in tiles.iter().zip(job.unit_files()).zip(got.iter_mut()) {
                 if *got || !is_done_file(&f) {
                     continue;
                 }
                 *got = true;
                 if let Err(e) = collect(*k, &f, &f.with_extension("png")) {
-                    failed.lock().unwrap_or_else(|e| e.into_inner()).get_or_insert(e);
+                    failed.locked().get_or_insert(e);
                 }
             }
         };
@@ -2355,10 +2356,10 @@ impl WorkerControl {
         self.stop.load(std::sync::atomic::Ordering::Relaxed) || self.abort.load(std::sync::atomic::Ordering::Relaxed)
     }
     pub fn note(&self) -> String {
-        self.note.lock().unwrap_or_else(|e| e.into_inner()).clone()
+        self.note.locked().clone()
     }
     fn set_note(&self, s: String) {
-        *self.note.lock().unwrap_or_else(|e| e.into_inner()) = s;
+        *self.note.locked() = s;
     }
 }
 
@@ -2504,7 +2505,6 @@ mod tests {
     }
 
     use super::*;
-    use crate::sync::Locked;
 
     fn temp(name: &str) -> PathBuf {
         let d = std::env::temp_dir().join(format!("mb3d_swarm_{name}_{}", std::process::id()));

@@ -7,6 +7,7 @@
 //! mouse moving, timers and the like are not logged.
 
 use crate::log;
+use crate::sync::Locked;
 use crate::vcl::control::{Control, Kind};
 use crate::vcl::{DialogResult, Ev, Event, Ui};
 use std::sync::Mutex;
@@ -86,7 +87,7 @@ fn value(c: &Control) -> Option<String> {
 
 /// Writes the held-back line.
 pub fn flush() {
-    let p = PENDING.lock().unwrap_or_else(|e| e.into_inner()).take();
+    let p = PENDING.locked().take();
     if let Some(p) = p {
         write(p);
     }
@@ -94,14 +95,14 @@ pub fn flush() {
 
 /// The idle work: a line held back for a second is written.
 pub fn idle() {
-    let due = PENDING.lock().unwrap_or_else(|e| e.into_inner()).as_ref().is_some_and(|p| p.at.elapsed() > Duration::from_secs(1));
+    let due = PENDING.locked().as_ref().is_some_and(|p| p.at.elapsed() > Duration::from_secs(1));
     if due {
         flush();
     }
 }
 
 fn hold(key: String, line: String, notches: i32) {
-    let mut g = PENDING.lock().unwrap_or_else(|e| e.into_inner());
+    let mut g = PENDING.locked();
     match g.as_mut() {
         Some(p) if p.key == key => {
             p.line = line;

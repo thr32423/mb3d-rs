@@ -36,6 +36,7 @@
 //!
 //! Only when the whole picture is calculated at once (not on tiles).
 use crate::calc::{CalcParams, Marcher};
+use crate::sync::Locked;
 use crate::gbuffer::SiLight;
 use crate::lighting::{LightVals, PaintCamera};
 use crate::math::*;
@@ -170,13 +171,13 @@ pub(crate) fn light(
         return None;
     }
     let sig = signature(sc, p, gbuf, lv);
-    if let Some((s, l)) = LAST.lock().unwrap_or_else(|e| e.into_inner()).as_ref() {
+    if let Some((s, l)) = LAST.locked().as_ref() {
         if *s == sig {
             return Some(l.clone());
         }
     }
     let out = Arc::new(calculate(m.cast_rays as usize, p, gbuf, lv, cam, threads, true, progress, cancel)?);
-    *LAST.lock().unwrap_or_else(|e| e.into_inner()) = Some((sig, out.clone()));
+    *LAST.locked() = Some((sig, out.clone()));
     Some(out)
 }
 

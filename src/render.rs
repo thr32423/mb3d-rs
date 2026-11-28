@@ -2046,6 +2046,7 @@ pub fn prewarm_gpu(sc: Scene) {
 /// The scene's material sends rays through the reflection pass's march
 /// (the emission's light rays, the subsurface scattering's): its
 /// pipelines are compiled ahead, as for the reflections.
+#[cfg(feature = "gpu")]
 fn material_rays(sc: &Scene) -> bool {
     sc.material.is_some_and(|m| m.scatters() || (m.emits() && m.cast_rays > 0))
 }

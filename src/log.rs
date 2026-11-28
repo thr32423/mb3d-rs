@@ -15,6 +15,7 @@
 //! line written is on disk even if the process dies the moment after.
 
 use std::collections::VecDeque;
+use crate::sync::Locked;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -181,7 +182,7 @@ fn init_in(dir: PathBuf, program: &str, lock: bool) {
             Some(c) => log(Level::Warn, "session", &format!("an earlier session crashed: {sessions}: {c} (details in {})", crate::crash::file().display())),
             None => log(Level::Warn, "session", &format!("an earlier session never ended (froze, was killed, crashed or lost its power): {sessions}")),
         }
-        *UNCLEAN.lock().unwrap_or_else(|e| e.into_inner()) = Some(Unclean { sessions, crash });
+        *UNCLEAN.locked() = Some(Unclean { sessions, crash });
     }
 }
 
@@ -280,7 +281,7 @@ pub fn mark_crash(text: &str) {
 
 /// A session that never ended, found at the start (once).
 pub fn take_unclean() -> Option<Unclean> {
-    UNCLEAN.lock().unwrap_or_else(|e| e.into_inner()).take()
+    UNCLEAN.locked().take()
 }
 
 /// Whether the log is running.

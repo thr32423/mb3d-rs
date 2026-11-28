@@ -507,13 +507,14 @@ pub fn text_width(face: Face, px: f32, text: &str) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::sync::Locked;
 
     /// (the tests set the fallback fonts, which all threads share)
     static FALLBACK_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
     #[test]
     fn devanagari_is_shaped() {
-        let _lock = FALLBACK_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = FALLBACK_LOCK.locked();
         let data = std::fs::read(concat!(env!("CARGO_MANIFEST_DIR"), "/Languages/Hindi.ttf")).unwrap();
         set_fallbacks(vec![load_font(data).unwrap()]);
         // कि: the vowel sign i stands before the consonant it follows
@@ -532,7 +533,7 @@ mod tests {
 
     #[test]
     fn arabic_is_shaped_right_to_left() {
-        let _lock = FALLBACK_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let _lock = FALLBACK_LOCK.locked();
         let data = std::fs::read(concat!(env!("CARGO_MANIFEST_DIR"), "/Languages/Arabic.ttf")).unwrap();
         set_fallbacks(vec![load_font(data).unwrap()]);
         // لا: lam and alef joined into one glyph

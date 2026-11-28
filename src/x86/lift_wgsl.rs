@@ -14,13 +14,13 @@
 //! the GPU); the x87 registers are an `f32` array.
 
 use super::lift::Analysis;
-use super::lift_emit::{dispatch_wgsl, structure_wgsl, Block, Jump, NO_FLAG};
+use super::lift::STACK_LOW;
+use super::lift_emit::{dispatch_wgsl, fop, region, structure_wgsl, Block, Jump, NO_FLAG};
 use super::*;
 use crate::custom::STACK_TOP;
 use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write;
 
-const STACK_LOW: u32 = BASE + 0x4000;
 
 /// How a cell is represented on the GPU.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -569,18 +569,6 @@ fn fist16(v: R) -> u32 {
 }
 "#;
 
-/// Region and byte offset as in `lift_emit` ('r' record from IT_BASE, 'v'
-/// variable buffer from its start, 's' stack from STACK_LOW).
-fn region(loc: super::lift::Loc) -> Option<(char, u32)> {
-    use super::lift::Loc;
-    match loc {
-        Loc::Field(o) => Some(('r', o)),
-        Loc::Var(o) => Some(('v', (o + crate::m3f::CONST_OFFSET as i32) as u32)),
-        Loc::Stack(o) => Some(('s', (STACK_TOP as i32 + o) as u32 - STACK_LOW)),
-        _ => None,
-    }
-}
-
 fn wmask(n: u32) -> String {
     if n >= 4 {
         "0xFFFFFFFFu".into()
@@ -727,17 +715,6 @@ fn round_cw(x: &str) -> String {
     format!("select(select(select(round({x}), floor({x}), ((fcw >> 10u) & 3u) == 1u), ceil({x}), ((fcw >> 10u) & 3u) == 2u), trunc({x}), ((fcw >> 10u) & 3u) == 3u)")
 }
 
-fn fop(op: &FOp, a: &str, b: &str) -> String {
-    match op {
-        FOp::Add => format!("{a} + {b}"),
-        FOp::Mul => format!("{a} * {b}"),
-        FOp::Sub => format!("{a} - {b}"),
-        FOp::SubR => format!("{b} - {a}"),
-        FOp::Div => format!("{a} / {b}"),
-        FOp::DivR => format!("{b} / {a}"),
-    }
-}
-
 fn rot(n: u8) -> String {
     let perm: Vec<String> = (0..8).map(|k| format!("f[{}]", (k + 8 - (n as usize) % 8) % 8)).collect();
     format!("f = array<R, 8>({});", perm.join(", "))
@@ -818,20 +795,7 @@ impl Prog {
         let cw = self.ops.iter().any(|o| matches!(o, Op::Gen(i, _, _) if matches!(**i, Ins::FldcwMem(_))));
         let tz = Typed { ty: &ty, cidx: &cidx, written_vars, dyn_var, cw };
         let n = self.ops.len();
-        let mut start = vec![false; n + 1];
-        start[0] = true;
-        for (k, op) in self.ops.iter().enumerate() {
-            match op {
-                Op::Jcc { target, .. } | Op::Jmp(target) | Op::Call { target, .. } | Op::JccRot { target, .. } | Op::JmpRot { target, .. } | Op::CallRot { target, .. } => {
-                    start[*target as usize] = true;
-                    start[k + 1] = true;
-                }
-                Op::Ret(_) => start[k + 1] = true,
-                _ => {}
-            }
-        }
-        let mut keys: Vec<(usize, Vec<usize>)> = an.states.keys().filter(|(k, _)| start[*k]).cloned().collect();
-        keys.sort();
+        let (start, keys) = self.block_keys(&an);
         let ids: HashMap<(usize, Vec<usize>), usize> = keys.iter().enumerate().map(|(i, k)| (k.clone(), i)).collect();
         let id = |k: usize, cs: &[usize]| ids.get(&(k, cs.to_vec())).copied();
         // the blocks with their jumps as placeholders, then laid out as

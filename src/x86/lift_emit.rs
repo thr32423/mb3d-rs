@@ -22,13 +22,12 @@
 //! that does not nest that way gets the state machine of `emit_rust`
 //! (`dispatch`; `M3F2RS_DISPATCH` forces it for comparisons).
 
-use super::lift::{Analysis, Loc};
+use super::lift::{Analysis, Loc, STACK_LOW};
 use super::*;
 use crate::custom::{off, IT_BASE, STACK_TOP};
 use std::collections::{BTreeSet, HashMap};
 use std::fmt::Write;
 
-const STACK_LOW: u32 = BASE + 0x4000;
 
 /// A region and byte offset in it: 'r' record (from IT_BASE), 'v' variable
 /// buffer (from its start), 's' stack (from STACK_LOW).
@@ -171,6 +170,13 @@ impl Block {
         v.extend(self.fall);
         v
     }
+
+    /// Whether the jumps in the lines are the block's last exit: they are
+    /// conditional if the block falls through (or ends with a conditional
+    /// jump: one ending the code).
+    fn last_jump(&self) -> bool {
+        self.fall.is_none() && !self.lines.last().is_some_and(|l| l.starts_with("if "))
+    }
 }
 
 /// The blocks as a state machine: `loop { match b { ... } }`, every jump of
@@ -216,6 +222,108 @@ pub(super) fn dispatch_wgsl(blocks: &[Block]) -> String {
     body
 }
 
+/// A construct of the structured layout: a label scope ends before
+/// position q, a loop after it.
+#[derive(PartialEq, Clone, Copy)]
+enum Open {
+    Scope(usize),
+    Loop(usize),
+}
+
+/// The layout [`structure`] and [`structure_wgsl`] write out: the blocks
+/// in reverse post order with their loops and label scopes.
+struct Layout {
+    /// the blocks in their order, and each block's position in it
+    order: Vec<usize>,
+    pos: Vec<usize>,
+    /// loops: header position -> last position of the body
+    lend: Vec<Option<usize>>,
+    loops: Vec<(usize, usize)>,
+    /// the positions that are targets of forward jumps needing a label
+    labels: Vec<bool>,
+}
+
+impl Layout {
+    /// None when the flow does not nest (a jump into a loop).
+    fn new(blocks: &[Block], entry: usize) -> Option<Layout> {
+        let nb = blocks.len();
+        // reverse post order; the successor visited last comes right after a
+        // block, so the fall through is visited last
+        let mut order = Vec::with_capacity(nb);
+        let mut seen = vec![false; nb];
+        let mut stack: Vec<(usize, usize)> = vec![(entry, 0)];
+        seen[entry] = true;
+        while let Some(&mut (b, ref mut i)) = stack.last_mut() {
+            let succs = blocks[b].succs();
+            if *i < succs.len() {
+                let s = succs[*i];
+                *i += 1;
+                if s < nb && !seen[s] {
+                    seen[s] = true;
+                    stack.push((s, 0));
+                }
+            } else {
+                order.push(b);
+                stack.pop();
+            }
+        }
+        order.reverse();
+        let mut pos = vec![usize::MAX; nb];
+        for (p, &b) in order.iter().enumerate() {
+            pos[b] = p;
+        }
+        // loops: header position -> last position of the body
+        let mut lend: Vec<Option<usize>> = vec![None; order.len()];
+        for (p, &b) in order.iter().enumerate() {
+            for t in blocks[b].succs() {
+                let q = *pos.get(t)?;
+                if q <= p {
+                    lend[q] = Some(lend[q].map_or(p, |e: usize| e.max(p)));
+                }
+            }
+        }
+        let loops: Vec<(usize, usize)> = lend.iter().enumerate().filter_map(|(h, e)| e.map(|e| (h, e))).collect();
+        let mut lay = Layout { order, pos, lend, loops, labels: Vec::new() };
+        // the targets of forward jumps that need a label, checked to lie in the
+        // same loop as the jump (no jumps into a loop)
+        let mut labels = vec![false; lay.order.len()];
+        for (p, &b) in lay.order.iter().enumerate() {
+            let exits = blocks[b].lines.iter().flat_map(|l| Jump::find(l)).filter(|j| j.0 != 'R').map(|j| (j.1, blocks[b].last_jump())).chain(blocks[b].fall.map(|t| (t, true)));
+            for (t, last) in exits {
+                let q = lay.pos[t];
+                if q > p && !lay.plain(p, q, last) {
+                    if lay.ctx(q).is_some_and(|(h, _)| p < h) {
+                        return None;
+                    }
+                    labels[q] = true;
+                }
+            }
+        }
+        lay.labels = labels;
+        Some(lay)
+    }
+
+    /// The innermost loop around position p (not the one p is the header of).
+    fn ctx(&self, p: usize) -> Option<(usize, usize)> {
+        self.loops.iter().filter(|&&(h, e)| h < p && p <= e).max_by_key(|l| l.0).copied()
+    }
+
+    /// Whether the exit of the block at p to the one at q needs no code: the
+    /// last exit of the block (not a conditional jump followed by the fall
+    /// through) to the next block in the same loop.
+    fn plain(&self, p: usize, q: usize, last: bool) -> bool {
+        last && q == p + 1 && !self.loops.iter().any(|&(h, e)| e == p && h <= p)
+    }
+
+    /// The label scopes of the loop `c` (None: outside every loop), the
+    /// outermost first.
+    fn scopes_in(&self, c: Option<(usize, usize)>) -> Vec<usize> {
+        let mut v: Vec<usize> = (0..self.order.len()).filter(|&q| self.labels[q] && self.ctx(q) == c).collect();
+        v.sort_by(|a, b| b.cmp(a));
+        v
+    }
+}
+
 /// The unset value of the `brk` and `cont` flags of [`structure_wgsl`].
 pub(super) const NO_FLAG: &str = "0xffffffffu";
 
@@ -229,66 +337,11 @@ pub(super) const NO_FLAG: &str = "0xffffffffu";
 /// like the dispatcher.  None when the flow does not nest (the dispatcher
 /// then).
 pub(super) fn structure_wgsl(blocks: &[Block], entry: usize) -> Option<String> {
-    let nb = blocks.len();
-    let mut order = Vec::with_capacity(nb);
-    let mut seen = vec![false; nb];
-    let mut stack: Vec<(usize, usize)> = vec![(entry, 0)];
-    seen[entry] = true;
-    while let Some(&mut (b, ref mut i)) = stack.last_mut() {
-        let succs = blocks[b].succs();
-        if *i < succs.len() {
-            let s = succs[*i];
-            *i += 1;
-            if s < nb && !seen[s] {
-                seen[s] = true;
-                stack.push((s, 0));
-            }
-        } else {
-            order.push(b);
-            stack.pop();
-        }
-    }
-    order.reverse();
-    let mut pos = vec![usize::MAX; nb];
-    for (p, &b) in order.iter().enumerate() {
-        pos[b] = p;
-    }
-    let mut lend: Vec<Option<usize>> = vec![None; order.len()];
-    for (p, &b) in order.iter().enumerate() {
-        for t in blocks[b].succs() {
-            let q = *pos.get(t)?;
-            if q <= p {
-                lend[q] = Some(lend[q].map_or(p, |e: usize| e.max(p)));
-            }
-        }
-    }
-    let loops: Vec<(usize, usize)> = lend.iter().enumerate().filter_map(|(h, e)| e.map(|e| (h, e))).collect();
-    let ctx = |p: usize| loops.iter().filter(|&&(h, e)| h < p && p <= e).max_by_key(|l| l.0).copied();
-    let plain = |p: usize, q: usize, last: bool| last && q == p + 1 && !loops.iter().any(|&(h, e)| e == p && h <= p);
-    let last_jump = |b: usize| blocks[b].fall.is_none() && !blocks[b].lines.last().is_some_and(|l| l.starts_with("if "));
-    let mut labels = vec![false; order.len()];
-    for (p, &b) in order.iter().enumerate() {
-        let exits = blocks[b].lines.iter().flat_map(|l| Jump::find(l)).filter(|j| j.0 != 'R').map(|j| (j.1, last_jump(b))).chain(blocks[b].fall.map(|t| (t, true)));
-        for (t, last) in exits {
-            let q = pos[t];
-            if q > p && !plain(p, q, last) {
-                if ctx(q).is_some_and(|(h, _)| p < h) {
-                    return None;
-                }
-                labels[q] = true;
-            }
-        }
-    }
-    #[derive(PartialEq, Clone, Copy)]
-    enum Open {
-        Scope(usize),
-        Loop(usize),
-    }
-    let scopes_in = |c: Option<(usize, usize)>| -> Vec<usize> {
-        let mut v: Vec<usize> = (0..order.len()).filter(|&q| labels[q] && ctx(q) == c).collect();
-        v.sort_by(|a, b| b.cmp(a));
-        v
-    };
+    let lay = Layout::new(blocks, entry)?;
+    let Layout { order, pos, lend, loops, labels } = &lay;
+    let plain = |p: usize, q: usize, last: bool| lay.plain(p, q, last);
+    let last_jump = |b: usize| blocks[b].last_jump();
+    let scopes_in = |c: Option<(usize, usize)>| lay.scopes_in(c);
     let step = "guard = guard + 1u; if (guard > 200000u) { return; }";
     // the label scopes nest deeply with many forward jumps; naga's parser
     // has a brace nesting limit (127), the lines nest a few more
@@ -425,78 +478,11 @@ struct Structured {
 /// next one needs neither.  None when the flow does not nest that way (the
 /// dispatcher is used then).
 fn structure(blocks: &[Block], entry: usize) -> Option<Structured> {
-    let nb = blocks.len();
-    // reverse post order; the successor visited last comes right after a
-    // block, so the fall through is visited last
-    let mut order = Vec::with_capacity(nb);
-    let mut seen = vec![false; nb];
-    let mut stack: Vec<(usize, usize)> = vec![(entry, 0)];
-    seen[entry] = true;
-    while let Some(&mut (b, ref mut i)) = stack.last_mut() {
-        let succs = blocks[b].succs();
-        if *i < succs.len() {
-            let s = succs[*i];
-            *i += 1;
-            if s < nb && !seen[s] {
-                seen[s] = true;
-                stack.push((s, 0));
-            }
-        } else {
-            order.push(b);
-            stack.pop();
-        }
-    }
-    order.reverse();
-    let mut pos = vec![usize::MAX; nb];
-    for (p, &b) in order.iter().enumerate() {
-        pos[b] = p;
-    }
-    // loops: header position -> last position of the body
-    let mut lend: Vec<Option<usize>> = vec![None; order.len()];
-    for (p, &b) in order.iter().enumerate() {
-        for t in blocks[b].succs() {
-            let q = *pos.get(t)?;
-            if q <= p {
-                lend[q] = Some(lend[q].map_or(p, |e: usize| e.max(p)));
-            }
-        }
-    }
-    let loops: Vec<(usize, usize)> = lend.iter().enumerate().filter_map(|(h, e)| e.map(|e| (h, e))).collect();
-    // the innermost loop around position p (not the one p is the header of)
-    let ctx = |p: usize| loops.iter().filter(|&&(h, e)| h < p && p <= e).max_by_key(|l| l.0).copied();
-    // whether the exit of the block at p to the one at q needs no code: the
-    // last exit of the block (not a conditional jump followed by the fall
-    // through) to the next block in the same loop
-    let plain = |p: usize, q: usize, last: bool| last && q == p + 1 && !loops.iter().any(|&(h, e)| e == p && h <= p);
-    // the jumps in the lines are conditional if the block falls through (or
-    // ends with a conditional jump: one ending the code)
-    let last_jump = |b: usize| blocks[b].fall.is_none() && !blocks[b].lines.last().is_some_and(|l| l.starts_with("if "));
-    // the targets of forward jumps that need a label, checked to lie in the
-    // same loop as the jump (no jumps into a loop)
-    let mut labels = vec![false; order.len()];
-    for (p, &b) in order.iter().enumerate() {
-        let exits = blocks[b].lines.iter().flat_map(|l| Jump::find(l)).filter(|j| j.0 != 'R').map(|j| (j.1, last_jump(b))).chain(blocks[b].fall.map(|t| (t, true)));
-        for (t, last) in exits {
-            let q = pos[t];
-            if q > p && !plain(p, q, last) {
-                if ctx(q).is_some_and(|(h, _)| p < h) {
-                    return None;
-                }
-                labels[q] = true;
-            }
-        }
-    }
-    // a construct: a label scope ends before position q, a loop after it
-    #[derive(PartialEq)]
-    enum Open {
-        Scope(usize),
-        Loop(usize),
-    }
-    let scopes_in = |c: Option<(usize, usize)>| -> Vec<usize> {
-        let mut v: Vec<usize> = (0..order.len()).filter(|&q| labels[q] && ctx(q) == c).collect();
-        v.sort_by(|a, b| b.cmp(a));
-        v
-    };
+    let lay = Layout::new(blocks, entry)?;
+    let Layout { order, pos, lend, loops, .. } = &lay;
+    let plain = |p: usize, q: usize, last: bool| lay.plain(p, q, last);
+    let last_jump = |b: usize| blocks[b].last_jump();
+    let scopes_in = |c: Option<(usize, usize)>| lay.scopes_in(c);
     let mut open: Vec<Open> = Vec::new();
     let mut code = String::new();
     // indented by the loops only (the label scopes nest deeply)
@@ -793,7 +779,7 @@ fn atan_round_chain(ops: &[Op], k0: usize, start: &[bool]) -> Option<(usize, Vec
     None
 }
 
-fn fop(op: &FOp, a: &str, b: &str) -> String {
+pub(super) fn fop(op: &FOp, a: &str, b: &str) -> String {
     match op {
         FOp::Add => format!("{a} + {b}"),
         FOp::Mul => format!("{a} * {b}"),
@@ -936,22 +922,8 @@ fn quantized(op: &Op, q: &mut [bool; 8]) {
             return None;
         }
         let n = self.ops.len();
-        // block starts (as in emit_rust)
-        let mut start = vec![false; n + 1];
-        start[0] = true;
-        for (k, op) in self.ops.iter().enumerate() {
-            match op {
-                Op::Jcc { target, .. } | Op::Jmp(target) | Op::Call { target, .. } | Op::JccRot { target, .. } | Op::JmpRot { target, .. } | Op::CallRot { target, .. } => {
-                    start[*target as usize] = true;
-                    start[k + 1] = true;
-                }
-                Op::Ret(_) => start[k + 1] = true,
-                _ => {}
-            }
-        }
         // blocks: (start op, call string)
-        let mut keys: Vec<(usize, Vec<usize>)> = an.states.keys().filter(|(k, _)| start[*k]).cloned().collect();
-        keys.sort();
+        let (start, keys) = self.block_keys(&an);
         let ids: HashMap<(usize, Vec<usize>), usize> = keys.iter().enumerate().map(|(i, k)| (k.clone(), i)).collect();
         let id = |k: usize, cs: &[usize]| ids.get(&(k, cs.to_vec())).copied();
         let mut cells = Cells::default();

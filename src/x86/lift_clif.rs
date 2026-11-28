@@ -22,7 +22,7 @@
 //! fields chosen by an index, computed addresses, the map functions and
 //! integer division.
 
-use super::lift::Loc;
+use super::lift::{Loc, STACK_LOW};
 use super::lift_emit::region;
 use super::*;
 use crate::custom::{IT_C1, STACK_TOP};
@@ -32,7 +32,6 @@ use cranelift_codegen::ir::{Block, FuncRef, InstBuilder, MemFlags, Type, Value};
 use cranelift_frontend::{FunctionBuilder, Variable};
 use std::collections::{BTreeSet, HashMap};
 
-const STACK_LOW: u32 = BASE + 0x4000;
 
 /// The Rust functions the compiled code calls: (name, number of
 /// f64 arguments; `round_int` takes the machine first).
@@ -404,20 +403,7 @@ impl Prog {
         }
         // the blocks, as in `emit_lifted_mode`
         let n = self.ops.len();
-        let mut start = vec![false; n + 1];
-        start[0] = true;
-        for (k, op) in self.ops.iter().enumerate() {
-            match op {
-                Op::Jcc { target, .. } | Op::Jmp(target) | Op::Call { target, .. } | Op::JccRot { target, .. } | Op::JmpRot { target, .. } | Op::CallRot { target, .. } => {
-                    start[*target as usize] = true;
-                    start[k + 1] = true;
-                }
-                Op::Ret(_) => start[k + 1] = true,
-                _ => {}
-            }
-        }
-        let mut keys: Vec<(usize, Vec<usize>)> = an.states.keys().filter(|(k, _)| start[*k]).cloned().collect();
-        keys.sort();
+        let (start, keys) = self.block_keys(&an);
         let blocks: HashMap<(usize, Vec<usize>), (usize, Block)> = keys.iter().enumerate().map(|(i, k)| (k.clone(), (i, b.create_block()))).collect();
         let ret = b.create_block();
         let entry = blocks.get(&(0, Vec::new()))?.1;

@@ -170,7 +170,7 @@ pub struct LiftReport {
     pub ops: usize,
 }
 
-const STACK_LOW: u32 = BASE + 0x4000;
+pub(super) const STACK_LOW: u32 = BASE + 0x4000;
 
 /// Abstract address of a memory operand.
 fn addr_of(s: &State, m: &Mem) -> AVal {
@@ -636,6 +636,28 @@ impl Analysis {
 }
 
 impl Prog {
+    /// The ops that start a block (jump targets and the ops after a jump,
+    /// a call or a return) and the blocks of the analysis in their order:
+    /// (start op, call string).
+    pub(super) fn block_keys(&self, an: &Analysis) -> (Vec<bool>, Vec<(usize, Vec<usize>)>) {
+        let n = self.ops.len();
+        let mut start = vec![false; n + 1];
+        start[0] = true;
+        for (k, op) in self.ops.iter().enumerate() {
+            match op {
+                Op::Jcc { target, .. } | Op::Jmp(target) | Op::Call { target, .. } | Op::JccRot { target, .. } | Op::JmpRot { target, .. } | Op::CallRot { target, .. } => {
+                    start[*target as usize] = true;
+                    start[k + 1] = true;
+                }
+                Op::Ret(_) => start[k + 1] = true,
+                _ => {}
+            }
+        }
+        let mut keys: Vec<(usize, Vec<usize>)> = an.states.keys().filter(|(k, _)| start[*k]).cloned().collect();
+        keys.sort();
+        (start, keys)
+    }
+
     /// The lifting analysis of this formula (see the module documentation);
     /// `difs`: the dIFS calling convention (`doHybridIFS3D`).
     pub fn lift_report(&self, difs: bool) -> LiftReport {

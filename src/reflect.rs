@@ -342,7 +342,74 @@ fn debug_pixel() -> Option<(i32, i32)> {
     Some((a.trim().parse().ok()?, b.trim().parse().ok()?))
 }
 
+impl<'a> SrCtx<'a> {
+    /// The pass's settings of a scene; `gpu`: the rays are marched on the
+    /// card (which calculates no transparent water).
+    fn new(sc: &Scene, p: &'a CalcParams, cam: &'a PaintCamera, lv: &'a LightVals, gpu: bool) -> Self {
+        let mc = &sc.mc;
+        let mid = sc.stereo_mid();
+        let m1 = normalise_matrix_to(1.0, &p.vgrads);
+        let hs_vecs: Vec<Vec3> = lv
+            .lights
+            .iter()
+            .map(|l| if l.positional { add(d3(l.ln), mid) } else { rotate_vector_reverse(&norm_to(-p.step_width, d3(l.ln)), &m1) })
+            .collect();
+        let hs = sc.shadows.map(|h| {
+            let lights: Vec<(usize, usize)> = lv.lights.iter().enumerate().filter(|(_, l)| (h.lights >> l.idx) & 1 != 0).map(|(i, l)| (i, l.idx)).collect();
+            (lights, h.soft, h.soft_radius.max(0.001), h.max_len_mul)
+        });
+        let ao = sc.ao.as_ref().map(|_| {
+            let d = sc.deao.unwrap_or_default();
+            (d.max_len, d.first_step_random)
+        });
+        SrCtx {
+            p,
+            lv,
+            cam,
+            mid,
+            hs_vecs,
+            max_reflections: mc.reflection_depth as i32,
+            sr_light_amount: mc.reflection_amount.clamp(0.0, 100.0),
+            // bOptions2 and 6 = 4 (an interpolation hybrid of dIFS): index 1
+            trans_di_const: mc.refraction_index,
+            calc_trans: mc.transparency,
+            only_difs: mc.only_difs,
+            absorption: (mc.absorption as f64 * p.step_width) as f32,
+            absorp_coeff: mc.absorption,
+            light_scattering_mul: mc.scattering / 330.0,
+            back_dist: (((8388352.0 / p.zc_mul + 1.0).powi(2) - 1.0) * p.step_width / p.zcorr) as f32,
+            hs,
+            ao,
+            vol: p.vol.is_some(),
+            gpu,
+            clouds: sc.clouds.filter(|_| p.slice_2d == 0).map(|c| (c, c.light(&crate::render::effective_lighting(sc), lv, cam))),
+            water: if gpu { None } else { WaterCtx::new(p, lv) },
+        }
+    }
+}
+
 impl<'a, 'c> SrTracer<'a, 'c> {
+    /// A tracer of the pass, its random numbers started at `seed`.
+    fn new(c: &'c SrCtx<'a>, seed: i32) -> Self {
+        SrTracer {
+            c,
+            m: Marcher::new(c.p, seed),
+            sr_si: SiLight::default(),
+            eye_dist: 0.0,
+            normal: [0.0; 3],
+            t_amb: [0.0; 3],
+            plv: Plv { view: [0.0, 0.0, 1.0], abs_view: [0.0, 0.0, 1.0], cam_pos: [0.0; 3], obj_pos: [0.0; 3], z_pos: 0.0, zpos_dyn_fog: 0.0, x_pos: 0.0, y_pos: 0.0, dep_c: [0.0; 3], px: 0, py: 0, exact_bg: false },
+            light_z: c.lv.lights.iter().map(|l| (l.pos_z, l.pos_lp)).collect(),
+            calc_trans_r: false,
+            trans_flip_inside: c.p.inside_rendering,
+            scale_amb_diff_down: false,
+            rnd: seed,
+            guard: 0,
+            dbg: false,
+            stop: None,
+        }
+    }
+
     #[inline]
     fn update_de_stop(&mut self, zz: f64) {
         let p = self.c.p;
@@ -1946,52 +2013,7 @@ fn reflections_cpu<S: Sample>(
     progress: &(dyn Fn(usize, usize) + Sync),
     cancel: &(dyn Fn() -> bool + Sync),
 ) {
-    let mc = &sc.mc;
-    let mid = sc.stereo_mid();
-    let m1 = normalise_matrix_to(1.0, &p.vgrads);
-    let hs_vecs: Vec<Vec3> = lv
-        .lights
-        .iter()
-        .map(|l| {
-            if l.positional {
-                add(d3(l.ln), mid)
-            } else {
-                rotate_vector_reverse(&norm_to(-p.step_width, d3(l.ln)), &m1)
-            }
-        })
-        .collect();
-    let hs = sc.shadows.map(|h| {
-        let lights: Vec<(usize, usize)> =
-            lv.lights.iter().enumerate().filter(|(_, l)| (h.lights >> l.idx) & 1 != 0).map(|(i, l)| (i, l.idx)).collect();
-        (lights, h.soft, h.soft_radius.max(0.001), h.max_len_mul)
-    });
-    let ao = sc.ao.as_ref().map(|_| {
-        let d = sc.deao.unwrap_or_default();
-        (d.max_len, d.first_step_random)
-    });
-    let ctx = SrCtx {
-        p,
-        lv,
-        cam,
-        mid,
-        hs_vecs,
-        max_reflections: mc.reflection_depth as i32,
-        sr_light_amount: mc.reflection_amount.clamp(0.0, 100.0),
-        // bOptions2 and 6 = 4 (an interpolation hybrid of dIFS): index 1
-        trans_di_const: mc.refraction_index,
-        calc_trans: mc.transparency,
-        only_difs: mc.only_difs,
-        absorption: (mc.absorption as f64 * p.step_width) as f32,
-        absorp_coeff: mc.absorption,
-        light_scattering_mul: mc.scattering / 330.0,
-        back_dist: (((8388352.0 / p.zc_mul + 1.0).powi(2) - 1.0) * p.step_width / p.zcorr) as f32,
-        hs,
-        ao,
-        vol: p.vol.is_some(),
-        gpu: false,
-        clouds: sc.clouds.filter(|_| p.slice_2d == 0).map(|c| (c, c.light(&crate::render::effective_lighting(sc), lv, cam))),
-        water: WaterCtx::new(p, lv),
-    };
+    let ctx = SrCtx::new(sc, p, cam, lv, false);
     let [x0, y0, w, h] = p.rect;
     let (wu, hu) = (w as usize, h as usize);
     let threads = threads.min(hu).max(1);
@@ -2013,36 +2035,7 @@ fn reflections_cpu<S: Sample>(
                     }
                     let y = ry as i32 + y0;
                     let seed = (0x24563487i64 + (y as i64 + 1) * 0x324594A1i64) as i32;
-                    let mut t = SrTracer {
-                        c: ctx,
-                        m: Marcher::new(p, seed),
-                        sr_si: SiLight::default(),
-                        eye_dist: 0.0,
-                        normal: [0.0; 3],
-                        t_amb: [0.0; 3],
-                        plv: Plv {
-                            view: [0.0, 0.0, 1.0],
-                            abs_view: [0.0, 0.0, 1.0],
-                            cam_pos: [0.0; 3],
-                            obj_pos: [0.0; 3],
-                            z_pos: 0.0,
-                            zpos_dyn_fog: 0.0,
-                            x_pos: 0.0,
-                            y_pos: 0.0,
-                            dep_c: [0.0; 3],
-                            px: 0,
-                            py: 0,
-                            exact_bg: false,
-                        },
-                        light_z: lv.lights.iter().map(|l| (l.pos_z, l.pos_lp)).collect(),
-                        calc_trans_r: false,
-                        trans_flip_inside: p.inside_rendering,
-                        scale_amb_diff_down: false,
-                        rnd: seed,
-                        guard: 0,
-                        dbg: false,
-                        stop: None,
-                    };
+                    let mut t = SrTracer::new(ctx, seed);
                     let dp = debug_pixel();
                     for x in 0..wu {
                         t.dbg = dp == Some((x as i32 + x0, y));
@@ -2103,50 +2096,14 @@ struct RPix {
 #[allow(clippy::too_many_arguments)]
 fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb: &mut [S], cam: &PaintCamera, lv: &LightVals, threads: usize, band_progress: &dyn Fn(f64), cancel: &(dyn Fn() -> bool + Sync)) -> Result<(), String> {
     use crate::gpu::{ReflectLight, ReflectOpts, ReflectTask};
-    let mc = &sc.mc;
-    let mid = sc.stereo_mid();
-    let m1 = normalise_matrix_to(1.0, &p.vgrads);
     let sw = p.step_width;
-    let hs_vecs: Vec<Vec3> = lv
-        .lights
-        .iter()
-        .map(|l| if l.positional { add(d3(l.ln), mid) } else { rotate_vector_reverse(&norm_to(-p.step_width, d3(l.ln)), &m1) })
-        .collect();
-    let hs = sc.shadows.map(|h| {
-        let lights: Vec<(usize, usize)> = lv.lights.iter().enumerate().filter(|(_, l)| (h.lights >> l.idx) & 1 != 0).map(|(i, l)| (i, l.idx)).collect();
-        (lights, h.soft, h.soft_radius.max(0.001), h.max_len_mul)
-    });
-    let ao = sc.ao.as_ref().map(|_| {
-        let d = sc.deao.unwrap_or_default();
-        (d.max_len, d.first_step_random)
-    });
-    let ctx = SrCtx {
-        p,
-        lv,
-        cam,
-        mid,
-        hs_vecs: hs_vecs.clone(),
-        max_reflections: mc.reflection_depth as i32,
-        sr_light_amount: mc.reflection_amount.clamp(0.0, 100.0),
-        trans_di_const: mc.refraction_index,
-        calc_trans: mc.transparency,
-        only_difs: mc.only_difs,
-        absorption: (mc.absorption as f64 * p.step_width) as f32,
-        absorp_coeff: mc.absorption,
-        light_scattering_mul: mc.scattering / 330.0,
-        back_dist: (((8388352.0 / p.zc_mul + 1.0).powi(2) - 1.0) * p.step_width / p.zcorr) as f32,
-        hs: hs.clone(),
-        ao,
-        vol: p.vol.is_some(),
-        gpu: true,
-        clouds: sc.clouds.filter(|_| p.slice_2d == 0).map(|c| (c, c.light(&crate::render::effective_lighting(sc), lv, cam))),
-        // (transparent water is calculated on the CPU: `reflections`)
-        water: None,
-    };
+    // (transparent water is calculated on the CPU: `reflections`)
+    let ctx = SrCtx::new(sc, p, cam, lv, true);
+    let (hs, hs_vecs, mid, ao) = (&ctx.hs, &ctx.hs_vecs, ctx.mid, ctx.ao);
     // the lights of the shadow rays (calc_hs): soft shadows use the last one
     let mut lights: Vec<ReflectLight> = Vec::new();
     let (mut soft_radius, mut hs_mul) = (0.0f32, 1.0f32);
-    if let Some((ls, soft, radius, mul)) = &hs {
+    if let Some((ls, soft, radius, mul)) = hs {
         hs_mul = *mul;
         let sel: Vec<&(usize, usize)> = if *soft { ls.last().into_iter().collect() } else { ls.iter().collect() };
         if *soft && !sel.is_empty() {
@@ -2163,23 +2120,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
     let n = wu * hu;
     let threads = threads.clamp(1, hu);
     // a tracer per thread for the shading (its marcher is not used)
-    let new_tracer = |seed: i32| SrTracer {
-        c: &ctx,
-        m: Marcher::new(p, seed),
-        sr_si: SiLight::default(),
-                        eye_dist: 0.0,
-        normal: [0.0; 3],
-        t_amb: [0.0; 3],
-        plv: Plv { view: [0.0, 0.0, 1.0], abs_view: [0.0, 0.0, 1.0], cam_pos: [0.0; 3], obj_pos: [0.0; 3], z_pos: 0.0, zpos_dyn_fog: 0.0, x_pos: 0.0, y_pos: 0.0, dep_c: [0.0; 3], px: 0, py: 0, exact_bg: false },
-        light_z: lv.lights.iter().map(|l| (l.pos_z, l.pos_lp)).collect(),
-        calc_trans_r: false,
-        trans_flip_inside: p.inside_rendering,
-        scale_amb_diff_down: false,
-        rnd: seed,
-        guard: 0,
-        dbg: false,
-        stop: None,
-    };
+    let new_tracer = |seed: i32| SrTracer::new(&ctx, seed);
     let dbg_i = debug_pixel().map(|(x, y)| ((y - y0) * w + (x - x0)) as usize);
     // the surfaces of the object pixels
     let mut px: Vec<Option<RPix>> = vec![None; n];

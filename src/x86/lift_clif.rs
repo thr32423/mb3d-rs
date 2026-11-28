@@ -22,7 +22,7 @@
 //! fields chosen by an index, computed addresses, the map functions and
 //! integer division.
 
-use super::lift::{Loc, STACK_LOW};
+use super::lift::{stack_init, Loc};
 use super::lift_emit::region;
 use super::*;
 use crate::custom::{IT_C1, STACK_TOP};
@@ -453,16 +453,6 @@ impl Prog {
 /// Offset of address `a` in the memory image (as `Machine::ui`).
 fn mem_off(a: u32) -> i32 {
     ((a.wrapping_sub(BASE) as usize) & (MEM_SIZE - 1)) as i32
-}
-
-/// The start value of stack cell `c` of a direct call (what the call
-/// pushes, 0 elsewhere); of a dIFS call: the return address only.
-fn stack_init(c: u32, difs: bool) -> u64 {
-    let x = IT_C1 - 32;
-    let call: &[(u32, u32)] = if difs { &[(STACK_TOP - 4, RETURN_SENTINEL)] } else { &[(STACK_TOP - 12, RETURN_SENTINEL), (STACK_TOP - 8, IT_C1), (STACK_TOP - 4, x + 24)] };
-    let half = |a: u32| call.iter().find(|(ca, _)| *ca == a).map_or(0, |(_, v)| *v) as u64;
-    let a = STACK_LOW + 8 * c;
-    half(a) | half(a + 4) << 32
 }
 
 fn mask32(size: u8) -> u32 {

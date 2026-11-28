@@ -1036,17 +1036,7 @@ fn quantized(op: &Op, q: &mut [bool; 8]) {
         // below the stack pointer).  Not when the code addresses memory
         // through registers (the stack could be among it).
         let local_stack = conv != Conv::Machine && !DYNAMIC_ACCESS.iter().any(|f| body.contains(f));
-        let stack_init = |c: u32| -> String {
-            let call_cells: Vec<(u32, u32)> = if difs {
-                vec![(STACK_TOP - 4, RETURN_SENTINEL)]
-            } else {
-                let x = crate::custom::IT_C1 - 32;
-                vec![(STACK_TOP - 12, RETURN_SENTINEL), (STACK_TOP - 8, crate::custom::IT_C1), (STACK_TOP - 4, x + 24)]
-            };
-            let half = |a: u32| call_cells.iter().find(|(ca, _)| *ca == a).map_or(0, |(_, v)| *v) as u64;
-            let a = STACK_LOW + 8 * c;
-            format!("{:#x}u64", half(a) | half(a + 4) << 32)
-        };
+        let stack_init = |c: u32| -> String { format!("{:#x}u64", super::lift::stack_init(c, difs)) };
         let load = |p: char, c: u32| -> String { if p == 's' && local_stack { stack_init(c) } else { load(p, c) } };
         let mut o = String::new();
         if direct {

@@ -17,7 +17,6 @@ use super::lift::Analysis;
 use super::lift::STACK_LOW;
 use super::lift_emit::{dispatch_wgsl, fop, region, structure_wgsl, Block, Jump, NO_FLAG};
 use super::*;
-use crate::custom::STACK_TOP;
 use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write;
 
@@ -847,16 +846,10 @@ impl Prog {
             }
             // the stack cells xof the call (return address, PIteration3D, @w;
             // dIFS: the return address) start with the values the call pushes
-            let call_cells: Vec<(u32, u32)> = if difs {
-                vec![(STACK_TOP - 4, RETURN_SENTINEL)]
-            } else {
-                let x = crate::custom::IT_C1 - 32;
-                vec![(STACK_TOP - 12, RETURN_SENTINEL), (STACK_TOP - 8, crate::custom::IT_C1), (STACK_TOP - 4, x + 24)]
-            };
             let init = |part: char| -> String {
                 if *p == 's' && part != 'f' {
                     let a = STACK_LOW + c * 8 + if part == 'h' { 4 } else { 0 };
-                    if let Some((_, v)) = call_cells.iter().find(|(ca, _)| *ca == a) {
+                    if let Some(v) = super::lift::call_cell(a, difs) {
                         return format!("{v:#x}u");
                     }
                 }

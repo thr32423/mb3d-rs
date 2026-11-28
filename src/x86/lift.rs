@@ -172,6 +172,23 @@ pub struct LiftReport {
 
 pub(super) const STACK_LOW: u32 = BASE + 0x4000;
 
+/// What a call pushes at the stack address `a` (4 bytes): the return
+/// address, PIteration3D and @w of a direct call; of a dIFS call the
+/// return address only.  None elsewhere.
+pub(super) fn call_cell(a: u32, difs: bool) -> Option<u32> {
+    let x = crate::custom::IT_C1 - 32;
+    let call: &[(u32, u32)] = if difs { &[(STACK_TOP - 4, RETURN_SENTINEL)] } else { &[(STACK_TOP - 12, RETURN_SENTINEL), (STACK_TOP - 8, crate::custom::IT_C1), (STACK_TOP - 4, x + 24)] };
+    call.iter().find(|(ca, _)| *ca == a).map(|(_, v)| *v)
+}
+
+/// The start value of stack cell `c` (8 bytes): what the call pushes, 0
+/// elsewhere.
+pub(super) fn stack_init(c: u32, difs: bool) -> u64 {
+    let half = |a: u32| call_cell(a, difs).unwrap_or(0) as u64;
+    let a = STACK_LOW + 8 * c;
+    half(a) | half(a + 4) << 32
+}
+
 /// Abstract address of a memory operand.
 fn addr_of(s: &State, m: &Mem) -> AVal {
     let base = match m.base {

@@ -236,15 +236,7 @@ impl Resumer {
             enc.copy_buffer_to_buffer(&self.queue, 0, &self.queue_read, 0, 32);
             g.queue.submit([enc.finish()]);
             let slice = self.queue_read.slice(..);
-            let (tx, rx) = std::sync::mpsc::channel();
-            slice.map_async(wgpu::MapMode::Read, move |r| {
-                let _ = tx.send(r);
-            });
-            g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
-            if let Some(e) = take_error() {
-                return Err(e);
-            }
-            rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+            g.map_read(slice)?;
             let q: Vec<u32> = slice.get_mapped_range().map_err(|e| e.to_string())?.chunks_exact(4).map(|b| u32::from_le_bytes(b.try_into().unwrap())).collect();
             self.queue_read.unmap();
             self.its = (self.its.0 + q[4] as u64, self.its.1 + q[5] as u64, self.its.2.max(q[6]));
@@ -1061,6 +1053,31 @@ struct Gpu {
     /// the card and its driver (a driver update empties the driver's
     /// shader cache: see [`seen`])
     driver: String,
+}
+
+impl Gpu {
+    /// A storage buffer holding the words `d` (one zero word for none: a
+    /// buffer cannot be empty).
+    fn words_buffer(&self, label: &'static str, d: &[u32]) -> wgpu::Buffer {
+        let d = if d.is_empty() { vec![0u32] } else { d.to_vec() };
+        let b = self.device.create_buffer(&wgpu::BufferDescriptor { label: Some(label), size: (d.len() * 4) as u64, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
+        self.queue.write_buffer(&b, 0, &bytes(&d));
+        b
+    }
+
+    /// Maps a read-back buffer and waits for the card: the work submitted
+    /// before is done then; the card's error, had it one.
+    fn map_read(&self, slice: wgpu::BufferSlice) -> Result<(), String> {
+        let (tx, rx) = std::sync::mpsc::channel();
+        slice.map_async(wgpu::MapMode::Read, move |r| {
+            let _ = tx.send(r);
+        });
+        self.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
+        if let Some(e) = take_error() {
+            return Err(e);
+        }
+        rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())
+    }
 }
 
 /// The pipeline of the scene shader `code` (compiled once, then cached).
@@ -2565,12 +2582,7 @@ fn reflect_batch_card(p: &CalcParams, tasks: &[ReflectTask], offset: usize, o: &
     let buf = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some("reflection tasks"), size, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
     g.queue.write_buffer(&buf, 0, &bytes(&words));
     let read = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some("reflection read"), size, usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
-    let make = |label: &'static str, d: &[u32]| {
-        let d = if d.is_empty() { vec![0u32] } else { d.to_vec() };
-        let b = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some(label), size: (d.len() * 4) as u64, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
-        g.queue.write_buffer(&b, 0, &bytes(&d));
-        b
-    };
+    let make = |label: &'static str, d: &[u32]| g.words_buffer(label, d);
     let cst = make("constants", &sh.cst);
     let rtpl = make("record", &sh.rtpl);
     let maps = make("maps", &vol_maps(p, &sh));
@@ -2669,15 +2681,7 @@ fn reflect_batch_card(p: &CalcParams, tasks: &[ReflectTask], offset: usize, o: &
     enc.copy_buffer_to_buffer(&buf, 0, &read, 0, size);
     g.queue.submit([enc.finish()]);
     let slice = read.slice(..);
-    let (tx, rx) = std::sync::mpsc::channel();
-    slice.map_async(wgpu::MapMode::Read, move |r| {
-        let _ = tx.send(r);
-    });
-    g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
-    if let Some(e) = take_error() {
-        return Err(e);
-    }
-    rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    g.map_read(slice)?;
     // the rays whose DE overflowed single precision (see `post_verdict`)
     let overflow = std::cell::Cell::new(0usize);
     let out = {
@@ -2954,12 +2958,7 @@ fn vol_map_card(p: &CalcParams, map: &crate::vollight::VolLightMap, max_dist: f6
     let size = (n.max(1) * 4) as u64;
     let buf = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some("light map"), size, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC, mapped_at_creation: false });
     let read = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some("light map read"), size, usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
-    let make = |label: &'static str, d: &[u32]| {
-        let d = if d.is_empty() { vec![0u32] } else { d.to_vec() };
-        let b = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some(label), size: (d.len() * 4) as u64, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
-        g.queue.write_buffer(&b, 0, &bytes(&d));
-        b
-    };
+    let make = |label: &'static str, d: &[u32]| g.words_buffer(label, d);
     let cst = make("constants", &sh.cst);
     let rtpl = make("record", &sh.rtpl);
     let maps = make("maps", &sh.maps);
@@ -3006,15 +3005,7 @@ fn vol_map_card(p: &CalcParams, map: &crate::vollight::VolLightMap, max_dist: f6
     enc.copy_buffer_to_buffer(&buf, 0, &read, 0, size);
     g.queue.submit([enc.finish()]);
     let slice = read.slice(..);
-    let (tx, rx) = std::sync::mpsc::channel();
-    slice.map_async(wgpu::MapMode::Read, move |r| {
-        let _ = tx.send(r);
-    });
-    g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
-    if let Some(e) = take_error() {
-        return Err(e);
-    }
-    rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    g.map_read(slice)?;
     let data = slice.get_mapped_range().map_err(|e| e.to_string())?;
     Ok(data.chunks_exact(4).take(n).map(|b| f32::from_le_bytes(b.try_into().unwrap())).collect())
 }
@@ -3080,12 +3071,7 @@ fn mc_batch_card(p: &CalcParams, tasks: &[crate::mc::McReq], offset: usize, seca
     let buf = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some("mc tasks"), size, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
     g.queue.write_buffer(&buf, 0, &bytes(&words));
     let read = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some("mc read"), size, usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
-    let make = |label: &'static str, d: &[u32]| {
-        let d = if d.is_empty() { vec![0u32] } else { d.to_vec() };
-        let b = g.device.create_buffer(&wgpu::BufferDescriptor { label: Some(label), size: (d.len() * 4) as u64, usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST, mapped_at_creation: false });
-        g.queue.write_buffer(&b, 0, &bytes(&d));
-        b
-    };
+    let make = |label: &'static str, d: &[u32]| g.words_buffer(label, d);
     let cst = make("constants", &sh.cst);
     let rtpl = make("record", &sh.rtpl);
     let maps = make("maps", &vol_maps(p, &sh));
@@ -3163,15 +3149,7 @@ fn mc_batch_card(p: &CalcParams, tasks: &[crate::mc::McReq], offset: usize, seca
     enc.copy_buffer_to_buffer(&buf, 0, &read, 0, size);
     g.queue.submit([enc.finish()]);
     let slice = read.slice(..);
-    let (tx, rx) = std::sync::mpsc::channel();
-    slice.map_async(wgpu::MapMode::Read, move |r| {
-        let _ = tx.send(r);
-    });
-    g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
-    if let Some(e) = take_error() {
-        return Err(e);
-    }
-    rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    g.map_read(slice)?;
     let out = {
         let data = slice.get_mapped_range().map_err(|e| e.to_string())?;
         data.chunks_exact(MC_WORDS * 4)
@@ -3302,17 +3280,7 @@ fn run(
             })
         })
         .collect();
-    let words = |label: &'static str, d: &[u32]| {
-        let d = if d.is_empty() { vec![0u32] } else { d.to_vec() };
-        let b = g.device.create_buffer(&wgpu::BufferDescriptor {
-            label: Some(label),
-            size: (d.len() * 4) as u64,
-            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
-            mapped_at_creation: false,
-        });
-        g.queue.write_buffer(&b, 0, &bytes(&d));
-        b
-    };
+    let words = |label: &'static str, d: &[u32]| g.words_buffer(label, d);
     let cst = words("constants", &sh.cst);
     let rtpl = words("record", &sh.rtpl);
     let maps = words("maps", &vol_maps(p, sh));
@@ -3522,15 +3490,7 @@ fn read_back(g: &Gpu, out: &wgpu::Buffer, read: &wgpu::Buffer, offset: u64, len:
     enc.copy_buffer_to_buffer(out, offset, read, 0, len);
     g.queue.submit([enc.finish()]);
     let slice = read.slice(..len);
-    let (tx, rx) = std::sync::mpsc::channel();
-    slice.map_async(wgpu::MapMode::Read, move |r| {
-        let _ = tx.send(r);
-    });
-    g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
-    if let Some(e) = take_error() {
-        return Err(e);
-    }
-    rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    g.map_read(slice)?;
     let v = slice.get_mapped_range().map_err(|e| e.to_string())?.to_vec();
     read.unmap();
     Ok(v)
@@ -3745,15 +3705,7 @@ fn ssao24_card(gbuf: &mut [SiLight], w: usize, h: usize, zc_mul: f64, zcorr: f64
     enc.copy_buffer_to_buffer(&acc, 0, &read, 0, (w * h * 4) as u64);
     g.queue.submit([enc.finish()]);
     let slice = read.slice(..);
-    let (tx, rx) = std::sync::mpsc::channel();
-    slice.map_async(wgpu::MapMode::Read, move |r| {
-        let _ = tx.send(r);
-    });
-    g.device.poll(wgpu::PollType::wait_indefinitely()).map_err(|e| e.to_string())?;
-    if let Some(e) = take_error() {
-        return Err(e);
-    }
-    rx.recv().map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    g.map_read(slice)?;
     mem("waited for the card");
     {
         let data = slice.get_mapped_range().map_err(|e| e.to_string())?;

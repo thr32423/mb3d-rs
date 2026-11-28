@@ -83,7 +83,6 @@ pub struct State {
     shared: Arc<Mutex<Shared>>,
     cancel: Arc<AtomicBool>,
     layout_size: (i32, i32),
-    uuid: u32,
     /// the main window's parameters (as text) the window last started
     /// from or sent there: opened again with the same ones, nothing changes
     main_text: String,
@@ -102,7 +101,6 @@ impl Default for State {
             shared: Arc::new(Mutex::new(Shared::default())),
             cancel: Arc::new(AtomicBool::new(false)),
             layout_size: (0, 0),
-            uuid: 0,
             main_text: String::new(),
             main_waiting: None,
         }
@@ -460,9 +458,6 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     };
     let gi = app.mutagen.generations.len() - 1;
     for (i, m, img) in done {
-        if i == 0 {
-            app.mutagen.uuid += 1;
-        }
         if app.mutagen.current == gi {
             ui.set_picture(F, &image_name(i), Some(img.clone()));
         }

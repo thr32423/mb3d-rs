@@ -254,14 +254,6 @@ pub fn denoise(inp: &Input) -> Result<Vec<f32>, String> {
     }
 }
 
-/// [`denoise`] of a painted picture (RGB, 8 bit per channel).
-#[allow(dead_code)]
-pub fn denoise_rgb(rgb: &[u8], width: usize, height: usize) -> Result<Vec<u8>, String> {
-    let color: Vec<f32> = rgb.iter().map(|&v| v as f32 / 255.0).collect();
-    let out = denoise(&Input { width, height, color: &color, albedo: None, normal: None, srgb: true, hdr: false })?;
-    Ok(out.iter().map(|&v| (v.clamp(0.0, 1.0) * 255.0).round() as u8).collect())
-}
-
 /// The records of a Monte Carlo render with their colours denoised: the
 /// filter works on the records' averages of the rays (what more rays
 /// converge to), before they are painted (exposure, saturation, soft

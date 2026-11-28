@@ -148,7 +148,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
 fn make(app: &mut Mb3d, ui: &mut Ui) {
     let sc = shown_scene(app, ui);
     let pic = ui.checked(F, "PicCheck");
-    let image = if pic { super::main_form::shown_picture(app) } else { None };
+    let image = if pic { super::main_form::saved_image(app) } else { None };
     if pic && image.is_none() {
         ui.set_caption(F, "StatusLabel", &tr("@MB:CalculateAPictureFirstOrUntick"));
         return;

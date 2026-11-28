@@ -620,10 +620,7 @@ pub fn show_led(ui: &mut Ui, led: Led, blinking: bool) {
 }
 
 /// Shown when a calculation starts on the CPU while the card's shaders
-/// compile.
-pub const COMPILE_NOTE: &str = "First calculation of this formula combination: the graphics card's shaders are being compiled (10-30 s, only once - the driver keeps them). The CPU calculates meanwhile, the card joins when they are ready.";
-
-/// [`COMPILE_NOTE`] in the current language.
+/// compile, in the current language.
 pub fn compile_note() -> String {
     tr("@MB:FirstCalculationOfThisFormulaCombination")
 }
@@ -2254,7 +2251,6 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
                 let ao = if stats.stages.ao_with_shadows { tr("@MB:WithHS") } else { stage(stats.stages.ao) };
                 ui.set_caption(F, "Label48", &ao);
                 ui.set_caption(F, "Label50", &stage(stats.stages.reflections.map(Some)));
-                let _ = secs;
                 // (always with the picture, Mand.pas:2321)
                 if let Some(p) = auto_m3i {
                     save_m3i(app, ui, &p);
@@ -3491,12 +3487,7 @@ fn save_pic_dialog(app: &mut Mb3d, ui: &mut Ui, what: &str) {
 }
 
 /// The image as saved: reduced by the viewing scale (MB3D saves Image1).
-/// The shown picture as it is saved (reduced by the viewing scale).
-pub fn shown_picture(app: &Mb3d) -> Option<(Vec<u8>, usize, usize)> {
-    saved_image(app)
-}
-
-fn saved_image(app: &Mb3d) -> Option<(Vec<u8>, usize, usize)> {
+pub fn saved_image(app: &Mb3d) -> Option<(Vec<u8>, usize, usize)> {
     let (rgb, w, h) = app.main.rgb.clone()?;
     let s = app.main.image_scale.max(1) as usize;
     Some(if s > 1 { crate::render::downsample(&rgb, w, h, s) } else { ((*rgb).clone(), w, h) })

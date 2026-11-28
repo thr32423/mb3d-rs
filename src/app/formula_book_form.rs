@@ -151,10 +151,9 @@ fn show_selected(app: &mut Mb3d, ui: &mut Ui) {
     // any file)
     match ex.first().cloned().map(Ok).unwrap_or_else(|| formula_book::starter_file(&t.name)) {
         Ok(p) => {
-            super::file_preview::request(app, ui, p.clone(), F, "Image1", "PicLabel");
+            super::file_preview::request(app, ui, p, F, "Image1", "PicLabel");
             // (the queue's own caption, size and formulas, is replaced
             // once the picture is there: idle_done)
-            let _ = p;
         }
         Err(e) => {
             ui.set_picture(F, "Image1", None);

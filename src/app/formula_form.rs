@@ -1224,8 +1224,6 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             }
         }
         "JITFormulaBtnClick" => {
-            let r = ui.c(F, "JITFormulaBtn").rect();
-            let _ = r;
             let hgt = ui.c(F, "JITFormulaBtn").height;
             ui.popup_menu(F, "JITPopupMenu", "JITFormulaBtn", 0, hgt);
         }

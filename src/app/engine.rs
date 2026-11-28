@@ -120,8 +120,6 @@ pub struct Stats {
     pub avg_its: f64,
     pub max_its: i32,
     pub calc_s: f64,
-    pub post_s: f64,
-    pub hits: f64,
     /// the stages after the main calculation
     pub stages: crate::render::StageTimes,
 }
@@ -207,7 +205,6 @@ pub struct Output {
     pub stats: Stats,
     /// the last job finished (for "Calculate 3D" -> enable buttons)
     pub finished: u64,
-    pub was_calc3d: bool,
     /// the last job was cancelled (by Stop or new parameters)
     pub cancelled: bool,
 }
@@ -340,12 +337,11 @@ fn needs_post(sc: &Scene, p: &CalcParams) -> bool {
     crate::render::post_pending(sc, p)
 }
 
-pub fn stats_of(g: &[SiLight], p: &CalcParams, calc_s: f64, post_s: f64) -> Stats {
+pub fn stats_of(g: &[SiLight], p: &CalcParams, calc_s: f64) -> Stats {
     let n = g.len().max(1) as f64;
-    let hits = g.iter().filter(|s| !s.is_background()).count() as f64;
     let steps = g.iter().map(|s| (s.shadow & 0x3FF) as f64).sum::<f64>() / n;
     let (avg_its10, max_its) = p.its.get();
-    Stats { avg_steps: steps, avg_its: avg_its10 as f64 / 10.0, max_its, calc_s, post_s, hits: 100.0 * hits / n, stages: Default::default() }
+    Stats { avg_steps: steps, avg_its: avg_its10 as f64 / 10.0, max_its, calc_s, stages: Default::default() }
 }
 
 impl Engine {
@@ -394,7 +390,6 @@ impl Engine {
             o.stage.clear();
             o.stage_base = 0.0;
             o.kept_secs = 0.0;
-            o.was_calc3d = matches!(job, Job::Calc { slice: 0, .. } | Job::Swarm { .. } | Job::Stereo { .. });
         }
         self.0.progress.store(0, Ordering::Relaxed);
         *j = Some((gen, job));
@@ -722,7 +717,7 @@ fn stereo(e: &Arc<Inner>, sc: &Scene, layout: crate::render::StereoLayout, cance
     // (the last picture's buffers stay while the eyes are calculated, so a
     // stopped pair leaves it to repaint; unless they do not fit)
     e.free_big_base(2 * pixels, 1);
-    let eye = |mode: u8, name: &str, offset: usize| -> Result<(Vec<u8>, StereoEye, f64, f64), String> {
+    let eye = |mode: u8, name: &str, offset: usize| -> Result<(Vec<u8>, StereoEye, f64), String> {
         let mut s = sc.clone();
         s.slice_2d = 0;
         s.calc_rect = None;
@@ -737,17 +732,17 @@ fn stereo(e: &Arc<Inner>, sc: &Scene, layout: crate::render::StereoLayout, cance
         if cancel() {
             return Err("cancelled".into());
         }
-        let painted_from = Instant::now();
+        let calc_s = started.elapsed().as_secs_f64();
         let rgb = crate::render::paint(&s, &params, &gbuffer);
         let (w, h) = (params.rect[2] as usize, params.rect[3] as usize);
         let eye = StereoEye { params, post: Arc::new(if keep { gbuffer } else { Vec::new() }), w, h };
-        Ok((rgb, eye, (painted_from - started).as_secs_f64(), painted_from.elapsed().as_secs_f64()))
+        Ok((rgb, eye, calc_s))
     };
-    let (left, left_eye, left_calc, left_paint) = eye(4, "left", 0)?;
+    let (left, left_eye, left_calc) = eye(4, "left", 0)?;
     if cancel() {
         return Err("cancelled".into());
     }
-    let (right, right_eye, right_calc, right_paint) = eye(3, "right", 500)?;
+    let (right, right_eye, right_calc) = eye(3, "right", 500)?;
     if (left_eye.w, left_eye.h) != (right_eye.w, right_eye.h) {
         return Err(tr("@MB:TheStereoEyeImagesHaveDifferent"));
     }
@@ -760,7 +755,6 @@ fn stereo(e: &Arc<Inner>, sc: &Scene, layout: crate::render::StereoLayout, cance
     *e.stereo_base.locked() = keep.then(|| Arc::new(StereoBase { scene: sc.clone(), layout, left: left_eye, right: right_eye }));
     e.publish(rgb, ow, oh, "stereo preview ready", Some(Stats {
         calc_s: left_calc + right_calc,
-        post_s: left_paint + right_paint,
         ..Default::default()
     }));
     Ok(())
@@ -811,7 +805,7 @@ fn swarm_tiles(e: &Arc<Inner>, sc: &Scene, dir: &std::path::Path, cols: u32, row
     if cancel() {
         return Err("cancelled".into());
     }
-    let mut stats = stats_of(&raw, &p, t0.elapsed().as_secs_f64(), 0.0);
+    let mut stats = stats_of(&raw, &p, t0.elapsed().as_secs_f64());
     stats.stages.reflections = refl_s;
     *e.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: raw.clone(), post: raw, post_sig: post_sig(&sc), w, h }));
     e.publish_plain(rgb, plain, w, h, "done (swarm)", Some(stats));
@@ -902,14 +896,12 @@ fn calc(e: &Inner, sc: &Scene, slice: u8, resume: crate::checkpoint::Policy, nam
     if cancel() {
         return Err("cancelled".into());
     }
-    let t2 = Instant::now();
     let (rgb, refl_s, plain) = crate::render::paint_reporting_plain(&sc, &p, &post, &progress, &stage, cancel);
     if cancel() {
         return Err("cancelled".into());
     }
     stages.reflections = refl_s;
-    let post_s = if needs_post(&sc, &p) { (t2 - t1).as_secs_f64() } else { 0.0 };
-    let mut stats = stats_of(&post, &p, (t1 - t0).as_secs_f64(), post_s);
+    let mut stats = stats_of(&post, &p, (t1 - t0).as_secs_f64());
     stats.stages = stages;
     e.publish_plain(rgb, plain, w, h, "", Some(stats));
     *e.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw, post, post_sig: post_sig(&sc), w, h }));
@@ -936,7 +928,7 @@ fn blocky(e: &Inner, sc: &Scene, cancel: &(dyn Fn() -> bool + Sync)) -> Result<(
     *e.partial.locked() = None;
     // painted without the post calculations, as MB3D's PaintRowsNoThreadBlocky
     let (rgb, plain) = crate::render::paint_preview_plain(&sc, &p, &g);
-    let stats = stats_of(&g, &p, t0.elapsed().as_secs_f64(), 0.0);
+    let stats = stats_of(&g, &p, t0.elapsed().as_secs_f64());
     e.publish_plain(rgb, plain, w, h, "", Some(stats));
     let g = Arc::new(g);
     *e.base.locked() = Some(Arc::new(Base { scene: sc.clone(), params: p, raw: g.clone(), post: g, post_sig: post_sig(&sc), w, h }));

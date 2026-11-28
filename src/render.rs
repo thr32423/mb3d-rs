@@ -236,17 +236,6 @@ pub fn calculate_raw_cancellable(
 /// rectangle and its pixels.
 pub type RowSink<'a> = &'a (dyn Fn(usize, &[SiLight]) + Sync);
 
-/// Like [`calculate_raw_cancellable`], handing every finished row to `rows`
-/// (MB3D shows the image while it is calculated).
-pub fn calculate_raw_rows(
-    sc: &Scene,
-    progress: &(dyn Fn(usize, usize) + Sync),
-    cancel: &(dyn Fn() -> bool + Sync),
-    rows: RowSink,
-) -> Result<(CalcParams, Vec<SiLight>), String> {
-    calculate_inner(sc, progress, &no_stage, cancel, 0, Some(rows), None)
-}
-
 /// Where a calculation runs (the card's rows differ a little from the CPU's).
 fn gpu_mode() -> &'static str {
     #[cfg(feature = "gpu")]
@@ -327,7 +316,7 @@ pub fn open_checkpoint(sc: &Scene, name: &str, policy: Policy) -> Option<Store> 
     Some(s)
 }
 
-/// The calculation of [`calculate_raw_rows`] (`post` 0) or
+/// The calculation without the passes after it (`post` 0) or
 /// [`calculate_cancellable`] (`post` 2) with its rows kept in `ck` (from
 /// [`open_checkpoint`]): the rows it holds are not calculated again.  The
 /// caller ends `ck` when the result is saved ([`Store::finish`]); dropped,
@@ -1622,7 +1611,7 @@ fn march_mixed(
     crate::gpu::set_status(if ready.load(Ordering::SeqCst) {
         format!("GPU {name}: the march shared with the CPU")
     } else {
-        // (the program shows a note on this: see `main_form::COMPILE_NOTE`)
+        // (the program shows a note on this: see `main_form::compile_note`)
         "CPU (the graphics card's shaders are compiling)".into()
     });
     std::thread::scope(|s| {
@@ -2530,18 +2519,8 @@ pub fn paint_f32(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> Vec<f32> {
     paint_with::<f32>(sc, p, gbuf, true, &|_, _| {}, &no_stage, &|| false).0
 }
 
-/// [`paint`], and the time of the reflections (None without them).
-pub fn paint_timed(sc: &Scene, p: &CalcParams, gbuf: &[SiLight]) -> (Vec<u8>, Option<f64>) {
-    paint_with::<u8>(sc, p, gbuf, true, &|_, _| {}, &no_stage, &|| false)
-}
-
-/// [`paint_timed`] that `cancel` ends early (the picture is then
-/// incomplete: the caller checks `cancel` and drops it).
-pub fn paint_timed_cancellable(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], cancel: &(dyn Fn() -> bool + Sync)) -> (Vec<u8>, Option<f64>) {
-    paint_with::<u8>(sc, p, gbuf, true, &|_, _| {}, &no_stage, cancel)
-}
-
-/// [`paint_timed_cancellable`] that names the passes after the lighting
+/// [`paint_cancellable`], with the time of the reflections (None without
+/// them), that names the passes after the lighting
 /// ("reflections", "depth of field") to `stage` and counts their rows in
 /// `progress`.
 pub fn paint_reporting(

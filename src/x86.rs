@@ -1253,12 +1253,6 @@ impl Machine {
         })
     }
 
-    /// Forget decoded instructions (after code was changed).
-    pub fn clear_cache(&mut self) {
-        self.cache.clear();
-        self.table = std::sync::Arc::new(Vec::new());
-    }
-
     /// Decodes all instructions reachable from `entries` in the code area
     /// starting at `CODE_START` into a shared table (cheap to clone).
     pub fn predecode(&mut self, entries: &[u32]) {

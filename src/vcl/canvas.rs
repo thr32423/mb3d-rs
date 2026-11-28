@@ -171,10 +171,6 @@ impl<'a> Canvas<'a> {
     pub fn origin(&self) -> (i32, i32) {
         (self.ox, self.oy)
     }
-    pub fn set_origin(&mut self, o: (i32, i32)) {
-        self.ox = o.0;
-        self.oy = o.1;
-    }
     pub fn translate(&mut self, dx: i32, dy: i32) {
         self.ox += dx;
         self.oy += dy;
@@ -325,16 +321,6 @@ impl<'a> Canvas<'a> {
         for y in y0..y1 {
             let c = mix(top, bottom, (y - y0) as f32 / (n - 1).max(1) as f32);
             self.fill_dev(x0, y, x1, y + 1, c);
-        }
-    }
-
-    /// Horizontal gradient from `left` to `right`.
-    pub fn gradient_h(&mut self, r: Rect, left: u32, right: u32) {
-        let (x0, y0, x1, y1) = (self.dx(r.x), self.dy(r.y), self.dx(r.right()), self.dy(r.bottom()));
-        let n = (x1 - x0).max(1);
-        for x in x0..x1 {
-            let c = mix(left, right, (x - x0) as f32 / (n - 1).max(1) as f32);
-            self.fill_dev(x, y0, x + 1, y1, c);
         }
     }
 

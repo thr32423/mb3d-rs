@@ -230,6 +230,24 @@ fn output_err(path: &str, e: impl std::fmt::Display) -> String {
     format!("{path}: {e}")
 }
 
+/// Writes MB3D parameters as a file (`m3p`) and as text parameters
+/// (`text`, under `title`), each where a path is given.
+fn save_params(raw: &[u8], title: &str, m3p: Option<&str>, text: Option<&str>, quiet: bool) -> Result<(), String> {
+    if let Some(f) = m3p {
+        std::fs::write(f, raw).map_err(|e| output_err(&f, e))?;
+        if !quiet {
+            mb3d::elog!("  wrote parameters {f}");
+        }
+    }
+    if let Some(f) = text {
+        std::fs::write(f, mb3d::m3p::raw_to_text(raw, title)).map_err(|e| output_err(&f, e))?;
+        if !quiet {
+            mb3d::elog!("  wrote text parameters {f}");
+        }
+    }
+    Ok(())
+}
+
 /// Writes a result file; "-" writes it to the standard output (pipes).
 fn write_out(path: &str, data: &[u8]) -> Result<(), String> {
     let r = if path == "-" {
@@ -498,21 +516,10 @@ fn run() -> Result<(), String> {
     if raw_copy && (save_text.is_some() || save_m3p.is_some()) {
         let path = scene_file.clone().unwrap();
         let (raw, title) = mb3d::m3p::read_raw(std::path::Path::new(&path)).map_err(input_err)?;
-        if let Some(f) = &save_m3p {
-            std::fs::write(f, &raw).map_err(|e| output_err(&f, e))?;
-            if !quiet {
-                mb3d::elog!("  wrote parameters {f}");
-            }
-        }
-        if let Some(f) = &save_text {
-            let title = title.unwrap_or_else(|| {
-                std::path::Path::new(&path).file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default()
-            });
-            std::fs::write(f, mb3d::m3p::raw_to_text(&raw, &title)).map_err(|e| output_err(&f, e))?;
-            if !quiet {
-                mb3d::elog!("  wrote text parameters {f}");
-            }
-        }
+        let title = title.unwrap_or_else(|| {
+            std::path::Path::new(&path).file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default()
+        });
+        save_params(&raw, &title, save_m3p.as_deref(), save_text.as_deref(), quiet)?;
         if !render_too {
             return Ok(());
         }
@@ -587,22 +594,11 @@ fn run() -> Result<(), String> {
     if !raw_copy && (save_text.is_some() || save_m3p.is_some()) {
         // a scene: encode it as MB3D parameters
         let raw = mb3d::m3p::write(&scene);
-        if let Some(f) = &save_m3p {
-            std::fs::write(f, &raw).map_err(|e| output_err(&f, e))?;
-            if !quiet {
-                mb3d::elog!("  wrote parameters {f}");
-            }
-        }
-        if let Some(f) = &save_text {
-            let title = scene_file
-                .as_deref()
-                .and_then(|p| std::path::Path::new(p).file_stem().map(|s| s.to_string_lossy().into_owned()))
-                .unwrap_or_else(|| "mb3d-rs".into());
-            std::fs::write(f, mb3d::m3p::raw_to_text(&raw, &title)).map_err(|e| output_err(&f, e))?;
-            if !quiet {
-                mb3d::elog!("  wrote text parameters {f}");
-            }
-        }
+        let title = scene_file
+            .as_deref()
+            .and_then(|p| std::path::Path::new(p).file_stem().map(|s| s.to_string_lossy().into_owned()))
+            .unwrap_or_else(|| "mb3d-rs".into());
+        save_params(&raw, &title, save_m3p.as_deref(), save_text.as_deref(), quiet)?;
         if !render_too {
             return Ok(());
         }

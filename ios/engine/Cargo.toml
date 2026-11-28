@@ -6,8 +6,8 @@ description = "The mb3d-rs engine as a static library for the iPad app (the C fu
 license = "LGPL-2.1-only"
 publish = false
 
-# src/lib.rs is mb3d-bindings' ffi/src/lib.rs (libmb3d), copied unchanged;
-# the iPad app links it statically (an App Store app has no loose dylibs).
+# The C functions are capi/ (shared with mb3d-bindings' libmb3d); the iPad
+# app links them statically (an App Store app has no loose dylibs).
 [lib]
 name = "mb3d"
 crate-type = ["staticlib"]
@@ -15,7 +15,7 @@ crate-type = ["staticlib"]
 # The engine without its desktop program; no JIT (iOS forbids code made at
 # run time) and no OIDN (no iOS build).
 [dependencies]
-engine = { package = "mb3d", path = "../..", default-features = false, features = ["gpu"] }
+mb3d-capi = { path = "../../capi", features = ["gpu"] }
 
 # (its own build, not part of the engine's)
 [workspace]

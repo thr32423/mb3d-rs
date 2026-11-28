@@ -400,10 +400,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "mb3d-ipad-engine"
+name = "mb3d-capi"
 version = "0.1.0"
 dependencies = [
  "mb3d",
+]
+
+[[package]]
+name = "mb3d-ipad-engine"
+version = "0.1.0"
+dependencies = [
+ "mb3d-capi",
 ]
 
 [[package]]

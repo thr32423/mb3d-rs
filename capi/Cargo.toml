@@ -1,0 +1,22 @@
+[package]
+name = "mb3d-capi"
+version = "0.1.0"
+edition = "2021"
+description = "The mb3d-rs engine's C functions (include/mb3d.h over mb3d::api), shared by the libraries built from it: mb3d-bindings' libmb3d and the iPad app's static library"
+license = "LGPL-2.1-only"
+publish = false
+
+# A Rust library: the crate that makes the C library (a cdylib or a
+# staticlib named mb3d) depends on this one and re-exports it
+# (`pub use mb3d_capi::*;`), choosing the engine's parts below.
+# The C functions need raw pointers, so they live here and not in the
+# engine, which forbids unsafe code.
+
+[features]
+gpu = ["engine/gpu"]
+jit = ["engine/jit"]
+oidn = ["engine/oidn"]
+
+# The engine, without its desktop application.
+[dependencies]
+engine = { package = "mb3d", path = "..", default-features = false }

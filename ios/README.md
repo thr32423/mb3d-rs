@@ -1,8 +1,9 @@
 # Mandelbulb3D for iPad (prototype)
 
 A native SwiftUI app for the iPad on top of the mb3d-rs engine. The engine
-is linked as a static library (`engine/`, the C functions of
-`engine/include/mb3d.h`, the same as mb3d-bindings' libmb3d). It is built
+is linked as a static library (`engine/`), whose C functions are the
+repository's `capi/` (`capi/include/mb3d.h`), the crate mb3d-bindings'
+libmb3d is made of too. It is built
 without JIT (iOS does not allow code made at run time) and without OIDN.
 
 - `App/`: the SwiftUI app (the picture over the whole screen, the settings' groups on a rail with a panel beside it, the scenes in a sheet)

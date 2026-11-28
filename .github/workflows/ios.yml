@@ -9,7 +9,7 @@ name: iPad app
 on:
   push:
     branches: [ipad-app]
-    paths: ["ios/**", "src/**", "Cargo.toml", ".github/workflows/ios.yml"]
+    paths: ["ios/**", "capi/**", "src/**", "Cargo.toml", ".github/workflows/ios.yml"]
   workflow_dispatch:
     inputs:
       example:

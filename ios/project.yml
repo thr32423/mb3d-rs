@@ -56,7 +56,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "2"
         SWIFT_VERSION: "5.0"
         SWIFT_OBJC_BRIDGING_HEADER: App/Bridging-Header.h
-        HEADER_SEARCH_PATHS: $(PROJECT_DIR)/engine/include
+        HEADER_SEARCH_PATHS: $(PROJECT_DIR)/../capi/include
         "LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]": $(PROJECT_DIR)/engine/target/aarch64-apple-ios-sim/release
         "LIBRARY_SEARCH_PATHS[sdk=iphoneos*]": $(PROJECT_DIR)/engine/target/aarch64-apple-ios/release
         # the engine and what it needs (cargo --print native-static-libs)

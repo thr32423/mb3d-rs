@@ -1804,41 +1804,7 @@ fn left_str(secs: f64) -> String {
     }
 }
 
-#[cfg(feature = "gui")]
-use mb3d::app::eta::ItemsLeft;
-
-/// The windows' `ItemsLeft` (items of about the same cost one after
-/// another: frames, tiles, passes) for the build without them.
-#[cfg(not(feature = "gui"))]
-#[derive(Default)]
-struct ItemsLeft {
-    per: Option<f64>,
-    n: u32,
-}
-
-#[cfg(not(feature = "gui"))]
-impl ItemsLeft {
-    fn done(&mut self, secs: f64) {
-        self.n += 1;
-        let w = 1.0 / self.n.min(4) as f64;
-        self.per = Some(self.per.map_or(secs, |p| p + (secs - p) * w));
-    }
-
-    fn per_item(&self) -> Option<f64> {
-        self.per
-    }
-
-    fn left(&self, g: f64, secs: f64, measured: Option<f64>, after: usize) -> Option<f64> {
-        let total = match (measured, self.per) {
-            (Some(m), Some(p)) => {
-                let a = g.clamp(0.0, 1.0) / (g.clamp(0.0, 1.0) + 0.08);
-                a * m + (1.0 - a) * p
-            }
-            (m, p) => m.or(p)?,
-        };
-        Some((total - secs).max(0.0) + after as f64 * self.per.unwrap_or(total))
-    }
-}
+use mb3d::items_left::ItemsLeft;
 
 /// The time left in the running item and `after` more: its progress `f`
 /// after `secs` at a steady pace, blended with the finished items' time.

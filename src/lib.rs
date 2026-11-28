@@ -82,6 +82,7 @@ pub mod serve;
 #[cfg(feature = "gpu")]
 pub mod gpu;
 pub mod image;
+pub mod items_left;
 pub mod iteration;
 pub mod jit;
 /// The Pascal formulas compiled with Cranelift (calls of the compiled code

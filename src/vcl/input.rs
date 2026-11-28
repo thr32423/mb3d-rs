@@ -1643,16 +1643,17 @@ impl Form {
         }
         match kind {
             Kind::Edit | Kind::Memo | Kind::ComboBox if self.editable(id) || kind != Kind::ComboBox => {
+                // (Alt+Down before the arrows: it opens the list and picks nothing)
+                if kind == Kind::ComboBox && (key == vk::F4 || (key == vk::DOWN && shift & SS_ALT != 0)) {
+                    self.open_combo(id, &mut out);
+                    return out;
+                }
                 if kind == Kind::ComboBox && (key == vk::UP || key == vk::DOWN) {
                     let c = &self.ctl[id];
                     if !c.items.is_empty() {
                         let i = (c.item_index + if key == vk::UP { -1 } else { 1 }).clamp(0, c.items.len() as i32 - 1);
                         self.combo_select(id, i, &mut out);
                     }
-                    return out;
-                }
-                if kind == Kind::ComboBox && (key == vk::F4 || (key == vk::DOWN && shift & SS_ALT != 0)) {
-                    self.open_combo(id, &mut out);
                     return out;
                 }
                 self.edit_key(id, key, shift, &mut out);
@@ -2049,6 +2050,24 @@ fn thousands(v: i64) -> String {
 #[cfg(test)]
 mod tests {
     use super::wheel_steps;
+    use super::*;
+
+    /// Alt+Down opens the list of a combo box one can type in, as F4 does
+    /// (Down alone picks the next item, also there).
+    #[test]
+    fn alt_down_opens_an_editable_combo() {
+        let dfm = "object F: TForm\n  ClientWidth = 200\n  ClientHeight = 100\n  object C: TComboBox\n    Left = 8\n    Top = 8\n    Width = 100\n    Height = 21\n    Items.Strings = (\n      'one'\n      'two'\n      'three')\n    ItemIndex = 0\n  end\nend\n";
+        let mut f = Form::from_dfm(dfm, &super::super::theme::Theme::new(super::super::theme::Style::default())).unwrap();
+        f.layout();
+        let c = f.id("C").unwrap();
+        assert!(f.editable(c), "a combo box without a style is typed in");
+        f.set_focus(Some(c), &mut Vec::new());
+        f.key_down(vk::DOWN, 0);
+        assert_eq!((f.ctl[c].item_index, f.popup.is_some()), (1, false));
+        f.key_down(vk::DOWN, SS_ALT);
+        assert_eq!(f.ctl[c].item_index, 1, "Alt+Down does not change the choice");
+        assert!(matches!(f.popup, Some(Popup::Combo { id, .. }) if id == c), "Alt+Down opens the list");
+    }
 
     #[test]
     fn wheel_notches_both_ways() {

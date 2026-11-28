@@ -494,7 +494,7 @@ fn colors_taken(app: &mut Mb3d, ui: &mut Ui, l: Result<crate::lighting::Lighting
             repaint_image(app, ui, true);
             app.message(ui, &trf("@MB:ColorsTakenFrom", &[&from]));
         }
-        Err(e) => app.message(ui, &e),
+        Err(e) => app.notify(ui, &e),
     }
 }
 
@@ -511,7 +511,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             let p = p.with_extension("m3l");
             match std::fs::write(&p, &rec[432..840]) {
                 Ok(()) => app.message(ui, &trf("@MB:Saved2", &[&p.display()])),
-                Err(e) => app.message(ui, &format!("{}: {e}", p.display())),
+                Err(e) => app.notify(ui, &format!("{}: {e}", p.display())),
             }
             return;
         }

@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animasi: perintah ffmpeg ada di clipboard (jalanka
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=Animasi: video ditulis: {}
 ;Animation: video written: {}
+AnimationFramesRendered=Animasi: semua {} bingkai selesai dirender.
+;Animation: all {} frames rendered.
 Animations=Animasi
 ;Animations
 AnotherFolder=Folder lain…
@@ -1200,6 +1202,9 @@ Elapsed=Berlalu
 ;Elapsed
 ElapsedTimeS=Waktu berlalu: {} d
 ;Elapsed time: {} s
+EmissionLightLower=cahaya emisi
+SubsurfaceLightLower=cahaya bawah permukaan
+;emission light
 Enable=Aktifkan
 ;Enable
 EnableGeneratingZBufferThisMode=Aktifkan pembuatan z-buffer. Mode ini memerlukan data tambahan sehingga tidak kompatibel dengan versi sebelumnya, jadi file MC dengan pengaturan ini tidak dapat disimpan/dipulihkan. Untuk menyimpan z-buffer cukup simpan gambar normal, z-buffer akan otomatis ikut disimpan.
@@ -2258,6 +2263,22 @@ MapType=Jenis Peta:
 ;Map Type:
 MapsOfTheCalculatedPicture=Peta dari gambar yang dihitung:
 ;Maps of the calculated picture:
+MatEmission=Emisi:
+;Emission:
+MatEmissionHint=Sepuluh angka, satu untuk tiap warna palet dari kiri ke kanan (0 ke atas): di tempat permukaan berwarna itu, permukaan bersinar dengan warna itu.\nContoh: 20 0 0 0 0 0 0 0 0 0 membuat warna pertama bersinar.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=Sinar cahaya:
+;Light rays:
+MatLightRaysHint=Sinar yang dikirim tiap piksel untuk cahaya yang dipancarkan bagian yang bersinar ke sekitarnya (0 = tidak ada, biasanya 8 sampai 16, paling banyak 64).\nLebih banyak sinar: derau berkurang, waktu bertambah.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=Bawah permukaan:
+;Subsurface:
+MatSubsurfaceHint=Sepuluh angka, satu untuk setiap warna palet dari kiri ke kanan (0 sampai 1): di mana permukaan memiliki warna itu, cahaya masuk ke dalamnya dan keluar lebih lembut dan berwarna, dan bagian tipis bercahaya saat disinari dari belakang (lilin, giok, marmer).\nContoh: 0 1 0 0 0 0 0 0 0 0 untuk warna kedua.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=Kedalaman:
+;Depth:
+MatSubsurfaceDepthHint=Seberapa jauh cahaya masuk ke dalam bahan, sebagai bagian dari lebar gambar (biasanya 0.03; lebih besar: cahaya menembus bagian yang lebih tebal).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=Material
 ;Material
 Max=Max

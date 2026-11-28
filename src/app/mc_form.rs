@@ -375,7 +375,7 @@ fn ai_noise_filter(app: &mut Mb3d, ui: &mut Ui) {
             app.mc.picture_changed = true;
             app.message(ui, &tr("@MB:NeuralNoiseFilterDone"));
         }
-        Err(e) => app.message(ui, &trf("@MB:NeuralNoiseFilter", &[&e])),
+        Err(e) => app.notify(ui, &trf("@MB:NeuralNoiseFilter", &[&e])),
     }
 }
 
@@ -458,7 +458,7 @@ fn start(app: &mut Mb3d, ui: &mut Ui) {
 /// (loaded from the render) imported, and their render continued.
 pub fn continue_render(app: &mut Mb3d, ui: &mut Ui) {
     if app.mc.running {
-        app.message(ui, &tr("@MB:TheMonteCarloWindowIsRendering"));
+        app.notify(ui, &tr("@MB:TheMonteCarloWindowIsRendering"));
         return;
     }
     ui.show(F);
@@ -859,7 +859,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         }
     }
     if !err.is_empty() {
-        app.message(ui, &trf("@MB:MonteCarlo3", &[&err]));
+        app.notify(ui, &trf("@MB:MonteCarlo3", &[&err]));
         ui.show_message(&err);
         app.mc.in_batch = false;
     }
@@ -1018,10 +1018,10 @@ fn save_picture(app: &mut Mb3d, ui: &mut Ui, path: &Path, jpeg_q: u8) {
                 let name = format!("ZBuf {}", path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default());
                 let zp = path.with_file_name(name).with_extension("png");
                 if let Err(e) = std::fs::write(&zp, crate::png::encode_gray16(w, h, &z)) {
-                    app.message(ui, &format!("{}: {e}", zp.display()));
+                    app.notify(ui, &format!("{}: {e}", zp.display()));
                 }
             }
-            Err(e) => app.message(ui, &trf("@MB:ZBuffer", &[&e])),
+            Err(e) => app.notify(ui, &trf("@MB:ZBuffer", &[&e])),
         }
     }
 }
@@ -1240,7 +1240,7 @@ fn next_batch_entry(app: &mut Mb3d, ui: &mut Ui) {
         Some(i) => {
             let p = app.mc.batch[i].m3p.clone();
             if let Err(e) = app.load_params(ui, &p) {
-                app.message(ui, &e);
+                app.notify(ui, &e);
                 app.mc.work.remove(0);
                 return next_batch_entry(app, ui);
             }

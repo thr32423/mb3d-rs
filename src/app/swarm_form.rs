@@ -423,7 +423,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             if ui.checked(F, "CheckBox1") {
                 if let Err(e) = start_worker(app) {
                     ui.set_checked(F, "CheckBox1", false);
-                    app.message(ui, &e);
+                    app.notify(ui, &e);
                 }
             } else {
                 stop_worker(app, false);

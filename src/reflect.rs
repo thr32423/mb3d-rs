@@ -489,14 +489,25 @@ impl<'a, 'c> SrTracer<'a, 'c> {
         self.shade_with(si, inside, self.c.water.as_ref().map(|w| w.surface))
     }
 
+    /// [`SrTracer::shade`] of the pixel's own surface (where the rays
+    /// start): the light of the shining parts on it counts.
+    fn shade_own(&self, si: &SiLight) -> crate::lighting::Shaded {
+        self.shade_opts(si, None, self.c.water.as_ref().map(|w| w.surface), true)
+    }
+
     /// [`SrTracer::shade`] with the ground's colours `ground`.
     fn shade_with(&self, si: &SiLight, inside: Option<(S3, f32)>, ground: Option<(S3, S3)>) -> crate::lighting::Shaded {
+        self.shade_opts(si, inside, ground, false)
+    }
+
+    fn shade_opts(&self, si: &SiLight, inside: Option<(S3, f32)>, ground: Option<(S3, S3)>, own_pixel: bool) -> crate::lighting::Shaded {
         let o = ShadeOpts {
             scale_amb_diff_down: if self.scale_amb_diff_down { Some(self.c.sr_light_amount) } else { None },
             inside_trans: inside,
             light_z: Some(&self.light_z),
             svec: true,
             ground,
+            own_pixel,
         };
         self.c.lv.shade(si, &self.plv, self.c.cam, &o)
     }
@@ -1670,6 +1681,10 @@ impl<'a, 'c> SrTracer<'a, 'c> {
         self.plv.view = c.cam.to_view(av);
         self.plv.y_pos = y as f32 / p.height as f32;
         self.plv.x_pos = (x + 1) as f32 / p.width as f32;
+        // (the pixel: the passes' light per pixel, emission and
+        // subsurface, is looked up by it)
+        self.plv.px = x;
+        self.plv.py = y;
         {
             let ys = self.plv.y_pos;
             let s = match lv.depth_func {
@@ -1780,7 +1795,7 @@ impl<'a, 'c> SrTracer<'a, 'c> {
         self.plv.zpos_dyn_fog = self.plv.z_pos;
         self.calc_trans_r = c.calc_trans && (!c.only_difs || self.m.last_difs);
         self.scale_amb_diff_down = self.calc_trans_r;
-        let sh = self.shade(si, None);
+        let sh = self.shade_own(si);
         self.t_amb = sh.light.map(|v| (v / 255.0).clamp(0.0, 8.0));
         let sv = sc3(sh.result, c.sr_light_amount);
         let mzz = self.m.mzz;
@@ -2266,6 +2281,8 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
                     t.plv.view = cam.to_view(av);
                     t.plv.y_pos = y as f32 / p.height as f32;
                     t.plv.x_pos = (x + 1) as f32 / p.width as f32;
+                    t.plv.px = x;
+                    t.plv.py = y;
                     let ys = t.plv.y_pos;
                     let sd = match lv.depth_func {
                         1 => ys * ys,
@@ -2282,7 +2299,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
                     let calc_trans_r = ctx.calc_trans && (!ctx.only_difs || p.decomb.as_ref().map_or(p.difs, |d| d.part2.difs));
                     t.scale_amb_diff_down = calc_trans_r;
                     t.sr_si = si;
-                    let sh = t.shade(&si, None);
+                    let sh = t.shade_own(&si);
                     if dbg_i == Some(i) {
                         crate::elog!("GPU surface: pos {pos:?} zz {zz:.4} si {si:?}\n  plv {:?}\n  light {:?} result {:?} spe {:?} {} dif {:?}", t.plv, sh.light, sh.result, sh.spe, sh.spe_a, sh.dif);
                     }
@@ -2348,7 +2365,7 @@ fn reflections_gpu<S: Sample>(sc: &Scene, p: &CalcParams, gbuf: &[SiLight], rgb:
     let march_gpu = |list: &[&(usize, RayReq)], share: Option<&crate::gpu::RaySharing>| -> Result<(Vec<RayHit>, usize, Vec<usize>), String> {
         let tasks: Vec<ReflectTask> = list
             .iter()
-            .map(|(i, r)| ReflectTask { origin: r.origin, dir: s3(&r.dir), zz: r.zz as f32, pixel: *i as u32, inside: r.inside, ao_q: rit_q(r.rit), no_ground: crate::water_layer::leaves_water(p, &r.origin, &r.dir, r.zz) })
+            .map(|(i, r)| ReflectTask { origin: r.origin, dir: s3(&r.dir), zz: r.zz as f32, pixel: *i as u32, inside: r.inside, ao_q: rit_q(r.rit), no_ground: crate::water_layer::leaves_water(p, &r.origin, &r.dir, r.zz), max_len: 0.0 })
             .collect();
         let opts = ReflectOpts { surface: false, lights: lights.clone(), soft_radius, hs_mul, ao: ao.map(|(m, f)| (0, m, f)), far_fog };
         let (hits, n_card, unfinished) = crate::gpu::reflect_batch(p, &tasks, &opts, share, cancel)?;

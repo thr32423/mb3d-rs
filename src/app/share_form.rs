@@ -188,7 +188,7 @@ fn make(app: &mut Mb3d, ui: &mut Ui) {
         }
         Err(e) => {
             ui.set_caption(F, "StatusLabel", &e);
-            app.message(ui, &e);
+            app.notify(ui, &e);
         }
     }
 }

@@ -429,7 +429,7 @@ pub fn zbuf_dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
         };
         match res {
             Ok(()) => app.message(ui, &trf("@MB:Saved2", &[&p.display()])),
-            Err(e) => app.message(ui, &format!("{}: {e}", p.display())),
+            Err(e) => app.notify(ui, &format!("{}: {e}", p.display())),
         }
     }
 }

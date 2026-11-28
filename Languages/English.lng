@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animation: the ffmpeg command is on the clipboard 
 ;the program
 AnimationVideoWritten=Animation: video written: {}
 ;the program
+AnimationFramesRendered=Animation: all {} frames rendered.
+;the program
 Animations=Animations
 ;HistoryFrm.ComboBox1.Items, Mand3DForm.SpeedButton12.Caption
 AnotherFolder=Another folder…
@@ -1199,6 +1201,9 @@ EditSelectedOption=Edit selected option
 Elapsed=Elapsed
 ;the program
 ElapsedTimeS=Elapsed time: {} s
+;the program
+EmissionLightLower=emission light
+SubsurfaceLightLower=subsurface light
 ;the program
 Enable=Enable
 ;PostProForm.CheckBox21.Caption
@@ -2258,6 +2263,22 @@ MapType=Map Type:
 ;HeightMapGenFrm.Label19.Caption
 MapsOfTheCalculatedPicture=Maps of the calculated picture:
 ;TextureFrm.MapsLabel.Caption
+MatEmission=Emission:
+;PostProForm.EmissionLbl.Caption
+MatEmissionHint=Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+;PostProForm.EmissionEdit.Hint
+MatLightRays=Light rays:
+;PostProForm.LightRaysLbl.Caption
+MatLightRaysHint=The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+;PostProForm.LightRaysEdit.Hint
+MatSubsurface=Subsurface:
+;PostProForm.SubsurfaceLbl.Caption
+MatSubsurfaceHint=Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+;PostProForm.SubsurfaceEdit.Hint
+MatSubsurfaceDepth=Depth:
+;PostProForm.SubsurfaceDepthLbl.Caption
+MatSubsurfaceDepthHint=How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
+;PostProForm.SubsurfaceDepthEdit.Hint
 Material=Material
 ;MeshPreviewFrm.MaterialSheet.Caption, PostProForm.MaterialBtn.Caption; the program
 Max=Max

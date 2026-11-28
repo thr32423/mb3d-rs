@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=애니메이션: ffmpeg 명령을 클립보드에 
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=애니메이션: 동영상 저장됨: {}
 ;Animation: video written: {}
+AnimationFramesRendered=애니메이션: {}개 프레임을 모두 렌더링했습니다.
+;Animation: all {} frames rendered.
 Animations=애니메이션
 ;Animations
 AnotherFolder=다른 폴더…
@@ -1201,6 +1203,9 @@ Elapsed=경과
 ;Elapsed
 ElapsedTimeS=경과 시간: {}초
 ;Elapsed time: {} s
+EmissionLightLower=발광 조명
+SubsurfaceLightLower=표면 아래 산란광
+;emission light
 Enable=사용
 ;Enable
 EnableGeneratingZBufferThisMode=Z 버퍼 생성을 켭니다. 이 모드는 추가 데이터가 필요하여 이전 버전과 호환되지 않으므로, 이 설정이 켜진 MC 파일은 저장/복원할 수 없습니다. Z 버퍼를 저장하려면 일반 이미지를 저장하기만 하면 Z 버퍼도 자동으로 함께 저장됩니다.
@@ -2259,6 +2264,22 @@ MapType=맵 종류:
 ;Map Type:
 MapsOfTheCalculatedPicture=계산된 그림의 맵:
 ;Maps of the calculated picture:
+MatEmission=발광색:
+;Emission:
+MatEmissionHint=팔레트의 각 색에 왼쪽부터 오른쪽으로 하나씩, 숫자 10개(0 이상): 표면이 그 색인 곳은 그 색으로 빛납니다.\n예: 20 0 0 0 0 0 0 0 0 0 은 첫 번째 색을 빛나게 합니다.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=광선 수:
+;Light rays:
+MatLightRaysHint=빛나는 부분이 주변에 비추는 빛을 위해 각 픽셀이 보내는 광선 수(0 = 없음, 보통 8~16, 최대 64).\n광선이 많을수록 노이즈가 줄고 시간이 늘어납니다.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=표면 아래:
+;Subsurface:
+MatSubsurfaceHint=팔레트의 각 색에 왼쪽에서 오른쪽으로 하나씩, 10개의 숫자(0~1): 표면이 그 색인 곳에서는 빛이 안으로 들어갔다가 부드럽고 물든 채로 나오며, 얇은 부분은 뒤에서 빛을 받으면 빛납니다(밀랍, 옥, 대리석).\n예: 0 1 0 0 0 0 0 0 0 0 은 두 번째 색입니다.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=깊이:
+;Depth:
+MatSubsurfaceDepthHint=빛이 재질 안으로 들어가는 거리, 그림 너비에 대한 비율(보통 0.03; 크게 하면 빛이 더 두꺼운 부분을 통과합니다).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=재질
 ;Material
 Max=Max

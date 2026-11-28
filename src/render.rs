@@ -558,6 +558,8 @@ fn calculate_rows(
         // the reflection pass's pipelines compile meanwhile
         if sc.mc.reflections {
             crate::gpu::reflect_prepare(&p, sc.shadows.is_some(), sc.ao.is_some());
+        } else if material_rays(sc) {
+            crate::gpu::reflect_prepare(&p, false, false);
         }
         // Auto: the CPU threads and the card share the march (the CPU
         // starts at once, the card joins when its shader is compiled);
@@ -2044,10 +2046,19 @@ pub fn prewarm_gpu(sc: Scene) {
         let _ = crate::gpu::march_prepare(&p, &post_job(&sc, &p));
         if sc.mc.reflections {
             crate::gpu::reflect_prepare(&p, sc.shadows.is_some(), sc.ao.is_some());
+        } else if material_rays(&sc) {
+            crate::gpu::reflect_prepare(&p, false, false);
         }
     });
     #[cfg(not(feature = "gpu"))]
     let _ = sc;
+}
+
+/// The scene's material sends rays through the reflection pass's march
+/// (the emission's light rays, the subsurface scattering's): its
+/// pipelines are compiled ahead, as for the reflections.
+fn material_rays(sc: &Scene) -> bool {
+    sc.material.is_some_and(|m| m.scatters() || (m.emits() && m.cast_rays > 0))
 }
 
 pub fn post_job(sc: &Scene, p: &CalcParams) -> PostJob {
@@ -2695,8 +2706,18 @@ fn paint_core<S: crate::lighting::Sample>(
     let [x0, ry0, w, h] = p.rect;
     let l = effective_lighting(sc);
     let cam = paint_camera(sc, p);
-    let lv = light_vals(sc, &l, &cam);
+    let mut lv = light_vals(sc, &l, &cam);
     let threads = thread_count(sc).min(h as usize).max(1);
+    // the light the shining parts of the surface cast (the whole picture only)
+    if full && sc.material.is_some_and(|m| m.emits() && m.cast_rays > 0) {
+        stage("emission light");
+        lv.emit_light = crate::emission::light(sc, p, gbuf, &lv, &cam, thread_count(sc), progress, cancel);
+    }
+    // the light that comes through the material (the whole picture only)
+    if full && sc.material.is_some_and(|m| m.scatters()) {
+        stage("subsurface light");
+        lv.sub_light = crate::subsurface::light(sc, p, gbuf, &lv, &cam, thread_count(sc), progress, cancel);
+    }
     let mut rgb = vec![S::default(); (w * h * 3) as usize];
     let chunk_rows = ((h as usize) + threads - 1) / threads;
     std::thread::scope(|s| {
@@ -3293,8 +3314,41 @@ pub fn compose_stereo(left: &[u8], right: &[u8], w: usize, h: usize, layout: Ste
     }
 }
 
+/// [`compose_stereo`] for colours before their final rounding to 8 bits.
+pub fn compose_stereo16(left: &[u16], right: &[u16], w: usize, h: usize, layout: StereoLayout) -> (Vec<u16>, usize, usize) {
+    match layout {
+        StereoLayout::Anaglyph => {
+            let mut out = right.to_vec();
+            for (o, l) in out.chunks_mut(3).zip(left.chunks(3)) {
+                o[0] = (0.299 * l[0] as f64 + 0.587 * l[1] as f64 + 0.114 * l[2] as f64).round().min(65535.0) as u16;
+            }
+            (out, w, h)
+        }
+        StereoLayout::TopBottom => ([left, right].concat(), w, h * 2),
+        _ => {
+            let (a, b) = if layout == StereoLayout::Parallel { (left, right) } else { (right, left) };
+            let mut out = vec![0u16; w * 2 * h * 3];
+            for y in 0..h {
+                out[y * w * 6..y * w * 6 + w * 3].copy_from_slice(&a[y * w * 3..(y + 1) * w * 3]);
+                out[y * w * 6 + w * 3..(y + 1) * w * 6].copy_from_slice(&b[y * w * 3..(y + 1) * w * 3]);
+            }
+            (out, w * 2, h)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn stereo_16_bit_layouts_keep_the_eyes_in_order() {
+        use super::{compose_stereo16, StereoLayout};
+        let left = [1, 2, 3, 4, 5, 6];
+        let right = [11, 12, 13, 14, 15, 16];
+        assert_eq!(compose_stereo16(&left, &right, 2, 1, StereoLayout::Parallel), ([left, right].concat(), 4, 1));
+        assert_eq!(compose_stereo16(&left, &right, 2, 1, StereoLayout::Cross), ([right, left].concat(), 4, 1));
+        assert_eq!(compose_stereo16(&left, &right, 2, 1, StereoLayout::TopBottom), ([left, right].concat(), 2, 2));
+    }
+
     #[test]
     fn memory_model() {
         use super::*;

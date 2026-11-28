@@ -76,7 +76,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
             let r = crate::mcp::cli_program().map_err(|_| tr("@MB:TheCommandLineProgramMb3dWas")).and_then(|exe| crate::mcp::claude_desktop(connected, &exe));
             match r {
                 Ok(t) => app.message(ui, &t),
-                Err(e) => app.message(ui, &e),
+                Err(e) => app.notify(ui, &e),
             }
             refresh(app, ui);
         }

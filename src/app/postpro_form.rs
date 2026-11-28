@@ -161,11 +161,29 @@ pub fn make_header(app: &mut Mb3d, ui: &mut Ui) {
         color: st.cloud_color,
         offset,
     });
+    // the emission of the palette's ten colours: the numbers in the edit
+    // (separated by spaces, commas or semicolons; missing ones are 0)
+    let mut emission = [0f32; 10];
+    for (e, v) in emission.iter_mut().zip(ui.text(F, "EmissionEdit").split(|c: char| c.is_whitespace() || c == ',' || c == ';').filter(|t| !t.is_empty())) {
+        *e = (super::util::ptf(v) as f32).max(0.0);
+    }
+    let cast_rays = (num("LightRaysEdit").round() as i64).clamp(0, 64) as u8;
+    // the subsurface scattering of the ten colours (0..1), as the emission
+    let mut subsurface = [0f32; 10];
+    for (e, v) in subsurface.iter_mut().zip(ui.text(F, "SubsurfaceEdit").split(|c: char| c.is_whitespace() || c == ',' || c == ';').filter(|t| !t.is_empty())) {
+        *e = (super::util::ptf(v) as f32).clamp(0.0, 1.0);
+    }
+    let subsurface_depth = (num("SubsurfaceDepthEdit") as f32).max(0.0);
     sc.material = ui.checked(F, "MaterialCbx").then(|| crate::scene::Material {
         fresnel: (num("FresnelEdit") as f32).clamp(0.0, 1.0),
         iridescence: (num("IridEdit") as f32).clamp(0.0, 1.0),
         irid_shift: num("IridShiftEdit") as f32,
         glow: (num("GlowEdit") as f32).max(0.0),
+        emission,
+        cast_rays,
+        subsurface,
+        // (the default written as 0, so a file keeps following the default)
+        subsurface_depth: if subsurface_depth == crate::scene::Material::SUBSURFACE_DEPTH { 0.0 } else { subsurface_depth },
     });
     sc.finish = ui.checked(F, "FinishCbx").then(|| crate::finish::Finish {
         exposure: (num("FinExpEdit") as f32).clamp(-10.0, 10.0),
@@ -239,6 +257,10 @@ pub fn set_from_header(app: &mut Mb3d, ui: &mut Ui) {
     for (e, v) in [("FresnelEdit", m.fresnel), ("IridEdit", m.iridescence), ("IridShiftEdit", m.irid_shift), ("GlowEdit", m.glow)] {
         ui.set_text(F, e, &super::util::fts_single(v as f64));
     }
+    ui.set_text(F, "EmissionEdit", &m.emission.map(|v| super::util::fts_single(v as f64)).join(" "));
+    ui.set_text(F, "LightRaysEdit", &m.cast_rays.to_string());
+    ui.set_text(F, "SubsurfaceEdit", &m.subsurface.map(|v| super::util::fts_single(v as f64)).join(" "));
+    ui.set_text(F, "SubsurfaceDepthEdit", &super::util::fts_single(m.depth() as f64));
     // the relief: without one a size that suits the view (a small part of
     // what the zoom shows)
     let suggest = {
@@ -406,11 +428,11 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &crate::vcl::DialogRes
 /// Whether a processing can start on the kept image (else the message).
 fn can_start(app: &mut Mb3d, ui: &mut Ui) -> bool {
     if app.main.calculating {
-        app.message(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
+        app.notify(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
         return false;
     }
     if app.eng.base().is_none() {
-        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
         return false;
     }
     true
@@ -596,11 +618,11 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                 // "Calculate only a selection in the image": the reflections
                 // of the selection only (MB3D's CalcSRT with the selection)
                 if app.main.calculating {
-                    app.message(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
+                    app.notify(ui, &tr("@MB:WaitForTheRunningCalculationOr"));
                     return;
                 }
                 if app.eng.base().is_none() {
-                    app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+                    app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
                     return;
                 }
                 let Some(rect) = selection_rect(app, ui) else { return };

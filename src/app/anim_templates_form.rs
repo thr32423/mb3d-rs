@@ -248,7 +248,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
             let flown = fl.frames;
             super::anim_form::add_template(app, ui, fl.keyframes, false, from_last);
             if let Some(w) = why {
-                app.message(ui, &trf("@MB:FlyThroughTheFlightEndedAfter", &[&flown, &asked, &w]));
+                app.notify(ui, &trf("@MB:FlyThroughTheFlightEndedAfter", &[&flown, &asked, &w]));
             }
         }
         Err(e) => ui.show_message(&trf("@MB:TheFlyThroughCannotStartHere", &[&e])),

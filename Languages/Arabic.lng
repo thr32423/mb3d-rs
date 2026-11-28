@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=التحريك: أمر ffmpeg في الحافظة 
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=التحريك: كُتب الفيديو: {}
 ;Animation: video written: {}
+AnimationFramesRendered=الرسوم المتحركة: تم إنشاء جميع الإطارات ({}).
+;Animation: all {} frames rendered.
 Animations=التحريكات
 ;Animations
 AnotherFolder=مجلد آخر…
@@ -1201,6 +1203,9 @@ Elapsed=المنقضي
 ;Elapsed
 ElapsedTimeS=الوقت المنقضي: {} ث
 ;Elapsed time: {} s
+EmissionLightLower=ضوء الانبعاث
+SubsurfaceLightLower=الضوء تحت السطح
+;emission light
 Enable=تمكين
 ;Enable
 EnableGeneratingZBufferThisMode=تمكين توليد مخزن Z. يحتاج هذا الوضع إلى بيانات إضافية تجعله غير متوافق مع الإصدارات السابقة، لذا لا يمكن حفظ ملفات MC بهذا الإعداد أو استعادتها. لحفظ مخزن Z احفظ الصورة العادية فحسب، فيُحفظ مخزن Z تلقائيًا معها.
@@ -2259,6 +2264,22 @@ MapType=نوع الخريطة:
 ;Map Type:
 MapsOfTheCalculatedPicture=خرائط الصورة المحسوبة:
 ;Maps of the calculated picture:
+MatEmission=الانبعاث:
+;Emission:
+MatEmissionHint=عشرة أرقام، واحد لكل لون في لوحة الألوان من اليسار إلى اليمين (0 فأكثر): حيث يكون للسطح ذلك اللون يضيء به.\nمثال: 20 0 0 0 0 0 0 0 0 0 يجعل اللون الأول يضيء.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=أشعة الضوء:
+;Light rays:
+MatLightRaysHint=الأشعة التي يرسلها كل بكسل للضوء الذي تلقيه الأجزاء المضيئة على ما حولها (0 = لا شيء، المعتاد من 8 إلى 16، بحد أقصى 64).\nأشعة أكثر: ضجيج أقل ووقت أطول.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=تحت السطح:
+;Subsurface:
+MatSubsurfaceHint=عشرة أرقام، رقم لكل لون من ألوان اللوحة من اليسار إلى اليمين (من 0 إلى 1): حيث يكون للسطح ذلك اللون يدخله الضوء ويخرج منه أنعم وملونًا، وتتوهج الأجزاء الرقيقة عند إضاءتها من الخلف (الشمع، اليشم، الرخام).\nمثال: 0 1 0 0 0 0 0 0 0 0 للون الثاني.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=العمق:
+;Depth:
+MatSubsurfaceDepthHint=إلى أي مدى يدخل الضوء في المادة، كجزء من عرض الصورة (0.03 هو المعتاد؛ أكثر: يمر الضوء عبر أجزاء أسمك).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=المادة
 ;Material
 Max=Max

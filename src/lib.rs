@@ -55,6 +55,8 @@ pub mod denoise;
 pub mod detail;
 pub mod droste;
 pub mod earlier;
+pub mod emission;
+pub mod subsurface;
 pub mod experimental;
 #[cfg(feature = "oidn")]
 // Intel Open Image Denoise is a C library: its calls are unsafe by Rust's definition

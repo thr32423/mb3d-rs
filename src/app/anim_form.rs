@@ -573,7 +573,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
         (j.making_video, v)
     };
     if let Some(v) = video {
-        app.message(ui, &trf("@MB:AnimationVideoWritten", &[&v.display()]));
+        app.notify(ui, &trf("@MB:AnimationVideoWritten", &[&v.display()]));
     }
     let (changed, thumbs, running, done, total, err, last, frames_len, paused) = {
         let mut j = app.anim.job.locked();
@@ -662,7 +662,10 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
     if !running {
         end_rendering(app, ui);
         if !err.is_empty() {
-            app.message(ui, &trf("@MB:Animation2", &[&err]));
+            app.notify(ui, &trf("@MB:Animation2", &[&err]));
+        } else if total > 0 && done >= total && !making_video {
+            // (with a video, its "video written" says it)
+            app.notify(ui, &trf("@MB:AnimationFramesRendered", &[&total]));
         }
         if ui.showing(PV) {
             ui.set_visible(PV, "ProgressBar1", false);

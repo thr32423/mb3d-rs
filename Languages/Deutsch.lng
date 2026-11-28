@@ -276,6 +276,8 @@ AnimationTheFfmpegCommandIsOn=Animation: Der ffmpeg-Befehl ist in der Zwischenab
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=Animation: Video geschrieben: {}
 ;Animation: video written: {}
+AnimationFramesRendered=Animation: alle {} Bilder berechnet.
+;Animation: all {} frames rendered.
 Animations=Animationen
 ;Animations
 AnotherFolder=Anderer Ordner…
@@ -1200,6 +1202,9 @@ Elapsed=Vergangen
 ;Elapsed
 ElapsedTimeS=Vergangene Zeit: {} s
 ;Elapsed time: {} s
+EmissionLightLower=Emissionslicht
+SubsurfaceLightLower=Licht unter der Oberfläche
+;emission light
 Enable=Aktivieren
 ;Enable
 EnableGeneratingZBufferThisMode=Erzeugt einen Z-Buffer. Dieser Modus benötigt zusätzliche Daten und ist daher mit früheren Versionen nicht kompatibel; MC-Dateien mit dieser Einstellung können nicht gespeichert/wiederhergestellt werden. Um den Z-Buffer zu speichern, speichern Sie einfach das normale Bild, der Z-Buffer wird dann automatisch mitgespeichert.
@@ -2258,6 +2263,22 @@ MapType=Map-Typ:
 ;Map Type:
 MapsOfTheCalculatedPicture=Karten des berechneten Bildes:
 ;Maps of the calculated picture:
+MatEmission=Emission:
+;Emission:
+MatEmissionHint=Zehn Zahlen, eine für jede Farbe der Palette von links nach rechts (0 und mehr): wo die Oberfläche diese Farbe hat, leuchtet sie in ihr.\nBeispiel: 20 0 0 0 0 0 0 0 0 0 lässt die erste Farbe leuchten.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=Lichtstrahlen:
+;Light rays:
+MatLightRaysHint=Die Strahlen, die jedes Pixel für das Licht aussendet, das die leuchtenden Teile auf ihre Umgebung werfen (0 = keine, 8 bis 16 ist üblich, höchstens 64).\nMehr Strahlen: weniger Rauschen, mehr Zeit.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=Subsurface:
+;Subsurface:
+MatSubsurfaceHint=Zehn Zahlen, eine für jede Farbe der Palette von links nach rechts (0 bis 1): Wo die Oberfläche diese Farbe hat, dringt Licht ein und tritt weicher und gefärbt wieder aus, und dünne Teile leuchten, wenn sie von hinten beleuchtet werden (Wachs, Jade, Marmor).\nBeispiel: 0 1 0 0 0 0 0 0 0 0 für die zweite Farbe.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=Tiefe:
+;Depth:
+MatSubsurfaceDepthHint=Wie weit Licht in das Material eindringt, als Anteil der Bildbreite (üblich ist 0.03; mehr: Licht geht durch dickere Teile).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=Material
 ;Material
 Max=Max

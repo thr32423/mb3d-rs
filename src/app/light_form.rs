@@ -1830,7 +1830,7 @@ pub fn choose_map(app: &Mb3d, ui: &mut Ui, p: &std::path::Path) -> Option<i32> {
             Some(m.nr)
         }
         Err(e) => {
-            app.message(ui, &e);
+            app.notify(ui, &e);
             None
         }
     }
@@ -1839,7 +1839,7 @@ pub fn choose_map(app: &Mb3d, ui: &mut Ui, p: &std::path::Path) -> Option<i32> {
 /// `GetLightParaFile`: a .m3l file (TLightingParas9).
 fn load_light_file(app: &mut Mb3d, ui: &mut Ui, p: &std::path::Path) -> bool {
     let Ok(d) = std::fs::read(p) else {
-        app.message(ui, &trf("@MB:CannotRead", &[&p.display()]));
+        app.notify(ui, &trf("@MB:CannotRead", &[&p.display()]));
         return false;
     };
     match crate::m3p::light_from_record(&d) {
@@ -1854,7 +1854,7 @@ fn load_light_file(app: &mut Mb3d, ui: &mut Ui, p: &std::path::Path) -> bool {
             true
         }
         None => {
-            app.message(ui, &trf("@MB:NoLightParameters", &[&p.display()]));
+            app.notify(ui, &trf("@MB:NoLightParameters", &[&p.display()]));
             false
         }
     }
@@ -1894,7 +1894,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             let p = p.with_extension("m3l");
             match std::fs::write(&p, &rec[432..840]) {
                 Ok(()) => app.message(ui, &trf("@MB:Saved2", &[&p.display()])),
-                Err(e) => app.message(ui, &format!("{}: {e}", p.display())),
+                Err(e) => app.notify(ui, &format!("{}: {e}", p.display())),
             }
             update_quick_load(app, ui);
         }
@@ -1911,7 +1911,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
                             name
                         }
                         Err(e) => {
-                            app.message(ui, &e);
+                            app.notify(ui, &e);
                             if let Some(d) = p.parent() {
                                 crate::maps::add_map_dir(d.to_path_buf());
                             }
@@ -1919,7 +1919,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
                         }
                     };
                     if crate::maps::by_name(&app.scene.lighting.bg_image).is_none() {
-                        app.message(ui, &tr("@MB:TheBackgroundImageCouldNotBe"));
+                        app.notify(ui, &tr("@MB:TheBackgroundImageCouldNotBe"));
                         app.scene.lighting.bg_image.clear();
                         app.light.user_change = false;
                         ui.set_checked(F, "CheckBox8", false);

@@ -73,7 +73,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "Button1Click" | "Button2Click" => {
             let Some(en) = selected(app, ui) else { return };
             if en.busy {
-                app.message(ui, &tr("@MB:ThisRenderIsRunningRightNow"));
+                app.notify(ui, &tr("@MB:ThisRenderIsRunningRightNow"));
                 return;
             }
             if let Err(m) = load(app, ui, &en) {
@@ -97,7 +97,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "Button3Click" => {
             if let Some(en) = selected(app, ui) {
                 if !crate::checkpoint::remove(&en) {
-                    app.message(ui, &tr("@MB:ThisRenderIsRunningRightNow"));
+                    app.notify(ui, &tr("@MB:ThisRenderIsRunningRightNow"));
                 }
                 refresh(app, ui);
             }
@@ -110,7 +110,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "Button5Click" => {
             let Some(en) = selected(app, ui) else { return };
             if !matches!(en.info.get("kind").map(String::as_str), Some("calc") | Some("tiles")) {
-                app.message(ui, &tr("@MB:OnlyAPictureIsKeptAs"));
+                app.notify(ui, &tr("@MB:OnlyAPictureIsKeptAs"));
                 return;
             }
             let o = crate::vcl::dialogs::FileOptions {

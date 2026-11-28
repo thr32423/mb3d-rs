@@ -86,7 +86,7 @@ pub fn batch_next(app: &mut Mb3d, ui: &mut Ui) {
         if checks[i] {
             match app.load_params(ui, Path::new(&rows[i][0])) {
                 Ok(()) => break,
-                Err(e) => app.message(ui, &e),
+                Err(e) => app.notify(ui, &e),
             }
         }
     }
@@ -932,7 +932,7 @@ pub fn tiling_idle(app: &mut Mb3d, ui: &mut Ui) {
     }
     match r {
         Ok((x, y)) => {
-            app.message(ui, &trf("@MB:TileXYSaved", &[&x, &y]));
+            app.notify(ui, &trf("@MB:TileXYSaved", &[&x, &y]));
             scan_project(app, ui);
             ui.fm(MAIN).set_caption(&app.title.clone());
             let auto = ui.checked(TF, "CheckBox4") || ui.checked(TF, "CheckBox6");
@@ -947,9 +947,9 @@ pub fn tiling_idle(app: &mut Mb3d, ui: &mut Ui) {
         Err(_) if app.tiling.cancel.load(Ordering::SeqCst) => {
             scan_project(app, ui);
             ui.fm(MAIN).set_caption(&app.title.clone());
-            app.message(ui, &tr("@MB:BigRenderStopped"));
+            app.notify(ui, &tr("@MB:BigRenderStopped"));
         }
-        Err(e) => app.message(ui, &trf("@MB:BigRender2", &[&e])),
+        Err(e) => app.notify(ui, &trf("@MB:BigRender2", &[&e])),
     }
 }
 

@@ -359,8 +359,8 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
     // a session before this one that never ended (see log.rs)
     if let Some(u) = crate::log::take_unclean() {
         match &u.crash {
-            Some(c) => app.message(ui, &trf("@MB:TheLastSessionCrashed", &[c])),
-            None => app.message(ui, &trf("@MB:TheLastSessionDidNotEnd", &[&u.sessions])),
+            Some(c) => app.notify(ui, &trf("@MB:TheLastSessionCrashed", &[c])),
+            None => app.notify(ui, &trf("@MB:TheLastSessionDidNotEnd", &[&u.sessions])),
         }
     }
     ui.set_caption(F, "Label3", &version_str());
@@ -471,7 +471,7 @@ pub fn start(app: &mut Mb3d, ui: &mut Ui) {
                     start_timer = false;
                 }
             }
-            Err(e) => app.message(ui, &e),
+            Err(e) => app.notify(ui, &e),
         }
     }
     if let Some((cross, screen)) = app.ini.get_extra(STEREO_SETTINGS).and_then(parse_stereo_settings) {
@@ -1224,7 +1224,7 @@ pub fn calc_mand(app: &mut Mb3d, ui: &mut Ui, calc3d: bool) {
     if app.scene.width < 1 || app.scene.height < 1 {
         // (a size field that is no number reads as 0: said, not a silent
         // nothing)
-        app.message(ui, &tr("@MB:NothingCalculatedThePictureSWidth"));
+        app.notify(ui, &tr("@MB:NothingCalculatedThePictureSWidth"));
         app.main.auto_m3i = None;
         return;
     }
@@ -1334,18 +1334,18 @@ fn parse_stereo_settings(text: &str) -> Option<(bool, [f32; 3])> {
 fn save_stereo_settings(app: &mut Mb3d, ui: &mut Ui) {
     let parsed = ["Edit15", "Edit18", "Edit13"].map(|edit| parse_float(&t(ui, edit)).map(|v| v as f32));
     let [Some(width), Some(distance), Some(minimum)] = parsed else {
-        return app.message(ui, &tr("@MB:StereoSettingsMustBePositiveNumbers"));
+        return app.notify(ui, &tr("@MB:StereoSettingsMustBePositiveNumbers"));
     };
     let screen = [width, distance, minimum];
     if screen.iter().any(|v| !v.is_finite() || *v <= 0.0) {
-        return app.message(ui, &tr("@MB:StereoSettingsMustBePositiveNumbers"));
+        return app.notify(ui, &tr("@MB:StereoSettingsMustBePositiveNumbers"));
     }
     app.scene.stereo_screen = screen;
     let cross = ui.checked(F, "StereoCrossCheck");
     app.ini.set_extra(STEREO_SETTINGS, &format!("{} {} {} {}", cross as u8, screen[0], screen[1], screen[2]));
     match app.ini.save() {
         Ok(()) => app.message(ui, &tr("@MB:SavedStereoSettings")),
-        Err(e) => app.message(ui, &trf("@MB:CouldNotWrite", &[&"Mandelbulb3D.ini", &e])),
+        Err(e) => app.notify(ui, &trf("@MB:CouldNotWrite", &[&"Mandelbulb3D.ini", &e])),
     }
 }
 
@@ -1357,7 +1357,7 @@ fn start_calc(app: &mut Mb3d, ui: &mut Ui, sc: Scene, slice: u8) {
             run_calc(app, sc, slice, crate::checkpoint::Policy::Continue);
         } else {
             not_started(app, ui);
-            app.message(ui, &tr("@MB:TheParametersDoNotMatchThe"));
+            app.notify(ui, &tr("@MB:TheParametersDoNotMatchThe"));
         }
         return;
     }
@@ -1391,7 +1391,7 @@ fn not_started(app: &mut Mb3d, ui: &mut Ui) {
 /// calculation of `key` (the Unfinished renders window).
 pub fn continue_calc(app: &mut Mb3d, ui: &mut Ui, key: &str) {
     if app.eng.running() {
-        app.message(ui, &tr("@MB:ACalculationIsRunningStopIt"));
+        app.notify(ui, &tr("@MB:ACalculationIsRunningStopIt"));
         return;
     }
     app.main.resume_key = Some(key.to_string());
@@ -1629,6 +1629,8 @@ fn short_stage(stage: &str) -> String {
         "post calculations" => tr("@MB:PostCalculations"),
         "post processing" => tr("@MB:PostProcessingLower"),
         "reflections" => tr("@MB:ReflectionsLower"),
+        "emission light" => tr("@MB:EmissionLightLower"),
+        "subsurface light" => tr("@MB:SubsurfaceLightLower"),
         "reflections of the selection" => tr("@MB:ReflectionsOfTheSelection"),
         "depth of field" => tr("@MB:DepthOfFieldLower"),
         "painting a preview" => tr("@MB:PaintingAPreview"),
@@ -2169,7 +2171,7 @@ pub fn idle(app: &mut Mb3d, ui: &mut Ui) {
                 crate::log::info("calc", &format!("stopped after {:.1} s", app.main.calc_start.elapsed().as_secs_f64()));
             } else if !err.is_empty() {
                 crate::log::error("calc", &err);
-                app.message(ui, &err);
+                app.notify(ui, &err);
                 // the errors beginners meet, in words (and the fix offered)
                 if let Some(ex) = super::explain::calc_error(&app.scene, &err) {
                     show_explained(app, ui, ex);
@@ -2352,7 +2354,7 @@ fn denoised(rgb: &[u8], w: usize, h: usize, sigma: f32) -> Vec<u8> {
 /// ([`crate::denoise`]) on the shown picture, which is also the saved one.
 pub fn denoise_picture(app: &mut Mb3d, ui: &mut Ui, sigma: f32) {
     let Some((rgb, w, h)) = app.main.rgb.clone() else {
-        return app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        return app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
     };
     let out = std::sync::Arc::new(denoised(&rgb, w, h, sigma));
     app.main.rgb = Some((out.clone(), w, h));
@@ -2809,7 +2811,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         }
         "Button8Click" => {
             if app.eng.base().is_none() {
-                app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+                app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
                 return;
             }
             let o = crate::vcl::dialogs::FileOptions {
@@ -2841,12 +2843,12 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                     }
                 }
                 Err(e) if e.starts_with(crate::m3p::TEXT_DAMAGED) => {
-                    app.message(ui, &tr("@MB:TheTextParametersOnTheClipboard"));
+                    app.notify(ui, &tr("@MB:TheTextParametersOnTheClipboard"));
                 }
                 // parameters fine, a formula of them not installed (it said
                 // "no text parameters found" before)
                 Err(e) if super::explain::missing_formula_name(&e).is_some() => {
-                    app.message(ui, &e);
+                    app.notify(ui, &e);
                     if let Some(ex) = super::explain::missing_formula(&e) {
                         show_explained(app, ui, ex);
                     }
@@ -2855,7 +2857,7 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
                     if ui.has_form("FTextBox") {
                         ui.show("FTextBox");
                     } else {
-                        app.message(ui, &tr("@MB:NoTextParametersFoundInThe"));
+                        app.notify(ui, &tr("@MB:NoTextParametersFoundInThe"));
                     }
                 }
             }
@@ -2911,10 +2913,17 @@ pub fn event(app: &mut Mb3d, ui: &mut Ui, e: &Event) {
         "FormResize" => {
             place_sticky(app, ui, None, false);
             place_ani(app, ui);
+            if ui.visible(F, "ToastPanel") {
+                position_toast(ui);
+            }
             let ph = ui.c(F, "Panel1").height;
             let mt = ui.c(F, "Memo1").top;
             let p4 = ui.c(F, "Panel4").height;
             ui.cm(F, "Memo1").height = (ph - mt - p4 - 1).clamp(80, 240);
+        }
+        "ToastTimer" => {
+            ui.set_visible(F, "ToastPanel", false);
+            ui.set_enabled(F, "ToastTimer", false);
         }
         "FormCloseQuery" => {
             // (also while the Monte Carlo window renders, Mand.pas:2979)
@@ -3100,7 +3109,7 @@ fn stop_calc(app: &mut Mb3d, ui: &mut Ui) {
     if anim {
         ui.set_caption("AnimationForm", "Button2", &tr("@MB:StartRenderingAnimationImages"));
     }
-    app.message(ui, &if anim { tr("@MB:AnimationRenderingStopped") } else { tr("@MB:CalculationStopped") });
+    app.notify(ui, &if anim { tr("@MB:AnimationRenderingStopped") } else { tr("@MB:CalculationStopped") });
 }
 
 fn speed_button3_click(app: &mut Mb3d, ui: &mut Ui, sender: &str) {
@@ -3298,7 +3307,7 @@ fn image_mouse_down(app: &mut Mb3d, ui: &mut Ui, ev: &Ev) {
                     page_control1_change(app, ui);
                     paras_changed(app, ui);
                 } else {
-                    app.message(ui, &tr("@MB:NoObjectAtThisPoint"));
+                    app.notify(ui, &tr("@MB:NoObjectAtThisPoint"));
                 }
             }
             _ => {
@@ -3452,7 +3461,7 @@ fn text_pars_load_success(app: &mut Mb3d, ui: &mut Ui) {
 
 fn save_pic_dialog(app: &mut Mb3d, ui: &mut Ui, what: &str) {
     if what != "jpgp" && what != "zbuf" && app.main.rgb.is_none() {
-        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
         return;
     }
     let (filter, ext) = match what {
@@ -3557,7 +3566,7 @@ pub fn save_done(app: &mut Mb3d, ui: &mut Ui) {
                 set_save_names(app, ui, &p);
             }
         }
-        Err(e) => app.message(ui, &e),
+        Err(e) => app.notify(ui, &e),
     }
 }
 
@@ -3598,7 +3607,7 @@ fn saved(app: &Mb3d, ui: &mut Ui, res: Result<String, String>, path: &std::path:
             true
         }
         Err(e) => {
-            app.message(ui, &format!("{}: {e}", path.display()));
+            app.notify(ui, &format!("{}: {e}", path.display()));
             false
         }
     }
@@ -3606,20 +3615,31 @@ fn saved(app: &Mb3d, ui: &mut Ui, res: Result<String, String>, path: &std::path:
 
 /// "PNG 16 bit colour": the picture painted again from the kept G-buffer
 /// with the colours as calculated (before the rounding to 8 bit), reduced
-/// by the viewing scale as the 8 bit picture.
+/// by the viewing scale as the 8 bit picture. A stereo preview uses both
+/// retained eye buffers and is composed in its displayed layout.
 fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
-    let Some(b) = app.eng.base() else {
-        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+    let base = app.eng.base();
+    let stereo = app.eng.stereo_base();
+    if base.is_none() && stereo.is_none() {
+        app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
         return;
-    };
+    }
     let s = app.main.image_scale.max(1) as usize;
+    let current = app.scene.clone();
     let text = png_comment(app, ui);
     let ok = trf("@MB:Saved16BitColour", &[&path.display()]);
     let enc: SaveEnc = Box::new(move || {
-        let rgb = crate::render::paint16(&b.scene, &b.params, &b.post);
-        let (rgb, w, h) = if s > 1 { crate::render::downsample(&rgb, b.w, b.h, s) } else { (rgb, b.w, b.h) };
+        let (rgb, w, h, scene) = if let Some(b) = base {
+            (crate::render::paint16(&b.scene, &b.params, &b.post), b.w, b.h, b.scene.clone())
+        } else {
+            let b = stereo.expect("a retained picture was checked above");
+            let scene = b.scene().clone();
+            let (rgb, w, h) = b.paint16(&current);
+            (rgb, w, h, scene)
+        };
+        let (rgb, w, h) = if s > 1 { crate::render::downsample(&rgb, w, h, s) } else { (rgb, w, h) };
         let mut data = crate::png::encode_rgb16(w, h, &rgb);
-        if crate::vr::is_pano(&b.scene, w, h) {
+        if crate::vr::is_pano(&scene, w, h) {
             data = crate::vr::png_with_pano(data, w, h);
         }
         if let Some(t) = text {
@@ -3630,12 +3650,32 @@ fn save_image16(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
     spawn_save(app, ui, path, ok, enc);
 }
 
+/// Shows a main-window log message briefly over the picture as well.
+pub fn toast(ui: &mut Ui, text: &str) {
+    if text.trim().is_empty() {
+        return;
+    }
+    position_toast(ui);
+    ui.set_caption(F, "ToastLabel", text);
+    ui.set_visible(F, "ToastPanel", true);
+    ui.set_enabled(F, "ToastTimer", true);
+    ui.reset_timer(F, "ToastTimer");
+}
+
+fn position_toast(ui: &mut Ui) {
+    let area = ui.c(F, "Panel5").width;
+    let width = 420.min((area - 24).max(160));
+    let left = ((area - width) / 2).max(0);
+    ui.cm(F, "ToastPanel").set_bounds(left, 84, width, 44);
+    ui.cm(F, "ToastLabel").set_bounds(10, 5, width - 20, 34);
+}
+
 /// "OpenEXR": the colours in floating point (not clipped above white) with
 /// the opacity, depth and normal layers ([`crate::exr`]), reduced by the
 /// viewing scale.
 fn save_exr(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
     let Some(b) = app.eng.base() else {
-        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
         return;
     };
     let s = app.main.image_scale.max(1) as usize;
@@ -3651,11 +3691,11 @@ fn save_exr(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
 /// transparent ([`crate::frames::rgba_of`]), reduced by the viewing scale.
 fn save_transparent(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
     let (Some((rgb, w, h)), Some(b)) = (app.main.rgb.clone(), app.eng.base()) else {
-        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
         return;
     };
     if b.post.len() != w * h {
-        app.message(ui, &tr("@MB:ThePictureDoesNotMatchIts"));
+        app.notify(ui, &tr("@MB:ThePictureDoesNotMatchIts"));
         return;
     }
     let s = app.main.image_scale.max(1) as usize;
@@ -3678,7 +3718,7 @@ fn save_transparent(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path) {
 /// offset, scale and inversion of the Z-buffer 16 bit window (`MakeZbufPGM`).
 fn save_zbuf(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path, kind: usize) {
     let Some(b) = app.eng.base() else {
-        app.message(ui, &tr("@MB:CalculateTheImageFirst"));
+        app.notify(ui, &tr("@MB:CalculateTheImageFirst"));
         return;
     };
     let res = if kind == 3 {
@@ -3702,7 +3742,7 @@ fn save_zbuf(app: &mut Mb3d, ui: &mut Ui, path: &std::path::Path, kind: usize) {
     };
     match res {
         Ok(p) => app.message(ui, &trf("@MB:Saved2", &[&p.display()])),
-        Err(e) => app.message(ui, &format!("{}: {e}", path.display())),
+        Err(e) => app.notify(ui, &format!("{}: {e}", path.display())),
     }
 }
 
@@ -3809,14 +3849,14 @@ fn camera_file_chosen(app: &mut Mb3d, ui: &mut Ui, what: &str, p: &std::path::Pa
         let p = p.with_extension(ext);
         match crate::m3p::write_file(&p, text.as_bytes()) {
             Ok(()) => app.message(ui, &trf("@MB:Saved2", &[&p.display()])),
-            Err(e) => app.message(ui, &format!("{}: {e}", p.display())),
+            Err(e) => app.notify(ui, &format!("{}: {e}", p.display())),
         }
         return;
     }
     let text = match cf::read_text(p) {
         Ok(t) => t.unwrap_or_default(),
         Err(e) => {
-            app.message(ui, &format!("{}: {e}", p.display()));
+            app.notify(ui, &format!("{}: {e}", p.display()));
             return;
         }
     };
@@ -3911,7 +3951,7 @@ pub fn open_file(app: &mut Mb3d, ui: &mut Ui, p: &std::path::Path) {
             show_image(app, ui);
         }
         Err(e) => {
-            app.message(ui, &e);
+            app.notify(ui, &e);
             // a formula that is not installed: what to do, in words
             if let Some(ex) = super::explain::missing_formula(&e) {
                 show_explained(app, ui, ex);
@@ -4039,7 +4079,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
                     set_save_names(app, ui, &p);
                     app.message(ui, &trf("@MB:Saved2", &[&p.display()]));
                 }
-                Err(e) => app.message(ui, &format!("{}: {e}", p.display())),
+                Err(e) => app.notify(ui, &format!("{}: {e}", p.display())),
             }
         }
         ("savem3i", DialogResult::File(Some(p))) => {
@@ -4085,7 +4125,7 @@ pub fn dialog(app: &mut Mb3d, ui: &mut Ui, what: &str, r: &DialogResult) {
             app.make_scene(ui);
             let m3p = p.with_extension("m3p");
             if let Err(e) = crate::m3p::write_file(&m3p, &crate::m3p::write(&app.scene)) {
-                app.message(ui, &format!("{}: {e}", m3p.display()));
+                app.notify(ui, &format!("{}: {e}", m3p.display()));
             }
             // (the picture follows on a background thread; the window takes
             // its name when it is done, in save_done)

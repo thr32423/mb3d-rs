@@ -1635,7 +1635,7 @@ mod tests {
         assert_eq!(parse(&raw_from_text(&raw_to_text(&raw, "t")).unwrap().0).unwrap().scene.clouds, cl.clouds);
         // the surface material
         let mut m = plain.clone();
-        m.material = Some(crate::scene::Material { fresnel: 0.5, iridescence: 0.75, irid_shift: 0.25, glow: 1.5 });
+        m.material = Some(crate::scene::Material { fresnel: 0.5, iridescence: 0.75, irid_shift: 0.25, glow: 1.5, emission: [0.0, 0.0, 2.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0], cast_rays: 8, subsurface: [0.0, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], subsurface_depth: 0.05 });
         assert_eq!(parse(&write(&m)).unwrap().scene.material, m.material);
         // the second part's place
         let mut q = plain.clone();
@@ -1699,7 +1699,7 @@ mod tests {
         let mut sc = Scene::preset("Integer Power").unwrap();
         sc.width = 6;
         sc.height = 4;
-        sc.material = Some(crate::scene::Material { fresnel: 0.5, iridescence: 0.75, irid_shift: 0.25, glow: 1.5 });
+        sc.material = Some(crate::scene::Material { fresnel: 0.5, iridescence: 0.75, irid_shift: 0.25, glow: 1.5, emission: [0.0, 0.0, 2.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0], cast_rays: 8, subsurface: [0.0, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], subsurface_depth: 0.05 });
         let g = vec![crate::gbuffer::SiLight::default(); 24];
         let rgb: Vec<u8> = (0..24 * 3).map(|i| (i * 5) as u8).collect();
         let p = std::env::temp_dir().join(format!("mb3d-m3i-img-{}.m3i", std::process::id()));

@@ -3511,6 +3511,34 @@ object Mand3DForm: TMand3DForm
         end
       end
     end
+    object ToastPanel: TPanel
+      Left = 99
+      Top = 84
+      Width = 420
+      Height = 44
+      BevelOuter = bvRaised
+      TabOrder = 3
+      Visible = False
+      object ToastLabel: TLabel
+        Left = 10
+        Top = 5
+        Width = 400
+        Height = 34
+        Alignment = taCenter
+        AutoSize = False
+        Font.Style = [fsBold]
+        Layout = tlCenter
+        ParentFont = False
+        WordWrap = True
+      end
+    end
+  end
+  object ToastTimer: TTimer
+    Enabled = False
+    Interval = 4000
+    OnTimer = ToastTimer
+    Left = 400
+    Top = 136
   end
   object Timer1: TTimer
     Enabled = False

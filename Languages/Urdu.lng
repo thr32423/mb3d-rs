@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=اینیمیشن: ffmpeg کمانڈ کلپ بور�
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=اینیمیشن: ویڈیو لکھی گئی: {}
 ;Animation: video written: {}
+AnimationFramesRendered=اینیمیشن: تمام {} فریم بن گئے۔
+;Animation: all {} frames rendered.
 Animations=اینیمیشنز
 ;Animations
 AnotherFolder=کوئی اور فولڈر…
@@ -1201,6 +1203,9 @@ Elapsed=گزرا وقت
 ;Elapsed
 ElapsedTimeS=گزرا وقت: {} s
 ;Elapsed time: {} s
+EmissionLightLower=اخراج کی روشنی
+SubsurfaceLightLower=سطح کے نیچے کی روشنی
+;emission light
 Enable=فعال
 ;Enable
 EnableGeneratingZBufferThisMode=z-buffer بنانا فعال کریں۔ اس موڈ کو اضافی ڈیٹا درکار ہے جو اسے پچھلے ورژنز سے غیر مطابق بناتا ہے، اس لیے اس ترتیب والی MC فائلیں محفوظ/بحال نہیں ہو سکتیں۔ z-buffer محفوظ کرنے کے لیے بس عام تصویر محفوظ کریں، z-buffer پھر خودکار طور پر ساتھ محفوظ ہو جاتا ہے۔
@@ -2259,6 +2264,22 @@ MapType=نقشے کی قسم:
 ;Map Type:
 MapsOfTheCalculatedPicture=حساب شدہ تصویر کے نقشے:
 ;Maps of the calculated picture:
+MatEmission=اخراج:
+;Emission:
+MatEmissionHint=دس اعداد، پیلیٹ کے ہر رنگ کے لیے ایک، بائیں سے دائیں (0 یا زیادہ): جہاں سطح کا وہ رنگ ہو وہاں وہ اسی رنگ میں چمکتی ہے۔\nمثال: 20 0 0 0 0 0 0 0 0 0 پہلے رنگ کو چمکاتا ہے۔
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=روشنی کی شعاعیں:
+;Light rays:
+MatLightRaysHint=وہ شعاعیں جو ہر پکسل اس روشنی کے لیے بھیجتا ہے جو چمکتے حصے اپنے اردگرد ڈالتے ہیں (0 = کوئی نہیں، عام طور پر 8 سے 16، زیادہ سے زیادہ 64)۔\nزیادہ شعاعیں: کم شور، زیادہ وقت۔
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=سطح کے نیچے:
+;Subsurface:
+MatSubsurfaceHint=دس اعداد، پیلیٹ کے ہر رنگ کے لیے ایک، بائیں سے دائیں (0 سے 1): جہاں سطح کا وہ رنگ ہو وہاں روشنی اس میں داخل ہوتی ہے اور نرم اور رنگین ہو کر نکلتی ہے، اور پتلے حصے پیچھے سے روشن ہونے پر چمکتے ہیں (موم، یشب، سنگ مرمر)۔\nمثال: 0 1 0 0 0 0 0 0 0 0 دوسرے رنگ کے لیے۔
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=گہرائی:
+;Depth:
+MatSubsurfaceDepthHint=روشنی مادے میں کتنی دور جاتی ہے، تصویر کی چوڑائی کے حصے کے طور پر (عام طور پر 0.03؛ زیادہ: روشنی موٹے حصوں سے گزرتی ہے)۔
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=مادہ
 ;Material
 Max=Max

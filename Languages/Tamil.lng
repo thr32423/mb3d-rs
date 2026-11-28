@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=அனிமேஷன்: ffmpeg கட்டள�
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=அனிமேஷன்: வீடியோ எழுதப்பட்டது: {}
 ;Animation: video written: {}
+AnimationFramesRendered=அசைவூட்டம்: அனைத்து {} சட்டகங்களும் உருவாக்கப்பட்டன.
+;Animation: all {} frames rendered.
 Animations=அனிமேஷன்கள்
 ;Animations
 AnotherFolder=வேறு கோப்புறை…
@@ -1201,6 +1203,9 @@ Elapsed=கழிந்தது
 ;Elapsed
 ElapsedTimeS=கழிந்த நேரம்: {} வி
 ;Elapsed time: {} s
+EmissionLightLower=உமிழ்வு ஒளி
+SubsurfaceLightLower=மேற்பரப்புக்கு அடியிலான ஒளி
+;emission light
 Enable=இயக்கு
 ;Enable
 EnableGeneratingZBufferThisMode=z-buffer உருவாக்கத்தை இயக்கு. இந்த முறைக்குக் கூடுதல் தரவு தேவை, அது முந்தைய பதிப்புகளுடன் பொருந்தாது, எனவே இந்த அமைப்புடன் MC கோப்புகளைச் சேமிக்க/மீட்க முடியாது. z-buffer ஐச் சேமிக்க சாதாரணப் படத்தைச் சேமிக்கவும், z-buffer தானாகச் சேமிக்கப்படும்.
@@ -2259,6 +2264,22 @@ MapType=வரைபட வகை:
 ;Map Type:
 MapsOfTheCalculatedPicture=கணக்கிட்ட படத்தின் வரைபடங்கள்:
 ;Maps of the calculated picture:
+MatEmission=உமிழ்வு:
+;Emission:
+MatEmissionHint=பத்து எண்கள், தட்டின் ஒவ்வொரு நிறத்துக்கும் ஒன்று, இடமிருந்து வலமாக (0 மற்றும் மேல்): மேற்பரப்பு அந்த நிறத்தில் இருக்கும் இடத்தில் அது அந்த நிறத்தில் ஒளிரும்.\nஎடுத்துக்காட்டு: 20 0 0 0 0 0 0 0 0 0 முதல் நிறத்தை ஒளிரச் செய்கிறது.
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=ஒளிக்கதிர்கள்:
+;Light rays:
+MatLightRaysHint=ஒளிரும் பகுதிகள் சுற்றியுள்ளவற்றின் மீது வீசும் ஒளிக்காக ஒவ்வொரு பிக்சலும் அனுப்பும் கதிர்கள் (0 = இல்லை, வழக்கமாக 8 முதல் 16, அதிகபட்சம் 64).\nஅதிக கதிர்கள்: குறைந்த இரைச்சல், அதிக நேரம்.
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=மேற்பரப்புக்கு அடியில்:
+;Subsurface:
+MatSubsurfaceHint=தட்டின் ஒவ்வொரு நிறத்துக்கும் இடமிருந்து வலமாக ஒன்று, பத்து எண்கள் (0 முதல் 1): மேற்பரப்பு அந்த நிறமாக இருக்கும் இடத்தில் ஒளி உள்ளே சென்று மென்மையாகவும் நிறம் பெற்றும் வெளிவருகிறது, மெல்லிய பகுதிகள் பின்னால் இருந்து ஒளி படும்போது ஒளிர்கின்றன (மெழுகு, பச்சைக்கல், பளிங்கு).\nஎடுத்துக்காட்டு: 0 1 0 0 0 0 0 0 0 0 இரண்டாவது நிறத்துக்கு.
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=ஆழம்:
+;Depth:
+MatSubsurfaceDepthHint=ஒளி பொருளுக்குள் எவ்வளவு தூரம் செல்கிறது, படத்தின் அகலத்தின் பங்காக (வழக்கமாக 0.03; அதிகம்: ஒளி தடிமனான பகுதிகள் வழியாகச் செல்லும்).
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=பொருள்
 ;Material
 Max=Max

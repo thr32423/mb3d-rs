@@ -187,6 +187,17 @@ pub fn combo_rows(f: &Form, id: Id) -> i32 {
     (combo_list_rect(f, id).h - 2) / (line_height(&f.font(id)) + 2)
 }
 
+/// The vertical scroll bar of a combo box's drop-down list: its rectangle,
+/// the rows shown at once and the largest top row. None when all items
+/// fit. Painting and the mouse both use it, so a click lands on the bar
+/// that is drawn.
+pub fn combo_scrollbar(f: &Form, id: Id) -> Option<(Rect, i32, i32)> {
+    let lr = combo_list_rect(f, id);
+    let vis = combo_rows(f, id).max(1);
+    let max = (f.ctl[id].items.len() as i32 - vis).max(0);
+    (max > 0).then(|| (Rect::new(lr.right() - 1 - SB, lr.y + 1, SB, lr.h - 2), vis, max))
+}
+
 pub const MENU_ITEM_H: i32 = 22;
 pub const MENU_SEP_H: i32 = 9;
 
@@ -1205,9 +1216,8 @@ impl Form {
         cv.fill(lr, th.window());
         cv.frame(lr, th.menu_border());
         let ih = line_height(&font) + 2;
-        let vis = (lr.h - 2) / ih;
-        let need_sb = c.items.len() as i32 > vis;
-        let ir0 = Rect::new(lr.x + 1, lr.y + 1, lr.w - 2 - if need_sb { SB } else { 0 }, lr.h - 2);
+        let sb = combo_scrollbar(self, id);
+        let ir0 = Rect::new(lr.x + 1, lr.y + 1, lr.w - 2 - if sb.is_some() { SB } else { 0 }, lr.h - 2);
         let old = cv.clip_to(ir0);
         for (i, it) in c.items.iter().enumerate().skip(top.max(0) as usize) {
             let y = ir0.y + (i as i32 - top) * ih;
@@ -1224,9 +1234,10 @@ impl Form {
             }
         }
         cv.set_clip(old);
-        if need_sb {
-            let sr = Rect::new(lr.right() - 1 - SB, lr.y + 1, SB, lr.h - 2);
-            paint_scrollbar(cv, th, sr, true, 0, c.items.len() as i64 - vis as i64, vis as i64, top as i64, PART_NONE, PART_NONE, true);
+        if let Some((sr, vis, max)) = sb {
+            let hp = if self.hot == Some(id) { self.hot_part } else { PART_NONE };
+            let pressed = if self.capture == Some(id) { self.cap_part } else { PART_NONE };
+            paint_scrollbar(cv, th, sr, true, 0, max as i64, vis as i64, top as i64, hp, pressed, true);
         }
     }
 

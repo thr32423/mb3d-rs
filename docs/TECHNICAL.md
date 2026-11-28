@@ -1178,6 +1178,17 @@ is written from the published algorithm only.
   the original program.
 * Points exactly on the z axis are degenerate in MB3D's triplex formulas
   (division by `x² + y²`). This is kept as in the original.
+* **Menger formulas in Julia mode (since 0.3.16):** in MB3D, Julia mode
+  does nothing to the Menger formulas (Menger3, Menger4, MengerIFS,
+  MengerSmt, CrossMenger, ... every formula with "Menger" in its name but
+  the dIFS ones): they never read the Julia constant. Now, with Julia mode
+  on, the Julia constant is added to x, y, z after each Menger step, as the
+  `_addC` transform does (reported by Geoffrey N. Barnes). With Julia mode
+  off nothing changes. Older pictures that combine a Menger formula with
+  Julia mode on look different now; 6 of MB3D's 80 example files do
+  (*Hyperben2 - Ozosphere tweak*, *KentPress - Parameter 3 tweak fogits*,
+  *Theli-At - MengerSpheres*, *julia on box*, *Abominog-Ua*, *Dainbramage -
+  Nothing left but bones*).
 
 ## Videos
 
@@ -1197,6 +1208,116 @@ a `-pattern_type glob` input when the file index steps by more than 1.
 `mb3d animate` prints it at the end; the Animation maker's *FFmpeg
 command* copies it to the clipboard. The program itself starts no other
 programs (until 0.2.42 it ran ffmpeg, which code scanners flag).
+
+## Emission: parts of the surface as light sources
+
+The surface material (`scene::Material`) lets the surface shine in its own
+colour: `glow` everywhere, `emission` by palette colour (ten strengths, one
+per colour; `LightVals::emission_at` reads them at the place the surface
+has in the palette, `palette_place`, which is `CalcColors`' search). The
+shading adds the surface's diffuse colour times that strength. Monte Carlo
+adds it at every hit of a path, so there the shining parts light their
+surroundings by the paths' bounces.
+
+For the painting, `src/emission.rs` casts that light in a pass of its own
+(the stage "emission light", when `material_light_rays` > 0):
+
+1. **Light samples.** Every shining pixel of the picture is a light sample:
+   its place (`Marcher::surface_point`), its normal, its colour times its
+   emission, and the area of surface the pixel shows (the pixel's width at
+   its depth, squared, over the cosine to the view). More than 65536: every
+   n-th, standing for n.
+2. **Aimed rays.** Each pixel sends `material_light_rays` rays, each to one
+   light sample: 8 candidates are drawn by power (brightness times area),
+   one is kept by what it would give the pixel with nothing in between (the
+   two cosines over the squared distance), and the ray's light is the kept
+   sample's over the chance it had (resampled importance sampling; the
+   choice of ReSTIR without its reuse in space and time). The light counts
+   when the ray reaches the sample.
+3. **Searching rays.** Shining parts the picture does not show (in gaps
+   seen from the side, behind other parts) have no light sample. As many
+   rays per pixel go out over the half space above the surface, more of
+   them towards the normal; a ray that meets a shining surface brings its
+   light when no light sample lies there (a grid of cells three pixel
+   widths wide over the samples), so no part counts twice.
+4. **The rays** run through the card's reflection march
+   (`gpu::reflect_batch`, the pipeline without shadows and occlusion) when
+   that shader is compiled, else on the CPU through the pixel march
+   (`Marcher::march_ray_from`); a scene new to the card compiles the shader
+   meanwhile.
+5. **Smoothing.** Four rounds of a 5x5 filter with growing holes (à trous)
+   over the pixels that show the same surface (the normal within about
+   45°, the place within 1.5 pixel widths of the pixel's plane per pixel of
+   distance).
+
+The result (`EmitLight`, a colour per pixel) is added in `LightVals::shade`
+as a light's diffuse part, on the pixel's own surface only
+(`ShadeOpts::own_pixel`; the reflection pass sets it for the surface its
+rays start from, not for what they hit, which only shines). It is kept
+while the picture's surfaces, the palette and the material stay the same
+(`signature`), so a repaint with other lights or fog does not calculate it
+again. Not on tiles (a tile does not see the other tiles' shining parts)
+and not in inside rendering. `MB3D_EMISSION_TIMING=1` prints the stages,
+`MB3D_EMISSION_RAW=1` leaves the smoothing out, `MB3D_EMISSION_CPU=1` keeps
+the rays off the card.
+
+The idea of light sources chosen by palette colour is Mandelbulb3D SE's
+(Glenn Olander; its emissive dIFS shapes with an opacity per colour, 64
+searching rays per pixel). None of its code is used.
+
+## Subsurface scattering: light through the material
+
+`Material::subsurface` gives each palette colour an amount (0..1, read as
+the emission is, `LightVals::subsurface_at`): where the surface has that
+colour, light goes into it, spreads and comes out softened and tinted.
+`material_subsurface_depth` is how far it goes: after that much of the
+picture's width (default 0.03) e^-1 of the light is left, more of the
+surface's own colours (`subsurface::tint`: a colour channel goes 0.25 to
+1 times as far, by its share of the diffuse colour's brightest).
+
+The painting (`src/subsurface.rs`, the stage "subsurface light"):
+
+1. **Lines.** For every pixel with an amount and every lamp not in front
+   of the surface: a line from just under the surface towards the lamp,
+   with the lamp's share: from behind fully, from the side half
+   (`0.5 - 0.5 n·l`), more where the light goes on towards the eye
+   (`0.5 + 1.5 (l·v)^4`), a positional lamp by its distance squared.
+2. **Thickness.** A ray inside the set (inside rendering's march) to where
+   the line comes out; more than 3 depths: no light.
+3. **Shadow.** From there on towards the lamp, the ordinary march, up to
+   twice the picture's width (a positional lamp: to the lamp).
+4. **Light.** The lamp's colour times e^-(thickness / depth / tint) times
+   its share; lone bright pixels limited to 1.5 times their second
+   brightest neighbour (a part thinner than a pixel lets everything
+   through where its neighbours let nothing), then the emission's
+   smoothing.
+
+Both ray batches run through the card's reflection march
+(`gpu::reflect_batch`, `ReflectTask::inside` for the thickness) when that
+shader is compiled, else on the CPU through `Marcher::march_ray_from`;
+card and CPU give the same light within about 1 % (single pixels on
+glowing edges differ). The shading adds the result as a light's diffuse
+part (as `EmitLight`), and wraps the lamps' diffuse light by half the
+amount around the side turned away (`(cos + w) / (1 + w)`; a hard shadow
+still darkens that side).
+
+Monte Carlo (`mc.rs`): the same direct light per hit (`sss_direct`: the
+thickness with a march through the material, `McReq` kind 2, and the
+lamp's shadow beyond, kind 1), the same wrap in `calc_phong_light`, and a
+second diffuse bounce, mirrored into the material, that comes out on the
+far side weakened and tinted and goes on from there (drawn with the
+chance of half the amount), so light from the sky, other parts and
+shining parts comes through thin parts. Without subsurface the paths and
+their random numbers are as before.
+
+Light that scatters many times inside a thick part (the glow just under a
+lit surface) is not modelled beyond the wrap. Not on tiles, not in inside
+rendering. `MB3D_SUBSURFACE_TIMING=1` prints the stages,
+`MB3D_SUBSURFACE_CPU=1` keeps the rays off the card.
+
+Mandelbulb3D SE (Glenn Olander) has subsurface scattering for its
+transparent dIFS parts; the depth as a part of the picture's width is its
+idea. None of its code is used.
 
 ## The Navigator and the main window's picture
 

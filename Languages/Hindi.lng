@@ -277,6 +277,8 @@ AnimationTheFfmpegCommandIsOn=एनिमेशन: ffmpeg कमांड क�
 ;Animation: the ffmpeg command is on the clipboard (run it in a terminal when the frames are done):
 AnimationVideoWritten=एनिमेशन: वीडियो लिखा गया: {}
 ;Animation: video written: {}
+AnimationFramesRendered=एनिमेशन: सभी {} फ़्रेम बन गए।
+;Animation: all {} frames rendered.
 Animations=एनिमेशन
 ;Animations
 AnotherFolder=दूसरा फ़ोल्डर…
@@ -1201,6 +1203,9 @@ Elapsed=बीता समय
 ;Elapsed
 ElapsedTimeS=बीता समय: {} s
 ;Elapsed time: {} s
+EmissionLightLower=उत्सर्जन की रोशनी
+SubsurfaceLightLower=सतह के नीचे की रोशनी
+;emission light
 Enable=सक्षम करें
 ;Enable
 EnableGeneratingZBufferThisMode=Z-बफ़र बनाना चालू करें। इस मोड को अतिरिक्त डेटा चाहिए जो इसे पिछले संस्करणों के साथ असंगत बनाता है, इसलिए इस सेटिंग वाली MC फ़ाइलें सहेजी/पुनर्स्थापित नहीं की जा सकतीं। Z-बफ़र सहेजने के लिए बस सामान्य छवि सहेजें, Z-बफ़र तब अपने आप सहेज लिया जाता है।
@@ -2259,6 +2264,22 @@ MapType=मैप प्रकार:
 ;Map Type:
 MapsOfTheCalculatedPicture=गणना किए चित्र के मैप:
 ;Maps of the calculated picture:
+MatEmission=उत्सर्जन:
+;Emission:
+MatEmissionHint=दस संख्याएँ, पैलेट के हर रंग के लिए एक, बाएँ से दाएँ (0 या अधिक): जहाँ सतह का वह रंग है वहाँ वह उसी रंग में चमकती है।\nउदाहरण: 20 0 0 0 0 0 0 0 0 0 पहले रंग को चमकाता है।
+;Ten numbers, one for each colour of the palette from left to right (0 and up): where the surface has that colour it shines in it.\nExample: 20 0 0 0 0 0 0 0 0 0 lets the first colour shine.
+MatLightRays=प्रकाश किरणें:
+;Light rays:
+MatLightRaysHint=वे किरणें जो हर पिक्सेल उस रोशनी के लिए भेजता है जो चमकते हिस्से अपने आसपास डालते हैं (0 = कोई नहीं, सामान्यतः 8 से 16, अधिकतम 64)।\nअधिक किरणें: कम शोर, अधिक समय।
+;The rays each pixel sends for the light the shining parts cast on what is around them (0 = none, 8 to 16 is usual, at most 64).\nMore rays: less noise, more time.
+MatSubsurface=सतह के नीचे:
+;Subsurface:
+MatSubsurfaceHint=दस संख्याएँ, पैलेट के हर रंग के लिए एक, बाएँ से दाएँ (0 से 1): जहाँ सतह का वह रंग है वहाँ रोशनी उसमें जाती है और नरम व रंगीन होकर निकलती है, और पतले हिस्से पीछे से रोशनी पड़ने पर चमकते हैं (मोम, जेड, संगमरमर)।\nउदाहरण: 0 1 0 0 0 0 0 0 0 0 दूसरे रंग के लिए।
+;Ten numbers, one for each colour of the palette from left to right (0 to 1): where the surface has that colour, light goes into it and comes out softened and tinted, and thin parts glow when lit from behind (wax, jade, marble).\nExample: 0 1 0 0 0 0 0 0 0 0 for the second colour.
+MatSubsurfaceDepth=गहराई:
+;Depth:
+MatSubsurfaceDepthHint=रोशनी पदार्थ में कितनी दूर जाती है, चित्र की चौड़ाई के हिस्से के रूप में (आम तौर पर 0.03; ज़्यादा: रोशनी मोटे हिस्सों से गुज़रती है)।
+;How far light goes into the material, as a part of the picture's width (0.03 is usual; more: light comes through thicker parts).
 Material=सामग्री
 ;Material
 Max=Max

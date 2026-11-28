@@ -7,7 +7,7 @@
 <!-- languages:end -->
 
 <!-- latest:start -->
-**Latest release: [v0.3.19](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.19)** (28 Nov 2026, 05:24 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
+**Latest release: [v0.3.20](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.20)** (28 Nov 2026, 11:14 UTC) · [Download](#download) · [What's new](docs/UPDATES.md)
 <!-- latest:end -->
 
 mb3d-rs is [Mandelbulb3D](https://github.com/thargor6/mb3d) (MB3D), the
@@ -1542,6 +1542,29 @@ Each commit links to its full description and code on GitHub; the downloads
 of a release are on its page. Times are in UTC.
 
 <!-- updates:start -->
+### [v0.3.20](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.20) · 28 Nov 2026, 11:14 UTC
+
+| Commit | What it does |
+|---|---|
+| [`07ea9f6`](https://github.com/thr32423/mb3d-rs/commit/07ea9f68a8588cbdf23c3c116c1baae41bc250b2) | Version number and release notes of this release |
+| [`b0281e9`](https://github.com/thr32423/mb3d-rs/commit/b0281e9b6ded8bb096a4b1e5f40de921b8eede4d) | Graphics card code and lifter, what was written several times: the wait for a read-back buffer (Gpu::map_read, six copies), the storage buffer filled with words (Gpu::words_buffer, four), the stack cells a formula's call pushes (lift::call_cell and stack_init, three). The generated Rust and the WGSL of the 510 translatable formulas are the same text as v0.3.19's, the 80 example files byte-identical on the CPU, and on one graphics card (the two cards together share the rows by timing and differ) the 58 files without the card's reflection pass are byte-identical to v0.3.19's repeated runs |
+| [`c957d44`](https://github.com/thr32423/mb3d-rs/commit/c957d44b32a205dd176e4ff9919ae20a006b158a) | Formula lifter: what its three code generators (Rust, WGSL, Cranelift) wrote out each on their own is in one place: the block starts and the blocks' order (Prog::block_keys, three copies), the layout of the structured code (Layout: reverse post order, loops, label scopes; structure and structure_wgsl each built it, the writing of the text stays apart), region, fop and STACK_LOW. The generated Rust (90,167 lines) and the WGSL of the 510 translatable formulas (also as dIFS) are the same text as v0.3.19's, the 80 example files byte-identical on the CPU |
+| [`f3eed25`](https://github.com/thr32423/mb3d-rs/commit/f3eed250f67f2f75f70c43112911db6018724335) | Command line: the MB3D parameters and text parameters of --save-m3p/--save-text are written in one place (save_params) for a parameter file copied as it is and for a converted scene; the files and messages of six example files are the same as v0.3.19's on both paths |
+| [`d8492b7`](https://github.com/thr32423/mb3d-rs/commit/d8492b79159db7cfd4074e1da7849023ab7b4472) | The time left over items of the same cost (ItemsLeft, blend) lives in one module both builds have (items_left.rs): the command line kept its own copy for the build without the windows |
+| [`51f9a63`](https://github.com/thr32423/mb3d-rs/commit/51f9a63ad6eeac25522db538bc5238acbc3a70aa) | The reflection pass's context and tracer are built in one place each (SrCtx::new, SrTracer::new) for the CPU and the card: the two copies of each were the same but for the card's flag and its missing transparent water. The 80 example files render byte-identical to v0.3.19 on the CPU; the card's pictures do not repeat from run to run (v0.3.19 against itself differs as much), so that path was read line by line |
+| [`273f734`](https://github.com/thr32423/mb3d-rs/commit/273f7342cea7884482437c88a8185642aefcf772) | The single-precision vector helpers of the Monte Carlo renderer and the reflections (s3, d3, add3, sub3, mul3, sc3, dot3, luma, spow, lin2, norm_to: the same eleven functions in both files) are one module, svec |
+| [`19fffcd`](https://github.com/thr32423/mb3d-rs/commit/19fffcdf7d68d7a07d71464c985ff29567091513) | Twin functions: swarm's write_atomic is the checkpoint's, m3f's build_rot_matrix is math's |
+| [`7bdcbd5`](https://github.com/thr32423/mb3d-rs/commit/7bdcbd55b62e7f83d17b87f662c104f120237afb) | A list box's visible rows are counted in one place (Form::listbox_rows): the painting and the scroll bar's hit test took the whole height of a box without a border, the arrows, the thumb, the wheel and the keys 4 pixels less, so End scrolled such a box one row too far when its height left under 4 pixels over (none of today's windows: heights 97, 369 and 25 at 13 a row). Test |
+| [`0778691`](https://github.com/thr32423/mb3d-rs/commit/07786917733a7f6b5941813019a0f52a0cfe944d) | A swarm tile whose only post calculation is the normals on the Z-buffer named it "ambient occlusion": its stage name is post_stage_name's, as everywhere else (test). MB3D_STAGE_TIMES=0 printed the cone march's line all the same: the print asks stage_times_on, as the measuring does |
+| [`9d8c88a`](https://github.com/thr32423/mb3d-rs/commit/9d8c88aa52b1cc78ef5bbd0ebdf412a8e721208d) | Lighting, Open: after the folders were changed in the Ini-dirs window the dialog opened in the folder of the last .m3l all the same: the window kept that folder itself (open_dir), beside the dialogs' own memory per dialog, which the Ini-dirs window does clear. Its own copy is gone; the dialogs' test also covers the folders forgotten |
+| [`b57b1b6`](https://github.com/thr32423/mb3d-rs/commit/b57b1b64bdce3af680345c8ed6d78e349ab827fe) | Alt+Down opens the list of a combo box one can type in: the arrows were handled first, so it picked the next item instead (F4 opened it). Test |
+| [`362147d`](https://github.com/thr32423/mb3d-rs/commit/362147d6eb2585bf9b47a49cf84fea5a97817dca) | Comments back on their functions (post_job, m3p::write, start_rendering, listview_tiles), comments that named what is gone (no_stage, calculate_inner, idx_switch's parameters, HELPERS, the card's "prototype"), statements that did nothing (reflect's rlast_de written and never read again, paint's hot_part_v that was always true, an empty if, a colour chosen from two equal branches, calc's unused binding) |
+| [`301a24e`](https://github.com/thr32423/mb3d-rs/commit/301a24e1534f732b5e4b0e6e0c35fd87433281a6) | Windows: the three lines that wake the event loop from a thread, written 33 times, are util::wake |
+| [`58e1169`](https://github.com/thr32423/mb3d-rs/commit/58e1169fd4d76a20e1b82794ee3eee45979e15c9) | Locks: the 40 hand-written lock().unwrap_or_else(\|e\| e.into_inner()) are sync's locked(), which is that; no warnings left in the build without the card (material_rays is the card's, subsurface's counter changes there only) |
+| [`7db881b`](https://github.com/thr32423/mb3d-rs/commit/7db881bdaf046ae6d1f8fa26c25d220c7bab2466) | Unused code removed: paint_timed, paint_timed_cancellable, calculate_raw_rows (render), denoise_rgb (oidn), Machine::clear_cache, Canvas::set_origin and gradient_h; the statistics' post_s and hits (hits counted every pixel of every calculation and nothing read it), Output::was_calc3d, MutaGen's uuid, the English COMPILE_NOTE beside compile_note(), shown_picture (it only called saved_image); statements that only silenced a warning (anim_form, formula_form, main_form, formula_book_form) |
+| [`7e58619`](https://github.com/thr32423/mb3d-rs/commit/7e586197d9cc5270ecf48d6dd878867d4e8a2081) | Theme: 19 matches on the theme family whose two arms were the same expression are that expression |
+| [`55871c7`](https://github.com/thr32423/mb3d-rs/commit/55871c76f7392fd226ed39179c26bba53051035a) | README: Updates for v0.3.19 |
+
 ### [v0.3.19](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.19) · 28 Nov 2026, 05:24 UTC
 
 | Commit | What it does |
@@ -1591,15 +1614,7 @@ of a release are on its page. Times are in UTC.
 | [`6a10ddd`](https://github.com/thr32423/mb3d-rs/commit/6a10ddd76f7a71e9a53b6b000d9365608409c5a9) | README: Updates for v0.3.17 |
 | [`02ddec0`](https://github.com/thr32423/mb3d-rs/commit/02ddec095e39074cc132b7c73d63e07320a91949) | Save stereo previews as 16-bit PNG and show message toasts |
 
-### [v0.3.17](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.17) · 27 Nov 2026, 06:59 UTC
-
-| Commit | What it does |
-|---|---|
-| [`903b737`](https://github.com/thr32423/mb3d-rs/commit/903b737ac8c76ae299aeddfaeeab39a94a9f998c) | Version number and release notes of this release |
-| [`37a6bb1`](https://github.com/thr32423/mb3d-rs/commit/37a6bb1541864f8ff65b3cf08926cecabea16906) | Formula lists: the blank row clears the formula; Menger Julia mode in the program (reported by Geoffrey N. Barnes) |
-| [`36b231e`](https://github.com/thr32423/mb3d-rs/commit/36b231e5b8234b214c51db109ecb2608da9a69c7) | README: Updates for v0.3.16 |
-
-All 130 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
+All 131 releases, back to v0.1.0: [the whole list](docs/UPDATES.md).
 <!-- updates:end -->
 
 ## For developers

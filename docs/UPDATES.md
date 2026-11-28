@@ -5,6 +5,32 @@ Every release of mb3d-rs, newest first, with the time it was published
 description and code; the downloads of a release are on its page. Back to
 the [README](../README.md).
 
+## [v0.3.19](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.19) · 28 Nov 2026, 05:24 UTC
+
+| Commit | What it does |
+|---|---|
+| [`655bd0a`](https://github.com/thr32423/mb3d-rs/commit/655bd0ad503dfc33745acc3effd99330977ae5d7) | Version number and release notes of this release |
+| [`f18a615`](https://github.com/thr32423/mb3d-rs/commit/f18a61592d4586c35e522e2c7323fbdc1ae4178f) | The engine's C functions in one place: capi/ (crate mb3d-capi, include/mb3d.h), moved from ios/engine, which was a copy of mb3d-bindings' ffi/src/lib.rs grown from 427 to 1127 lines (navigator, Monte Carlo, films, meshes), so the first 426 lines lived in two repositories. The iPad app's static library is now only `pub use mb3d_capi::*` with the gpu part; mb3d-bindings' libmb3d can be made the same way from the next release. A crate of its own because the C functions need raw pointers and the engine forbids unsafe code (nothing new: the code is moved unchanged). tests/capi_header.rs: the header and the functions name the same 80 functions. Checked: libmb3d.a for aarch64-apple-ios-sim and a cdylib made the same way both export the 80 |
+| [`9ffc8de`](https://github.com/thr32423/mb3d-rs/commit/9ffc8de09b4b18e5333ce497526db7688752e879) | README: Updates for v0.3.18 |
+| [`a9b00fc`](https://github.com/thr32423/mb3d-rs/commit/a9b00fc055e1748e13758e53a9c91195e7fe2679) | iPad app: showcase with two scenes (coral dusk, dunes) [skip ci] |
+| [`2e4f7e2`](https://github.com/thr32423/mb3d-rs/commit/2e4f7e2013e4793675bc773fd3a4ed36d5242b4c) | iPad app: showcase screenshots of six own scenes (workflow input showcase) [skip ci] |
+| [`6539f9e`](https://github.com/thr32423/mb3d-rs/commit/6539f9e98f701daf5126de398f7727ad72d633b3) | iPad app workflow: TestFlight build signed with the distribution certificate and App Store profile (no cloud signing) |
+| [`c2319e1`](https://github.com/thr32423/mb3d-rs/commit/c2319e19e82ec6fdcb4bfcc57edf222453d4c17d) | iPad app: Orbit Trap (name, bundle ID, icon), licences and credits, privacy manifest; TestFlight upload job |
+| [`2cf36bc`](https://github.com/thr32423/mb3d-rs/commit/2cf36bcb268294b2992d9a43058e88cbe9cf8e4c) | iPad app: a typed number takes focus on the next turn and closes only after losing it; the test keeps the element tree when no field opens |
+| [`ce9f712`](https://github.com/thr32423/mb3d-rs/commit/ce9f712f2a0852616d206d720c02e1ab17a7c029) | iPad app: the number tests find a row by its title and drag its pill; More is scrolled to; a number's title is read once |
+| [`51131c2`](https://github.com/thr32423/mb3d-rs/commit/51131c256ebd4e22dcd2f5d4775985dd913a6c72) | iPad app: UI tests for what screenshots cannot show (dragging numbers, the slider's fade, the light ball, two- and three-finger taps, holding to compare, More, the Formula book, Mutation), run by the workflow with frames while a finger is down |
+| [`096324d`](https://github.com/thr32423/mb3d-rs/commit/096324d12df2212153f3ebf3b782e4b3526d63b6) | iPad app: Variations' caption stays under its picture in landscape; landscape screenshots turned upright |
+| [`7e4936c`](https://github.com/thr32423/mb3d-rs/commit/7e4936cee3f24ab508d484896d5c59d2f0ec037c) | iPad app: landscape screenshots by turning the simulated iPad (Simulator's Rotate Right), not by drawing the interface sideways |
+| [`4ced6e8`](https://github.com/thr32423/mb3d-rs/commit/4ced6e89f5fe02513415ca6a720e4f4748ada9b2) | iPad app: -landscape lays the interface out on its side and draws it turned (an iPad app cannot turn the simulator) |
+| [`d1ee280`](https://github.com/thr32423/mb3d-rs/commit/d1ee2803dd28383f43c64767203fdca17b02c5b7) | iPad app: screenshots on its side too (-landscape) |
+| [`b8033e1`](https://github.com/thr32423/mb3d-rs/commit/b8033e1e3f7cb40b019e2a063e6a5ebef7d670fe) | iPad app: Monte Carlo depth of field (Calculate DoF, Bokeh); the values shown while a scene has none are the engine's own (checked against its text; bailout asked from the engine) |
+| [`3c0ff44`](https://github.com/thr32423/mb3d-rs/commit/3c0ff440004b64c2c757e858688085d3cc9c2202) | iPad app: the Formula book. A formula's page from the list (kind, description, values explained, hints, example files to open), built-in formulas with their descriptions, in the desktop's 17 languages. Engine: formula_book without the desktop program (pages and the example index by labels) |
+| [`356b5e1`](https://github.com/thr32423/mb3d-rs/commit/356b5e10d0636712f9662a397c6669d9696e5860) | iPad app: the settings under More carry the desktop's own names, in its 17 languages (from Languages/*.lng), grouped as its windows group them |
+| [`7c267c8`](https://github.com/thr32423/mb3d-rs/commit/7c267c8383ea2c44d3ed862d09f0091a9edc7f1a) | iPad app: the desktop's remaining settings under More on each page (fractal, hybrids, lights, colours, fog, shadows, occlusion, depth of field, Monte Carlo, experimental), formula kinds and descriptions in the list, generations to go back to. Engine: the formula book in short |
+| [`b536920`](https://github.com/thr32423/mb3d-rs/commit/b53692095dd5ca124ba859a67a75e234c096b381) | iPad app: Variations with MutaGen's settings (weight of formulas; weight and strength of values, Julia, iterations) in place of one strength |
+| [`c098fbb`](https://github.com/thr32423/mb3d-rs/commit/c098fbb789e3426c48ba1ae6f8d193ddc1e0a23e) | iPad app: the rail and the panels over the navigation stack, not in it (a panel's title and Close went into the main toolbar) |
+| [`edc7a7c`](https://github.com/thr32423/mb3d-rs/commit/edc7a7c224126b5c78454a1df93a7c4562e8dd6e) | iPad app: interface redone. Picture over the whole screen, settings on a rail with a panel, quick previews while a value changes, numbers dragged, light ball, palette strip, formula cards and list, scenes as pictures, keyframe strip, variations full screen, menu commands, dark. Engine: variations with a strength, the navigator's axes |
+
 ## [v0.3.18](https://github.com/thr32423/mb3d-rs/releases/tag/v0.3.18) · 27 Nov 2026, 20:04 UTC
 
 | Commit | What it does |
